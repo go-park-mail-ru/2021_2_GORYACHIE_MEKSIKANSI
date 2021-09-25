@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/gorilla/mux"
+/*	"github.com/gorilla/mux"*/
 	"os"
 )
 
@@ -91,17 +91,25 @@ func logoutHandler(ctx *fasthttp.RequestCtx, conn *pgxpool.Pool) {
 }
 
 func (h *Handler) Routing(ctx *fasthttp.RequestCtx) {
-	router := mux.NewRouter()
+/*	router := mux.NewRouter()
 	api := "/api"
 	router.HandleFunc(api + "/restaurants", productsHandler).Methods("GET")
 	router.HandleFunc(api + "/login", loginHandler).Methods("POST")
 	router.HandleFunc(api + "/logout", logoutHandler).Methods("POST")
-	router.HandleFunc(api + "/signup", signUpHandler).Methods("POST")
+	router.HandleFunc(api + "/signup", signUpHandler).Methods("POST")*/
+
+	switch string(ctx.Path()) {
+	case "/api/restaurants":
+		productsHandler(ctx)
+	case "/api/":
+	default:
+		ctx.Error("Unsupported path", fasthttp.StatusNotFound)
+	}
 
 }
 
 func runServer(port string) {
-	conn, err := pgxpool.Connect(context.Background(), "postgres://matroskin:" + password + "@localhost:5432/hot_mexican")
+	conn, err := pgxpool.Connect(context.Background(), "postgres://Captain-matroskin:" + password + "@localhost:5432/hot_mexican")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
