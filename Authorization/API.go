@@ -29,6 +29,11 @@ type Authorization struct {
 	Password string `json:"password"`
 }
 
+type Result struct {
+	Status int         `json:"status,omitempty"`
+	Body   interface{} `json:"parsedJSON,omitempty"`
+}
+
 func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	wrapper := Wrapper{Conn: u.ConnectionDB}
 	signUpAll := Registration{}
@@ -46,6 +51,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	cookieHttp.SetValue(cookieDB.SessionId)
 	cookieHttp.SetHTTPOnly(true)
 	ctx.Response.SetStatusCode(http.StatusOK)
+
 	// TODO: записать в json статус
 	// json.NewEncoder()
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
@@ -68,6 +74,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	cookieHttp.SetValue(cookieDB.SessionId)
 	cookieHttp.SetHTTPOnly(true)
 	ctx.Response.SetStatusCode(http.StatusOK)
+	json.NewEncoder(ctx).Encode(&Result{})
 	// TODO: записать в json статус
 
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
