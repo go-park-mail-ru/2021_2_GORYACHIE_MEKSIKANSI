@@ -2,37 +2,26 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/fasthttp/router"
-	_ "github.com/fasthttp/router"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
+	"net/http"
 	"os"
 	"time"
 )
 
-const PASSWORD_DB string = ""
-const LOGIN_DB string = "Captain-Matroskin"
-
-type Restaurant struct {
-	img                 string
-	name                string
-	costForFreeDelivery int
-	minDeliveryTime     int
-	maxDeliveryTime     int
-	rating              float32
-}
-
-type Wrapper struct {
-	conn *pgxpool.Pool
-}
+const PASSWORDDB string = ""
+const LOGINDB string = "Captain-matroskin"
 
 type SignUp struct {
-	TypeIn   string `json:"type"`
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Phone    string `json:"phone"`
-	Password string `json:"password"`
+	TypeIn   	string 		`json:"type"`
+	Name     	string 		`json:"name"`
+	Email    	string 		`json:"email"`
+	Phone    	string 		`json:"phone"`
+	Password 	string 		`json:"password"`
+	Birthday 	time.Time 	`json:"birthday,omitempty"`
 }
 
 type Login struct {
@@ -41,13 +30,13 @@ type Login struct {
 	Password string `json:"password"`
 }
 
-type Restaurants struct {
-	ImgUrl         string  `json:"imgUrl"`
-	RestaurantName string  `json:"restaurantName"`
-	PriceDelivery  string  `json:"costForFreeDelivery"`
-	MinDelivery    string  `json:"minDelivery"`
-	MaxDelivery    string  `json:"maxDelivery"`
-	Rating         float32 `json:"rating"`
+type Restaurant struct {
+	Img         		string  `json:"imgUrl"`
+	Name 				string  `json:"restaurantName"`
+	CostForFreeDelivery int  	`json:"costForFreeDelivery"`
+	MinDelivery    		int  	`json:"minDelivery"`
+	MaxDelivery    		int  	`json:"maxDelivery"`
+	Rating         		float32 `json:"rating"`
 }
 
 type Profile struct {
@@ -56,7 +45,7 @@ type Profile struct {
 	Email    string    `json:"email"`
 	Phone    string    `json:"phone"`
 	Avatar   string    `json:"avatar"`
-	Birthday time.Time `json:"birthday"`
+	Birthday time.Time `json:"birthday,omitempty"`
 }
 
 type UserInfo struct {
@@ -66,86 +55,92 @@ type RestaurantInfo struct {
 	connectionDB *pgxpool.Pool
 }
 
-func (db *Wrapper) getRestaurants() ([]Restaurant, error) {
-	row, _ := db.conn.Query(context.Background(), "SELECT id FROM general_user_info")
-	p := Restaurant{}
-	var result []Restaurant
-	for row.Next() {
-		err := row.Scan(&p.costForFreeDelivery)
-		if err != nil {
-			panic(err)
-		}
-		result = append(result, p)
-	}
-
-	return result, nil
-}
-
-func allRestaurants(db Wrapper) []Restaurant {
-	result, _ := db.getRestaurants()
-	return result
-}
-
 func (r *RestaurantInfo) productsHandler(ctx *fasthttp.RequestCtx) {
-
-	// TODO: make response
-	//ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
-	ctx.WriteString("Welcome!")
-	fmt.Fprintf(ctx, "Hi there! RequestURI is ")
-
+	WrapperDB := Wrapper{Conn: r.connectionDB}
+	restaurant, _/*err*/ := allRestaurants(WrapperDB)  // TODO: проверки на ошибки
+	if restaurant!= nil {
+		ctx.Response.SetStatusCode(http.StatusBadRequest)  // TODO: какой код?
+	}
+	fmt.Printf("Console:  method: %s, url: %s\n",string(ctx.Method()), ctx.URI())
 }
 
 func (u *UserInfo) signUpHandler(ctx *fasthttp.RequestCtx) {
-	var db = Wrapper{u.connectionDB}
-	restaurants := allRestaurants(db)
-	//signUp := SignUp{}
-	/*	switch signUp.TypeIn {
-		case "client":
-			signUpClient(db, name, email, phone, password, birthday)
-		case "courier":
-			signUpCourier(db, name, email, phone, password)
-		case "host":
-			signUpHost(db, name, email, phone, password)
-		default:
-			fmt.Printf("error")
+	wrapper := Wrapper{Conn: u.connectionDB}
+	signUpAll := SignUp{}
+	err := json.Unmarshal(ctx.Request.Body(), &signUpAll)
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusBadRequest)
+		return
+	}
+	cookieHttp := fasthttp.Cookie{}
+	cookieDB := Cookie{}
+	cookieDB, _/*err*/ = signUp(wrapper, signUpAll)
 
-
-		}*/
-	// TODO: make response
-	fmt.Fprintf(ctx, "Hi there! RequestURI is %d", restaurants[0].costForFreeDelivery)
+	cookieHttp.SetExpire(cookieDB.DateLife)
+	cookieHttp.SetValue(cookieDB.SessionId)
+	cookieHttp.SetHTTPOnly(true)
+	ctx.Response.SetStatusCode(http.StatusOK)
+	// TODO: записать в json статус
+	fmt.Printf("Console:  method: %s, url: %s\n",string(ctx.Method()), ctx.URI())
 }
 
 func (u *UserInfo) loginHandler(ctx *fasthttp.RequestCtx) {
-	var db = Wrapper{u.connectionDB}
-	restaurants := allRestaurants(db)
-	// TODO: make response
-	fmt.Fprintf(ctx, "Hi there! RequestURI is %d", restaurants[0].costForFreeDelivery)
+	wrapper := Wrapper{Conn: u.connectionDB}
+	userLogin := Login{}
+	err := json.Unmarshal(ctx.Request.Body(), &userLogin)
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusBadRequest)
+		return
+	}
+	cookieHttp := fasthttp.Cookie{}
+	cookieDB := Cookie{}
+	cookieDB, _/*err*/ = login(wrapper, userLogin)  // TODO: проверки на ошибки
+
+	cookieHttp.SetExpire(cookieDB.DateLife)
+	cookieHttp.SetValue(cookieDB.SessionId)
+	cookieHttp.SetHTTPOnly(true)
+	ctx.Response.SetStatusCode(http.StatusOK)
+	// TODO: записать в json статус
+	fmt.Printf("Console:  method: %s, url: %s\n",string(ctx.Method()), ctx.URI())
 }
 
 func (u *UserInfo) logoutHandler(ctx *fasthttp.RequestCtx) {
-	var db = Wrapper{u.connectionDB}
-	restaurants := allRestaurants(db)
-	// TODO: make response
-	fmt.Fprintf(ctx, "Hi there! RequestURI is %d", restaurants[0].costForFreeDelivery)
+	wrapper := Wrapper{Conn: u.connectionDB}
+
+	cookieHttp := fasthttp.Cookie{}  // TODO: считать куки
+	cookieDB := Cookie{DateLife: cookieHttp.Expire(), SessionId: string(cookieHttp.Value())}
+	_/*err*/ = logout(wrapper, cookieDB) // TODO: проверки на ошибки
+
+	ctx.Response.SetStatusCode(http.StatusOK)
+	// TODO: записать в json статус
+	fmt.Printf("Console:  method: %s, url: %s\n",string(ctx.Method()), ctx.URI())
 }
 
 func (u *UserInfo) profileHandler(ctx *fasthttp.RequestCtx) {
-	var db = Wrapper{u.connectionDB}
-	restaurants := allRestaurants(db)
-	// TODO: make response
-	fmt.Fprintf(ctx, "Hi there! RequestURI is %d", restaurants[0].costForFreeDelivery)
+	wrapper := Wrapper{Conn: u.connectionDB}
+	profile := Profile{}
+
+	cookieHttp := fasthttp.Cookie{}  // TODO: считать куки
+	cookieDB := Cookie{DateLife: cookieHttp.Expire(), SessionId: string(cookieHttp.Value())}
+	profile, _/*err*/ = getProfile(wrapper, cookieDB)  // TODO: проверки на ошибки
+	if profile.Email != "" {  // TODO: заглушка на unused
+		ctx.Response.SetStatusCode(http.StatusBadRequest)
+	}
+	ctx.Response.SetStatusCode(http.StatusOK)
+	// TODO: записать в json статус
+	fmt.Printf("Console:  method: %s, url: %s\n",string(ctx.Method()), ctx.URI())
 }
 
 func runServer(port string) {
-	conn, err := pgxpool.Connect(context.Background(), "postgres://"+LOGIN_DB+":"+PASSWORD_DB+"@localhost:5432/hot_mexican")
+	connectionPostgres, err := pgxpool.Connect(context.Background(), "postgres://"+LOGINDB+":"+PASSWORDDB+"@localhost:5432/hot_mexican")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
-	defer conn.Close()
+	defer connectionPostgres.Close()
 
-	userInfo := UserInfo{connectionDB: conn}
-	restaurantInfo := RestaurantInfo{connectionDB: conn}
+	userInfo := UserInfo{connectionDB: connectionPostgres}
+	restaurantInfo := RestaurantInfo{connectionDB: connectionPostgres}
 
 	myRouter := router.New()
 	api := "/api"
