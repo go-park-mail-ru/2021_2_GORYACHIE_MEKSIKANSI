@@ -72,7 +72,7 @@ func (db *Wrapper) SignupHost(signup Registration) (mid.Defense, error) {
 	return cookie, err
 }
 
-func (db *Wrapper) SignupCourier(signup Registration) (Defense, error) {
+func (db *Wrapper) SignupCourier(signup Registration) (mid.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
 	db.Transaction = tx
 
@@ -89,8 +89,8 @@ func (db *Wrapper) SignupCourier(signup Registration) (Defense, error) {
 		return mid.Defense{}, err
 	}
 
-	var cookie Defense
-	cookie = cookie.generateNew()
+	var cookie mid.Defense
+	cookie = cookie.GenerateNew()
 	err = db.AddTransactionCookie(cookie, userId)
 	if err != nil {
 		return cookie, err
@@ -109,7 +109,7 @@ func (db *Wrapper) SignupCourier(signup Registration) (Defense, error) {
 	return cookie, err
 }
 
-func (db *Wrapper) SignupClient(signup Registration) (Defense, error) {
+func (db *Wrapper) SignupClient(signup Registration) (mid.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
 	db.Transaction = tx
 
@@ -125,8 +125,8 @@ func (db *Wrapper) SignupClient(signup Registration) (Defense, error) {
 		return mid.Defense{}, err
 	}
 
-	var cookie Defense
-	cookie = cookie.generateNew()
+	var cookie mid.Defense
+	cookie = cookie.GenerateNew()
 	err = db.AddTransactionCookie(cookie, userId)
 	if err != nil {
 		return cookie, err
@@ -145,7 +145,7 @@ func (db *Wrapper) SignupClient(signup Registration) (Defense, error) {
 	return cookie, nil
 }
 
-func (db *Wrapper) AddTransactionCookie(cookie Defense, id int) error {
+func (db *Wrapper) AddTransactionCookie(cookie mid.Defense, id int) error {
 	_, err := db.Transaction.Exec(context.Background(),
 		"INSERT INTO cookie (client_id, session_id, date_life) VALUES ($1, $2, $3)",
 		id, cookie.SessionId, cookie.DateLife)
@@ -233,7 +233,7 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 	return user, nil
 }
 
-func (db *Wrapper) DeleteCookie(cookie Defense) error {
+func (db *Wrapper) DeleteCookie(cookie mid.Defense) error {
 	_, err := db.Conn.Query(context.Background(),
 		"DELETE FROM cookie WHERE session_id = $1 AND date_life = $2",
 		cookie.SessionId, cookie.DateLife)
@@ -244,7 +244,7 @@ func (db *Wrapper) DeleteCookie(cookie Defense) error {
 	return nil
 }
 
-func (db *Wrapper) AddCookie(cookie Defense, id int) error {
+func (db *Wrapper) AddCookie(cookie mid.Defense, id int) error {
 	_, err := db.Conn.Exec(context.Background(),
 		"INSERT INTO cookie (client_id, session_id, date_life) VALUES ($1, $2, $3)",
 		id, cookie.SessionId, cookie.DateLife)

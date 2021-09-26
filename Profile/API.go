@@ -19,16 +19,18 @@ type Profile struct {
 }
 
 type ProfileInfo struct {
-	Id           int
 	ConnectionDB *pgxpool.Pool
 }
 
 func (u *ProfileInfo) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	wrapper := Wrapper{Conn: u.ConnectionDB}
 	profile := Profile{}
+	cookieHttp := fasthttp.Cookie{}
+	cookieDB := mid.Defense{DateLife: cookieHttp.Expire(), SessionId: string(cookieHttp.Value())}
+	id, _ := mid.GetIdByCookie(u.ConnectionDB, cookieDB)
 
-	profile, _ /*err*/ = GetProfile(wrapper, u.Id) // TODO: проверки на ошибки
-	if profile.Email != "" {                       // TODO: заглушка на unused
+	profile, _ /*err*/ = GetProfile(wrapper, id) // TODO: проверки на ошибки
+	if profile.Email != "" {                     // TODO: заглушка на unused
 		ctx.Response.SetStatusCode(http.StatusBadRequest)
 	}
 	ctx.Response.SetStatusCode(http.StatusOK)

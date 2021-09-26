@@ -33,14 +33,18 @@ func runServer(port string) {
 		os.Exit(1)
 	}
 	defer connectionPostgres.Close()
-
+	err = mid.CreateDb(connectionPostgres)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
 	userInfo := auth.UserInfo{ConnectionDB: connectionPostgres}
 	restaurantInfo := restaurant.RestaurantInfo{ConnectionDB: connectionPostgres}
 	profileInfo := profile.ProfileInfo{ConnectionDB: connectionPostgres}
 
 	myRouter := router.New()
 	api := "/api"
-	cookieDB := auth.Defense{}
+	cookieDB := mid.Defense{}
 	mid.CheckAccess(connectionPostgres, cookieDB) // TODO: проверка кук для этих профиля и логаута
 
 	myRouter.GET(api+"/profile", profileInfo.ProfileHandler)
