@@ -1,11 +1,11 @@
 package Profile
 
 import (
+	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	"net/http"
-	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	"time"
 )
 
@@ -36,6 +36,5 @@ func (u *ProfileInfo) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	ctx.Response.SetStatusCode(http.StatusOK)
 	// TODO: записать в json статус
 
-	mid.SetHeaders(ctx)
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }

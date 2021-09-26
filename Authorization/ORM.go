@@ -1,12 +1,12 @@
 package Authorization
 
 import (
+	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
-	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 )
 
 type Wrapper struct {
