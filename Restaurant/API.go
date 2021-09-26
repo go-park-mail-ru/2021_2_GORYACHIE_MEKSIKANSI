@@ -5,7 +5,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	"net/http"
-	middleware "project/Middleware"
+	middleware "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 )
 
 type Restaurant struct {

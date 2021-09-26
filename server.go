@@ -9,10 +9,10 @@ import (
 	"github.com/valyala/fasthttp"
 	_ "net/http"
 	"os"
-	auth "project/Authorization"
-	mid "project/Middleware"
-	profile "project/Profile"
-	restaurant "project/Restaurant"
+	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
+	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
+	profile "2021_2_GORYACHIE_MEKSIKANSI/Profile"
+	restaurant "2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
 	_ "time"
 )
 

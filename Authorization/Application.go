@@ -2,7 +2,7 @@ package Authorization
 
 import (
 	"math/rand"
-	mid "project/Middleware"
+	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	"strings"
 	"time"
 )
