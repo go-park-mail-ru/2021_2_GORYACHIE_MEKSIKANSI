@@ -29,5 +29,6 @@ func (r *RestaurantInfo) ProductsHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusBadRequest) // TODO: только 200 вернуть
 	}
 	middleware.SetHeaders(ctx)
+
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }

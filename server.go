@@ -16,18 +16,13 @@ import (
 	_ "time"
 )
 
-const PASSWORDDB string = "root"
 const LOGINDB string = "root"
-
-type Result struct {
-	Status int         `json:"status,omitempty"`
-	Body   interface{} `json:"parsedJSON,omitempty"`
-}
+const PASSWORDDB string = "root"
+const DBNAME string = "hot_mexicans_db"
 
 func runServer(port string) {
 	// TODO: сделать вернуть connection
-
-	connectionPostgres, err := pgxpool.Connect(context.Background(), "postgres://"+LOGINDB+":"+PASSWORDDB+"@localhost:5432/hot_mexicans_db")
+	connectionPostgres, err := pgxpool.Connect(context.Background(), "postgres://" + LOGINDB + ":" + PASSWORDDB + "@localhost:5432/" + DBNAME)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -50,7 +45,7 @@ func runServer(port string) {
 	myRouter.GET(api+"/profile", profileInfo.ProfileHandler)
 	myRouter.POST(api+"/logout", userInfo.LogoutHandler)
 
-	myRouter.GET(api+"/restaurants", restaurantInfo.ProductsHandler)
+	myRouter.GET(api+"/", restaurantInfo.ProductsHandler)
 	myRouter.POST(api+"/login", userInfo.LoginHandler)
 	myRouter.POST(api+"/signup", userInfo.SignUpHandler)
 
