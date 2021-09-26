@@ -2,21 +2,12 @@ package Authorization
 
 import (
 	"math/rand"
+	mid "project/Middleware"
 	"strings"
 	"time"
 )
 
-const DAYLIVECOOKIE = 5
 const LENSALT = 5
-const LENSESSINID = 92
-const LENCSRFTOKEN = 92
-
-func (c Defense) generateNew() Defense {
-	c.DateLife = time.Now().Add(time.Hour * 24 * DAYLIVECOOKIE)
-	c.SessionId = randString(LENSESSINID)
-	c.CsrfToken = randString(LENCSRFTOKEN)
-	return c
-}
 
 func randString(length int) string {
 	rand.Seed(time.Now().UnixNano())
@@ -30,8 +21,8 @@ func randString(length int) string {
 	return b.String()
 }
 
-func SignUp(db Wrapper, signup Registration) (Defense, error) {
-	var cookie Defense
+func SignUp(db Wrapper, signup Registration) (mid.Defense, error) {
+	var cookie mid.Defense
 	var err error
 	switch signup.TypeIn {
 	case "client":
@@ -41,7 +32,7 @@ func SignUp(db Wrapper, signup Registration) (Defense, error) {
 	case "host":
 		cookie, err = db.SignupHost(signup)
 	default:
-		return Defense{}, err
+		return mid.Defense{}, err
 	}
 
 	if err != nil {
@@ -51,7 +42,7 @@ func SignUp(db Wrapper, signup Registration) (Defense, error) {
 	return cookie, nil
 }
 
-func Login(db Wrapper, login Authorization) (Defense, error) {
+func Login(db Wrapper, login Authorization) (mid.Defense, error) {
 	var userId int
 	var err error
 	switch {
@@ -61,15 +52,15 @@ func Login(db Wrapper, login Authorization) (Defense, error) {
 	case login.Phone != "":
 		userId, err = db.LoginByPhone(login.Phone, login.Password)
 	default:
-		return Defense{}, err
+		return mid.Defense{}, err
 	}
 
 	if err != nil {
-		return Defense{}, err
+		return mid.Defense{}, err
 	}
 
-	var cookie Defense
-	cookie = cookie.generateNew()
+	var cookie mid.Defense
+	cookie = cookie.GenerateNew()
 	err = db.AddCookie(cookie, userId)
 
 	if err != nil {
@@ -78,7 +69,7 @@ func Login(db Wrapper, login Authorization) (Defense, error) {
 	return cookie, nil
 }
 
-func Logout(db Wrapper, cookie Defense) error {
+func Logout(db Wrapper, cookie mid.Defense) error {
 	err := db.DeleteCookie(cookie)
 	if err != nil {
 		return err

@@ -6,7 +6,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	"net/http"
-	middleware "project/Middleware"
+	mid "project/Middleware"
 	"time"
 )
 
@@ -21,12 +21,6 @@ type Registration struct {
 	Phone    string    `json:"phone"`
 	Password string    `json:"password"`
 	Birthday time.Time `json:"birthday,omitempty"`
-}
-
-type Defense struct {
-	DateLife  time.Time
-	SessionId string
-	CsrfToken string
 }
 
 type Authorization struct {
@@ -44,7 +38,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 	cookieHttp := fasthttp.Cookie{}
-	cookieDB := Defense{}
+	cookieDB := mid.Defense{}
 	cookieDB, _ /*err*/ = SignUp(wrapper, signUpAll)
 
 	cookieHttp.SetExpire(cookieDB.DateLife)
@@ -54,7 +48,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	ctx.Response.SetStatusCode(http.StatusOK)
 	// TODO: записать в json статус
 	// json.NewEncoder()
-	middleware.SetHeaders(ctx)
+	mid.SetHeaders(ctx)
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }
 
@@ -67,7 +61,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 	cookieHttp := fasthttp.Cookie{}
-	cookieDB := Defense{}
+	cookieDB := mid.Defense{}
 	cookieDB, _ /*err*/ = Login(wrapper, userLogin) // TODO: проверки на ошибки
 
 	cookieHttp.SetExpire(cookieDB.DateLife)
@@ -77,7 +71,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	ctx.Response.SetStatusCode(http.StatusOK)
 	// TODO: записать в json статус
 
-	middleware.SetHeaders(ctx)
+	mid.SetHeaders(ctx)
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }
 
@@ -85,12 +79,12 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	wrapper := Wrapper{Conn: u.ConnectionDB}
 
 	cookieHttp := fasthttp.Cookie{}
-	cookieDB := Defense{DateLife: cookieHttp.Expire(), SessionId: string(cookieHttp.Value())}
+	cookieDB := mid.Defense{DateLife: cookieHttp.Expire(), SessionId: string(cookieHttp.Value())}
 	_ /*err*/ = Logout(wrapper, cookieDB) // TODO: проверки на ошибки
 
 	ctx.Response.SetStatusCode(http.StatusOK)
 	// TODO: записать в json статус
-	middleware.SetHeaders(ctx)
+	mid.SetHeaders(ctx)
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 	// TODO: отдать просроченную куку, key=value, sessionId=432423
 }

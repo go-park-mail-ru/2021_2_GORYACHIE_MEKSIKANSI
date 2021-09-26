@@ -5,7 +5,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	"net/http"
-	middleware "project/Middleware"
+	mid "project/Middleware"
 	"time"
 )
 
@@ -34,6 +34,6 @@ func (u *ProfileInfo) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	ctx.Response.SetStatusCode(http.StatusOK)
 	// TODO: записать в json статус
 
-	middleware.SetHeaders(ctx)
+	mid.SetHeaders(ctx)
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }

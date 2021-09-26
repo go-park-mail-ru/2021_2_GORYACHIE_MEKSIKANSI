@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
+	mid "project/Middleware"
 )
 
 type Wrapper struct {
@@ -34,7 +35,7 @@ func (db *Wrapper) GeneralSignUp(signup Registration) (int, error) {
 	return userId, nil
 }
 
-func (db *Wrapper) SignupHost(signup Registration) (Defense, error) {
+func (db *Wrapper) SignupHost(signup Registration) (mid.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
 	db.Transaction = tx
 
@@ -48,11 +49,11 @@ func (db *Wrapper) SignupHost(signup Registration) (Defense, error) {
 
 	userId, err := db.GeneralSignUp(signup)
 	if err != nil {
-		return Defense{}, err
+		return mid.Defense{}, err
 	}
 
-	var cookie Defense
-	cookie = cookie.generateNew()
+	var cookie mid.Defense
+	cookie = cookie.GenerateNew()
 	err = db.AddTransactionCookie(cookie, userId)
 	if err != nil {
 		return cookie, err
@@ -85,7 +86,7 @@ func (db *Wrapper) SignupCourier(signup Registration) (Defense, error) {
 
 	userId, err := db.GeneralSignUp(signup)
 	if err != nil {
-		return Defense{}, err
+		return mid.Defense{}, err
 	}
 
 	var cookie Defense
@@ -121,7 +122,7 @@ func (db *Wrapper) SignupClient(signup Registration) (Defense, error) {
 
 	userId, err := db.GeneralSignUp(signup)
 	if err != nil {
-		return Defense{}, err
+		return mid.Defense{}, err
 	}
 
 	var cookie Defense
