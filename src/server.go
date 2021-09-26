@@ -2,46 +2,78 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
 )
 
+const DAYLIVECOOKIE = 5
+const LENSALT = 5
+
 type Restaurant struct {
-	img                 string
-	name                string
-	costForFreeDelivery int
-	minDeliveryTime     int
-	maxDeliveryTime     int
-	rating              float32
+	Img                 string  `json:"imgUrl"`
+	Name                string  `json:"restaurantName"`
+	CostForFreeDelivery int     `json:"costForFreeDelivery"`
+	MinDelivery         int     `json:"minDelivery"`
+	MaxDelivery         int     `json:"maxDelivery"`
+	Rating              float32 `json:"rating"`
 }
 
 type Wrapper struct {
-	conn *pgxpool.Pool
+	Conn        *pgxpool.Pool
+	Transaction pgx.Tx
 }
 
 type Cookie struct {
-	dateLife  time.Time
-	sessionId string
+	DateLife  time.Time
+	SessionId string
+}
+
+type Profile struct {
+	Type     string    `json:"type"`
+	Name     string    `json:"name"`
+	Email    string    `json:"email"`
+	Phone    string    `json:"phone"`
+	Avatar   string    `json:"avatar"`
+	Birthday time.Time `json:"birthday"`
 }
 
 func (c Cookie) generateNew() Cookie {
-	c.dateLife = time.Now()
-	c.sessionId = "123"
+	c.DateLife = time.Now().Add(time.Hour * 24 * DAYLIVECOOKIE)
+	c.SessionId = "123"
 	return c
 }
 
 type Handler struct {
 	foobar string
-	conn   *pgxpool.Pool
+	Conn   *pgxpool.Pool
+}
+
+type Login struct {
+	Email    string `json:"email,omitempty"`
+	Phone    string `json:"phone,omitempty"`
+	Password string `json:"password"`
+}
+
+type SignUp struct {
+	TypeIn   string    `json:"type"`
+	Name     string    `json:"name"`
+	Email    string    `json:"email"`
+	Phone    string    `json:"phone"`
+	Password string    `json:"password"`
+	Birthday time.Time `json:"birthday"`
 }
 
 // ORM
 func (db *Wrapper) getRestaurants() ([]Restaurant, error) {
-	row, err := db.conn.Query(context.Background(),
+	row, err := db.Conn.Query(context.Background(),
 		"SELECT avatar, price_delivery, min_delivery_time, max_delivery_time FROM restaurant LIMIT 50")
 	if err != nil {
 		return nil, err
@@ -50,8 +82,8 @@ func (db *Wrapper) getRestaurants() ([]Restaurant, error) {
 	p := Restaurant{}
 	var result []Restaurant
 	for row.Next() {
-		p.rating = rand.Float32() * 5
-		err := row.Scan(&p.img, &p.name, &p.costForFreeDelivery, &p.minDeliveryTime, &p.maxDeliveryTime)
+		p.Rating = rand.Float32() * 5
+		err := row.Scan(&p.Img, &p.Name, &p.CostForFreeDelivery, &p.MinDelivery, &p.MaxDelivery)
 		//err := row.Scan(&p.img, &p.name, &p.costForFreeDelivery, &p.minDeliveryTime, &p.maxDeliveryTime, &p.rating)
 		if err != nil {
 			panic(err)
@@ -61,31 +93,199 @@ func (db *Wrapper) getRestaurants() ([]Restaurant, error) {
 
 	return result, nil
 }
+func (db *Wrapper) getRoleById(id int) (string, error) {
+	role := 0
 
-func (db *Wrapper) generalSignUp(name string, email string, phone string, password string) (int, error) {
+	row, err := db.Conn.Query(context.Background(),
+		"SELECT id FROM client WHERE client_id = $1", id)
+	if err != nil {
+		return "", err
+	}
+	for row.Next() {
+		err = row.Scan(&role)
+		if err != nil {
+			return "", err
+		}
+	}
+	if role != 0 {
+		return "client", nil
+	}
+
+	row, err = db.Conn.Query(context.Background(),
+		"SELECT id FROM host WHERE client_id = $1", id)
+	if err != nil {
+		return "", err
+	}
+	for row.Next() {
+		err = row.Scan(&role)
+		if err != nil {
+			return "", err
+		}
+	}
+	if role != 0 {
+		return "host", nil
+	}
+
+	row, err = db.Conn.Query(context.Background(),
+		"SELECT id FROM courier WHERE client_id = $1", id)
+	if err != nil {
+		return "", err
+	}
+	for row.Next() {
+		err = row.Scan(&role)
+		if err != nil {
+			return "", err
+		}
+	}
+	if role != 0 {
+		return "courier", nil
+	}
+
+	return "", nil
+}
+
+func randString(length int) string {
+	rand.Seed(time.Now().UnixNano())
+	chars := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
+	var b strings.Builder
+	for i := 0; i < length; i++ {
+		b.WriteRune(chars[rand.Intn(len(chars))])
+	}
+	return b.String()
+}
+
+func hashPassword(password string, salt string) string {
+	h := sha256.New()
+	h.Write([]byte(salt + password))
+	hash := hex.EncodeToString(h.Sum(nil))
+	return hash
+}
+
+func (db *Wrapper) generalSignUp(signup SignUp) (int, error) {
 	var userId int
-	err := db.conn.QueryRow(context.Background(),
+	salt := randString(LENSALT)
+
+	err := db.Transaction.QueryRow(context.Background(),
 		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-		name, email, phone, password, "salt").Scan(&userId)
+		signup.Name, signup.Email, signup.Phone, hashPassword(signup.Password, salt), salt).Scan(&userId)
 	if err != nil {
 		panic(err)
 	}
 	return userId, nil
 }
 
-func (db *Wrapper) signupHost(userId int) error {
-	_, err := db.conn.Exec(context.Background(),
-		"INSERT INTO host (client_id) VALUES ($1)", userId)
+func (db *Wrapper) signupHost(signup SignUp) (Cookie, error) {
+	tx, err := db.Conn.Begin(context.Background())
+	db.Transaction = tx
+	defer func(tx pgx.Tx, ctx context.Context) {
+		err := tx.Rollback(ctx)
+		if err != nil {
+			// TODO: add return err
+			return
+		}
+	}(tx, context.Background())
+
+	userId, err := db.generalSignUp(signup)
 	if err != nil {
-		return err
+		return Cookie{}, err
 	}
 
-	return nil
+	var cookie Cookie
+	cookie = cookie.generateNew()
+	err = db.addTransactionCookie(cookie, userId)
+	if err != nil {
+		return cookie, err
+	}
+
+	err = tx.Commit(context.Background())
+
+	_, err = db.Conn.Exec(context.Background(),
+		"INSERT INTO host (client_id) VALUES ($1)", userId)
+	if err != nil {
+		_, err = db.Conn.Exec(context.Background(),
+			"DELETE FROM host WHERE client_id = $1", userId)
+		return cookie, err
+	}
+
+	return cookie, err
 }
 
-func (db *Wrapper) signupCourier(userId int) error {
-	_, err := db.conn.Exec(context.Background(),
+func (db *Wrapper) signupCourier(signup SignUp) (Cookie, error) {
+	tx, err := db.Conn.Begin(context.Background())
+	db.Transaction = tx
+	defer func(tx pgx.Tx, ctx context.Context) {
+		err := tx.Rollback(ctx)
+		if err != nil {
+			// TODO: add return err
+			return
+		}
+	}(tx, context.Background())
+
+	userId, err := db.generalSignUp(signup)
+	if err != nil {
+		return Cookie{}, err
+	}
+
+	var cookie Cookie
+	cookie = cookie.generateNew()
+	err = db.addTransactionCookie(cookie, userId)
+	if err != nil {
+		return cookie, err
+	}
+
+	err = tx.Commit(context.Background())
+
+	_, err = db.Conn.Exec(context.Background(),
 		"INSERT INTO courier (client_id) VALUES ($1)", userId)
+	if err != nil {
+		_, err = db.Conn.Exec(context.Background(),
+			"DELETE FROM courier WHERE client_id = $1", userId)
+		return cookie, err
+	}
+
+	return cookie, err
+}
+
+func (db *Wrapper) signupClient(signup SignUp) (Cookie, error) {
+	tx, err := db.Conn.Begin(context.Background())
+	db.Transaction = tx
+	defer func(tx pgx.Tx, ctx context.Context) {
+		err := tx.Rollback(ctx)
+		if err != nil {
+			// TODO: add return err
+			return
+		}
+	}(tx, context.Background())
+
+	userId, err := db.generalSignUp(signup)
+	if err != nil {
+		return Cookie{}, err
+	}
+
+	var cookie Cookie
+	cookie = cookie.generateNew()
+	err = db.addTransactionCookie(cookie, userId)
+	if err != nil {
+		return cookie, err
+	}
+
+	err = tx.Commit(context.Background())
+
+	_, err = db.Conn.Exec(context.Background(),
+		"INSERT INTO client (client_id, date_birthday) VALUES ($1, $2)", userId, signup.Birthday)
+	if err != nil {
+		_, err = db.Conn.Exec(context.Background(),
+			"DELETE FROM general_user_info WHERE client_id = $1", userId)
+		return cookie, err
+	}
+
+	return cookie, nil
+}
+
+func (db *Wrapper) addTransactionCookie(cookie Cookie, id int) error {
+	_, err := db.Transaction.Exec(context.Background(),
+		"INSERT INTO cookie (client_id, session_id, date_life) VALUES ($1, $2, $3)",
+		id, cookie.SessionId, cookie.DateLife)
 	if err != nil {
 		return err
 	}
@@ -94,9 +294,9 @@ func (db *Wrapper) signupCourier(userId int) error {
 }
 
 func (db *Wrapper) addCookie(cookie Cookie, id int) error {
-	_, err := db.conn.Exec(context.Background(),
+	_, err := db.Conn.Exec(context.Background(),
 		"INSERT INTO cookie (client_id, session_id, date_life) VALUES ($1, $2, $3)",
-		id, cookie.sessionId, cookie.dateLife)
+		id, cookie.SessionId, cookie.DateLife)
 	if err != nil {
 		return err
 	}
@@ -105,8 +305,9 @@ func (db *Wrapper) addCookie(cookie Cookie, id int) error {
 }
 
 func (db *Wrapper) getIdByCookie(cookie Cookie) (int, error) {
-	row, err := db.conn.Query(context.Background(),
-		"SELECT client_id FROM cookie WHERE session_id = $1 AND date_life = $2", cookie.sessionId, cookie.dateLife)
+	row, err := db.Conn.Query(context.Background(),
+		//"SELECT client_id FROM cookie WHERE session_id = $1", cookie.SessionId)
+		"SELECT client_id FROM cookie WHERE session_id = $1 AND date_life = $2", cookie.SessionId, cookie.DateLife)
 	if err != nil {
 		return 0, err
 	}
@@ -123,11 +324,11 @@ func (db *Wrapper) getIdByCookie(cookie Cookie) (int, error) {
 }
 
 func (db *Wrapper) deleteCookie(cookie Cookie) error {
-	_, err := db.conn.Query(context.Background(),
-		"DELETE FROM cookie WHERE session_id = $1",
-		//"DELETE FROM cookie WHERE session_id = $1 AND date_life = $2",
-		//cookie.sessionId, cookie.dateLife)
-		cookie.sessionId)
+	_, err := db.Conn.Query(context.Background(),
+		//"DELETE FROM cookie WHERE session_id = $1",
+		"DELETE FROM cookie WHERE session_id = $1 AND date_life = $2",
+		cookie.SessionId, cookie.DateLife)
+	//cookie.SessionId)
 	if err != nil {
 		return err
 	}
@@ -135,43 +336,59 @@ func (db *Wrapper) deleteCookie(cookie Cookie) error {
 	return nil
 }
 
-//func (db *Wrapper) checkCookie(cookie Cookie) error {
-//	_, err := db.conn.Query(context.Background(),
-//		"DELETE FROM cookie WHERE session_id = $1 AND date_life = $2",
-//		cookie.sessionId, cookie.dateLife)
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//}
-
-func (db *Wrapper) signupClient(userId int, birthday time.Time) error {
-	_, err := db.conn.Exec(context.Background(),
-		"INSERT INTO client (client_id, birthday) VALUES ($1, $2)", userId, birthday)
+func (db *Wrapper) checkCookie(cookie Cookie) (bool, error) {
+	row, err := db.Conn.Query(context.Background(),
+		"SELECT ID FROM cookie WHERE session_id = $1 AND date_life = $2",
+		cookie.SessionId, cookie.DateLife)
 	if err != nil {
-		return err
+		return false, err
 	}
 
-	return nil
+	var id int
+	for row.Next() {
+		err = row.Scan(&id)
+	}
+	if id == 0 {
+		return false, nil
+	}
+	return true, nil
 }
 
-func (db *Wrapper) login(email string, phone string, password string) (int, error) {
+func (db *Wrapper) loginByEmail(email string, password string) (int, error) {
 	var user int
-	row, err := db.conn.Query(context.Background(),
-		"SELECT id FROM general_user_info WHERE email = $1 AND phone = $2 AND password = $3",
-		email, phone, password)
+	var salt string
+
+	row, err := db.Conn.Query(context.Background(),
+		"SELECT salt FROM general_user_info WHERE email = $1",
+		email)
+	if err != nil {
+		return 0, err
+	}
+
+	for row.Next() {
+		err = row.Scan(&salt)
+
+		if err != nil {
+			panic(err)
+			return 0, err
+		}
+	}
+
+	row, err = db.Conn.Query(context.Background(),
+		"SELECT id FROM general_user_info WHERE email = $1 AND password = $2",
+		email, hashPassword(password, salt))
 	if err != nil {
 		return 0, err
 	}
 
 	for row.Next() {
 		err = row.Scan(&user)
+		if err != nil {
+			panic(err)
+			return 0, err
+		}
 	}
-	if err != nil {
-		panic(err)
-		return 0, err
-	}
-	// TODO: check
+
 	if user == 0 {
 		panic(err)
 		return 0, nil
@@ -179,8 +396,114 @@ func (db *Wrapper) login(email string, phone string, password string) (int, erro
 	return user, nil
 }
 
+func (db *Wrapper) loginByPhone(phone string, password string) (int, error) {
+	var user int
+	var salt string
+
+	row, err := db.Conn.Query(context.Background(),
+		"SELECT salt FROM general_user_info WHERE phone = $1",
+		phone)
+	if err != nil {
+		return 0, err
+	}
+
+	for row.Next() {
+		err = row.Scan(&salt)
+
+		if err != nil {
+			panic(err)
+			return 0, err
+		}
+	}
+
+	row, err = db.Conn.Query(context.Background(),
+		"SELECT id FROM general_user_info WHERE phone = $1 AND password = $2",
+		phone, password)
+	if err != nil {
+		return 0, err
+	}
+
+	for row.Next() {
+		err = row.Scan(&user)
+		if err != nil {
+			panic(err)
+			return 0, err
+		}
+	}
+
+	if user == 0 {
+		panic(err)
+		return 0, nil
+	}
+	return user, nil
+}
+
+func (db *Wrapper) getProfileHost(id int) (Profile, error) {
+	row, err := db.Conn.Query(context.Background(),
+		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id)
+	if err != nil {
+		return Profile{}, err
+	}
+	var profile = Profile{}
+	for row.Next() {
+		err = row.Scan(&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
+		if err != nil {
+			panic(err)
+			return Profile{}, err
+		}
+	}
+	return profile, err
+}
+
+func (db *Wrapper) getProfileClient(id int) (Profile, error) {
+	row, err := db.Conn.Query(context.Background(),
+		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id)
+	if err != nil {
+		return Profile{}, err
+	}
+	var profile = Profile{}
+	for row.Next() {
+		err = row.Scan(&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
+		if err != nil {
+			panic(err)
+			return Profile{}, err
+		}
+	}
+
+	row, err = db.Conn.Query(context.Background(),
+		"SELECT date_birthday FROM client WHERE client_id = $1", id)
+	if err != nil {
+		return Profile{}, err
+	}
+	for row.Next() {
+		err = row.Scan(&profile.Birthday)
+		if err != nil {
+			panic(err)
+			return Profile{}, err
+		}
+	}
+	return profile, err
+}
+
+func (db *Wrapper) getProfileCourier(id int) (Profile, error) {
+	row, err := db.Conn.Query(context.Background(),
+		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id)
+	if err != nil {
+		return Profile{}, err
+	}
+	var profile = Profile{}
+	for row.Next() {
+		err = row.Scan(&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
+		if err != nil {
+			panic(err)
+			return Profile{}, err
+		}
+	}
+	return profile, err
+}
+
 func (db *Wrapper) updateName(id int, name string) error {
-	_, err := db.conn.Query(context.Background(),
+	_, err := db.Conn.Query(context.Background(),
 		"UPDATE general_user_info SET name = $1 WHERE id = $2", name, id)
 	if err != nil {
 		return err
@@ -189,7 +512,7 @@ func (db *Wrapper) updateName(id int, name string) error {
 }
 
 func (db *Wrapper) updateEmail(id int, email string) error {
-	_, err := db.conn.Query(context.Background(),
+	_, err := db.Conn.Query(context.Background(),
 		"UPDATE general_user_info SET email = $1 WHERE id = $2", email, id)
 	if err != nil {
 		return err
@@ -198,7 +521,7 @@ func (db *Wrapper) updateEmail(id int, email string) error {
 }
 
 func (db *Wrapper) updatePassword(id int, password string) error {
-	_, err := db.conn.Query(context.Background(),
+	_, err := db.Conn.Query(context.Background(),
 		"UPDATE general_user_info SET password = $1 WHERE id = $2", password, id)
 	if err != nil {
 		return err
@@ -207,7 +530,7 @@ func (db *Wrapper) updatePassword(id int, password string) error {
 }
 
 func (db *Wrapper) updateAdditionalInfo(id int, phone string) error {
-	_, err := db.conn.Query(context.Background(),
+	_, err := db.Conn.Query(context.Background(),
 		"UPDATE general_user_info SET phone = $1 WHERE id = $2", phone, id)
 	if err != nil {
 		return err
@@ -216,7 +539,7 @@ func (db *Wrapper) updateAdditionalInfo(id int, phone string) error {
 }
 
 func (db *Wrapper) updateAvatar(id int, avatar string) error {
-	_, err := db.conn.Query(context.Background(),
+	_, err := db.Conn.Query(context.Background(),
 		"UPDATE general_user_info SET avatar = $1 WHERE id = $2", avatar, id)
 	if err != nil {
 		return err
@@ -225,6 +548,30 @@ func (db *Wrapper) updateAvatar(id int, avatar string) error {
 }
 
 // Application
+func getProfile(db Wrapper, cookie Cookie) (Profile, error) {
+	id, err := db.getIdByCookie(cookie)
+	if err != nil {
+		return Profile{}, err
+	}
+	role, err := db.getRoleById(id)
+	if err != nil {
+		return Profile{}, err
+	}
+	var result Profile
+	switch role {
+	case "client":
+		result, err = db.getProfileClient(id)
+	case "courier":
+		result, err = db.getProfileCourier(id)
+	case "host":
+		result, err = db.getProfileHost(id)
+	}
+	if err != nil {
+		return Profile{}, err
+	}
+	return result, nil
+}
+
 func allRestaurants(db Wrapper) ([]Restaurant, error) {
 	result, err := db.getRestaurants()
 	if err != nil {
@@ -237,56 +584,25 @@ func allRestaurants(db Wrapper) ([]Restaurant, error) {
 	return result, nil
 }
 
-func signUp(db Wrapper, typeUser string, name string, email string, phone string, password string) (Cookie, error) {
-	var id int
-	id, err := db.generalSignUp(name, email, phone, password)
-	if err != nil {
-		var cookie Cookie
-		return cookie, err
-	}
-	switch typeUser {
-	case "host":
-		err = db.signupHost(id)
-		// TODO: if err then delete from general
-	case "courier":
-		err = db.signupCourier(id)
-	}
-
-	if err != nil {
-		var cookie Cookie
-		return cookie, nil
-	}
-
+func signUp(db Wrapper, signup SignUp) (Cookie, error) {
 	var cookie Cookie
-	cookie = cookie.generateNew()
-	err = db.addCookie(cookie, id)
+	var err error
+	switch signup.TypeIn {
+	case "client":
+		cookie, err = db.signupClient(signup)
+	case "courier":
+		cookie, err = db.signupCourier(signup)
+	case "host":
+		cookie, err = db.signupHost(signup)
+	default:
+		return Cookie{}, err
+
+	}
 	if err != nil {
 		return cookie, err
 	}
 
 	return cookie, nil
-}
-
-func signUpClient(db Wrapper, name string, email string, phone string, password string, birthday time.Time) (int, error) {
-	var id int
-	id, err := db.generalSignUp(name, email, phone, password)
-	if err != nil {
-		return 0, nil
-	}
-	err = db.signupClient(id, birthday)
-
-	if err != nil {
-		return 0, err
-	}
-
-	var cookie Cookie
-	cookie = cookie.generateNew()
-	err = db.addCookie(cookie, id)
-	if err != nil {
-		return 0, err
-	}
-
-	return id, nil
 }
 
 func updateName(db Wrapper, cookie Cookie, id int, name string) error {
@@ -330,8 +646,18 @@ func updateAvatar(db Wrapper, cookie Cookie, id int, avatar string) error {
 	return nil
 }
 
-func login(db Wrapper, email string, phone string, password string) (Cookie, error) {
-	userId, err := db.login(email, phone, password)
+func login(db Wrapper, login Login) (Cookie, error) {
+	var userId int
+	var err error
+	switch {
+	case login.Email != "":
+		userId, err = db.loginByEmail(login.Email, login.Password)
+
+	case login.Phone != "":
+		userId, err = db.loginByPhone(login.Phone, login.Password)
+	default:
+		return Cookie{}, err
+	}
 	if err != nil {
 		return Cookie{}, err
 	}
@@ -355,19 +681,20 @@ func logout(db Wrapper, cookie Cookie) error {
 
 // API
 func productsHandler(ctx *fasthttp.RequestCtx, conn *pgxpool.Pool) {
-	var db = Wrapper{conn}
+	var db = Wrapper{Conn: conn}
 	restaurants, _ := allRestaurants(db)
-	fmt.Fprintf(ctx, "Hi there! RequestURI is %d", restaurants[0].costForFreeDelivery)
+	fmt.Fprintf(ctx, "Hi there! RequestURI is %d", restaurants[0].CostForFreeDelivery)
 }
 
 func loginHandler(ctx *fasthttp.RequestCtx, conn *pgxpool.Pool) {
-	var db = Wrapper{conn}
-	cookie, _ := login(db, "1", "1", "1")
-	fmt.Fprintf(ctx, "Hi there! RequestURI is %s", cookie.sessionId)
+	var db = Wrapper{Conn: conn}
+	var loginUser = Login{"email", "phone", "password"}
+	cookie, _ := login(db, loginUser)
+	fmt.Fprintf(ctx, "Hi there! RequestURI is %s", cookie.SessionId)
 }
 
 func logoutHandler(ctx *fasthttp.RequestCtx, conn *pgxpool.Pool) {
-	var db = Wrapper{conn}
+	var db = Wrapper{Conn: conn}
 	var cookie Cookie
 	cookie = cookie.generateNew()
 	err := logout(db, cookie)
@@ -377,9 +704,21 @@ func logoutHandler(ctx *fasthttp.RequestCtx, conn *pgxpool.Pool) {
 }
 
 func signupHandler(ctx *fasthttp.RequestCtx, conn *pgxpool.Pool) {
-	var db = Wrapper{conn}
-	cookie, _ := signUp(db, "host", "2", "2", "2", "2")
-	fmt.Fprintf(ctx, "Hi there! RequestURI is %d", cookie.sessionId)
+	var db = Wrapper{Conn: conn}
+	var signup = SignUp{"client", "name", "email", "phone", "password", time.Now()}
+	_, err := signUp(db, signup)
+	if err != nil {
+		return
+	}
+}
+
+func profileHandler(ctx *fasthttp.RequestCtx, conn *pgxpool.Pool) {
+	var db = Wrapper{Conn: conn}
+	var cookie = Cookie{}
+	_, err := getProfile(db, cookie.generateNew())
+	if err != nil {
+		return
+	}
 }
 
 // Routing(transportation)
@@ -387,13 +726,15 @@ func signupHandler(ctx *fasthttp.RequestCtx, conn *pgxpool.Pool) {
 func (h *Handler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Path()) {
 	case "/api/restaurant":
-		productsHandler(ctx, h.conn)
+		productsHandler(ctx, h.Conn)
 	case "/login":
-		loginHandler(ctx, h.conn)
+		loginHandler(ctx, h.Conn)
 	case "/logout":
-		logoutHandler(ctx, h.conn)
+		logoutHandler(ctx, h.Conn)
 	case "/signup":
-		signupHandler(ctx, h.conn)
+		signupHandler(ctx, h.Conn)
+	case "/profile":
+		profileHandler(ctx, h.Conn)
 	default:
 		ctx.Error("Unsupported path", fasthttp.StatusNotFound)
 	}
@@ -407,7 +748,7 @@ func main() {
 	}
 	defer conn.Close()
 
-	handler := &Handler{foobar: "foobar", conn: conn}
+	handler := &Handler{foobar: "foobar", Conn: conn}
 	err = fasthttp.ListenAndServe(":8080", handler.HandleFastHTTP)
 	if err != nil {
 		return
