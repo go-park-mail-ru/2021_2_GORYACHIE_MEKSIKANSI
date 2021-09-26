@@ -5,7 +5,6 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	"net/http"
-	middleware "project/Middleware"
 )
 
 type Restaurant struct {
@@ -28,7 +27,6 @@ func (r *RestaurantInfo) ProductsHandler(ctx *fasthttp.RequestCtx) {
 	if restaurant != nil {
 		ctx.Response.SetStatusCode(http.StatusBadRequest) // TODO: только 200 вернуть
 	}
-	middleware.SetHeaders(ctx)
 
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }
