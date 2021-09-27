@@ -245,7 +245,7 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 
 func (db *Wrapper) DeleteCookie(cookie mid.Defense) error {
 	_, err := db.Conn.Query(context.Background(),
-		"DELETE FROM cookie WHERE session_id = $1 AND date_life = $2",
+		"DELETE FROM cookie WHERE session_id = $1",
 		cookie.SessionId, cookie.DateLife)
 	if err != nil {
 		return err
