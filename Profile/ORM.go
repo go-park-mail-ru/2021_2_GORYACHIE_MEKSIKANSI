@@ -3,7 +3,13 @@ package Profile
 import (
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	"context"
+	"errors"
 	"github.com/jackc/pgx/v4/pgxpool"
+)
+
+const (
+	ERRQUERY = "Error query"
+	ERRSCAN = "Error scan"
 )
 
 type Wrapper struct {
@@ -16,12 +22,12 @@ func (db *Wrapper) getRoleById(id int) (string, error) {
 	row, err := db.Conn.Query(context.Background(),
 		"SELECT id FROM client WHERE client_id = $1", id)
 	if err != nil {
-		return "", err
+		return "", errors.New(ERRQUERY)
 	}
 	for row.Next() {
 		err = row.Scan(&role)
 		if err != nil {
-			return "", err
+			return "", errors.New(ERRSCAN)
 		}
 	}
 	if role != 0 {
@@ -31,12 +37,12 @@ func (db *Wrapper) getRoleById(id int) (string, error) {
 	row, err = db.Conn.Query(context.Background(),
 		"SELECT id FROM host WHERE client_id = $1", id)
 	if err != nil {
-		return "", err
+		return "", errors.New(ERRQUERY)
 	}
 	for row.Next() {
 		err = row.Scan(&role)
 		if err != nil {
-			return "", err
+			return "", errors.New(ERRSCAN)
 		}
 	}
 	if role != 0 {
@@ -46,12 +52,12 @@ func (db *Wrapper) getRoleById(id int) (string, error) {
 	row, err = db.Conn.Query(context.Background(),
 		"SELECT id FROM courier WHERE client_id = $1", id)
 	if err != nil {
-		return "", err
+		return "", errors.New(ERRQUERY)
 	}
 	for row.Next() {
 		err = row.Scan(&role)
 		if err != nil {
-			return "", err
+			return "", errors.New(ERRSCAN)
 		}
 	}
 	if role != 0 {
@@ -65,14 +71,14 @@ func (db *Wrapper) GetProfileHost(id int) (Profile, error) {
 	row, err := db.Conn.Query(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id)
 	if err != nil {
-		return Profile{}, err
+		return Profile{}, errors.New(ERRQUERY)
 	}
 
 	var profile = Profile{}
 	for row.Next() {
 		err = row.Scan(&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 		if err != nil {
-			return Profile{}, err
+			return Profile{}, errors.New(ERRSCAN)
 		}
 	}
 	return profile, err
@@ -82,49 +88,49 @@ func (db *Wrapper) GetProfileClient(id int) (Profile, error) {
 	row, err := db.Conn.Query(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id)
 	if err != nil {
-		return Profile{}, err
+		return Profile{}, errors.New(ERRQUERY)
 	}
 
 	var profile = Profile{}
 	for row.Next() {
 		err = row.Scan(&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 		if err != nil {
-			return Profile{}, err
+			return Profile{}, errors.New(ERRSCAN)
 		}
 	}
 
 	row, err = db.Conn.Query(context.Background(),
 		"SELECT date_birthday FROM client WHERE client_id = $1", id)
 	if err != nil {
-		return Profile{}, err
+		return Profile{}, errors.New(ERRQUERY)
 	}
 
 	for row.Next() {
 		err = row.Scan(&profile.Birthday)
 		if err != nil {
 			panic(err)
-			return Profile{}, err
+			return Profile{}, errors.New(ERRSCAN)
 		}
 	}
 
-	return profile, err
+	return profile, nil
 }
 
 func (db *Wrapper) GetProfileCourier(id int) (Profile, error) {
 	row, err := db.Conn.Query(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id)
 	if err != nil {
-		return Profile{}, err
+		return Profile{}, errors.New(ERRQUERY)
 	}
 
 	var profile = Profile{}
 	for row.Next() {
 		err = row.Scan(&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 		if err != nil {
-			return Profile{}, err
+			return Profile{}, errors.New(ERRSCAN)
 		}
 	}
-	return profile, err
+	return profile, nil
 }
 
 func (db *Wrapper) AddCookie(cookie mid.Defense, id int) error {
@@ -132,7 +138,7 @@ func (db *Wrapper) AddCookie(cookie mid.Defense, id int) error {
 		"INSERT INTO cookie (client_id, session_id, date_life) VALUES ($1, $2, $3)",
 		id, cookie.SessionId, cookie.DateLife)
 	if err != nil {
-		return err
+		return errors.New(ERRQUERY)
 	}
 
 	return nil

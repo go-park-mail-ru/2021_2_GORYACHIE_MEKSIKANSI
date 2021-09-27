@@ -5,8 +5,14 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
+)
+
+const (
+	ERRQUERY = "Error query"
+	ERRSCAN = "Error scan"
 )
 
 type Wrapper struct {
@@ -31,15 +37,13 @@ func (db *Wrapper) GeneralSignUp(signup Registration) (int, error) {
 		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
 		signup.Name, signup.Email, signup.Phone, hashPassword(signup.Password, salt), salt)
 	if err != nil {
-		panic(err)
-		return 0, err
+		return 0, errors.New(ERRQUERY)
 	}
 
 	for row.Next() {
 		err := row.Scan(&userId)
 		if err != nil {
-			panic(err)
-            return 0, err
+            return 0, errors.New(ERRSCAN)
 		}
 	}
 
@@ -76,10 +80,10 @@ func (db *Wrapper) SignupHost(signup Registration) (mid.Defense, error) {
 	if err != nil {
 		_, err = db.Conn.Exec(context.Background(),
 			"DELETE FROM host WHERE client_id = $1", userId)
-		return cookie, err
+		return cookie, errors.New(ERRQUERY)
 	}
 
-	return cookie, err
+	return cookie, nil
 }
 
 func (db *Wrapper) SignupCourier(signup Registration) (mid.Defense, error) {
@@ -112,7 +116,7 @@ func (db *Wrapper) SignupCourier(signup Registration) (mid.Defense, error) {
 	if err != nil {
 		_, err = db.Conn.Exec(context.Background(),
 			"DELETE FROM courier WHERE client_id = $1", userId)
-		return cookie, err
+		return cookie, errors.New(ERRQUERY)
 	}
 
 	return cookie, err
@@ -148,7 +152,7 @@ func (db *Wrapper) SignupClient(signup Registration) (mid.Defense, error) {
 	if err != nil {
 		_, err = db.Conn.Exec(context.Background(),
 			"DELETE FROM general_user_info WHERE client_id = $1", userId)
-		return cookie, err
+		return cookie, errors.New(ERRQUERY)
 	}
 
 	return cookie, nil
@@ -159,8 +163,7 @@ func (db *Wrapper) AddTransactionCookie(cookie mid.Defense, id int) error {
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
 	if err != nil {
-		panic(err)
-		return err
+		return errors.New(ERRQUERY)
 	}
 
 	return nil
@@ -174,14 +177,14 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 		"SELECT salt FROM general_user_info WHERE email = $1",
 		email)
 	if err != nil {
-		return 0, err
+		return 0, errors.New(ERRQUERY)
 	}
 
 	for row.Next() {
 		err = row.Scan(&salt)
 
 		if err != nil {
-			return 0, err
+			return 0, errors.New(ERRSCAN)
 		}
 	}
 
@@ -189,13 +192,13 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 		"SELECT id FROM general_user_info WHERE email = $1 AND password = $2",
 		email, hashPassword(password, salt))
 	if err != nil {
-		return 0, err
+		return 0, errors.New(ERRQUERY)
 	}
 
 	for row.Next() {
 		err = row.Scan(&user)
 		if err != nil {
-			return 0, err
+			return 0, errors.New(ERRSCAN)
 		}
 	}
 
@@ -213,13 +216,13 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 		"SELECT salt FROM general_user_info WHERE phone = $1",
 		phone)
 	if err != nil {
-		return 0, err
+		return 0, errors.New(ERRQUERY)
 	}
 
 	for row.Next() {
 		err = row.Scan(&salt)
 		if err != nil {
-			return 0, err
+			return 0, errors.New(ERRSCAN)
 		}
 	}
 
@@ -227,13 +230,13 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 		"SELECT id FROM general_user_info WHERE phone = $1 AND password = $2",
 		phone, hashPassword(password, salt))
 	if err != nil {
-		return 0, err
+		return 0, errors.New(ERRQUERY)
 	}
 
 	for row.Next() {
 		err = row.Scan(&user)
 		if err != nil {
-			return 0, err
+			return 0, errors.New(ERRSCAN)
 		}
 	}
 
@@ -248,7 +251,7 @@ func (db *Wrapper) DeleteCookie(cookie mid.Defense) error {
 		"DELETE FROM cookie WHERE session_id = $1",
 		cookie.SessionId, cookie.DateLife)
 	if err != nil {
-		return err
+		return errors.New(ERRQUERY)
 	}
 
 	return nil
@@ -259,7 +262,7 @@ func (db *Wrapper) AddCookie(cookie mid.Defense, id int) error {
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, "s")
 	if err != nil {
-		return err
+		return errors.New(ERRQUERY)
 	}
 
 	return nil
