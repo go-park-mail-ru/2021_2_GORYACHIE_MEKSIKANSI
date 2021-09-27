@@ -2,6 +2,7 @@ package Middleware
 
 import (
 	"context"
+	"errors"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"math/rand"
 	"time"
@@ -10,6 +11,14 @@ import (
 const LOGINDB string = "constantil"
 const PASSWORDDB string = "293456QwErty"
 const DBNAME string = "hot_mexicans_db"
+
+const (
+	ERRQUERY = "Error query"
+	ERRSCAN = "Error scan"
+	ERRSIDNOTFOUND = "Error id not found"
+	ERRNOTCONNECT = "Error not connect"
+	IDNOTFOUND = -1
+)
 
 func randomInteger(min int, max int) int {
 	return rand.Intn(max - min) + min
@@ -70,7 +79,8 @@ func makeName() string {
 	"Loving Hut",
 	"Garden Fresh",
 	"Cafe Epi",
-	"Tai Pan"}
+	"Tai Pan",
+	}
 	return restNames[randomInteger(0, len(restNames)- 1)]
 }
 
@@ -78,7 +88,7 @@ func CreateDb() (*pgxpool.Pool, error) {
 	var err error
 	conn, err := pgxpool.Connect(context.Background(), "postgres://" + LOGINDB + ":" + PASSWORDDB + "@localhost:5432/" + DBNAME)
 	if err != nil {
-		return nil, err
+		return nil, errors.New(ERRNOTCONNECT)
 	}
 
 	tableGeneralUserInfo:= "CREATE TABLE IF NOT EXISTS general_user_info (id SERIAL PRIMARY KEY, name text NOT NULL, password varchar(64) NOT NULL, salt varchar(5) NOT NULL, phone varchar(15) UNIQUE NOT NULL, email text UNIQUE, avatar text DEFAULT '/uploads/', date_registration timestamp DEFAULT NOW() NOT NULL, deleted boolean DEFAULT false);"
@@ -89,14 +99,14 @@ func CreateDb() (*pgxpool.Pool, error) {
 	tableCourier := "CREATE TABLE IF NOT EXISTS courier (id serial PRIMARY KEY, client_id  INTEGER UNIQUE, FOREIGN KEY (client_id) REFERENCES general_user_info (id) On DELETE CASCADE);"
 	_, err = conn.Exec(context.Background(), tableGeneralUserInfo + tableRestaurant + tableCookie + tableHost + tableClient + tableCourier)
 	if err != nil {
-		return nil, err
+		return nil, errors.New(ERRQUERY)
 	}
 
 	for  i := 0; i < 100; i++ {
-		//_, err := conn.Exec(context.Background(), "INSERT INTO restaurant (name, description, price_delivery, city, street, house) VALUES ($1, $2, $3, $4, $5, $6)", makeName(), makeName(), randomInteger(10, 15), "city", "street", "house", 0)
-		//if err != nil {
-		//	return err
-		//}
+		_, err := conn.Exec(context.Background(), "INSERT INTO restaurant (name, description, price_delivery, city, street, house) VALUES ($1, $2, $3, $4, $5, $6)", makeName(), makeName(), randomInteger(10, 15), "city", "street", "house", 0)
+		if err != nil {
+			return nil, errors.New(ERRQUERY)
+		}
 	}
 	return conn, nil
 }
@@ -108,18 +118,18 @@ func CheckAccess(conn *pgxpool.Pool, cookie Defense) (bool, error) {
 		"SELECT client_id, date_life FROM cookie WHERE session_id = $1 AND csrf_token = $2",
 		cookie.SessionId, cookie.CsrfToken)
 	if err != nil {
-		return false, err
+		return false, errors.New(ERRQUERY)
 	}
 
 	for row.Next() {
 		err = row.Scan(&id, &timeLiveCookie)
 		if err != nil {
-			return false, err
+			return false, errors.New(ERRSCAN)
 		}
 	}
 
 	if id == 0 {
-		return false, err
+		return false, errors.New(ERRSIDNOTFOUND)
 	}
 
 	realTime := time.Now()
@@ -137,18 +147,18 @@ func GetIdByCookie(conn *pgxpool.Pool, cookie Defense) (int, error) {
 		"SELECT client_id, date_life FROM cookie WHERE session_id = $1",
 		cookie.SessionId)
 	if err != nil {
-		return -2, err
+		return 0, errors.New(ERRQUERY)
 	}
 
 	for row.Next() {
 		err = row.Scan(&id, &timeLiveCookie)
 		if err != nil {
-			return -2, err
+			return 0, errors.New(ERRSCAN)
 		}
 	}
 
 	if id == 0 {
-		return id, err
+		return 0, errors.New(ERRSIDNOTFOUND)
 	}
 
 	realTime := time.Now()
@@ -156,5 +166,5 @@ func GetIdByCookie(conn *pgxpool.Pool, cookie Defense) (int, error) {
 		return id, nil
 	}
 
-	return -1, nil
+	return IDNOTFOUND, nil
 }
