@@ -117,13 +117,6 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 }
 
 func(u *UserInfo) CheckLoggedInHandler(ctx *fasthttp.RequestCtx) {
-	//wrapper := Wrapper{Conn: u.ConnectionDB}
-	userLogin := Authorization{}
-	err := json.Unmarshal(ctx.Request.Body(), &userLogin)
-	if err != nil {
-		ctx.Response.SetStatusCode(http.StatusBadRequest)
-		return
-	}
 	// get cookie from request
 	cookieDB := mid.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 	// get cookie from database
@@ -146,6 +139,9 @@ func(u *UserInfo) CheckLoggedInHandler(ctx *fasthttp.RequestCtx) {
 	// -2 - смотреть err
 
 	ctx.Response.SetStatusCode(http.StatusOK)
+	json.NewEncoder(ctx).Encode(&Result{
+		Status: http.StatusOK,
+	})
 
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }
