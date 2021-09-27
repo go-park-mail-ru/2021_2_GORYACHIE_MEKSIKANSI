@@ -27,7 +27,7 @@ func (db *Wrapper) GeneralSignUp(signup Registration) (int, error) {
 
 	salt := randString(LENSALT)
 
-	row, err := db.Transaction.Query(context.Background(),
+	row := db.Transaction.QueryRow(context.Background(),
 		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
 		signup.Name, signup.Email, signup.Phone, hashPassword(signup.Password, salt), salt)
 	if err != nil {
@@ -35,13 +35,11 @@ func (db *Wrapper) GeneralSignUp(signup Registration) (int, error) {
 		return 0, err
 	}
 
-	for row.Next() {
-		err := row.Scan(&userId)
+		err = row.Scan(&userId)
 		if err != nil {
 			panic(err)
             return 0, err
 		}
-	}
 
 	return userId, nil
 }
@@ -142,7 +140,6 @@ func (db *Wrapper) SignupClient(signup Registration) (mid.Defense, error) {
 	}
 
 	err = tx.Commit(context.Background())
-
 	_, err = db.Conn.Exec(context.Background(),
 		"INSERT INTO client (client_id, date_birthday) VALUES ($1, $2)", userId, signup.Birthday)
 	if err != nil {
