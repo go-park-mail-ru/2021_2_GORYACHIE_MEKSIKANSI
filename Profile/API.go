@@ -25,41 +25,32 @@ type ProfileInfo struct {
 }
 
 func (u *ProfileInfo) ProfileHandler(ctx *fasthttp.RequestCtx) {
-	cookieHttp := fasthttp.Cookie{}
+	cookieHTTP := fasthttp.Cookie{}
 	wrapper := Wrapper{Conn: u.ConnectionDB}
 	profile := Profile{}
 	cookieDB := mid.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 
 	id, err := mid.GetIdByCookie(u.ConnectionDB, cookieDB)
-	if id == 0 {
-		err = json.NewEncoder(ctx).Encode(&auth.Result{
-			Status: http.StatusUnauthorized,
-		})
-		return // TODO(N): подправить
+
+	errOut := auth.CheckErrorProfileCookie(err, ctx, &cookieHTTP)
+	if errOut != nil {
+		return
 	}
 
+	profile, err = GetProfile(wrapper, id) // TODO: проверки на ошибки
+	err = CheckErrorProfile(err, ctx)
 	if err != nil {
-		// TODO: Сделай с этим что-нибудь
+		return
 	}
 
-	if id == -1 {  // просрочена кука
-		cookieHttp.SetKey("session_id")
-		cookieHttp.SetValue(string(ctx.Request.Header.Cookie("session_id")))
-		cookieHttp.SetExpire(time.Now().Add(-72 * time.Hour))
-		cookieHttp.SetHTTPOnly(true)
-		cookieHttp.SetPath("/")
-		ctx.Response.Header.SetCookie(&cookieHttp)
-	}
-	// -2 - смотреть err
-
-
-	profile, _ /*err*/ = GetProfile(wrapper, id) // TODO: проверки на ошибки
-	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&auth.Result{
 		Status: http.StatusOK,
 		Body:   profile,
 	})
+	ctx.Response.SetStatusCode(http.StatusOK)
 	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusOK)
+		fmt.Printf("Console: %s\n", auth.ERRENCODE)
 		return 
 	}
 

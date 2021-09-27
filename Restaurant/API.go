@@ -25,15 +25,21 @@ type RestaurantInfo struct {
 
 func (r *RestaurantInfo) ProductsHandler(ctx *fasthttp.RequestCtx) {
 	WrapperDB := Wrapper{Conn: r.ConnectionDB}
-	restaurant, _ /*err*/ := AllRestaurants(WrapperDB) // TODO: проверки на ошибки
-	if restaurant != nil {
-		ctx.Response.SetStatusCode(http.StatusBadRequest) // TODO: только 200 вернуть
+	restaurant, err := AllRestaurants(WrapperDB)
+	err = CheckErrorRestaurant(err, ctx, restaurant)
+	if err != nil {
+		return
 	}
+
 	ctx.SetStatusCode(http.StatusOK)
-	json.NewEncoder(ctx).Encode(&auth.Result{
+	err = json.NewEncoder(ctx).Encode(&auth.Result{
 		Status: http.StatusOK,
 		Body: restaurant,
 	})
-	//ctx.Response.SetBody()
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusOK)
+		fmt.Printf("Console: %s\n", auth.ERRENCODE)
+		return
+	}
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }

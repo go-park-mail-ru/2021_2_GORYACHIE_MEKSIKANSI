@@ -51,7 +51,7 @@ func runServer(port string) {
 		// if you leave allowedOrigins empty then fasthttpcors will treat it as "*"
 		AllowedOrigins: []string{"http://127.0.0.1:3000"}, // Only allow example.com to access the resource
 		// if you leave allowedHeaders empty then fasthttpcors will accept any non-simple headers
-		AllowedHeaders: []string{"access-control-allow-origin", "content-type"}, // only allow x-something-client and Content-Type in actual request
+		AllowedHeaders: []string{"access-control-allow-origin", "content-type", "x-csrf-token", "access-control-expose-headers", "x-requested-with"}, // only allow x-something-client and Content-Type in actual request
 		// if you leave this empty, only simple method will be accepted
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"}, // only allow get or post to resource
 		AllowCredentials: true,                   // resource doesn't support credentials

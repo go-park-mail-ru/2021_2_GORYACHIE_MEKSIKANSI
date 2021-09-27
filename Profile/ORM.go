@@ -1,7 +1,7 @@
 package Profile
 
 import (
-	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
+	//mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	"context"
 	"errors"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -22,7 +22,7 @@ const (
 	ERRGETBIRTHDAYSCAN = "ERROR: birthday not scan"
 	ERRGETPROFILECOURIERQUERY = "ERROR: profile courier query"
 	ERRGETPROFILECOURIERSCAN = "ERROR: profile courier not scan"
-	ERRADDCOOKIEQUERY = "ERROR: cookie query"
+	//ERRADDCOOKIEQUERY = "ERROR: cookie query"
 )
 
 type Wrapper struct {
@@ -146,16 +146,16 @@ func (db *Wrapper) GetProfileCourier(id int) (Profile, error) {
 	return profile, nil
 }
 
-func (db *Wrapper) AddCookie(cookie mid.Defense, id int) error {
-	_, err := db.Conn.Exec(context.Background(),
-		"INSERT INTO cookie (client_id, session_id, date_life) VALUES ($1, $2, $3)",
-		id, cookie.SessionId, cookie.DateLife)
-	if err != nil {
-		return errors.New(ERRADDCOOKIEQUERY)
-	}
-
-	return nil
-}
+//func (db *Wrapper) AddCookie(cookie mid.Defense, id int) error {
+//	_, err := db.Conn.Exec(context.Background(),
+//		"INSERT INTO cookie (client_id, session_id, date_life) VALUES ($1, $2, $3)",
+//		id, cookie.SessionId, cookie.DateLife)
+//	if err != nil {
+//		return errors.New(ERRADDCOOKIEQUERY)
+//	}
+//
+//	return nil
+//}
 
 //func (db *Wrapper) updateName(id int, name string) error {
 //	_, err := db.Conn.Query(context.Background(),
