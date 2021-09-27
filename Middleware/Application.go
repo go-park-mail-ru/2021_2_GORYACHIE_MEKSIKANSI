@@ -101,40 +101,40 @@ func CreateDb() (*pgxpool.Pool, error) {
 	return conn, nil
 }
 
-//func checkDefence(conn *pgxpool.Pool, cookie Defense) (bool, error) {
-//	row, err := conn.Query(context.Background(),
-//		"SELECT ID FROM cookie WHERE session_id = $1 AND date_life = $2 AND csrf_token = $3",
-//		cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
-//	if err != nil {
-//		return false, err
-//	}
-//
-//	var id int
-//	for row.Next() {
-//		err = row.Scan(&id)
-//		if err != nil {
-//			return false, err
-//		}
-//	}
-//
-//	return true, nil
-//}
-//
-//func CheckAccess(conn *pgxpool.Pool, cookie Defense) (bool, error) {
-//	result, err := checkDefence(conn, cookie)
-//	if err != nil {
-//		return false, err
-//	}
-//	return result, nil
-//}
+func CheckAccess(conn *pgxpool.Pool, cookie Defense) (bool, error) {
+	var timeLiveCookie time.Time
+	var id int
+	row, err := conn.Query(context.Background(),
+		"SELECT client_id, date_life FROM cookie WHERE session_id = $1 AND csrf_token = $2",
+		cookie.SessionId, cookie.CsrfToken)
+	if err != nil {
+		return false, err
+	}
+
+	for row.Next() {
+		err = row.Scan(&id, &timeLiveCookie)
+		if err != nil {
+			return false, err
+		}
+	}
+
+	if id == 0 {
+		return false, err
+	}
+
+	realTime := time.Now()
+	if realTime.Before(timeLiveCookie) {
+		return true, nil
+	}
+
+	return false, nil
+}
 
 func GetIdByCookie(conn *pgxpool.Pool, cookie Defense) (int, error) {
 	var timeLiveCookie time.Time
 	var id int
 	row, err := conn.Query(context.Background(),
 		"SELECT client_id, date_life FROM cookie WHERE session_id = $1",
-		//"SELECT client_id FROM cookie WHERE session_id = $1 AND csrf_token = $2",
-		//cookie.SessionId, cookie.CsrfToken)
 		cookie.SessionId)
 	if err != nil {
 		return -2, err
