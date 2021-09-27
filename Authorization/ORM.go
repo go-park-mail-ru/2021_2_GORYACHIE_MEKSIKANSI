@@ -23,13 +23,24 @@ func hashPassword(password string, salt string) string {
 
 func (db *Wrapper) GeneralSignUp(signup Registration) (int, error) {
 	var userId int
+	var err error
+
 	salt := randString(LENSALT)
 
-	err := db.Transaction.QueryRow(context.Background(),
+	row, err := db.Transaction.Query(context.Background(),
 		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-		signup.Name, signup.Email, signup.Phone, hashPassword(signup.Password, salt), salt).Scan(&userId)
+		signup.Name, signup.Email, signup.Phone, hashPassword(signup.Password, salt), salt)
 	if err != nil {
 		panic(err)
+		return 0, err
+	}
+
+	for row.Next() {
+		err := row.Scan(&userId)
+		if err != nil {
+			panic(err)
+            return 0, err
+		}
 	}
 
 	return userId, nil
@@ -42,7 +53,6 @@ func (db *Wrapper) SignupHost(signup Registration) (mid.Defense, error) {
 	defer func(tx pgx.Tx, ctx context.Context) {
 		err := tx.Rollback(ctx)
 		if err != nil {
-			panic(err)
 			return
 		}
 	}(tx, context.Background())
@@ -79,7 +89,6 @@ func (db *Wrapper) SignupCourier(signup Registration) (mid.Defense, error) {
 	defer func(tx pgx.Tx, ctx context.Context) {
 		err := tx.Rollback(ctx)
 		if err != nil {
-			panic(err)
 			return
 		}
 	}(tx, context.Background())
@@ -116,7 +125,7 @@ func (db *Wrapper) SignupClient(signup Registration) (mid.Defense, error) {
 	defer func(tx pgx.Tx, ctx context.Context) {
 		err := tx.Rollback(ctx)
 		if err != nil {
-			panic(err)
+			return
 		}
 	}(tx, context.Background())
 
@@ -147,9 +156,10 @@ func (db *Wrapper) SignupClient(signup Registration) (mid.Defense, error) {
 
 func (db *Wrapper) AddTransactionCookie(cookie mid.Defense, id int) error {
 	_, err := db.Transaction.Exec(context.Background(),
-		"INSERT INTO cookie (client_id, session_id, date_life) VALUES ($1, $2, $3)",
-		id, cookie.SessionId, cookie.DateLife)
+		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
+		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
 	if err != nil {
+		panic(err)
 		return err
 	}
 
@@ -215,7 +225,7 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 
 	row, err = db.Conn.Query(context.Background(),
 		"SELECT id FROM general_user_info WHERE phone = $1 AND password = $2",
-		phone, password)
+		phone, hashPassword(password, salt))
 	if err != nil {
 		return 0, err
 	}
@@ -246,8 +256,8 @@ func (db *Wrapper) DeleteCookie(cookie mid.Defense) error {
 
 func (db *Wrapper) AddCookie(cookie mid.Defense, id int) error {
 	_, err := db.Conn.Exec(context.Background(),
-		"INSERT INTO cookie (client_id, session_id, date_life) VALUES ($1, $2, $3)",
-		id, cookie.SessionId, cookie.DateLife)
+		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
+		id, cookie.SessionId, cookie.DateLife, "s")
 	if err != nil {
 		return err
 	}

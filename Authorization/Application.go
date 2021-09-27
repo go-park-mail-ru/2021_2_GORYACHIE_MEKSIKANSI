@@ -1,8 +1,8 @@
 package Authorization
 
 import (
-	"math/rand"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
+	"math/rand"
 	"strings"
 	"time"
 )
@@ -60,6 +60,7 @@ func Login(db Wrapper, login Authorization) (mid.Defense, error) {
 	}
 
 	var cookie mid.Defense
+	//TODO Check cookie
 	cookie = cookie.GenerateNew()
 	err = db.AddCookie(cookie, userId)
 

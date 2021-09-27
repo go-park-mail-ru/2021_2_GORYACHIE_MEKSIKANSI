@@ -5,31 +5,19 @@ import (
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	profile "2021_2_GORYACHIE_MEKSIKANSI/Profile"
 	restaurant "2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
-	"context"
 	_ "encoding/json"
 	"fmt"
 	cors "github.com/AdhityaRamadhanus/fasthttpcors"
 	"github.com/fasthttp/router"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	_ "net/http"
 	"os"
 	_ "time"
 )
 
-const LOGINDB string = "root"
-const PASSWORDDB string = "root"
-const DBNAME string = "hot_mexicans_db"
-
 func runServer(port string) {
-	// TODO: сделать вернуть connection
-	connectionPostgres, err := pgxpool.Connect(context.Background(), "postgres://" + LOGINDB + ":" + PASSWORDDB + "@localhost:5432/" + DBNAME)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
-	}
+	connectionPostgres, err := mid.CreateDb()
 	defer connectionPostgres.Close()
-	err = mid.CreateDb(connectionPostgres)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -40,8 +28,16 @@ func runServer(port string) {
 
 	myRouter := router.New()
 	api := "/api"
-	cookieDB := mid.Defense{}
-	mid.CheckAccess(connectionPostgres, cookieDB) // TODO: проверка кук для этих профиля и логаута
+/*	cookieDB := mid.Defense{}
+	// TODO(Н): Сделать проверку когда надо (проверять не надо только в сигнапе и логине)
+	id, err := mid.GetIdByCookie(connectionPostgres, cookieDB)
+	if id == 0 {
+		// TODO(Н): подправить
+	}
+	// Если id == 0, то сессии или scrf не найден
+	if err != nil {
+		// TODO: Сделай с этим что-нибудь
+	}*/
 
 	
 	myRouter.GET(api+"/profile", profileInfo.ProfileHandler)
@@ -49,6 +45,7 @@ func runServer(port string) {
 	myRouter.GET(api+"/", restaurantInfo.ProductsHandler)
 	myRouter.POST(api+"/login", userInfo.LoginHandler)
 	myRouter.POST(api+"/signup", userInfo.SignUpHandler)
+	myRouter.GET(api+"/check", userInfo.CheckLoggedInHandler)
 
 	withCors := cors.NewCorsHandler(cors.Options{
 		// if you leave allowedOrigins empty then fasthttpcors will treat it as "*"
@@ -68,5 +65,7 @@ func runServer(port string) {
 }
 
 func main() {
+
 	runServer(":5000")
 }
+

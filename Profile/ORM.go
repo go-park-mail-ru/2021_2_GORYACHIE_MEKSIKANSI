@@ -1,6 +1,7 @@
 package Profile
 
 import (
+	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	"context"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
@@ -124,6 +125,17 @@ func (db *Wrapper) GetProfileCourier(id int) (Profile, error) {
 		}
 	}
 	return profile, err
+}
+
+func (db *Wrapper) AddCookie(cookie mid.Defense, id int) error {
+	_, err := db.Conn.Exec(context.Background(),
+		"INSERT INTO cookie (client_id, session_id, date_life) VALUES ($1, $2, $3)",
+		id, cookie.SessionId, cookie.DateLife)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 //func (db *Wrapper) updateName(id int, name string) error {

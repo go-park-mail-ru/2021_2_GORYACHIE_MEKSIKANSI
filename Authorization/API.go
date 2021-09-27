@@ -50,10 +50,21 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	cookieHttp.SetKey("session_id")
 	cookieHttp.SetValue(cookieDB.SessionId)
 	cookieHttp.SetHTTPOnly(true)
+	cookieHttp.SetPath("/")
+	ctx.Response.Header.SetCookie(&cookieHttp)
+
 	ctx.Response.SetStatusCode(http.StatusOK)
 
-	// TODO: записать в json статус
-	// json.NewEncoder()
+
+	json.NewEncoder(ctx).Encode(&Result{
+		Status: http.StatusOK,
+		Body: &Registration{
+			TypeIn: signUpAll.TypeIn,
+			Name: signUpAll.Name,
+			Email: signUpAll.Email,
+			Phone: signUpAll.Phone,
+		},
+	})
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }
 
@@ -73,9 +84,13 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	cookieHttp.SetKey("session_id")
 	cookieHttp.SetValue(cookieDB.SessionId)
 	cookieHttp.SetHTTPOnly(true)
+	cookieHttp.SetPath("/")
+	ctx.Response.Header.SetCookie(&cookieHttp)
+
 	ctx.Response.SetStatusCode(http.StatusOK)
-	json.NewEncoder(ctx).Encode(&Result{})
-	// TODO: записать в json статус
+	json.NewEncoder(ctx).Encode(&Result{
+		Status: http.StatusOK,
+	})
 
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }
@@ -88,8 +103,49 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	_ /*err*/ = Logout(wrapper, cookieDB) // TODO: проверки на ошибки
 
 	ctx.Response.SetStatusCode(http.StatusOK)
-	// TODO: записать в json статус
+	json.NewEncoder(ctx).Encode(&Result{
+		Status: http.StatusOK,
+	})
+	cookieHttp.SetExpire(cookieDB.DateLife) //TODO: уменьшить день
+	cookieHttp.SetKey("session_id")
+	cookieHttp.SetValue(cookieDB.SessionId)
+	cookieHttp.SetHTTPOnly(true)
+	cookieHttp.SetPath("/")
+	ctx.Response.Header.SetCookie(&cookieHttp)
 
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
-	// TODO: отдать просроченную куку, key=value, sessionId=432423
+}
+
+func(u *UserInfo) CheckLoggedInHandler(ctx *fasthttp.RequestCtx) {
+	//wrapper := Wrapper{Conn: u.ConnectionDB}
+	userLogin := Authorization{}
+	err := json.Unmarshal(ctx.Request.Body(), &userLogin)
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusBadRequest)
+		return
+	}
+	// get cookie from request
+	cookieDB := mid.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
+	// get cookie from database
+	id, err := mid.GetIdByCookie(u.ConnectionDB, cookieDB)
+	if id == 0 {
+		ctx.Response.SetStatusCode(http.StatusUnauthorized)
+		fmt.Printf("Console:  method: %s, url: %s\n Cookie not found. User not authorized", string(ctx.Method()), ctx.URI())
+		return // TODO(N): подправить
+	}
+
+	if err != nil {
+		// TODO: Сделай с этим что-нибудь
+	}
+
+	if id == -1 {  // просрочена кука
+		ctx.Response.SetStatusCode(http.StatusUnauthorized)
+		fmt.Printf("Console:  method: %s, url: %s\n Cookie is expired. User not authorized", string(ctx.Method()), ctx.URI())
+		return // TODO(N): подправить
+	}
+	// -2 - смотреть err
+
+	ctx.Response.SetStatusCode(http.StatusOK)
+
+	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }

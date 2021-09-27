@@ -1,6 +1,8 @@
 package Restaurant
 
 import (
+	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
+	"encoding/json"
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
@@ -10,11 +12,11 @@ import (
 type Restaurant struct {
 	Id                  int     `json:"id"`
 	Img                 string  `json:"imgUrl"`
-	Name                string  `json:"restaurantName"`
-	CostForFreeDelivery int     `json:"costForFreeDelivery"`
-	MinDelivery         int     `json:"minDelivery"`
-	MaxDelivery         int     `json:"maxDelivery"`
-	Rating              float32 `json:"rating"`
+	Name                string  `json:"name"`
+	CostForFreeDelivery int     `json:"cost"`
+	MinDelivery         int     `json:"minDeliveryTime"`
+	MaxDelivery         int     `json:"maxDeliveryTime"`
+	Rating              int 	`json:"rating"`
 }
 
 type RestaurantInfo struct {
@@ -27,6 +29,11 @@ func (r *RestaurantInfo) ProductsHandler(ctx *fasthttp.RequestCtx) {
 	if restaurant != nil {
 		ctx.Response.SetStatusCode(http.StatusBadRequest) // TODO: только 200 вернуть
 	}
-
+	ctx.SetStatusCode(http.StatusOK)
+	json.NewEncoder(ctx).Encode(&auth.Result{
+		Status: http.StatusOK,
+		Body: restaurant,
+	})
+	//ctx.Response.SetBody()
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }

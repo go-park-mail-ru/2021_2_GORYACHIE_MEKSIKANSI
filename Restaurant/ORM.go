@@ -11,7 +11,7 @@ type Wrapper struct {
 
 func (db *Wrapper) GetRestaurants() ([]Restaurant, error) {
 	row, err := db.Conn.Query(context.Background(),
-		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant LIMIT 50")
+		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant ORDER BY random() LIMIT 50")
 	if err != nil {
 		return nil, err
 	}

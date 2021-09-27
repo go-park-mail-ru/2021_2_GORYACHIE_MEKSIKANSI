@@ -5,8 +5,5 @@ func AllRestaurants(db Wrapper) ([]Restaurant, error) {
 	if err != nil {
 		return nil, err
 	}
-	if result != nil {
-		return nil, err
-	}
 	return result, nil
 }
