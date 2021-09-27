@@ -52,6 +52,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	cookieHttp.SetHTTPOnly(true)
 	cookieHttp.SetPath("/")
 	cookieHttp.SetSameSite(fasthttp.CookieSameSiteNoneMode)
+	cookieHttp.SetSecure(false)
 	ctx.Response.Header.SetCookie(&cookieHttp)
 
 	ctx.Response.SetStatusCode(http.StatusOK)
@@ -87,6 +88,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	cookieHttp.SetHTTPOnly(true)
 	cookieHttp.SetPath("/")
 	cookieHttp.SetSameSite(fasthttp.CookieSameSiteNoneMode)
+	cookieHttp.SetSecure(false)
 	ctx.Response.Header.SetCookie(&cookieHttp)
 
 	ctx.Response.SetStatusCode(http.StatusOK)
@@ -110,6 +112,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	cookieHttp.SetHTTPOnly(true)
 	cookieHttp.SetPath("/")
 	cookieHttp.SetSameSite(fasthttp.CookieSameSiteNoneMode)
+	cookieHttp.SetSecure(false)
 	ctx.Response.Header.SetCookie(&cookieHttp)
 
 	ctx.Response.SetStatusCode(http.StatusOK)
