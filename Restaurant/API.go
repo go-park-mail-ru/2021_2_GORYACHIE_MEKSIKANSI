@@ -16,7 +16,7 @@ type Restaurant struct {
 	CostForFreeDelivery int     `json:"cost"`
 	MinDelivery         int     `json:"minDeliveryTime"`
 	MaxDelivery         int     `json:"maxDeliveryTime"`
-	Rating              int 	`json:"rating"`
+	Rating              float32 `json:"rating"`
 }
 
 type RestaurantInfo struct {
