@@ -49,7 +49,7 @@ func runServer(port string) {
 
 	withCors := cors.NewCorsHandler(cors.Options{
 		// if you leave allowedOrigins empty then fasthttpcors will treat it as "*"
-		AllowedOrigins: []string{"http://127.0.0.1:3000"}, // Only allow example.com to access the resource
+		AllowedOrigins: []string{"http://167.172.179.1:3000"}, // Only allow example.com to access the resource
 		// if you leave allowedHeaders empty then fasthttpcors will accept any non-simple headers
 		AllowedHeaders: []string{"access-control-allow-origin", "content-type"}, // only allow x-something-client and Content-Type in actual request
 		// if you leave this empty, only simple method will be accepted

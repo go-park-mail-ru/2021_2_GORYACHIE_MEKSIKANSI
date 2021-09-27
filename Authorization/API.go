@@ -86,7 +86,6 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	cookieHttp.SetValue(cookieDB.SessionId)
 	cookieHttp.SetHTTPOnly(true)
 	cookieHttp.SetPath("/")
-	cookieHttp.SetSameSite(fasthttp.CookieSameSiteLaxMode)
 	ctx.Response.Header.SetCookie(&cookieHttp)
 
 	ctx.Response.SetStatusCode(http.StatusOK)
