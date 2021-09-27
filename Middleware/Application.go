@@ -13,11 +13,16 @@ const PASSWORDDB string = "293456QwErty"
 const DBNAME string = "hot_mexicans_db"
 
 const (
-	ERRQUERY = "Error query"
-	ERRSCAN = "Error scan"
-	ERRSIDNOTFOUND = "Error id not found"
-	ERRNOTCONNECT = "Error not connect"
-	IDNOTFOUND = -1
+	ERRCREATEQUERY = "ERROR: db not created"
+	ERRINSERTQUERY = "ERROR: restaurant not insert"
+	ERRCOOKIEANDCSRFQUERY = "ERROR: cookie and csrf query"
+	ERRCOOKIEANDCSRFSCAN = "ERROR: cookie and csrf scan"
+	ERRCOOKIEQUERY = "ERROR: cookie query"
+	ERRCOOKIESCAN = "ERROR: cookie scan"
+	ERRSIDNOTFOUND = "ERROR: id not found"
+	ERRNOTCONNECT      = "ERROR: not connect"
+	ERRUPDATECSRFQUERY = "ERROR: csrf not updated"
+	ERRCOOKIEEXPIRED   = "ERROR: cookie expired"
 )
 
 func randomInteger(min int, max int) int {
@@ -99,14 +104,14 @@ func CreateDb() (*pgxpool.Pool, error) {
 	tableCourier := "CREATE TABLE IF NOT EXISTS courier (id serial PRIMARY KEY, client_id  INTEGER UNIQUE, FOREIGN KEY (client_id) REFERENCES general_user_info (id) On DELETE CASCADE);"
 	_, err = conn.Exec(context.Background(), tableGeneralUserInfo + tableRestaurant + tableCookie + tableHost + tableClient + tableCourier)
 	if err != nil {
-		return nil, errors.New(ERRQUERY)
+		return nil, errors.New(ERRCREATEQUERY)
 	}
 
-	for  i := 0; i < 100; i++ {
-		//_, err := conn.Exec(context.Background(), "INSERT INTO restaurant (name, description, price_delivery, city, street, house) VALUES ($1, $2, $3, $4, $5, $6)", makeName(), makeName(), randomInteger(10, 15), "city", "street", "house", 0)
-		//if err != nil {
-		//	return nil, errors.New(ERRQUERY)
-		//}
+	for  i := 0; i < 500; i++ {
+		_, err := conn.Exec(context.Background(), "INSERT INTO restaurant (name, description, price_delivery, city, street, house, rating, min_delivery_time, max_delivery_time, avatar) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", makeName(), makeName(), randomInteger(10, 15), "city", "street", "house", randomInteger(10, 15), randomInteger(10, 15), randomInteger(10, 15), "https://avatars.mds.yandex.net/get-mpic/4944925/img_id5013960435158963405.jpeg/13hq")
+		if err != nil {
+			return nil, errors.New(ERRINSERTQUERY)
+		}
 	}
 	return conn, nil
 }
@@ -118,13 +123,13 @@ func CheckAccess(conn *pgxpool.Pool, cookie Defense) (bool, error) {
 		"SELECT client_id, date_life FROM cookie WHERE session_id = $1 AND csrf_token = $2",
 		cookie.SessionId, cookie.CsrfToken)
 	if err != nil {
-		return false, errors.New(ERRQUERY)
+		return false, errors.New(ERRCOOKIEANDCSRFQUERY)
 	}
 
 	for row.Next() {
 		err = row.Scan(&id, &timeLiveCookie)
 		if err != nil {
-			return false, errors.New(ERRSCAN)
+			return false, errors.New(ERRCOOKIEANDCSRFSCAN)
 		}
 	}
 
@@ -140,6 +145,18 @@ func CheckAccess(conn *pgxpool.Pool, cookie Defense) (bool, error) {
 	return false, nil
 }
 
+func NewCsrf(conn *pgxpool.Pool, cookie Defense) (string, error) {
+	csrfToken := randString(5)
+	err := conn.QueryRow(context.Background(),
+		"UPDATE cookie SET csrf_token = $1 WHERE session_id = $2",
+		csrfToken, cookie.SessionId)
+	if err != nil {
+		return "", errors.New(ERRUPDATECSRFQUERY)
+	}
+
+	return csrfToken, nil
+}
+
 func GetIdByCookie(conn *pgxpool.Pool, cookie Defense) (int, error) {
 	var timeLiveCookie time.Time
 	var id int
@@ -147,13 +164,13 @@ func GetIdByCookie(conn *pgxpool.Pool, cookie Defense) (int, error) {
 		"SELECT client_id, date_life FROM cookie WHERE session_id = $1",
 		cookie.SessionId)
 	if err != nil {
-		return 0, errors.New(ERRQUERY)
+		return 0, errors.New(ERRCOOKIEQUERY)
 	}
 
 	for row.Next() {
 		err = row.Scan(&id, &timeLiveCookie)
 		if err != nil {
-			return 0, errors.New(ERRSCAN)
+			return 0, errors.New(ERRCOOKIESCAN)
 		}
 	}
 
@@ -166,5 +183,5 @@ func GetIdByCookie(conn *pgxpool.Pool, cookie Defense) (int, error) {
 		return id, nil
 	}
 
-	return IDNOTFOUND, nil
+	return 0, errors.New(ERRCOOKIEEXPIRED)
 }

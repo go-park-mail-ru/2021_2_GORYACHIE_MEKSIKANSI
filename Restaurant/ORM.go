@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	ERRQUERY = "Error query"
-	ERRSCAN = "Error scan"
+	ERRQUERY = "ERROR: restaurant not get"
+	ERRSCAN = "ERROR: restaurant scan error"
 )
 
 type Wrapper struct {

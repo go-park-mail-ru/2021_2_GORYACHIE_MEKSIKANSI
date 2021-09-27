@@ -8,8 +8,21 @@ import (
 )
 
 const (
-	ERRQUERY = "Error query"
-	ERRSCAN = "Error scan"
+	ERRCLIENTQUERY = "ERROR: check user on client query"
+	ERRCLIENTSCAN = "ERROR: check user on client not scan"
+	ERRHOSTQUERY = "ERROR: check user on host query"
+	ERRHOSTSCAN = "ERROR: check user on client not scan"
+	ERRCORIERQUERY = "ERROR: check user on host query"
+	ERRCORIERSCAN = "ERROR: check user on client not scan"
+	ERRGETPROFILEHOSTQUERY = "ERROR: profile host query"
+	ERRGETPROFILEHOSTSCAN = "ERROR: profile host not scan"
+	ERRGETPROFILECLIENTQUERY = "ERROR: profile client query"
+	ERRGETPROFILECLIENTSCAN = "ERROR: profile client not scan"
+	ERRGETBIRTHDAYQUERY = "ERROR: birthday query"
+	ERRGETBIRTHDAYSCAN = "ERROR: birthday not scan"
+	ERRGETPROFILECOURIERQUERY = "ERROR: profile courier query"
+	ERRGETPROFILECOURIERSCAN = "ERROR: profile courier not scan"
+	ERRADDCOOKIEQUERY = "ERROR: cookie query"
 )
 
 type Wrapper struct {
@@ -22,12 +35,12 @@ func (db *Wrapper) getRoleById(id int) (string, error) {
 	row, err := db.Conn.Query(context.Background(),
 		"SELECT id FROM client WHERE client_id = $1", id)
 	if err != nil {
-		return "", errors.New(ERRQUERY)
+		return "", errors.New(ERRCLIENTQUERY)
 	}
 	for row.Next() {
 		err = row.Scan(&role)
 		if err != nil {
-			return "", errors.New(ERRSCAN)
+			return "", errors.New(ERRCLIENTSCAN)
 		}
 	}
 	if role != 0 {
@@ -37,12 +50,12 @@ func (db *Wrapper) getRoleById(id int) (string, error) {
 	row, err = db.Conn.Query(context.Background(),
 		"SELECT id FROM host WHERE client_id = $1", id)
 	if err != nil {
-		return "", errors.New(ERRQUERY)
+		return "", errors.New(ERRHOSTQUERY)
 	}
 	for row.Next() {
 		err = row.Scan(&role)
 		if err != nil {
-			return "", errors.New(ERRSCAN)
+			return "", errors.New(ERRHOSTSCAN)
 		}
 	}
 	if role != 0 {
@@ -52,12 +65,12 @@ func (db *Wrapper) getRoleById(id int) (string, error) {
 	row, err = db.Conn.Query(context.Background(),
 		"SELECT id FROM courier WHERE client_id = $1", id)
 	if err != nil {
-		return "", errors.New(ERRQUERY)
+		return "", errors.New(ERRCORIERQUERY)
 	}
 	for row.Next() {
 		err = row.Scan(&role)
 		if err != nil {
-			return "", errors.New(ERRSCAN)
+			return "", errors.New(ERRCORIERSCAN)
 		}
 	}
 	if role != 0 {
@@ -71,14 +84,14 @@ func (db *Wrapper) GetProfileHost(id int) (Profile, error) {
 	row, err := db.Conn.Query(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id)
 	if err != nil {
-		return Profile{}, errors.New(ERRQUERY)
+		return Profile{}, errors.New(ERRGETPROFILEHOSTQUERY)
 	}
 
 	var profile = Profile{}
 	for row.Next() {
 		err = row.Scan(&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 		if err != nil {
-			return Profile{}, errors.New(ERRSCAN)
+			return Profile{}, errors.New(ERRGETPROFILEHOSTSCAN)
 		}
 	}
 	return profile, err
@@ -88,28 +101,28 @@ func (db *Wrapper) GetProfileClient(id int) (Profile, error) {
 	row, err := db.Conn.Query(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id)
 	if err != nil {
-		return Profile{}, errors.New(ERRQUERY)
+		return Profile{}, errors.New(ERRGETPROFILECLIENTQUERY)
 	}
 
 	var profile = Profile{}
 	for row.Next() {
 		err = row.Scan(&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 		if err != nil {
-			return Profile{}, errors.New(ERRSCAN)
+			return Profile{}, errors.New(ERRGETPROFILECLIENTSCAN)
 		}
 	}
 
 	row, err = db.Conn.Query(context.Background(),
 		"SELECT date_birthday FROM client WHERE client_id = $1", id)
 	if err != nil {
-		return Profile{}, errors.New(ERRQUERY)
+		return Profile{}, errors.New(ERRGETBIRTHDAYQUERY)
 	}
 
 	for row.Next() {
 		err = row.Scan(&profile.Birthday)
 		if err != nil {
 			panic(err)
-			return Profile{}, errors.New(ERRSCAN)
+			return Profile{}, errors.New(ERRGETBIRTHDAYSCAN)
 		}
 	}
 
@@ -120,14 +133,14 @@ func (db *Wrapper) GetProfileCourier(id int) (Profile, error) {
 	row, err := db.Conn.Query(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id)
 	if err != nil {
-		return Profile{}, errors.New(ERRQUERY)
+		return Profile{}, errors.New(ERRGETPROFILECOURIERQUERY)
 	}
 
 	var profile = Profile{}
 	for row.Next() {
 		err = row.Scan(&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 		if err != nil {
-			return Profile{}, errors.New(ERRSCAN)
+			return Profile{}, errors.New(ERRGETPROFILECOURIERSCAN)
 		}
 	}
 	return profile, nil
@@ -138,7 +151,7 @@ func (db *Wrapper) AddCookie(cookie mid.Defense, id int) error {
 		"INSERT INTO cookie (client_id, session_id, date_life) VALUES ($1, $2, $3)",
 		id, cookie.SessionId, cookie.DateLife)
 	if err != nil {
-		return errors.New(ERRQUERY)
+		return errors.New(ERRADDCOOKIEQUERY)
 	}
 
 	return nil

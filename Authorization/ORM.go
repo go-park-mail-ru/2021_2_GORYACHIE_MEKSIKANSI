@@ -11,8 +11,24 @@ import (
 )
 
 const (
-	ERRQUERY = "Error query"
-	ERRSCAN = "Error scan"
+	ERRPHONEQUERY = "ERROR: phone error query"
+	ERRPHONESCAN  = "ERROR: phone not scan"
+	ERRPHONEPASSQUERY = "ERROR: password and phone error query"
+	ERRPHONEPASSSCAN  = "ERROR: phone and password not scan"
+	ERRMAILQUERY     = "ERROR: email error query"
+	ERRMAILSCAN      = "ERROR: email not scan"
+	ERRMAILPASSQUERY = "ERROR: password or email error query"
+	ERRMAILPASSSCAN       = "ERROR: email and pass not scan"
+	ERRNOTLOGINORPASSWORD = "ERROR: wrong login or password"
+	ERRINFOQUERY = "ERROR: not insert info query"
+	ERRINFOSCAN = "ERROR: info not scan"
+	ERRINSERTHOSTQUERY = "ERROR: not insert host query"
+	ERRINSERTCOURIERQUERY = "ERROR: not insert courier query"
+	ERRINSERTCLIENTQUERY = "ERROR: not insert client query"
+	ERRINSERTCOOKIEQUERY = "ERROR: not insert cookie transact query"
+	ERRDELETEQUERY = "ERROR: cookie not delete query"
+	ERRINSERTLOGINCOOKIEQUERY = "ERROR: not insert cookie query"
+	ERRUNIQUE = "Телефон или email уже зарегистрирован"
 )
 
 type Wrapper struct {
@@ -37,12 +53,16 @@ func (db *Wrapper) GeneralSignUp(signup Registration) (int, error) {
 		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
 		signup.Name, signup.Email, signup.Phone, hashPassword(signup.Password, salt), salt)
 	if err != nil {
-		return 0, errors.New(ERRQUERY)
+		return 0, errors.New(ERRINFOQUERY)
 	}
 
 		err = row.Scan(&userId)
 		if err != nil {
-            return 0, errors.New(ERRSCAN)
+			errorText := err.Error()
+            if errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_phone_key\" (SQLSTATE 23505)" {
+            	return 0, errors.New(ERRUNIQUE)
+			}
+            return 0, errors.New(ERRINFOSCAN)
 		}
 
 	return userId, nil
@@ -78,7 +98,7 @@ func (db *Wrapper) SignupHost(signup Registration) (mid.Defense, error) {
 	if err != nil {
 		_, err = db.Conn.Exec(context.Background(),
 			"DELETE FROM host WHERE client_id = $1", userId)
-		return cookie, errors.New(ERRQUERY)
+		return cookie, errors.New(ERRINSERTHOSTQUERY)
 	}
 
 	return cookie, nil
@@ -114,7 +134,7 @@ func (db *Wrapper) SignupCourier(signup Registration) (mid.Defense, error) {
 	if err != nil {
 		_, err = db.Conn.Exec(context.Background(),
 			"DELETE FROM courier WHERE client_id = $1", userId)
-		return cookie, errors.New(ERRQUERY)
+		return cookie, errors.New(ERRINSERTCOURIERQUERY)
 	}
 
 	return cookie, err
@@ -149,7 +169,7 @@ func (db *Wrapper) SignupClient(signup Registration) (mid.Defense, error) {
 	if err != nil {
 		_, err = db.Conn.Exec(context.Background(),
 			"DELETE FROM general_user_info WHERE client_id = $1", userId)
-		return cookie, errors.New(ERRQUERY)
+		return cookie, errors.New(ERRINSERTCLIENTQUERY)
 	}
 
 	return cookie, nil
@@ -160,7 +180,7 @@ func (db *Wrapper) AddTransactionCookie(cookie mid.Defense, id int) error {
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
 	if err != nil {
-		return errors.New(ERRQUERY)
+		return errors.New(ERRINSERTCOOKIEQUERY)
 	}
 
 	return nil
@@ -174,14 +194,14 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 		"SELECT salt FROM general_user_info WHERE email = $1",
 		email)
 	if err != nil {
-		return 0, errors.New(ERRQUERY)
+		return 0, errors.New(ERRMAILQUERY)
 	}
 
 	for row.Next() {
 		err = row.Scan(&salt)
 
 		if err != nil {
-			return 0, errors.New(ERRSCAN)
+			return 0, errors.New(ERRMAILSCAN)
 		}
 	}
 
@@ -189,18 +209,18 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 		"SELECT id FROM general_user_info WHERE email = $1 AND password = $2",
 		email, hashPassword(password, salt))
 	if err != nil {
-		return 0, errors.New(ERRQUERY)
+		return 0, errors.New(ERRMAILPASSQUERY)
 	}
 
 	for row.Next() {
 		err = row.Scan(&user)
 		if err != nil {
-			return 0, errors.New(ERRSCAN)
+			return 0, errors.New(ERRMAILPASSSCAN)
 		}
 	}
 
 	if user == 0 {
-		return 0, nil
+		return 0, errors.New(ERRNOTLOGINORPASSWORD)
 	}
 	return user, nil
 }
@@ -213,13 +233,13 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 		"SELECT salt FROM general_user_info WHERE phone = $1",
 		phone)
 	if err != nil {
-		return 0, errors.New(ERRQUERY)
+		return 0, errors.New(ERRPHONEQUERY)
 	}
 
 	for row.Next() {
 		err = row.Scan(&salt)
 		if err != nil {
-			return 0, errors.New(ERRSCAN)
+			return 0, errors.New(ERRPHONESCAN)
 		}
 	}
 
@@ -227,28 +247,28 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 		"SELECT id FROM general_user_info WHERE phone = $1 AND password = $2",
 		phone, hashPassword(password, salt))
 	if err != nil {
-		return 0, errors.New(ERRQUERY)
+		return 0, errors.New(ERRPHONEPASSQUERY)
 	}
 
 	for row.Next() {
 		err = row.Scan(&user)
 		if err != nil {
-			return 0, errors.New(ERRSCAN)
+			return 0, errors.New(ERRPHONEPASSSCAN)
 		}
 	}
 
 	if user == 0 {
-		return 0, nil
+		return 0, errors.New(ERRNOTLOGINORPASSWORD)
 	}
 	return user, nil
 }
 
 func (db *Wrapper) DeleteCookie(cookie mid.Defense) error {
-	_, err := db.Conn.Query(context.Background(),
+	_, err := db.Conn.Exec(context.Background(),
 		"DELETE FROM cookie WHERE session_id = $1",
-		cookie.SessionId, cookie.DateLife)
+		cookie.SessionId)
 	if err != nil {
-		return errors.New(ERRQUERY)
+		return errors.New(ERRDELETEQUERY)
 	}
 
 	return nil
@@ -257,9 +277,9 @@ func (db *Wrapper) DeleteCookie(cookie mid.Defense) error {
 func (db *Wrapper) AddCookie(cookie mid.Defense, id int) error {
 	_, err := db.Conn.Exec(context.Background(),
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
-		id, cookie.SessionId, cookie.DateLife, "s")
+		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
 	if err != nil {
-		return errors.New(ERRQUERY)
+		return errors.New(ERRINSERTLOGINCOOKIEQUERY)
 	}
 
 	return nil
