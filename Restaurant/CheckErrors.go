@@ -17,7 +17,7 @@ const(
 func CheckErrorRestaurant(err error, ctx *fasthttp.RequestCtx, restaurant []Restaurant) error {
 	if err != nil {
 		if err.Error() == ERRQUERY {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
@@ -31,7 +31,7 @@ func CheckErrorRestaurant(err error, ctx *fasthttp.RequestCtx, restaurant []Rest
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRSCAN {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: mid.ERRCOOKIEEXPIRED,
 			})
@@ -46,7 +46,7 @@ func CheckErrorRestaurant(err error, ctx *fasthttp.RequestCtx, restaurant []Rest
 		}
 	} else {
 		if restaurant == nil {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: RESTAURANTNULL,
 			})

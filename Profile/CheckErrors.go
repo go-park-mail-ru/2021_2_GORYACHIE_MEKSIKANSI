@@ -2,6 +2,7 @@ package Profile
 
 import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
+	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,7 +13,7 @@ import (
 func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 	if err != nil {
 		if err.Error() == ERRGETPROFILECLIENTQUERY {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
@@ -27,7 +28,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 		}
 
 		if err.Error() == ERRGETPROFILECLIENTSCAN {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
@@ -41,7 +42,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRGETBIRTHDAYQUERY {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
@@ -55,7 +56,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRGETBIRTHDAYSCAN {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
@@ -69,7 +70,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRGETPROFILECOURIERQUERY {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
@@ -83,7 +84,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRGETPROFILECOURIERSCAN {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
@@ -97,7 +98,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRGETPROFILEHOSTQUERY {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
@@ -111,7 +112,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRGETPROFILEHOSTSCAN {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
@@ -125,7 +126,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRCLIENTQUERY {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
@@ -139,7 +140,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRCLIENTSCAN {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
@@ -153,7 +154,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRHOSTQUERY {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
@@ -167,7 +168,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRHOSTSCAN {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
@@ -182,7 +183,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 		}
 
 		if err.Error() == ERRHOSTSCAN {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
@@ -196,7 +197,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRCORIERQUERY {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
@@ -210,7 +211,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRCORIERSCAN {
-			err := json.NewEncoder(ctx).Encode(&auth.ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})

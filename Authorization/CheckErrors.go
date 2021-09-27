@@ -10,16 +10,10 @@ import (
 	"time"
 )
 
-type ResultError struct {
-	Status	int         `json:"status"`
-	Explain	string		`json:"parsedJSON,omitempty"`
-}
-
-
 func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 	if errIn != nil {
 		if errIn.Error() == ERRUNIQUE {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: ERRUNIQUE,
 			})
@@ -34,7 +28,7 @@ func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 		}
 
 		if errIn.Error() == ERRINFOQUERY {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRINFOQUERY,
 			})
@@ -48,7 +42,7 @@ func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if errIn.Error() == ERRINFOSCAN {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRINFOSCAN,
 			})
@@ -62,7 +56,7 @@ func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if errIn.Error() == ERRINSERTHOSTQUERY {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRINSERTHOSTQUERY,
 			})
@@ -76,7 +70,7 @@ func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if errIn.Error() == ERRINSERTCOOKIEQUERY {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRINSERTCOOKIEQUERY,
 			})
@@ -90,7 +84,7 @@ func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if errIn.Error() == ERRINSERTCOURIERQUERY {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRINSERTCOURIERQUERY,
 			})
@@ -104,7 +98,7 @@ func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if errIn.Error() == ERRINSERTCLIENTQUERY {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRINSERTCLIENTQUERY,
 			})
@@ -124,7 +118,7 @@ func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 	if err != nil {
 		if err.Error() == ERRNOTLOGINORPASSWORD {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRNOTLOGINORPASSWORD,
 			})
@@ -139,7 +133,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 		}
 
 		if err.Error() == ERRINSERTLOGINCOOKIEQUERY {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRDB,
 			})
@@ -153,7 +147,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRMAILQUERY {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRDB,
 			})
@@ -167,7 +161,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRMAILSCAN {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRDB,
 			})
@@ -181,7 +175,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRMAILPASSQUERY {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRDB,
 			})
@@ -195,7 +189,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRMAILPASSSCAN {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRDB,
 			})
@@ -209,7 +203,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRPHONEQUERY {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRDB,
 			})
@@ -223,7 +217,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRPHONESCAN {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRDB,
 			})
@@ -237,7 +231,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRPHONEPASSQUERY {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRDB,
 			})
@@ -251,7 +245,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == ERRPHONEPASSSCAN {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRDB,
 			})
@@ -271,7 +265,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 func checkErrorLogout(err error, ctx *fasthttp.RequestCtx) error {
 	if err != nil {
 		if err.Error() == ERRDELETEQUERY {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRDB,
 			})
@@ -291,7 +285,7 @@ func checkErrorLogout(err error, ctx *fasthttp.RequestCtx) error {
 func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 	if err != nil {
 		if err.Error() == mid.ERRCOOKIEQUERY {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
@@ -306,7 +300,7 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 		}
 
 		if err.Error() == mid.ERRCOOKIESCAN {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
@@ -320,7 +314,7 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("Fatal")
 		}
 		if err.Error() == mid.ERRCOOKIEEXPIRED {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: mid.ERRCOOKIEEXPIRED,
 			})
@@ -335,7 +329,7 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 		}
 
 		if err.Error() == mid.ERRSIDNOTFOUND {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: ERRAUTH,
 			})
@@ -372,7 +366,7 @@ func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx, cookieHTTP *fa
 		}
 
 		if err.Error() == mid.ERRCOOKIESCAN {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
@@ -386,7 +380,7 @@ func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx, cookieHTTP *fa
 			return errors.New("Fatal")
 		}
 		if err.Error() == mid.ERRCOOKIEEXPIRED {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: mid.ERRCOOKIEEXPIRED,
 			})
@@ -401,7 +395,7 @@ func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx, cookieHTTP *fa
 		}
 
 		if err.Error() == mid.ERRSIDNOTFOUND {
-			err := json.NewEncoder(ctx).Encode(&ResultError{
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: ERRAUTH,
 			})

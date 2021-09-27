@@ -7,11 +7,13 @@ import (
 	"math/rand"
 	"time"
 )
-
-const LOGINDB string = "constantil"
-const PASSWORDDB string = "293456QwErty"
-const DBNAME string = "hot_mexicans_db"
-
+const (
+	DBLOGIN string = "constantil"
+	DBPASSWORD string = "293456QwErty"
+	DBNAME string = "hot_mexicans_db"
+	DBHOST = "localhost"
+	DBPORT = "5432"
+)
 const (
 	ERRCREATEQUERY = "ERROR: db not created"
 	ERRINSERTQUERY = "ERROR: restaurant not insert"
@@ -91,7 +93,7 @@ func makeName() string {
 
 func CreateDb() (*pgxpool.Pool, error) {
 	var err error
-	conn, err := pgxpool.Connect(context.Background(), "postgres://" + LOGINDB + ":" + PASSWORDDB + "@localhost:5432/" + DBNAME)
+	conn, err := pgxpool.Connect(context.Background(), "postgres://" + DBLOGIN + ":" + DBPASSWORD + "@" + DBHOST + ":" + DBPORT + "/" + DBNAME)
 	if err != nil {
 		return nil, errors.New(ERRNOTCONNECT)
 	}

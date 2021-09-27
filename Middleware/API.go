@@ -16,6 +16,11 @@ type Defense struct {
 	CsrfToken string
 }
 
+type ResultError struct {
+	Status	int         `json:"status"`
+	Explain	string		`json:"parsedJSON,omitempty"`
+}
+
 func randString(length int) string {
 	rand.Seed(time.Now().UnixNano())
 	chars := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
