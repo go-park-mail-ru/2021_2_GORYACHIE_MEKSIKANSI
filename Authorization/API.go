@@ -102,17 +102,17 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	cookieDB := mid.Defense{DateLife: cookieHttp.Expire(), SessionId: string(cookieHttp.Value())}
 	_ /*err*/ = Logout(wrapper, cookieDB) // TODO: проверки на ошибки
 
-	ctx.Response.SetStatusCode(http.StatusOK)
-	json.NewEncoder(ctx).Encode(&Result{
-		Status: http.StatusOK,
-	})
-	cookieHttp.SetExpire(cookieDB.DateLife) //TODO: уменьшить день
+	cookieHttp.SetExpire(time.Now().Add(time.Hour * -3)) //TODO: уменьшить день
 	cookieHttp.SetKey("session_id")
 	cookieHttp.SetValue(cookieDB.SessionId)
 	cookieHttp.SetHTTPOnly(true)
 	cookieHttp.SetPath("/")
 	ctx.Response.Header.SetCookie(&cookieHttp)
 
+	ctx.Response.SetStatusCode(http.StatusOK)
+	json.NewEncoder(ctx).Encode(&Result{
+		Status: http.StatusOK,
+	})
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }
 
@@ -123,6 +123,10 @@ func(u *UserInfo) CheckLoggedInHandler(ctx *fasthttp.RequestCtx) {
 	id, err := mid.GetIdByCookie(u.ConnectionDB, cookieDB)
 	if id == 0 {
 		ctx.Response.SetStatusCode(http.StatusUnauthorized)
+		ctx.Response.SetStatusCode(http.StatusOK)
+		json.NewEncoder(ctx).Encode(&Result{
+			Status: http.StatusUnauthorized,
+		})
 		fmt.Printf("Console:  method: %s, url: %s\n Cookie not found. User not authorized", string(ctx.Method()), ctx.URI())
 		return // TODO(N): подправить
 	}
@@ -132,8 +136,11 @@ func(u *UserInfo) CheckLoggedInHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	if id == -1 {  // просрочена кука
-		ctx.Response.SetStatusCode(http.StatusUnauthorized)
+		ctx.Response.SetStatusCode(http.StatusOK)
 		fmt.Printf("Console:  method: %s, url: %s\n Cookie is expired. User not authorized", string(ctx.Method()), ctx.URI())
+		json.NewEncoder(ctx).Encode(&Result{
+			Status: http.StatusUnauthorized,
+		})
 		return // TODO(N): подправить
 	}
 	// -2 - смотреть err

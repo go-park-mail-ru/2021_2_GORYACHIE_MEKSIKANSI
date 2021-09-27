@@ -32,7 +32,9 @@ func (u *ProfileInfo) ProfileHandler(ctx *fasthttp.RequestCtx) {
 
 	id, err := mid.GetIdByCookie(u.ConnectionDB, cookieDB)
 	if id == 0 {
-		panic("id not found")
+		err = json.NewEncoder(ctx).Encode(&auth.Result{
+			Status: http.StatusUnauthorized,
+		})
 		return // TODO(N): подправить
 	}
 
