@@ -141,7 +141,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	cookieHTTP.SetExpire(time.Now().Add(time.Hour * -3))-
+	cookieHTTP.SetExpire(time.Now().Add(time.Hour * -3))
 	cookieHTTP.SetKey("session_id")
 	cookieHTTP.SetValue(cookieDB.SessionId)
 	cookieHTTP.SetHTTPOnly(true)
