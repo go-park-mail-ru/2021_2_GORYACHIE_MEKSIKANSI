@@ -13,9 +13,9 @@ import (
 const DEBUG = true
 
 const (
-	DBLOGIN string = "Captain-matroskin"
-	DBPASSWORD string = "74tbr6r54f78"
-	DBNAME string = "hot_mexican_db"
+	DBLOGIN string = "constantil"
+	DBPASSWORD string = "293456QwErty"
+	DBNAME string = "hot_mexicans_db"
 	DBHOST = "localhost"
 	DBPORT = "5432"
 )
@@ -113,7 +113,7 @@ func CreateDb() (*pgxpool.Pool, error) {
 		return nil, errors.New(ERRNOTCONNECT)
 	}
 	if DEBUG {
-		_, err = conn.Exec(context.Background(), "DROP TABLE IF EXISTS restaurant, general_user_info, host, client, courier CASCADE")
+		_, err = conn.Exec(context.Background(), "DROP TABLE IF EXISTS restaurant, general_user_info, host, client, cookie, courier CASCADE")
 		if err != nil {
 			return nil, errors.New(ERRDELETEQUERY)
 		}
