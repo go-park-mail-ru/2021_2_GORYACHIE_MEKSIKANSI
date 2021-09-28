@@ -67,7 +67,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	cookieHTTP.SetSameSite(fasthttp.CookieSameSiteLaxMode)
 	ctx.Response.Header.SetCookie(&cookieHTTP)
 
-	ctx.Response.Header.Set("X-CSRF-Token", cookieDB.CsrfToken)
+	ctx.Response.Header.Set("X-Csrf-Token", cookieDB.CsrfToken)
 
 	ctx.Response.SetStatusCode(http.StatusOK)
 
