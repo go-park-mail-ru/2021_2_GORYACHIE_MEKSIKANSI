@@ -28,15 +28,6 @@ func runServer(port string) {
 
 	myRouter := router.New()
 	api := "/api"
-/*	cookieDB := mid.Defense{}
-	// TODO(Н): Сделать проверку когда надо (проверять не надо только в сигнапе и логине)
-	id, err := mid.GetIdByCookie(connectionPostgres, cookieDB)
-	if id == 0 {
-
-	}
-	// Если id == 0, то сессии или scrf не найден
-	if err != nil {
-	}*/
 
 	myRouter.GET(api+"/profile", profileInfo.ProfileHandler)
 	myRouter.POST(api+"/logout", userInfo.LogoutHandler)

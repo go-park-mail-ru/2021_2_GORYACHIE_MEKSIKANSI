@@ -267,6 +267,53 @@ func checkErrorLogout(err error, ctx *fasthttp.RequestCtx) error {
 	return nil
 }
 
+func checkErrorLogoutAccess(err error, ctx *fasthttp.RequestCtx) error {
+	if err != nil {
+		switch err.Error() {
+		case mid.ERRCOOKIEANDCSRFQUERY:
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
+				Status:  http.StatusInternalServerError,
+				Explain: ERRDB,
+			})
+			if err != nil {
+				ctx.Response.SetStatusCode(http.StatusOK)
+				fmt.Printf("Console: %s\n", ERRENCODE)
+				return errors.New("fatal")
+			}
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			fmt.Printf("Console: %s\n", mid.ERRCOOKIEANDCSRFQUERY)
+			return errors.New("fatal")
+		case mid.ERRCOOKIEANDCSRFSCAN:
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
+				Status:  http.StatusInternalServerError,
+				Explain: ERRDB,
+			})
+			if err != nil {
+				ctx.Response.SetStatusCode(http.StatusOK)
+				fmt.Printf("Console: %s\n", ERRENCODE)
+				return errors.New("fatal")
+			}
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			fmt.Printf("Console: %s\n", mid.ERRCOOKIEANDCSRFSCAN)
+			return errors.New("fatal")
+		case mid.ERRSIDNOTFOUND:
+			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
+				Status:  http.StatusUnauthorized,
+				Explain: mid.ERRSIDNOTFOUND,
+			})
+			if err != nil {
+				ctx.Response.SetStatusCode(http.StatusOK)
+				fmt.Printf("Console: %s\n", ERRENCODE)
+				return errors.New("fatal")
+			}
+			ctx.Response.SetStatusCode(http.StatusUnauthorized)
+			fmt.Printf("Console: %s\n", mid.ERRSIDNOTFOUND)
+			return errors.New("fatal")
+		}
+	}
+	return nil
+}
+
 func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 	if err != nil {
 		switch err.Error() {
