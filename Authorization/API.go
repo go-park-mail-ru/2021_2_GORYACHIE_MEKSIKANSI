@@ -100,7 +100,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	cookieHTTP := fasthttp.Cookie{}
 	cookieDB := mid.Defense{}
 	cookieDB, err = Login(wrapper, userLogin)
-	//ctx.Response.Header("XTFD")
+
 	errOut :=checkErrorLogin(err, ctx)
 	if errOut != nil {
 		return
@@ -132,7 +132,8 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	wrapper := Wrapper{Conn: u.ConnectionDB}
 	cookieHTTP := fasthttp.Cookie{}
 	cookieDB := mid.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
-	ctx.Response.Header.Peek("X-CSRF-Token")
+	//cookieDB.CsrfToken = string(ctx.Response.Header.Peek("X-Csrf-Token"))
+
 
 	err := Logout(wrapper, cookieDB)
 	errOut:=checkErrorLogout(err, ctx)
@@ -140,7 +141,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	cookieHTTP.SetExpire(time.Now().Add(time.Hour * -3))
+	cookieHTTP.SetExpire(time.Now().Add(time.Hour * -3))-
 	cookieHTTP.SetKey("session_id")
 	cookieHTTP.SetValue(cookieDB.SessionId)
 	cookieHTTP.SetHTTPOnly(true)
