@@ -12,7 +12,8 @@ import (
 
 func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 	if err != nil {
-		if err.Error() == ERRGETPROFILECLIENTQUERY {
+		switch err.Error() {
+		case ERRGETPROFILECLIENTQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
@@ -20,14 +21,12 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRGETPROFILECLIENTQUERY)
-			return errors.New("Fatal")
-		}
-
-		if err.Error() == ERRGETPROFILECLIENTSCAN {
+			return errors.New("fatal")
+		case ERRGETPROFILECLIENTSCAN:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
@@ -35,13 +34,12 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRGETPROFILECLIENTSCAN)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRGETBIRTHDAYQUERY {
+			return errors.New("fatal")
+		case ERRGETBIRTHDAYQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
@@ -49,13 +47,12 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRGETBIRTHDAYQUERY)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRGETBIRTHDAYSCAN {
+			return errors.New("fatal")
+		case ERRGETBIRTHDAYSCAN:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
@@ -63,13 +60,12 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRGETBIRTHDAYSCAN)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRGETPROFILECOURIERQUERY {
+			return errors.New("fatal")
+		case ERRGETPROFILECOURIERQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
@@ -77,13 +73,12 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRGETPROFILECOURIERQUERY)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRGETPROFILECOURIERSCAN {
+			return errors.New("fatal")
+		case ERRGETPROFILECOURIERSCAN:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
@@ -91,13 +86,12 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRGETPROFILECOURIERSCAN)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRGETPROFILEHOSTQUERY {
+			return errors.New("fatal")
+		case ERRGETPROFILEHOSTQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
@@ -105,13 +99,12 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRGETPROFILEHOSTQUERY)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRGETPROFILEHOSTSCAN {
+			return errors.New("fatal")
+		case ERRGETPROFILEHOSTSCAN:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
@@ -119,13 +112,12 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRGETPROFILEHOSTSCAN)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRCLIENTQUERY {
+			return errors.New("fatal")
+		case ERRCLIENTQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
@@ -133,13 +125,12 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRCLIENTQUERY)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRCLIENTSCAN {
+			return errors.New("fatal")
+		case ERRCLIENTSCAN:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
@@ -147,13 +138,12 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRCLIENTSCAN)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRHOSTQUERY {
+			return errors.New("fatal")
+		case ERRHOSTQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
@@ -161,13 +151,12 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRHOSTQUERY)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRHOSTSCAN {
+			return errors.New("fatal")
+		case ERRHOSTSCAN:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
@@ -175,14 +164,12 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRHOSTSCAN)
-			return errors.New("Fatal")
-		}
-
-		if err.Error() == ERRHOSTSCAN {
+			return errors.New("fatal")
+		case ERRCORIERQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
@@ -190,27 +177,12 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
-			}
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			fmt.Printf("Console: %s\n", ERRHOSTSCAN)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRCORIERQUERY {
-			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusInternalServerError,
-				Explain: auth.ERRDB,
-			})
-			if err != nil {
-				ctx.Response.SetStatusCode(http.StatusOK)
-				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRCORIERQUERY)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRCORIERSCAN {
+			return errors.New("fatal")
+		case ERRCORIERSCAN:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
@@ -218,11 +190,11 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRCORIERSCAN)
-			return errors.New("Fatal")
+			return errors.New("fatal")
 		}
 	}
 	return nil

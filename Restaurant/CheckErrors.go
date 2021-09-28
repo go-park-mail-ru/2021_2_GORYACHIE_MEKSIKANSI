@@ -11,12 +11,13 @@ import (
 )
 
 const(
-	RESTAURANTNULL = "ERROR: restaurants not found"
+	RESTNULL = "ERROR: restaurants not found"
 )
 
 func CheckErrorRestaurant(err error, ctx *fasthttp.RequestCtx, restaurant []Restaurant) error {
 	if err != nil {
-		if err.Error() == ERRQUERY {
+		switch err.Error() {
+		case ERRQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
@@ -24,41 +25,39 @@ func CheckErrorRestaurant(err error, ctx *fasthttp.RequestCtx, restaurant []Rest
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRQUERY)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRSCAN {
+			return errors.New("fatal")
+		case ERRSCAN:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusUnauthorized,
-				Explain: mid.ERRCOOKIEEXPIRED,
+				Status:  http.StatusInternalServerError,
+				Explain: auth.ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRSCAN)
-			return errors.New("Fatal")
+			return errors.New("fatal")
+
 		}
 	} else {
-		if restaurant == nil {
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
-				Explain: RESTAURANTNULL,
+				Explain: RESTNULL,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusOK)
-			fmt.Printf("Console: %s\n", RESTAURANTNULL)
-			return errors.New("Fatal")
-		}
+			fmt.Printf("Console: %s\n", RESTNULL)
+			return errors.New("fatal")
 	}
 	return nil
 }

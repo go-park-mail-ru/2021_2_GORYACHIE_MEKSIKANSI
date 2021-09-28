@@ -12,104 +12,98 @@ import (
 
 func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 	if errIn != nil {
-		if errIn.Error() == ERRUNIQUE {
+		switch errIn.Error() {
+		case ERRUNIQUE:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusUnauthorized,
-				Explain: ERRUNIQUE,
+				Status:  http.StatusInternalServerError,
+				Explain: ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRUNIQUE)
-			return errors.New("Fatal")
-		}
-
-		if errIn.Error() == ERRINFOQUERY {
+			return errors.New("fatal")
+		case ERRINFOQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusBadRequest,
-				Explain: ERRINFOQUERY,
+				Status:  http.StatusInternalServerError,
+				Explain: ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRINFOQUERY)
-			return errors.New("Fatal")
-		}
-		if errIn.Error() == ERRINFOSCAN {
+			return errors.New("fatal")
+		case ERRINFOSCAN:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusBadRequest,
-				Explain: ERRINFOSCAN,
+				Status:  http.StatusInternalServerError,
+				Explain: ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRINFOSCAN)
-			return errors.New("Fatal")
-		}
-		if errIn.Error() == ERRINSERTHOSTQUERY {
+			return errors.New("fatal")
+		case ERRINSERTHOSTQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusBadRequest,
-				Explain: ERRINSERTHOSTQUERY,
+				Status:  http.StatusInternalServerError,
+				Explain: ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRINSERTHOSTQUERY)
-			return errors.New("Fatal")
-		}
-		if errIn.Error() == ERRINSERTCOOKIEQUERY {
+			return errors.New("fatal")
+		case ERRINSERTCOOKIEQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusBadRequest,
-				Explain: ERRINSERTCOOKIEQUERY,
+				Status:  http.StatusInternalServerError,
+				Explain: ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRINSERTCOOKIEQUERY)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRINSERTCOOKIEQUERY)
-			return errors.New("Fatal")
-		}
-		if errIn.Error() == ERRINSERTCOURIERQUERY {
+			return errors.New("fatal")
+		case ERRINSERTCOURIERQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusBadRequest,
-				Explain: ERRINSERTCOURIERQUERY,
+				Status:  http.StatusInternalServerError,
+				Explain: ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRINSERTCOURIERQUERY)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRINSERTCOURIERQUERY)
-			return errors.New("Fatal")
-		}
-		if errIn.Error() == ERRINSERTCLIENTQUERY {
+			return errors.New("fatal")
+		case ERRINSERTCLIENTQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusBadRequest,
-				Explain: ERRINSERTCLIENTQUERY,
+				Status:  http.StatusInternalServerError,
+				Explain: ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRINSERTCLIENTQUERY)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRINSERTCOURIERQUERY)
-			return errors.New("Fatal")
+			return errors.New("fatal")
 		}
 	}
 	return nil
@@ -117,7 +111,8 @@ func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 
 func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 	if err != nil {
-		if err.Error() == ERRNOTLOGINORPASSWORD {
+		switch err.Error() {
+		case ERRNOTLOGINORPASSWORD:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRNOTLOGINORPASSWORD,
@@ -125,138 +120,128 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusOK)
 			fmt.Printf("Console: %s\n", ERRNOTLOGINORPASSWORD)
-			return errors.New("Fatal")
-		}
-
-		if err.Error() == ERRINSERTLOGINCOOKIEQUERY {
+			return errors.New("fatal")
+		case ERRINSERTLOGINCOOKIEQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusBadRequest,
+				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRINSERTLOGINCOOKIEQUERY)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRMAILQUERY {
+			return errors.New("fatal")
+		case ERRMAILQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusBadRequest,
+				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRMAILQUERY)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRMAILSCAN {
+			return errors.New("fatal")
+		case ERRMAILSCAN:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusBadRequest,
+				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRMAILSCAN)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRMAILPASSQUERY {
+			return errors.New("fatal")
+		case ERRMAILPASSQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusBadRequest,
+				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRMAILPASSQUERY)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRMAILPASSSCAN {
+			return errors.New("fatal")
+		case ERRMAILPASSSCAN:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusBadRequest,
+				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRMAILPASSSCAN)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRPHONEQUERY {
+			return errors.New("fatal")
+		case ERRPHONEQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusBadRequest,
+				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRPHONEQUERY)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRPHONESCAN {
+			return errors.New("fatal")
+		case ERRPHONESCAN:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusBadRequest,
+				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRPHONESCAN)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRPHONEPASSQUERY {
+			return errors.New("fatal")
+		case ERRPHONEPASSQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusBadRequest,
+				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRPHONEPASSQUERY)
-			return errors.New("Fatal")
-		}
-		if err.Error() == ERRPHONEPASSSCAN {
+			return errors.New("fatal")
+		case ERRPHONEPASSSCAN:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusBadRequest,
+				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRPHONEPASSSCAN)
-			return errors.New("Fatal")
+			return errors.New("fatal")
 		}
 	}
 	return nil
@@ -272,11 +257,11 @@ func checkErrorLogout(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusOK)
 			fmt.Printf("Console: %s\n", ERRDELETEQUERY)
-			return errors.New("Fatal")
+			return errors.New("fatal")
 		}
 	}
 	return nil
@@ -284,7 +269,8 @@ func checkErrorLogout(err error, ctx *fasthttp.RequestCtx) error {
 
 func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 	if err != nil {
-		if err.Error() == mid.ERRCOOKIEQUERY {
+		switch err.Error() {
+		case mid.ERRCOOKIEQUERY:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
@@ -292,14 +278,12 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", mid.ERRCOOKIEQUERY)
-			return errors.New("Fatal")
-		}
-
-		if err.Error() == mid.ERRCOOKIESCAN {
+			return errors.New("fatal")
+		case mid.ERRCOOKIESCAN:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
@@ -307,13 +291,12 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", mid.ERRCOOKIESCAN)
-			return errors.New("Fatal")
-		}
-		if err.Error() == mid.ERRCOOKIEEXPIRED {
+			return errors.New("fatal")
+		case mid.ERRCOOKIEEXPIRED:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: mid.ERRCOOKIEEXPIRED,
@@ -321,14 +304,12 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusOK)
 			fmt.Printf("Console: %s\n", mid.ERRCOOKIEEXPIRED)
-			return errors.New("Fatal")
-		}
-
-		if err.Error() == mid.ERRSIDNOTFOUND {
+			return errors.New("fatal")
+		case mid.ERRSIDNOTFOUND:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: ERRAUTH,
@@ -336,11 +317,11 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusOK)
 			fmt.Printf("Console: %s\n", mid.ERRSIDNOTFOUND)
-			return errors.New("Fatal")
+			return errors.New("fatal")
 		}
 	}
 	return nil
@@ -348,7 +329,8 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 
 func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx, cookieHTTP *fasthttp.Cookie) error {
 	if err != nil {
-		if err.Error() == mid.ERRCOOKIEQUERY {
+		switch err.Error() {
+		case mid.ERRCOOKIEQUERY:
 			cookieHTTP.SetKey("session_id")
 			cookieHTTP.SetValue(string(ctx.Request.Header.Cookie("session_id")))
 			cookieHTTP.SetExpire(time.Now().Add(-72 * time.Hour))
@@ -358,14 +340,12 @@ func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx, cookieHTTP *fa
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", mid.ERRCOOKIEQUERY)
-			return errors.New("Fatal")
-		}
-
-		if err.Error() == mid.ERRCOOKIESCAN {
+			return errors.New("fatal")
+		case mid.ERRCOOKIESCAN:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
@@ -373,13 +353,12 @@ func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx, cookieHTTP *fa
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", mid.ERRCOOKIESCAN)
-			return errors.New("Fatal")
-		}
-		if err.Error() == mid.ERRCOOKIEEXPIRED {
+			return errors.New("fatal")
+		case mid.ERRCOOKIEEXPIRED:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: mid.ERRCOOKIEEXPIRED,
@@ -387,14 +366,12 @@ func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx, cookieHTTP *fa
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusOK)
 			fmt.Printf("Console: %s\n", mid.ERRCOOKIEEXPIRED)
-			return errors.New("Fatal")
-		}
-
-		if err.Error() == mid.ERRSIDNOTFOUND {
+			return errors.New("fatal")
+		case mid.ERRSIDNOTFOUND:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: ERRAUTH,
@@ -402,11 +379,11 @@ func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx, cookieHTTP *fa
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("Fatal")
+				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusOK)
 			fmt.Printf("Console: %s\n", mid.ERRSIDNOTFOUND)
-			return errors.New("Fatal")
+			return errors.New("fatal")
 		}
 	}
 	return nil

@@ -2,18 +2,24 @@ package Middleware
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"math/rand"
 	"time"
 )
+
+const DEBUG = true
+
 const (
-	DBLOGIN string = "constantil"
-	DBPASSWORD string = "293456QwErty"
-	DBNAME string = "hot_mexicans_db"
+	DBLOGIN string = "Captain-matroskin"
+	DBPASSWORD string = "74tbr6r54f78"
+	DBNAME string = "hot_mexican_db"
 	DBHOST = "localhost"
 	DBPORT = "5432"
 )
+
 const (
 	ERRCREATEQUERY = "ERROR: db not created"
 	ERRINSERTQUERY = "ERROR: restaurant not insert"
@@ -25,10 +31,19 @@ const (
 	ERRNOTCONNECT      = "ERROR: not connect"
 	ERRUPDATECSRFQUERY = "ERROR: csrf not updated"
 	ERRCOOKIEEXPIRED   = "ERROR: cookie expired"
+	ERRDELETEQUERY = "ERROR: not delete query"
+	ERRINSERTROOTQUERY = "ERROR: not create root"
 )
 
 func randomInteger(min int, max int) int {
 	return rand.Intn(max - min) + min
+}
+
+func HashPassword(password string, salt string) string {
+	h := sha256.New()
+	h.Write([]byte(salt + password))
+	hash := hex.EncodeToString(h.Sum(nil))
+	return hash
 }
 
 func makeName() string {
@@ -97,6 +112,12 @@ func CreateDb() (*pgxpool.Pool, error) {
 	if err != nil {
 		return nil, errors.New(ERRNOTCONNECT)
 	}
+	if DEBUG {
+		_, err = conn.Exec(context.Background(), "DROP TABLE IF EXISTS restaurant, general_user_info, host, client, courier CASCADE")
+		if err != nil {
+			return nil, errors.New(ERRDELETEQUERY)
+		}
+	}
 
 	tableGeneralUserInfo:= "CREATE TABLE IF NOT EXISTS general_user_info (id SERIAL PRIMARY KEY, name text NOT NULL, password varchar(64) NOT NULL, salt varchar(5) NOT NULL, phone varchar(15) UNIQUE NOT NULL, email text UNIQUE, avatar text DEFAULT '/uploads/', date_registration timestamp DEFAULT NOW() NOT NULL, deleted boolean DEFAULT false);"
 	tableRestaurant := "CREATE TABLE IF NOT EXISTS restaurant (id serial PRIMARY KEY, owner INTEGER, FOREIGN KEY (owner) REFERENCES general_user_info (id) On DELETE CASCADE, name text NOT NULL, description text NOT NULL, created timestamp DEFAULT NOW() NOT NULL, deleted boolean DEFAULT false, avatar text DEFAULT '/uploads/', min_price int DEFAULT 0, price_delivery int NOT NULL, min_delivery_time int, max_delivery_time int, city text NOT NULL, street text NOT NULL, house text NOT NULL, floor int, rating double precision, location text);"
@@ -109,12 +130,23 @@ func CreateDb() (*pgxpool.Pool, error) {
 		return nil, errors.New(ERRCREATEQUERY)
 	}
 
+	_, err = conn.Exec(context.Background(),
+		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5)",
+		"root", "root@root", "88888888888", HashPassword("root", "salt"), "salt")
+
+	if err != nil {
+		return nil, errors.New(ERRINSERTROOTQUERY)
+	}
+
 	for  i := 0; i < 500; i++ {
-		_, err := conn.Exec(context.Background(), "INSERT INTO restaurant (name, description, price_delivery, city, street, house, rating, min_delivery_time, max_delivery_time, avatar) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", makeName(), makeName(), randomInteger(10, 15), "city", "street", "house", randomInteger(10, 15), randomInteger(10, 15), randomInteger(10, 15), "https://avatars.mds.yandex.net/get-mpic/4944925/img_id5013960435158963405.jpeg/13hq")
+		_, err := conn.Exec(context.Background(),
+			"INSERT INTO restaurant (name, description, owner, price_delivery, city, street, house, rating, min_delivery_time, max_delivery_time, avatar, floor, location) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)",
+			makeName(), makeName(), 1, randomInteger(1, 15000), "city", "street", "house", randomInteger(1, 5), randomInteger(1, 300), randomInteger(1, 300), "https://avatars.mds.yandex.net/get-mpic/4944925/img_id5013960435158963405.jpeg/13hq", randomInteger(1, 163), "location")
 		if err != nil {
 			return nil, errors.New(ERRINSERTQUERY)
 		}
 	}
+
 	return conn, nil
 }
 

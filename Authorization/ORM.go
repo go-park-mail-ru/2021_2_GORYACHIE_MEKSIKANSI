@@ -3,8 +3,6 @@ package Authorization
 import (
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"errors"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -36,13 +34,6 @@ type Wrapper struct {
 	Transaction pgx.Tx
 }
 
-func hashPassword(password string, salt string) string {
-	h := sha256.New()
-	h.Write([]byte(salt + password))
-	hash := hex.EncodeToString(h.Sum(nil))
-	return hash
-}
-
 func (db *Wrapper) GeneralSignUp(signup Registration) (int, error) {
 	var userId int
 	var err error
@@ -51,7 +42,7 @@ func (db *Wrapper) GeneralSignUp(signup Registration) (int, error) {
 
 	row := db.Transaction.QueryRow(context.Background(),
 		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-		signup.Name, signup.Email, signup.Phone, hashPassword(signup.Password, salt), salt)
+		signup.Name, signup.Email, signup.Phone, mid.HashPassword(signup.Password, salt), salt)
 	if err != nil {
 		return 0, errors.New(ERRINFOQUERY)
 	}
@@ -207,7 +198,7 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 
 	row, err = db.Conn.Query(context.Background(),
 		"SELECT id FROM general_user_info WHERE email = $1 AND password = $2",
-		email, hashPassword(password, salt))
+		email, mid.HashPassword(password, salt))
 	if err != nil {
 		return 0, errors.New(ERRMAILPASSQUERY)
 	}
@@ -245,7 +236,7 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 
 	row, err = db.Conn.Query(context.Background(),
 		"SELECT id FROM general_user_info WHERE phone = $1 AND password = $2",
-		phone, hashPassword(password, salt))
+		phone, mid.HashPassword(password, salt))
 	if err != nil {
 		return 0, errors.New(ERRPHONEPASSQUERY)
 	}
