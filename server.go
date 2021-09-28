@@ -47,8 +47,9 @@ func runServer(port string) {
 
 	withCors := cors.NewCorsHandler(cors.Options{
 		AllowedOrigins: []string{"http://127.0.0.1:3000"},
-		AllowedHeaders: []string{"access-control-allow-origin", "content-type", "x-csrf-token", "access-control-expose-headers", "x-requested-with"},
+		AllowedHeaders: []string{"access-control-allow-origin", "content-type", "X-Csrf-Token", "access-control-expose-headers", "x-requested-with"},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		ExposedHeaders: []string{"X-Csrf-Token"},
 		AllowCredentials: true,
 		AllowMaxAge:      5600,
 		Debug:            true,
