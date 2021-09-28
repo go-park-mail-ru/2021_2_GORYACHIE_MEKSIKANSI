@@ -37,7 +37,7 @@ func (u *ProfileInfo) ProfileHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	profile, err = GetProfile(wrapper, id) // TODO: проверки на ошибки
+	profile, err = GetProfile(wrapper, id)
 	err = CheckErrorProfile(err, ctx)
 	if err != nil {
 		return

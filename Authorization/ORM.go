@@ -91,7 +91,6 @@ func (db *Wrapper) SignupHost(signup Registration) (mid.Defense, error) {
 			"DELETE FROM host WHERE client_id = $1", userId)
 		return cookie, errors.New(ERRINSERTHOSTQUERY)
 	}
-
 	return cookie, nil
 }
 
@@ -127,7 +126,6 @@ func (db *Wrapper) SignupCourier(signup Registration) (mid.Defense, error) {
 			"DELETE FROM courier WHERE client_id = $1", userId)
 		return cookie, errors.New(ERRINSERTCOURIERQUERY)
 	}
-
 	return cookie, err
 }
 

@@ -14,7 +14,7 @@ const(
 	ERRDB		=	"ERROR: database is not responding"
 	ERRENCODE	=	"ERROR: Encode"
 	ERRUNMARSHAL=	"ERROR: unmarshal json"
-	ERRAUTH = "ERROR: authorization failed"
+	ERRAUTH 	= 	"ERROR: authorization failed"
 )
 
 type UserInfo struct {
@@ -101,7 +101,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	cookieDB := mid.Defense{}
 	cookieDB, err = Login(wrapper, userLogin)
 
-	errOut :=checkErrorLogin(err, ctx)
+	errOut := checkErrorLogin(err, ctx)
 	if errOut != nil {
 		return
 	}
@@ -134,9 +134,8 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	cookieDB := mid.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
 
-
 	err := Logout(wrapper, cookieDB)
-	errOut:=checkErrorLogout(err, ctx)
+	errOut := checkErrorLogout(err, ctx)
 	if errOut != nil {
 		return
 	}

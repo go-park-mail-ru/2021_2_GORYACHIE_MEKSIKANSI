@@ -130,20 +130,22 @@ func CreateDb() (*pgxpool.Pool, error) {
 		return nil, errors.New(ERRCREATEQUERY)
 	}
 
-	_, err = conn.Exec(context.Background(),
-		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5)",
-		"root", "root@root", "88888888888", HashPassword("root", "salt"), "salt")
+	if DEBUG {
+		_, err = conn.Exec(context.Background(),
+			"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5)",
+			"root", "root@root", "88888888888", HashPassword("root", "salt"), "salt")
 
-	if err != nil {
-		return nil, errors.New(ERRINSERTROOTQUERY)
-	}
-
-	for  i := 0; i < 500; i++ {
-		_, err := conn.Exec(context.Background(),
-			"INSERT INTO restaurant (name, description, owner, price_delivery, city, street, house, rating, min_delivery_time, max_delivery_time, avatar, floor, location) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)",
-			makeName(), makeName(), 1, randomInteger(1, 15000), "city", "street", "house", randomInteger(1, 5), randomInteger(1, 300), randomInteger(1, 300), "https://avatars.mds.yandex.net/get-mpic/4944925/img_id5013960435158963405.jpeg/13hq", randomInteger(1, 163), "location")
 		if err != nil {
-			return nil, errors.New(ERRINSERTQUERY)
+			return nil, errors.New(ERRINSERTROOTQUERY)
+		}
+
+		for i := 0; i < 500; i++ {
+			_, err := conn.Exec(context.Background(),
+				"INSERT INTO restaurant (name, description, owner, price_delivery, city, street, house, rating, min_delivery_time, max_delivery_time, avatar, floor, location) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)",
+				makeName(), makeName(), 1, randomInteger(1, 15000), "city", "street", "house", randomInteger(1, 5), randomInteger(1, 300), randomInteger(1, 300), "https://avatars.mds.yandex.net/get-mpic/4944925/img_id5013960435158963405.jpeg/13hq", randomInteger(1, 163), "location")
+			if err != nil {
+				return nil, errors.New(ERRINSERTQUERY)
+			}
 		}
 	}
 
