@@ -132,7 +132,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	wrapper := Wrapper{Conn: u.ConnectionDB}
 	cookieHTTP := fasthttp.Cookie{}
 	cookieDB := mid.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
-	//cookieDB.CsrfToken = string(ctx.Response.Header.Peek("X-Csrf-Token"))
+	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
 
 
 	err := Logout(wrapper, cookieDB)
