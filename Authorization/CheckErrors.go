@@ -18,12 +18,12 @@ func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusConflict,
 				Explain: ERRUNIQUE,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetStatusCode(http.StatusOK)
 			fmt.Printf("Console: %s\n", ERRUNIQUE)
 			return errors.New("fatal")
 		case ERRINFOQUERY:
@@ -31,7 +31,7 @@ func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -44,7 +44,7 @@ func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -57,7 +57,7 @@ func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -70,7 +70,7 @@ func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRINSERTCOOKIEQUERY)
 				return errors.New("fatal")
@@ -83,7 +83,7 @@ func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRINSERTCOURIERQUERY)
 				return errors.New("fatal")
@@ -96,7 +96,7 @@ func checkErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRINSERTCLIENTQUERY)
 				return errors.New("fatal")
@@ -114,10 +114,10 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 		switch err.Error() {
 		case ERRNOTLOGINORPASSWORD:
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
-				Status:  http.StatusBadRequest,
+				Status:  http.StatusUnauthorized,
 				Explain: ERRNOTLOGINORPASSWORD,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -130,7 +130,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -143,7 +143,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -156,7 +156,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -169,7 +169,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -182,7 +182,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -195,7 +195,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -208,7 +208,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -221,7 +221,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -234,7 +234,7 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -249,12 +249,12 @@ func checkErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 
 func checkErrorLogout(err error, ctx *fasthttp.RequestCtx) error {
 	if err != nil {
-		if err.Error() == ERRDELETEQUERY {
+		if err.Error() != ERRDELETEQUERY {
 			err := json.NewEncoder(ctx).Encode(&mid.ResultError{
 				Status:  http.StatusBadRequest,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -275,7 +275,7 @@ func checkErrorLogoutAccess(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -288,7 +288,7 @@ func checkErrorLogoutAccess(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -301,7 +301,7 @@ func checkErrorLogoutAccess(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusUnauthorized,
 				Explain: mid.ERRSIDNOTFOUND,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -322,7 +322,7 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -335,7 +335,7 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -348,7 +348,7 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusUnauthorized,
 				Explain: mid.ERRCOOKIEEXPIRED,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -361,7 +361,7 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusUnauthorized,
 				Explain: ERRAUTH,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -384,7 +384,7 @@ func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx, cookieHTTP *fa
 			cookieHTTP.SetHTTPOnly(true)
 			cookieHTTP.SetPath("/")
 			ctx.Response.Header.SetCookie(cookieHTTP)
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -397,7 +397,7 @@ func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx, cookieHTTP *fa
 				Status:  http.StatusInternalServerError,
 				Explain: ERRDB,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -410,7 +410,7 @@ func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx, cookieHTTP *fa
 				Status:  http.StatusUnauthorized,
 				Explain: mid.ERRCOOKIEEXPIRED,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")
@@ -423,7 +423,7 @@ func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx, cookieHTTP *fa
 				Status:  http.StatusUnauthorized,
 				Explain: ERRAUTH,
 			})
-			if err == nil {
+			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", ERRENCODE)
 				return errors.New("fatal")

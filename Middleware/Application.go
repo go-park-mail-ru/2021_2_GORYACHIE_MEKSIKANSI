@@ -142,7 +142,7 @@ func CreateDb() (*pgxpool.Pool, error) {
 		for i := 0; i < 500; i++ {
 			_, err := conn.Exec(context.Background(),
 				"INSERT INTO restaurant (name, description, owner, price_delivery, city, street, house, rating, min_delivery_time, max_delivery_time, avatar, floor, location) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)",
-				makeName(), makeName(), 1, randomInteger(200, 300), "city", "street", "house", randomInteger(1, 5), randomInteger(30, 40), randomInteger(50, 60), "https://mir-s3-cdn-cf.behance.net/project_modules/1400_opt_1/96672465571661.5afc10a864fc2.jpg", randomInteger(1, 163), "location")
+				makeName(), makeName(), 1, randomInteger(200, 300), "city", "street", "house", randomInteger(1, 5), randomInteger(30, 40), randomInteger(50, 60), "http://mir-s3-cdn-cf.behance.net/project_modules/1400_opt_1/96672465571661.5afc10a864fc2.jpg", randomInteger(1, 163), "location")
 			if err != nil {
 				return nil, errors.New(ERRINSERTQUERY)
 			}
