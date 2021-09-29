@@ -22,7 +22,7 @@ func CheckErrorRestaurant(err error, ctx *fasthttp.RequestCtx, restaurant []Rest
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")
@@ -35,7 +35,7 @@ func CheckErrorRestaurant(err error, ctx *fasthttp.RequestCtx, restaurant []Rest
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")
@@ -48,7 +48,7 @@ func CheckErrorRestaurant(err error, ctx *fasthttp.RequestCtx, restaurant []Rest
 				Status:  http.StatusBadRequest,
 				Explain: RESTNULL,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")

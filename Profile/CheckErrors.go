@@ -18,7 +18,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")
@@ -31,7 +31,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")
@@ -44,7 +44,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")
@@ -57,7 +57,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")
@@ -70,7 +70,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")
@@ -83,7 +83,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")
@@ -96,7 +96,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")
@@ -109,7 +109,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")
@@ -122,7 +122,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")
@@ -135,7 +135,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")
@@ -148,7 +148,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")
@@ -161,7 +161,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")
@@ -174,7 +174,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")
@@ -187,7 +187,7 @@ func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 				Status:  http.StatusInternalServerError,
 				Explain: auth.ERRDB,
 			})
-			if err != nil {
+			if err == nil {
 				ctx.Response.SetStatusCode(http.StatusOK)
 				fmt.Printf("Console: %s\n", auth.ERRENCODE)
 				return errors.New("fatal")

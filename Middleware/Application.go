@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-const DEBUG = true
+const DEBUG = false
 
 const (
 	DBLOGIN string = "constantil"
