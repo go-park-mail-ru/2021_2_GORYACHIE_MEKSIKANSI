@@ -13,9 +13,9 @@ import (
 const DEBUG = false
 
 const (
-	DBLOGIN string = "constantil"
-	DBPASSWORD string = "293456QwErty"
-	DBNAME string = "hot_mexicans_db"
+	DBLOGIN string = "Captain-matroskin"
+	DBPASSWORD string = "74tbr6r54f78"
+	DBNAME string = "hot_mexican_db"
 	DBHOST = "localhost"
 	DBPORT = "5432"
 )
@@ -48,60 +48,14 @@ func HashPassword(password string, salt string) string {
 
 func makeName() string {
 	restNames := []string{
-	"Cheesecake Factory",
-	"Shokolaat",
-	"Gordon Biersch",
-	"Crepevine",
-	"Creamery",
-	"Old Pro",
-	"House of Bagels",
-	"The Prolific Oven",
-	"La Strada",
-	"Buca di Beppo",
-	"Madame Tam",
-	"Sprout Cafe",
-	"Junoon",
-	"Bistro Maxine",
-	"Three Seasons",
-	"Reposado",
-	"Siam Royal",
-	"Krung Siam",
-	"Thaiphoon",
-	"Tamarine",
-	"Joya",
-	"Jing Jing",
-	"Evvia Estiatorio",
-	"Cafe 220",
-	"Cafe Renaissance",
-	"Kan Zeman",
-	"Mango Caribbean Cafe",
-	"Baklava",
-	"Mandarin Gourmet",
-	"Bangkok Cuisine",
-	"Darbar Indian Cuisine",
-	"Mantra",
-	"Janta",
-	"Hyderabad House",
-	"Starbucks",
-	"Coupa Cafe",
-	"Lytton Coffee Company",
-	"Il Fornaio",
-	"Lavanda",
-	"MacArthur Park",
-	"Osteria",
-	"Vero",
-	"Cafe Renzo",
-	"Miyake",
-	"Sushi Tomo",
-	"Kanpai",
-	"Pizza My Heart",
-	"New York Pizza",
-	"California Pizza Kitchen",
-	"Round Table",
-	"Loving Hut",
-	"Garden Fresh",
-	"Cafe Epi",
-	"Tai Pan",
+	"Cheesecake Factory", "Shokolaat", "Gordon Biersch", "Crepevine", "Creamery", "Old Pro", "House of Bagels",
+	"The Prolific Oven", "La Strada", "Buca di Beppo", "Madame Tam", "Sprout Cafe", "Junoon", "Bistro Maxine",
+	"Three Seasons", "Reposado", "Siam Royal", "Krung Siam", "Thaiphoon", "Tamarine", "Joya", "Jing Jing",
+	"Evvia Estiatorio", "Cafe 220", "Cafe Renaissance", "Kan Zeman", "Mango Caribbean Cafe", "Baklava",
+	"Mandarin Gourmet", "Bangkok Cuisine", "Darbar Indian Cuisine", "Mantra", "Janta", "Hyderabad House",
+	"Starbucks", "Coupa Cafe", "Lytton Coffee Company", "Il Fornaio", "Lavanda", "MacArthur Park",
+	"Osteria", "Vero", "Cafe Renzo", "Miyake", "Sushi Tomo", "Kanpai", "Pizza My Heart", "New York Pizza",
+	"California Pizza Kitchen", "Round Table", "Loving Hut", "Garden Fresh", "Cafe Epi", "Tai Pan",
 	}
 	return restNames[randomInteger(0, len(restNames)- 1)]
 }
@@ -173,8 +127,7 @@ func CheckAccess(conn *pgxpool.Pool, cookie Defense) (bool, error) {
 		return false, errors.New(ERRSIDNOTFOUND)
 	}
 
-	realTime := time.Now()
-	if realTime.Before(timeLiveCookie) {
+	if time.Now().Before(timeLiveCookie) {
 		return true, nil
 	}
 

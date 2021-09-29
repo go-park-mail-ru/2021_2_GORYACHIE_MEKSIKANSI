@@ -11,9 +11,9 @@ import (
 
 type Restaurant struct {
 	Id                  int     `json:"id"`
-	Img                 string  `json:"imgUrl"`
+	Img                 string  `json:"img"`
 	Name                string  `json:"name"`
-	CostForFreeDelivery int     `json:"cost"`
+	CostForFreeDelivery int     `json:"сostForFreeDelivery"`
 	MinDelivery         int     `json:"minDeliveryTime"`
 	MaxDelivery         int     `json:"maxDeliveryTime"`
 	Rating              float32 `json:"rating"`

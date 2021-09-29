@@ -2,6 +2,7 @@ package Profile
 
 import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
+	error "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	"encoding/json"
 	"fmt"
@@ -32,13 +33,13 @@ func (u *ProfileInfo) ProfileHandler(ctx *fasthttp.RequestCtx) {
 
 	id, err := mid.GetIdByCookie(u.ConnectionDB, cookieDB)
 
-	errOut := auth.CheckErrorProfileCookie(err, ctx, &cookieHTTP)
+	errOut := error.CheckErrorProfileCookie(err, ctx, &cookieHTTP)
 	if errOut != nil {
 		return
 	}
 
 	profile, err = GetProfile(wrapper, id)
-	err = CheckErrorProfile(err, ctx)
+	err = error.CheckErrorProfile(err, ctx)
 	if err != nil {
 		return
 	}

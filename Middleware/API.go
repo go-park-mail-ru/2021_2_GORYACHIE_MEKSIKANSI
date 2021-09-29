@@ -1,14 +1,19 @@
 package Middleware
 
 import (
+	"github.com/valyala/fasthttp"
 	"math/rand"
 	"strings"
 	"time"
+
 )
 
-const DAYLIVECOOKIE = 5
-const LENSESSINID = 92
-const LENCSRFTOKEN = 92
+const (
+	DAYLIVECOOKIE		= 5
+	LENSESSINID			= 92
+	LENCSRFTOKEN 		= 92
+	KEYCOOKIESESSION	= "session_id"
+)
 
 type Defense struct {
 	DateLife  time.Time
@@ -19,6 +24,14 @@ type Defense struct {
 type ResultError struct {
 	Status	int         `json:"status"`
 	Explain	string		`json:"parsedJSON,omitempty"`
+}
+
+func SetCookieResponse(cookieHTTP *fasthttp.Cookie, cookieDB Defense, sessionId string) {
+	cookieHTTP.SetExpire(cookieDB.DateLife)
+	cookieHTTP.SetKey(sessionId)
+	cookieHTTP.SetValue(cookieDB.SessionId)
+	cookieHTTP.SetHTTPOnly(true)
+	cookieHTTP.SetPath("/")
 }
 
 func randString(length int) string {

@@ -24,7 +24,7 @@ func randString(length int) string {
 func SignUp(db Wrapper, signup Registration) (mid.Defense, error) {
 	var cookie mid.Defense
 	var err error
-	switch signup.TypeIn {
+	switch signup.TypeUser {
 	case "client":
 		cookie, err = db.SignupClient(signup)
 	case "courier":

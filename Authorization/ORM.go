@@ -13,10 +13,10 @@ const (
 	ERRPHONESCAN  = "ERROR: phone not scan"
 	ERRPHONEPASSQUERY = "ERROR: password and phone error query"
 	ERRPHONEPASSSCAN  = "ERROR: phone and password not scan"
-	ERRMAILQUERY     = "ERROR: email error query"
-	ERRMAILSCAN      = "ERROR: email not scan"
+	ERRMAILQUERY = "ERROR: email error query"
+	ERRMAILSCAN = "ERROR: email not scan"
 	ERRMAILPASSQUERY = "ERROR: password or email error query"
-	ERRMAILPASSSCAN       = "ERROR: email and pass not scan"
+	ERRMAILPASSSCAN  = "ERROR: email and pass not scan"
 	ERRNOTLOGINORPASSWORD = "Неправильный логин или пароль"
 	ERRINFOQUERY = "ERROR: not insert info query"
 	ERRINFOSCAN = "ERROR: info not scan"
@@ -50,8 +50,7 @@ func (db *Wrapper) GeneralSignUp(signup Registration) (int, error) {
 		err = row.Scan(&userId)
 		if err != nil {
 			errorText := err.Error()
-            if errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_phone_key\" (SQLSTATE 23505)"  ||
-				errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_email_key\" (SQLSTATE 23505)" {
+            if errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_phone_key\" (SQLSTATE 23505)" {
             	return 0, errors.New(ERRUNIQUE)
 			}
             return 0, errors.New(ERRINFOSCAN)
@@ -177,7 +176,7 @@ func (db *Wrapper) AddTransactionCookie(cookie mid.Defense, id int) error {
 }
 
 func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
-	var user int
+	var userId int
 	var salt string
 
 	row, err := db.Conn.Query(context.Background(),
@@ -203,16 +202,16 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 	}
 
 	for row.Next() {
-		err = row.Scan(&user)
+		err = row.Scan(&userId)
 		if err != nil {
 			return 0, errors.New(ERRMAILPASSSCAN)
 		}
 	}
 
-	if user == 0 {
+	if userId == 0 {
 		return 0, errors.New(ERRNOTLOGINORPASSWORD)
 	}
-	return user, nil
+	return userId, nil
 }
 
 func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
