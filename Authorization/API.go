@@ -11,13 +11,6 @@ import (
 	"time"
 )
 
-const(
-	ERRDB = "ERROR: database is not responding"
-	ERRENCODE = "ERROR: Encode"
-	ERRUNMARSHAL = "ERROR: unmarshal json"
-	ERRAUTH = "ERROR: authorization failed"
-)
-
 type UserInfo struct {
 	ConnectionDB *pgxpool.Pool
 }
@@ -48,19 +41,18 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	err := json.Unmarshal(ctx.Request.Body(), &signUpAll)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusOK)
-		fmt.Printf("Console: %s\n", ERRUNMARSHAL)
+		fmt.Printf("Console: %s\n", errors.ERRUNMARSHAL)
 		return
 	}
 
 	cookieHTTP := fasthttp.Cookie{}
-	cookieDB := mid.Defense{}
-	cookieDB, errIn := SignUp(wrapper, signUpAll)
+	cookieDB, errIn := SignUp(wrapper, &signUpAll)
 
 	errOut := errors.CheckErrorSignUp(errIn, ctx)
 	if errOut != nil{
 		return
 	}
-	mid.SetCookieResponse(&cookieHTTP, cookieDB, mid.KEYCOOKIESESSION)
+	mid.SetCookieResponse(&cookieHTTP, *cookieDB, mid.KEYCOOKIESESSION)
 	ctx.Response.Header.SetCookie(&cookieHTTP)
 	ctx.Response.Header.Set("X-Csrf-Token", cookieDB.CsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
@@ -76,7 +68,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusOK)
-		fmt.Printf("Console: %s\n", ERRENCODE)
+		fmt.Printf("Console: %s\n", errors.ERRENCODE)
 		return
 	}
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
@@ -88,19 +80,18 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	err := json.Unmarshal(ctx.Request.Body(), &userLogin)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusOK)
-		fmt.Printf("Console: %s\n", ERRUNMARSHAL)
+		fmt.Printf("Console: %s\n", errors.ERRUNMARSHAL)
 		return
 	}
 	cookieHTTP := fasthttp.Cookie{}
-	cookieDB := mid.Defense{}
-	cookieDB, err = Login(wrapper, userLogin)
+	cookieDB, err := Login(wrapper, &userLogin)
 
 	errOut := errors.CheckErrorLogin(err, ctx)
 	if errOut != nil {
 		return
 	}
 
-	mid.SetCookieResponse(&cookieHTTP, cookieDB, mid.KEYCOOKIESESSION)
+	mid.SetCookieResponse(&cookieHTTP, *cookieDB, mid.KEYCOOKIESESSION)
 	ctx.Response.Header.SetCookie(&cookieHTTP)
 	ctx.Response.Header.Set("X-CSRF-Token", cookieDB.CsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
@@ -110,7 +101,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusOK)
-		fmt.Printf("Console: %s\n", ERRENCODE)
+		fmt.Printf("Console: %s\n", errors.ERRENCODE)
 		return
 	}
 
@@ -122,13 +113,13 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	cookieHTTP := fasthttp.Cookie{}
 	cookieDB := mid.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
-	_, err := mid.CheckAccess(u.ConnectionDB, cookieDB)
+	_, err := mid.CheckAccess(u.ConnectionDB, &cookieDB)
 	errAccess := errors.CheckErrorLogoutAccess(err, ctx)
 	if errAccess != nil {
 		return
 	}
 
-	err = Logout(wrapper, cookieDB)
+	err = Logout(wrapper, &cookieDB)
 	errOut := errors.CheckErrorLogout(err, ctx)
 	if errOut != nil {
 		return
@@ -151,7 +142,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 
 func(u *UserInfo) CheckLoggedInHandler(ctx *fasthttp.RequestCtx) {
 	cookieDB := mid.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
-	_ , err := mid.GetIdByCookie(u.ConnectionDB, cookieDB)
+	_ , err := mid.GetIdByCookie(u.ConnectionDB, &cookieDB)
 
 	errOut := errors.CheckErrorLoggedIn(err, ctx)
 	if errOut != nil {
@@ -163,7 +154,7 @@ func(u *UserInfo) CheckLoggedInHandler(ctx *fasthttp.RequestCtx) {
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusOK)
-		fmt.Printf("Console: %s\n", ERRENCODE)
+		fmt.Printf("Console: %s\n", errors.ERRENCODE)
 		return
 	}
 	ctx.Response.SetStatusCode(http.StatusOK)

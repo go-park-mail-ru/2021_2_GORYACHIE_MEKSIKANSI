@@ -2,7 +2,6 @@ package Middleware
 
 import (
 	"github.com/valyala/fasthttp"
-	"math/rand"
 	"strings"
 	"time"
 
@@ -21,11 +20,6 @@ type Defense struct {
 	CsrfToken string
 }
 
-type ResultError struct {
-	Status	int         `json:"status"`
-	Explain	string		`json:"parsedJSON,omitempty"`
-}
-
 func SetCookieResponse(cookieHTTP *fasthttp.Cookie, cookieDB Defense, sessionId string) {
 	cookieHTTP.SetExpire(cookieDB.DateLife)
 	cookieHTTP.SetKey(sessionId)
@@ -35,7 +29,6 @@ func SetCookieResponse(cookieHTTP *fasthttp.Cookie, cookieDB Defense, sessionId 
 }
 
 func randString(length int) string {
-	rand.Seed(time.Now().UnixNano())
 	chars := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
 	var b strings.Builder
 
@@ -46,9 +39,9 @@ func randString(length int) string {
 	return b.String()
 }
 
-func (c Defense) GenerateNew() Defense {
+func (c Defense) GenerateNew() *Defense {
 	c.DateLife = time.Now().Add(time.Hour * 24 * DAYLIVECOOKIE)
 	c.SessionId = randString(LENSESSINID)
 	c.CsrfToken = randString(LENCSRFTOKEN)
-	return c
+	return &c
 }

@@ -2,7 +2,7 @@ package Profile
 
 import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
-	error "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	"encoding/json"
 	"fmt"
@@ -28,18 +28,17 @@ type ProfileInfo struct {
 func (u *ProfileInfo) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	cookieHTTP := fasthttp.Cookie{}
 	wrapper := Wrapper{Conn: u.ConnectionDB}
-	profile := Profile{}
 	cookieDB := mid.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 
-	id, err := mid.GetIdByCookie(u.ConnectionDB, cookieDB)
+	id, err := mid.GetIdByCookie(u.ConnectionDB, &cookieDB)
 
-	errOut := error.CheckErrorProfileCookie(err, ctx, &cookieHTTP)
+	errOut := errors.CheckErrorProfileCookie(err, ctx, &cookieHTTP)
 	if errOut != nil {
 		return
 	}
 
-	profile, err = GetProfile(wrapper, id)
-	err = error.CheckErrorProfile(err, ctx)
+	profile, err := GetProfile(wrapper, id)
+	err = errors.CheckErrorProfile(err, ctx)
 	if err != nil {
 		return
 	}
@@ -51,7 +50,7 @@ func (u *ProfileInfo) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	ctx.Response.SetStatusCode(http.StatusOK)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusOK)
-		fmt.Printf("Console: %s\n", auth.ERRENCODE)
+		fmt.Printf("Console: %s\n", errors.ERRENCODE)
 		return 
 	}
 
