@@ -194,18 +194,11 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 		}
 	}
 
-	row, err = db.Conn.Query(context.Background(),
+	err = db.Conn.QueryRow(context.Background(),
 		"SELECT id FROM general_user_info WHERE email = $1 AND password = $2",
-		email, mid.HashPassword(password, salt))
+		email, mid.HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
-		return 0, errors.New(ERRMAILPASSQUERY)
-	}
-
-	for row.Next() {
-		err = row.Scan(&userId)
-		if err != nil {
-			return 0, errors.New(ERRMAILPASSSCAN)
-		}
+		return 0, errors.New(ERRMAILPASSSCAN)
 	}
 
 	if userId == 0 {

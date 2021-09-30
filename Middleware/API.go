@@ -40,7 +40,7 @@ func randString(length int) string {
 	var b strings.Builder
 
 	for i := 0; i < length; i++ {
-		b.WriteRune(chars[rand.Intn(len(chars))])
+		b.WriteRune(chars[randomInteger(0, len(chars))])
 	}
 
 	return b.String()

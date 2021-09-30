@@ -2,11 +2,12 @@ package Middleware
 
 import (
 	"context"
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"math/rand"
+	"math/big"
 	"time"
 )
 
@@ -36,7 +37,12 @@ const (
 )
 
 func randomInteger(min int, max int) int {
-	return rand.Intn(max - min) + min
+	nBig, err := rand.Int(rand.Reader, big.NewInt(int64(max - min)))
+	if err != nil {
+		return 5
+	}
+	n := nBig.Int64()
+	return int(n) + min
 }
 
 func HashPassword(password string, salt string) string {
@@ -149,18 +155,11 @@ func NewCsrf(conn *pgxpool.Pool, cookie Defense) (string, error) {
 func GetIdByCookie(conn *pgxpool.Pool, cookie Defense) (int, error) {
 	var timeLiveCookie time.Time
 	var id int
-	row, err := conn.Query(context.Background(),
+	err := conn.QueryRow(context.Background(),
 		"SELECT client_id, date_life FROM cookie WHERE session_id = $1",
-		cookie.SessionId)
+		cookie.SessionId).Scan(&id, &timeLiveCookie)
 	if err != nil {
-		return 0, errors.New(ERRCOOKIEQUERY)
-	}
-
-	for row.Next() {
-		err = row.Scan(&id, &timeLiveCookie)
-		if err != nil {
-			return 0, errors.New(ERRCOOKIESCAN)
-		}
+		return 0, errors.New(ERRCOOKIESCAN)
 	}
 
 	if id == 0 {
