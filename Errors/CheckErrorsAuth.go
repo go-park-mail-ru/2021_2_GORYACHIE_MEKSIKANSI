@@ -345,7 +345,7 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("fatal")
 		case  ERRCOOKIEEXPIRED:
 			err := json.NewEncoder(ctx).Encode( ResultError{
-				Status:  http.StatusConflict,
+				Status:  http.StatusUnauthorized,
 				Explain:  ERRCOOKIEEXPIRED,
 			})
 			if err != nil {
@@ -358,7 +358,7 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("fatal")
 		case  ERRSIDNOTFOUND:
 			err := json.NewEncoder(ctx).Encode( ResultError{
-				Status:  http.StatusConflict,
+				Status:  http.StatusUnauthorized,
 				Explain: ERRAUTH,
 			})
 			if err != nil {
@@ -371,7 +371,7 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("fatal")
 		case ERRCOOKIEIDNOTFOUND:
 			err := json.NewEncoder(ctx).Encode( ResultError{
-				Status:  http.StatusConflict,
+				Status:  http.StatusUnauthorized,
 				Explain: ERRAUTH,
 			})
 			if err != nil {

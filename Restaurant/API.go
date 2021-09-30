@@ -14,7 +14,7 @@ type Restaurant struct {
 	Id                  int     `json:"id"`
 	Img                 string  `json:"img"`
 	Name                string  `json:"name"`
-	CostForFreeDelivery int     `json:"сostForFreeDelivery"`
+	CostForFreeDelivery int     `json:"costForFreeDelivery"`
 	MinDelivery         int     `json:"minDeliveryTime"`
 	MaxDelivery         int     `json:"maxDeliveryTime"`
 	Rating              float32 `json:"rating"`

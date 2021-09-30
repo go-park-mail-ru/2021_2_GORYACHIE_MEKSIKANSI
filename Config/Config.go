@@ -1,7 +1,7 @@
 package Config
 
 const (
-    DEBUG = true
+    DEBUG = false
 	ALLOWEDORIGINSDOMEN = "http://127.0.0.1"
 	ALLOWEDORIGINSPORT = "3000"
 	DBLOGIN = "Captain-matroskin"
