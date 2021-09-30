@@ -58,4 +58,5 @@ const(
 	ERRSCAN = "ERROR: restaurant scan error"
 	RESTNULL = "ERROR: restaurants not found"
 	ERRCOOKIEIDNOTFOUND = "ERROR: id by cookie not found"
+	ERRINSERTROOTCLIENTQUERY = "ERROR: root not insert in client"
 )

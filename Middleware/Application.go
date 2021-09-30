@@ -76,6 +76,13 @@ func CreateDb() (*pgxpool.Pool, error) {
 		if err != nil {
 			return nil, errors.New(errorsConst.ERRINSERTROOTQUERY)
 		}
+		_, err = conn.Exec(context.Background(),
+			"INSERT INTO client (client_id) VALUES ($1)",
+			"1")
+
+		if err != nil {
+			return nil, errors.New(errorsConst.ERRINSERTROOTCLIENTQUERY)
+		}
 
 		for i := 0; i < 500; i++ {
 			_, err := conn.Exec(context.Background(),

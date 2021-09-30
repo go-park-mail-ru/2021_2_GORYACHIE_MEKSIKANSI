@@ -1,13 +1,11 @@
 package Errors
 
-
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/valyala/fasthttp"
 	"net/http"
-	"time"
 )
 
 func CheckErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
@@ -390,21 +388,7 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx, cookieHTTP *fasthttp.Cookie) error {
 	if err != nil {
 		switch err.Error() {
-		case  ERRCOOKIEQUERY:
-			cookieHTTP.SetKey("session_id")
-			cookieHTTP.SetValue(string(ctx.Request.Header.Cookie("session_id")))
-			cookieHTTP.SetExpire(time.Now().Add(-72 * time.Hour))
-			cookieHTTP.SetHTTPOnly(true)
-			cookieHTTP.SetPath("/")
-			ctx.Response.Header.SetCookie(cookieHTTP)
-			if err != nil {
-				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("fatal")
-			}
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			fmt.Printf("Console: %s\n",  ERRCOOKIEQUERY)
-			return errors.New("fatal")
+
 		case  ERRCOOKIESCAN:
 			err := json.NewEncoder(ctx).Encode( ResultError{
 				Status:  http.StatusInternalServerError,
