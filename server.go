@@ -2,6 +2,7 @@ package main
 
 import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
+	config "2021_2_GORYACHIE_MEKSIKANSI/Config"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	profile "2021_2_GORYACHIE_MEKSIKANSI/Profile"
 	restaurant "2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
@@ -37,7 +38,7 @@ func runServer(port string) {
 	myRouter.GET(api+"check", userInfo.CheckLoggedInHandler)
 
 	withCors := cors.NewCorsHandler(cors.Options{
-		AllowedOrigins: 	[]string{"http://127.0.0.1:3000"},
+		AllowedOrigins: 	[]string{config.ALLOWEDORIGINSDOMEN + ":" + config.ALLOWEDORIGINSPORT},
 		AllowedHeaders: 	[]string{"access-control-allow-origin", "content-type", "x-csrf-token", "access-control-expose-headers"},
 		AllowedMethods:   	[]string{"GET", "POST", "OPTIONS"},
 		ExposedHeaders:		[]string{"X-Csrf-Token"},

@@ -1,6 +1,7 @@
 package Middleware
 
 import (
+	config "2021_2_GORYACHIE_MEKSIKANSI/Config"
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	"context"
 	"crypto/rand"
@@ -12,19 +13,6 @@ import (
 	"time"
 )
 
-const DEBUG = true
-
-const (
-	DBLOGIN string = "Captain-matroskin"
-	DBPASSWORD string = "74tbr6r54f78"
-	DBNAME string = "hot_mexican_db"
-	DBHOST = "localhost"
-	DBPORT = "5432"
-)
-
-const (
-
-)
 
 func randomInteger(min int, max int) int {
 	nBig, err := rand.Int(rand.Reader, big.NewInt(int64(max - min)))
@@ -58,11 +46,11 @@ func makeName() string {
 
 func CreateDb() (*pgxpool.Pool, error) {
 	var err error
-	conn, err := pgxpool.Connect(context.Background(), "postgres://" + DBLOGIN + ":" + DBPASSWORD + "@" + DBHOST + ":" + DBPORT + "/" + DBNAME)
+	conn, err := pgxpool.Connect(context.Background(), "postgres://" + config.DBLOGIN + ":" + config.DBPASSWORD + "@" + config.DBHOST + ":" + config.DBPORT + "/" + config.DBNAME)
 	if err != nil {
 		return nil, errors.New(errorsConst.ERRNOTCONNECT)
 	}
-	if DEBUG {
+	if config.DEBUG {
 		_, err = conn.Exec(context.Background(), "DROP TABLE IF EXISTS restaurant, general_user_info, host, client, cookie, courier CASCADE")
 		if err != nil {
 			return nil, errors.New(errorsConst.ERRDELETEQUERY)
@@ -80,7 +68,7 @@ func CreateDb() (*pgxpool.Pool, error) {
 		return nil, errors.New(errorsConst.ERRCREATEQUERY)
 	}
 
-	if DEBUG {
+	if config.DEBUG {
 		_, err = conn.Exec(context.Background(),
 			"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5)",
 			"root", "root@root", "88888888888", HashPassword("rootroot", "salt"), "salt")
@@ -153,10 +141,6 @@ func GetIdByCookie(conn *pgxpool.Pool, cookie *Defense) (int, error) {
 			return 0, errors.New(errorsConst.ERRCOOKIEIDNOTFOUND)
 		}
 		return 0, errors.New(errorsConst.ERRCOOKIESCAN)
-	}
-
-	if id == 0 {
-		return 0, errors.New(errorsConst.ERRSIDNOTFOUND)
 	}
 
 	realTime := time.Now()

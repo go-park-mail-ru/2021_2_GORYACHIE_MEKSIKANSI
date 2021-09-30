@@ -345,7 +345,7 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("fatal")
 		case  ERRCOOKIEEXPIRED:
 			err := json.NewEncoder(ctx).Encode( ResultError{
-				Status:  http.StatusUnauthorized,
+				Status:  http.StatusConflict,
 				Explain:  ERRCOOKIEEXPIRED,
 			})
 			if err != nil {
@@ -358,7 +358,7 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("fatal")
 		case  ERRSIDNOTFOUND:
 			err := json.NewEncoder(ctx).Encode( ResultError{
-				Status:  http.StatusUnauthorized,
+				Status:  http.StatusConflict,
 				Explain: ERRAUTH,
 			})
 			if err != nil {
@@ -371,7 +371,7 @@ func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("fatal")
 		case ERRCOOKIEIDNOTFOUND:
 			err := json.NewEncoder(ctx).Encode( ResultError{
-				Status:  http.StatusUnauthorized,
+				Status:  http.StatusConflict,
 				Explain: ERRAUTH,
 			})
 			if err != nil {
@@ -431,9 +431,9 @@ func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx, cookieHTTP *fa
 			ctx.Response.SetStatusCode(http.StatusOK)
 			fmt.Printf("Console: %s\n",  ERRCOOKIEEXPIRED)
 			return errors.New("fatal")
-		case  ERRSIDNOTFOUND:
+		case  ERRCOOKIEIDNOTFOUND:
 			err := json.NewEncoder(ctx).Encode( ResultError{
-				Status:  http.StatusUnauthorized,
+				Status:  http.StatusConflict,
 				Explain: ERRAUTH,
 			})
 			if err != nil {
@@ -442,7 +442,7 @@ func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx, cookieHTTP *fa
 				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusOK)
-			fmt.Printf("Console: %s\n",  ERRSIDNOTFOUND)
+			fmt.Printf("Console: %s\n",  ERRCOOKIEIDNOTFOUND)
 			return errors.New("fatal")
 		}
 	}
