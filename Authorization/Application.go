@@ -21,10 +21,10 @@ func randString(length int) string {
 	return b.String()
 }
 
-func SignUp(db Wrapper, signup Registration) (mid.Defense, error) {
-	var cookie mid.Defense
+func SignUp(db Wrapper, signup *Registration) (*mid.Defense, error) {
+	var cookie *mid.Defense
 	var err error
-	switch signup.TypeIn {
+	switch signup.TypeUser {
 	case "client":
 		cookie, err = db.SignupClient(signup)
 	case "courier":
@@ -32,17 +32,17 @@ func SignUp(db Wrapper, signup Registration) (mid.Defense, error) {
 	case "host":
 		cookie, err = db.SignupHost(signup)
 	default:
-		return mid.Defense{}, err
+		return nil, err
 	}
 
 	if err != nil {
-		return cookie, err
+		return nil, err
 	}
 
 	return cookie, nil
 }
 
-func Login(db Wrapper, login Authorization) (mid.Defense, error) {
+func Login(db Wrapper, login *Authorization) (*mid.Defense, error) {
 	var userId int
 	var err error
 	switch {
@@ -52,28 +52,24 @@ func Login(db Wrapper, login Authorization) (mid.Defense, error) {
 	case login.Phone != "":
 		userId, err = db.LoginByPhone(login.Phone, login.Password)
 	default:
-		return mid.Defense{}, err
+		return nil, err
 	}
 
 	if err != nil {
-		return mid.Defense{}, err
+		return nil, err
 	}
 
-	var cookie mid.Defense
-	//TODO Check cookie
-	cookie = cookie.GenerateNew()
+	var tmp mid.Defense
+	cookie := tmp.GenerateNew()
 	err = db.AddCookie(cookie, userId)
 
 	if err != nil {
-		return cookie, err
+		return nil, err
 	}
 	return cookie, nil
 }
 
-func Logout(db Wrapper, cookie mid.Defense) error {
+func Logout(db Wrapper, cookie *mid.Defense) error {
 	err := db.DeleteCookie(cookie)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }

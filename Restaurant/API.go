@@ -2,6 +2,7 @@ package Restaurant
 
 import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
+	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	"encoding/json"
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -11,9 +12,9 @@ import (
 
 type Restaurant struct {
 	Id                  int     `json:"id"`
-	Img                 string  `json:"imgUrl"`
+	Img                 string  `json:"img"`
 	Name                string  `json:"name"`
-	CostForFreeDelivery int     `json:"cost"`
+	CostForFreeDelivery int     `json:"costForFreeDelivery"`
 	MinDelivery         int     `json:"minDeliveryTime"`
 	MaxDelivery         int     `json:"maxDeliveryTime"`
 	Rating              float32 `json:"rating"`
@@ -26,7 +27,7 @@ type RestaurantInfo struct {
 func (r *RestaurantInfo) ProductsHandler(ctx *fasthttp.RequestCtx) {
 	WrapperDB := Wrapper{Conn: r.ConnectionDB}
 	restaurant, err := AllRestaurants(WrapperDB)
-	err = CheckErrorRestaurant(err, ctx, restaurant)
+	err = errors.CheckErrorRestaurant(err, ctx)
 	if err != nil {
 		return
 	}
@@ -38,7 +39,7 @@ func (r *RestaurantInfo) ProductsHandler(ctx *fasthttp.RequestCtx) {
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusOK)
-		fmt.Printf("Console: %s\n", auth.ERRENCODE)
+		fmt.Printf("Console: %s\n", errors.ERRENCODE)
 		return
 	}
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
