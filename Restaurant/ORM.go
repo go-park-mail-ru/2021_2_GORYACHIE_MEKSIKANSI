@@ -3,8 +3,8 @@ package Restaurant
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	"context"
-	"errors"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"time"
 )
 
 type Wrapper struct {
@@ -15,7 +15,10 @@ func (db *Wrapper) GetRestaurants() ([]Restaurant, error) {
 	row, err := db.Conn.Query(context.Background(),
 		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant ORDER BY random() LIMIT 50")
 	if err != nil {
-		return nil, errors.New(errorsConst.ERRQUERY)
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ERRQUERY,
+			Time: time.Now(),
+		}
 	}
 
 	restaurant := Restaurant{}
@@ -24,7 +27,10 @@ func (db *Wrapper) GetRestaurants() ([]Restaurant, error) {
 		err := row.Scan(&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery,
 			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating)
 		if err != nil {
-			return nil, errors.New(errorsConst.ERRSCAN)
+			return nil, &errorsConst.Errors{
+				Text: errorsConst.ERRSCAN,
+				Time: time.Now(),
+			}
 		}
 		result = append(result, restaurant)
 	}

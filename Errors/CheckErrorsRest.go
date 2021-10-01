@@ -37,10 +37,10 @@ func CheckErrorRestaurant(err error, ctx *fasthttp.RequestCtx) error {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n",  ERRSCAN)
 			return errors.New("fatal")
-		case RESTNULL:
+		case ERRRESTNULL:
 			err := json.NewEncoder(ctx).Encode(ResultError{
 				Status:  http.StatusBadRequest,
-				Explain: RESTNULL,
+				Explain: ERRRESTNULL,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusInternalServerError)
@@ -48,7 +48,7 @@ func CheckErrorRestaurant(err error, ctx *fasthttp.RequestCtx) error {
 				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusOK)
-			fmt.Printf("Console: %s\n", RESTNULL)
+			fmt.Printf("Console: %s\n", ERRRESTNULL)
 			return errors.New("fatal")
 		}
 	}
