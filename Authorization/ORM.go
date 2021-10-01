@@ -63,15 +63,12 @@ func (db *Wrapper) SignupHost(signup *Registration) (*mid.Defense, error) {
 		return nil, err
 	}
 
-	err = tx.Commit(context.Background())
-
-	_, err = db.Conn.Exec(context.Background(),
+	_, err = db.Transaction.Exec(context.Background(),
 		"INSERT INTO host (client_id) VALUES ($1)", userId)
 	if err != nil {
-		_, err = db.Conn.Exec(context.Background(),
-			"DELETE FROM host WHERE client_id = $1", userId)
 		return nil, errors.New(errorsConst.ERRINSERTHOSTQUERY)
 	}
+	err = tx.Commit(context.Background())
 	return cookie, nil
 }
 
@@ -98,15 +95,14 @@ func (db *Wrapper) SignupCourier(signup *Registration) (*mid.Defense, error) {
 		return nil, err
 	}
 
-	err = tx.Commit(context.Background())
 
-	_, err = db.Conn.Exec(context.Background(),
+	_, err = db.Transaction.Exec(context.Background(),
 		"INSERT INTO courier (client_id) VALUES ($1)", userId)
 	if err != nil {
-		_, err = db.Conn.Exec(context.Background(),
-			"DELETE FROM courier WHERE client_id = $1", userId)
 		return nil, errors.New(errorsConst.ERRINSERTCOURIERQUERY)
 	}
+	err = tx.Commit(context.Background())
+
 	return cookie, err
 }
 
@@ -133,14 +129,12 @@ func (db *Wrapper) SignupClient(signup *Registration) (*mid.Defense, error) {
 		return nil, err
 	}
 
-	err = tx.Commit(context.Background())
-	_, err = db.Conn.Exec(context.Background(),
+	_, err = db.Transaction.Exec(context.Background(),
 		"INSERT INTO client (client_id, date_birthday) VALUES ($1, $2)", userId, signup.Birthday)
 	if err != nil {
-		_, err = db.Conn.Exec(context.Background(),
-			"DELETE FROM general_user_info WHERE client_id = $1", userId)
 		return nil, errors.New(errorsConst.ERRINSERTCLIENTQUERY)
 	}
+	err = tx.Commit(context.Background())
 
 	return cookie, nil
 }
@@ -160,19 +154,11 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 	var userId int
 	var salt string
 
-	row, err := db.Conn.Query(context.Background(),
+	err := db.Conn.QueryRow(context.Background(),
 		"SELECT salt FROM general_user_info WHERE email = $1",
-		email)
+		email).Scan(&salt)
 	if err != nil {
-		return 0, errors.New(errorsConst.ERRMAILQUERY)
-	}
-
-	for row.Next() {
-		err = row.Scan(&salt)
-
-		if err != nil {
-			return 0, errors.New(errorsConst.ERRMAILSCAN)
-		}
+		return 0, errors.New(errorsConst.ERRMAILSCAN)
 	}
 
 	err = db.Conn.QueryRow(context.Background(),
@@ -189,18 +175,11 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 	var userId int
 	var salt string
 
-	row, err := db.Conn.Query(context.Background(),
+	err := db.Conn.QueryRow(context.Background(),
 		"SELECT salt FROM general_user_info WHERE phone = $1",
-		phone)
+		phone).Scan(&salt)
 	if err != nil {
-		return 0, errors.New(errorsConst.ERRPHONEQUERY)
-	}
-
-	for row.Next() {
-		err = row.Scan(&salt)
-		if err != nil {
-			return 0, errors.New(errorsConst.ERRPHONESCAN)
-		}
+		return 0, errors.New(errorsConst.ERRPHONESCAN)
 	}
 
 	err = db.Conn.QueryRow(context.Background(),

@@ -136,19 +136,6 @@ func CheckErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRINSERTLOGINCOOKIEQUERY)
 			return errors.New("fatal")
-		case ERRMAILQUERY:
-			err := json.NewEncoder(ctx).Encode( ResultError{
-				Status:  http.StatusInternalServerError,
-				Explain: ERRDB,
-			})
-			if err != nil {
-				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("fatal")
-			}
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			fmt.Printf("Console: %s\n", ERRMAILQUERY)
-			return errors.New("fatal")
 		case ERRMAILSCAN:
 			err := json.NewEncoder(ctx).Encode( ResultError{
 				Status:  http.StatusInternalServerError,
@@ -187,19 +174,6 @@ func CheckErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ERRMAILPASSSCAN)
-			return errors.New("fatal")
-		case ERRPHONEQUERY:
-			err := json.NewEncoder(ctx).Encode( ResultError{
-				Status:  http.StatusInternalServerError,
-				Explain: ERRDB,
-			})
-			if err != nil {
-				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("fatal")
-			}
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			fmt.Printf("Console: %s\n", ERRPHONEQUERY)
 			return errors.New("fatal")
 		case ERRPHONESCAN:
 			err := json.NewEncoder(ctx).Encode( ResultError{
@@ -268,19 +242,6 @@ func CheckErrorLogout(err error, ctx *fasthttp.RequestCtx) error {
 func CheckErrorLogoutAccess(err error, ctx *fasthttp.RequestCtx) error {
 	if err != nil {
 		switch err.Error() {
-		case ERRCOOKIEANDCSRFQUERY:
-			err := json.NewEncoder(ctx).Encode( ResultError{
-				Status:  http.StatusInternalServerError,
-				Explain: ERRDB,
-			})
-			if err != nil {
-				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ERRENCODE)
-				return errors.New("fatal")
-			}
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			fmt.Printf("Console: %s\n", ERRCOOKIEANDCSRFQUERY)
-			return errors.New("fatal")
 		case ERRCOOKIEANDCSRFSCAN:
 			err := json.NewEncoder(ctx).Encode( ResultError{
 				Status:  http.StatusInternalServerError,

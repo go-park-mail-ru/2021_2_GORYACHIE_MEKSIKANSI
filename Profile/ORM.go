@@ -15,46 +15,28 @@ type Wrapper struct {
 func (db *Wrapper) getRoleById(id int) (string, error) {
 	role := 0
 
-	row, err := db.Conn.Query(context.Background(),
-		"SELECT id FROM client WHERE client_id = $1", id)
-	if err != nil {
-		return "", errors.New(errorsConst.ERRCLIENTQUERY)
-	}
-	for row.Next() {
-		err = row.Scan(&role)
-		if err != nil {
-			return "", errors.New(errorsConst.ERRCLIENTSCAN)
-		}
-	}
-	if role != 0 {
-		return "client", nil
-	}
-
-	row, err = db.Conn.Query(context.Background(),
-		"SELECT id FROM host WHERE client_id = $1", id)
-	if err != nil {
-		return "", errors.New(errorsConst.ERRHOSTQUERY)
-	}
-	for row.Next() {
-		err = row.Scan(&role)
-		if err != nil {
-			return "", errors.New(errorsConst.ERRHOSTSCAN)
-		}
+	err := db.Conn.QueryRow(context.Background(),
+		"SELECT id FROM host WHERE client_id = $1", id).Scan(&role)
+	if err != nil && err.Error() != "no rows in result set" {
+		return "", errors.New(errorsConst.ERRHOSTSCAN)
 	}
 	if role != 0 {
 		return "host", nil
 	}
 
-	row, err = db.Conn.Query(context.Background(),
-		"SELECT id FROM courier WHERE client_id = $1", id)
-	if err != nil {
-		return "", errors.New(errorsConst.ERRCORIERQUERY)
+	err = db.Conn.QueryRow(context.Background(),
+		"SELECT id FROM client WHERE client_id = $1", id).Scan(&role)
+	if err != nil && err.Error() != "no rows in result set" {
+		return "", errors.New(errorsConst.ERRCLIENTSCAN)
 	}
-	for row.Next() {
-		err = row.Scan(&role)
-		if err != nil {
-			return "", errors.New(errorsConst.ERRCORIERSCAN)
-		}
+	if role != 0 {
+		return "client", nil
+	}
+
+	err = db.Conn.QueryRow(context.Background(),
+		"SELECT id FROM courier WHERE client_id = $1", id).Scan(&role)
+	if err != nil && err.Error() != "no rows in result set" {
+		return "", errors.New(errorsConst.ERRCORIERSCAN)
 	}
 	if role != 0 {
 		return "courier", nil
@@ -64,66 +46,43 @@ func (db *Wrapper) getRoleById(id int) (string, error) {
 }
 
 func (db *Wrapper) GetProfileHost(id int) (*Profile, error) {
-	row, err := db.Conn.Query(context.Background(),
-		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id)
+	var profile = Profile{}
+	err := db.Conn.QueryRow(context.Background(),
+		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
+			&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
-		return nil, errors.New(errorsConst.ERRGETPROFILEHOSTQUERY)
+		return nil, errors.New(errorsConst.ERRGETPROFILEHOSTSCAN)
 	}
 
-	var profile = Profile{}
-	for row.Next() {
-		err = row.Scan(&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
-		if err != nil {
-			return nil, errors.New(errorsConst.ERRGETPROFILEHOSTSCAN)
-		}
-	}
 	return &profile, err
 }
 
 func (db *Wrapper) GetProfileClient(id int) (*Profile, error) {
-	row, err := db.Conn.Query(context.Background(),
-		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id)
-	if err != nil {
-		return nil, errors.New(errorsConst.ERRGETPROFILECLIENTQUERY)
-	}
-
 	var profile = Profile{}
-	for row.Next() {
-		err = row.Scan(&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
-		if err != nil {
-			return nil, errors.New(errorsConst.ERRGETPROFILECLIENTSCAN)
-		}
-	}
-
-	row, err = db.Conn.Query(context.Background(),
-		"SELECT date_birthday FROM client WHERE client_id = $1", id)
+	err := db.Conn.QueryRow(context.Background(),
+		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
+			&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
-		return nil, errors.New(errorsConst.ERRGETBIRTHDAYQUERY)
+		return nil, errors.New(errorsConst.ERRGETPROFILECLIENTSCAN)
 	}
 
-	for row.Next() {
-		err = row.Scan(&profile.Birthday)
-		if err != nil {
-			return nil, errors.New(errorsConst.ERRGETBIRTHDAYSCAN)
-		}
+	err = db.Conn.QueryRow(context.Background(),
+		"SELECT date_birthday FROM client WHERE client_id = $1", id).Scan(&profile.Birthday)
+	if err != nil {
+		return nil, errors.New(errorsConst.ERRGETBIRTHDAYSCAN)
 	}
 
 	return &profile, nil
 }
 
 func (db *Wrapper) GetProfileCourier(id int) (*Profile, error) {
-	row, err := db.Conn.Query(context.Background(),
-		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id)
-	if err != nil {
-		return nil, errors.New(errorsConst.ERRGETPROFILECOURIERQUERY)
-	}
-
 	var profile = Profile{}
-	for row.Next() {
-		err = row.Scan(&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
-		if err != nil {
-			return nil, errors.New(errorsConst.ERRGETPROFILECOURIERSCAN)
-		}
+	err := db.Conn.QueryRow(context.Background(),
+		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
+			&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
+	if err != nil {
+		return nil, errors.New(errorsConst.ERRGETPROFILECOURIERSCAN)
+
 	}
 	return &profile, nil
 }

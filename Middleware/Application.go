@@ -76,10 +76,10 @@ func CreateDb() (*pgxpool.Pool, error) {
 		if err != nil {
 			return nil, errors.New(errorsConst.ERRINSERTROOTQUERY)
 		}
-		_, err = conn.Exec(context.Background(),
-			"INSERT INTO client (client_id) VALUES ($1)",
-			"1")
 
+		_, err = conn.Exec(context.Background(),
+			"INSERT INTO client (client_id, date_birthday) VALUES ($1, $2)",
+			"1", time.Now())
 		if err != nil {
 			return nil, errors.New(errorsConst.ERRINSERTROOTCLIENTQUERY)
 		}
@@ -100,22 +100,14 @@ func CreateDb() (*pgxpool.Pool, error) {
 func CheckAccess(conn *pgxpool.Pool, cookie *Defense) (bool, error) {
 	var timeLiveCookie time.Time
 	var id int
-	row, err := conn.Query(context.Background(),
+	err := conn.QueryRow(context.Background(),
 		"SELECT client_id, date_life FROM cookie WHERE session_id = $1 AND csrf_token = $2",
-		cookie.SessionId, cookie.CsrfToken)
+		cookie.SessionId, cookie.CsrfToken).Scan(&id, &timeLiveCookie)
 	if err != nil {
-		return false, errors.New(errorsConst.ERRCOOKIEANDCSRFQUERY)
-	}
-
-	for row.Next() {
-		err = row.Scan(&id, &timeLiveCookie)
-		if err != nil {
-			return false, errors.New(errorsConst.ERRCOOKIEANDCSRFSCAN)
+		if err.Error() == "no rows in result set" {
+			return false, errors.New(errorsConst.ERRSIDNOTFOUND)
 		}
-	}
-
-	if id == 0 {
-		return false, errors.New(errorsConst.ERRSIDNOTFOUND)
+		return false, errors.New(errorsConst.ERRCOOKIEANDCSRFSCAN)
 	}
 
 	if time.Now().Before(timeLiveCookie) {
@@ -127,7 +119,7 @@ func CheckAccess(conn *pgxpool.Pool, cookie *Defense) (bool, error) {
 
 func NewCsrf(conn *pgxpool.Pool, cookie *Defense) (string, error) {
 	csrfToken := randString(5)
-	err := conn.QueryRow(context.Background(),
+	_, err := conn.Exec(context.Background(),
 		"UPDATE cookie SET csrf_token = $1 WHERE session_id = $2",
 		csrfToken, cookie.SessionId)
 	if err != nil {
