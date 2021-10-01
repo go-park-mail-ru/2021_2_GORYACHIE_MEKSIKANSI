@@ -7,14 +7,13 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
-	"errors"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"math/big"
 	"time"
 )
 
 
-func randomInteger(min int, max int) int {
+func RandomInteger(min int, max int) int {
 	nBig, err := rand.Int(rand.Reader, big.NewInt(int64(max - min)))
 	if err != nil {
 		return 5
@@ -41,19 +40,25 @@ func makeName() string {
 	"Osteria", "Vero", "Cafe Renzo", "Miyake", "Sushi Tomo", "Kanpai", "Pizza My Heart", "New York Pizza",
 	"California Pizza Kitchen", "Round Table", "Loving Hut", "Garden Fresh", "Cafe Epi", "Tai Pan",
 	}
-	return restNames[randomInteger(0, len(restNames)- 1)]
+	return restNames[RandomInteger(0, len(restNames)- 1)]
 }
 
 func CreateDb() (*pgxpool.Pool, error) {
 	var err error
 	conn, err := pgxpool.Connect(context.Background(), "postgres://" + config.DBLOGIN + ":" + config.DBPASSWORD + "@" + config.DBHOST + ":" + config.DBPORT + "/" + config.DBNAME)
 	if err != nil {
-		return nil, errors.New(errorsConst.ERRNOTCONNECT)
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ERRNOTCONNECT,
+			Time: time.Now(),
+		}
 	}
 	if config.DEBUG {
 		_, err = conn.Exec(context.Background(), "DROP TABLE IF EXISTS restaurant, general_user_info, host, client, cookie, courier CASCADE")
 		if err != nil {
-			return nil, errors.New(errorsConst.ERRDELETEQUERY)
+			return nil, &errorsConst.Errors{
+				Text: errorsConst.ERRDELETEQUERY,
+				Time: time.Now(),
+			}
 		}
 	}
 
@@ -65,7 +70,10 @@ func CreateDb() (*pgxpool.Pool, error) {
 	tableCourier := "CREATE TABLE IF NOT EXISTS courier (id serial PRIMARY KEY, client_id  INTEGER UNIQUE, FOREIGN KEY (client_id) REFERENCES general_user_info (id) On DELETE CASCADE);"
 	_, err = conn.Exec(context.Background(), tableGeneralUserInfo + tableRestaurant + tableCookie + tableHost + tableClient + tableCourier)
 	if err != nil {
-		return nil, errors.New(errorsConst.ERRCREATEQUERY)
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ERRCREATEQUERY,
+			Time: time.Now(),
+		}
 	}
 
 	if config.DEBUG {
@@ -74,22 +82,31 @@ func CreateDb() (*pgxpool.Pool, error) {
 			"root", "root@root", "88888888888", HashPassword("rootroot", "salt"), "salt")
 
 		if err != nil {
-			return nil, errors.New(errorsConst.ERRINSERTROOTQUERY)
+			return nil, &errorsConst.Errors{
+				Text: errorsConst.ERRINSERTROOTQUERY,
+				Time: time.Now(),
+			}
 		}
 
 		_, err = conn.Exec(context.Background(),
 			"INSERT INTO client (client_id, date_birthday) VALUES ($1, $2)",
 			"1", time.Now())
 		if err != nil {
-			return nil, errors.New(errorsConst.ERRINSERTROOTCLIENTQUERY)
+			return nil, &errorsConst.Errors{
+				Text: errorsConst.ERRINSERTROOTCLIENTQUERY,
+				Time: time.Now(),
+			}
 		}
 
 		for i := 0; i < 500; i++ {
 			_, err := conn.Exec(context.Background(),
 				"INSERT INTO restaurant (name, description, owner, price_delivery, city, street, house, rating, min_delivery_time, max_delivery_time, avatar, floor, location) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)",
-				makeName(), makeName(), 1, randomInteger(200, 300), "city", "street", "house", randomInteger(1, 5), randomInteger(30, 40), randomInteger(50, 60), "http://mir-s3-cdn-cf.behance.net/project_modules/1400_opt_1/96672465571661.5afc10a864fc2.jpg", randomInteger(1, 163), "location")
+				makeName(), makeName(), 1, RandomInteger(200, 300), "city", "street", "house", RandomInteger(1, 5), RandomInteger(30, 40), RandomInteger(50, 60), "http://mir-s3-cdn-cf.behance.net/project_modules/1400_opt_1/96672465571661.5afc10a864fc2.jpg", RandomInteger(1, 163), "location")
 			if err != nil {
-				return nil, errors.New(errorsConst.ERRINSERTQUERY)
+				return nil, &errorsConst.Errors{
+					Text: errorsConst.ERRINSERTQUERY,
+					Time: time.Now(),
+				}
 			}
 		}
 	}
@@ -105,9 +122,15 @@ func CheckAccess(conn *pgxpool.Pool, cookie *Defense) (bool, error) {
 		cookie.SessionId, cookie.CsrfToken).Scan(&id, &timeLiveCookie)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return false, errors.New(errorsConst.ERRSIDNOTFOUND)
+			return false, &errorsConst.Errors{
+				Text: errorsConst.ERRSIDNOTFOUND,
+				Time: time.Now(),
+			}
 		}
-		return false, errors.New(errorsConst.ERRCOOKIEANDCSRFSCAN)
+		return false, &errorsConst.Errors{
+			Text: errorsConst.ERRCOOKIEANDCSRFSCAN,
+			Time: time.Now(),
+		}
 	}
 
 	if time.Now().Before(timeLiveCookie) {
@@ -123,7 +146,10 @@ func NewCsrf(conn *pgxpool.Pool, cookie *Defense) (string, error) {
 		"UPDATE cookie SET csrf_token = $1 WHERE session_id = $2",
 		csrfToken, cookie.SessionId)
 	if err != nil {
-		return "", errors.New(errorsConst.ERRUPDATECSRFQUERY)
+		return "", &errorsConst.Errors{
+			Text: errorsConst.ERRUPDATECSRFQUERY,
+			Time: time.Now(),
+		}
 	}
 
 	return csrfToken, nil
@@ -137,9 +163,15 @@ func GetIdByCookie(conn *pgxpool.Pool, cookie *Defense) (int, error) {
 		cookie.SessionId).Scan(&id, &timeLiveCookie)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return 0, errors.New(errorsConst.ERRCOOKIEIDNOTFOUND)
+			return 0, &errorsConst.Errors{
+				Text: errorsConst.ERRCOOKIEIDNOTFOUND,
+				Time: time.Now(),
+			}
 		}
-		return 0, errors.New(errorsConst.ERRCOOKIESCAN)
+		return 0, &errorsConst.Errors{
+			Text: errorsConst.ERRCOOKIESCAN,
+			Time: time.Now(),
+		}
 	}
 
 	realTime := time.Now()
@@ -147,5 +179,8 @@ func GetIdByCookie(conn *pgxpool.Pool, cookie *Defense) (int, error) {
 		return id, nil
 	}
 
-	return 0, errors.New(errorsConst.ERRCOOKIEEXPIRED)
+	return 0, &errorsConst.Errors{
+		Text: errorsConst.ERRCOOKIEEXPIRED,
+		Time: time.Now(),
+	}
 }

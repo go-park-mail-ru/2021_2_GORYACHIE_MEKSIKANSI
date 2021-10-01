@@ -4,7 +4,6 @@ import (
 	"github.com/valyala/fasthttp"
 	"strings"
 	"time"
-
 )
 
 const (
@@ -33,7 +32,7 @@ func randString(length int) string {
 	var b strings.Builder
 
 	for i := 0; i < length; i++ {
-		b.WriteRune(chars[randomInteger(0, len(chars))])
+		b.WriteRune(chars[RandomInteger(0, len(chars))])
 	}
 
 	return b.String()

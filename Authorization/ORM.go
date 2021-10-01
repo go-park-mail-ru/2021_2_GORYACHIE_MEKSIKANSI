@@ -4,9 +4,9 @@ import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	"context"
-	"errors"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"time"
 )
 
 type Wrapper struct {
@@ -24,7 +24,10 @@ func (db *Wrapper) GeneralSignUp(signup *Registration) (int, error) {
 		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
 		signup.Name, signup.Email, signup.Phone, mid.HashPassword(signup.Password, salt), salt)
 	if err != nil {
-		return 0, errors.New(errorsConst.ERRINFOQUERY)
+		return 0, &errorsConst.Errors{
+			Text: errorsConst.ERRINFOQUERY,
+			Time: time.Now(),
+		}
 	}
 
 		err = row.Scan(&userId)
@@ -32,9 +35,15 @@ func (db *Wrapper) GeneralSignUp(signup *Registration) (int, error) {
 			errorText := err.Error()
             if errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_phone_key\" (SQLSTATE 23505)" ||
 				errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_email_key\" (SQLSTATE 23505)" {
-            	return 0, errors.New(errorsConst.ERRUNIQUE)
+            	return 0, &errorsConst.Errors{
+					Text: errorsConst.ERRUNIQUE,
+					Time: time.Now(),
+				}
 			}
-            return 0, errors.New(errorsConst.ERRINFOSCAN)
+            return 0, &errorsConst.Errors {
+				Text: errorsConst.ERRINFOSCAN,
+				Time: time.Now(),
+			}
 		}
 
 	return userId, nil
@@ -66,7 +75,10 @@ func (db *Wrapper) SignupHost(signup *Registration) (*mid.Defense, error) {
 	_, err = db.Transaction.Exec(context.Background(),
 		"INSERT INTO host (client_id) VALUES ($1)", userId)
 	if err != nil {
-		return nil, errors.New(errorsConst.ERRINSERTHOSTQUERY)
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ERRINSERTHOSTQUERY,
+			Time: time.Now(),
+		}
 	}
 	err = tx.Commit(context.Background())
 	return cookie, nil
@@ -99,7 +111,10 @@ func (db *Wrapper) SignupCourier(signup *Registration) (*mid.Defense, error) {
 	_, err = db.Transaction.Exec(context.Background(),
 		"INSERT INTO courier (client_id) VALUES ($1)", userId)
 	if err != nil {
-		return nil, errors.New(errorsConst.ERRINSERTCOURIERQUERY)
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ERRINSERTCOURIERQUERY,
+			Time: time.Now(),
+		}
 	}
 	err = tx.Commit(context.Background())
 
@@ -132,7 +147,10 @@ func (db *Wrapper) SignupClient(signup *Registration) (*mid.Defense, error) {
 	_, err = db.Transaction.Exec(context.Background(),
 		"INSERT INTO client (client_id, date_birthday) VALUES ($1, $2)", userId, signup.Birthday)
 	if err != nil {
-		return nil, errors.New(errorsConst.ERRINSERTCLIENTQUERY)
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ERRINSERTCLIENTQUERY,
+			Time: time.Now(),
+		}
 	}
 	err = tx.Commit(context.Background())
 
@@ -144,7 +162,10 @@ func (db *Wrapper) AddTransactionCookie(cookie *mid.Defense, id int) error {
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
 	if err != nil {
-		return errors.New(errorsConst.ERRINSERTCOOKIEQUERY)
+		return &errorsConst.Errors{
+			Text: errorsConst.ERRINSERTCOOKIEQUERY,
+			Time: time.Now(),
+		}
 	}
 
 	return nil
@@ -158,14 +179,20 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 		"SELECT salt FROM general_user_info WHERE email = $1",
 		email).Scan(&salt)
 	if err != nil {
-		return 0, errors.New(errorsConst.ERRMAILSCAN)
+		return 0, &errorsConst.Errors{
+			Text: errorsConst.ERRMAILSCAN,
+			Time: time.Now(),
+		}
 	}
 
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT id FROM general_user_info WHERE email = $1 AND password = $2",
 		email, mid.HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
-		return 0, errors.New(errorsConst.ERRNOTLOGINORPASSWORD)
+		return 0, &errorsConst.Errors{
+			Text: errorsConst.ERRNOTLOGINORPASSWORD,
+			Time: time.Now(),
+		}
 	}
 
 	return userId, nil
@@ -179,14 +206,20 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 		"SELECT salt FROM general_user_info WHERE phone = $1",
 		phone).Scan(&salt)
 	if err != nil {
-		return 0, errors.New(errorsConst.ERRPHONESCAN)
+		return 0, &errorsConst.Errors{
+			Text: errorsConst.ERRPHONESCAN,
+			Time: time.Now(),
+		}
 	}
 
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT id FROM general_user_info WHERE phone = $1 AND password = $2",
 		phone, mid.HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
-		return 0, errors.New(errorsConst.ERRNOTLOGINORPASSWORD)
+		return 0, &errorsConst.Errors{
+			Text: errorsConst.ERRNOTLOGINORPASSWORD,
+			Time: time.Now(),
+		}
 	}
 	return userId, nil
 }
@@ -196,7 +229,10 @@ func (db *Wrapper) DeleteCookie(cookie *mid.Defense) error {
 		"DELETE FROM cookie WHERE session_id = $1 AND csrf_token = $2",
 		cookie.SessionId, cookie.CsrfToken)
 	if err != nil {
-		return errors.New(errorsConst.ERRDELETECOOKIEQUERY)
+		return &errorsConst.Errors{
+			Text: errorsConst.ERRDELETECOOKIEQUERY,
+			Time: time.Now(),
+		}
 	}
 
 	return nil
@@ -207,7 +243,10 @@ func (db *Wrapper) AddCookie(cookie *mid.Defense, id int) error {
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
 	if err != nil {
-		return errors.New(errorsConst.ERRINSERTLOGINCOOKIEQUERY)
+		return &errorsConst.Errors{
+			Text: errorsConst.ERRINSERTLOGINCOOKIEQUERY,
+			Time: time.Now(),
+		}
 	}
 
 	return nil

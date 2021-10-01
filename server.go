@@ -28,14 +28,14 @@ func runServer(port string) {
 	profileInfo := profile.ProfileInfo{ConnectionDB: connectionPostgres}
 
 	myRouter := router.New()
-	api := "/api/"
+	api := myRouter.Group("/api/")
 
-	myRouter.GET(api+"profile", profileInfo.ProfileHandler)
-	myRouter.POST(api+"logout", userInfo.LogoutHandler)
-	myRouter.GET(api, restaurantInfo.ProductsHandler)
-	myRouter.POST(api+"login", userInfo.LoginHandler)
-	myRouter.POST(api+"signup", userInfo.SignUpHandler)
-	myRouter.GET(api+"check", userInfo.CheckLoggedInHandler)
+	api.GET("profile", profileInfo.ProfileHandler)
+	api.POST("logout", userInfo.LogoutHandler)
+	api.GET("", restaurantInfo.ProductsHandler)
+	api.POST("login", userInfo.LoginHandler)
+	api.POST("signup", userInfo.SignUpHandler)
+	api.GET("check", userInfo.CheckLoggedInHandler)
 
 	withCors := cors.NewCorsHandler(cors.Options{
 		AllowedOrigins: 	[]string{config.ALLOWEDORIGINSDOMEN + ":" + config.ALLOWEDORIGINSPORT},
