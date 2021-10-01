@@ -2,6 +2,7 @@ package main
 
 import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
+	config "2021_2_GORYACHIE_MEKSIKANSI/Config"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	profile "2021_2_GORYACHIE_MEKSIKANSI/Profile"
 	restaurant "2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
@@ -27,24 +28,25 @@ func runServer(port string) {
 	profileInfo := profile.ProfileInfo{ConnectionDB: connectionPostgres}
 
 	myRouter := router.New()
-	api := "/api"
+	api := "/api/"
 
-	myRouter.GET(api+"/profile", profileInfo.ProfileHandler)
-	myRouter.POST(api+"/logout", userInfo.LogoutHandler)
-	myRouter.GET(api+"/", restaurantInfo.ProductsHandler)
-	myRouter.POST(api+"/login", userInfo.LoginHandler)
-	myRouter.POST(api+"/signup", userInfo.SignUpHandler)
-	myRouter.GET(api+"/check", userInfo.CheckLoggedInHandler)
+	myRouter.GET(api+"profile", profileInfo.ProfileHandler)
+	myRouter.POST(api+"logout", userInfo.LogoutHandler)
+	myRouter.GET(api, restaurantInfo.ProductsHandler)
+	myRouter.POST(api+"login", userInfo.LoginHandler)
+	myRouter.POST(api+"signup", userInfo.SignUpHandler)
+	myRouter.GET(api+"check", userInfo.CheckLoggedInHandler)
 
 	withCors := cors.NewCorsHandler(cors.Options{
-		AllowedOrigins: []string{"http://127.0.0.1:3000"},
-		AllowedHeaders: []string{"access-control-allow-origin", "content-type", "x-csrf-token", "access-control-expose-headers"},
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
-		ExposedHeaders: []string{"X-Csrf-Token"},
-		AllowCredentials: true,
-		AllowMaxAge:      5600,
-		Debug:            true,
+		AllowedOrigins: 	[]string{config.ALLOWEDORIGINSDOMEN + ":" + config.ALLOWEDORIGINSPORT},
+		AllowedHeaders: 	[]string{"access-control-allow-origin", "content-type", "x-csrf-token", "access-control-expose-headers"},
+		AllowedMethods:   	[]string{"GET", "POST", "OPTIONS"},
+		ExposedHeaders:		[]string{"X-Csrf-Token"},
+		AllowCredentials:	true,
+		AllowMaxAge:     	5600,
+		Debug:            	true,
 	})
+
 	err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(myRouter.Handler))
 	if err != nil {
 		fmt.Printf("Console: ERROR: fatall lListenAndServe")
