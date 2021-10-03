@@ -11,96 +11,96 @@ import (
 func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
 	if err != nil {
 		switch err.Error() {
-		case ERRGETPROFILECLIENTSCAN:
+		case ErrGetProfileClientScan:
 			err := json.NewEncoder(ctx).Encode(ResultError{
 				Status:  http.StatusInternalServerError,
-				Explain: ERRDB,
+				Explain: ErrDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ERRENCODE)
+				fmt.Printf("Console: %s\n", ErrEncode)
 				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			fmt.Printf("Console: %s\n", ERRGETPROFILECLIENTSCAN)
+			fmt.Printf("Console: %s\n", ErrGetProfileClientScan)
 			return errors.New("fatal")
-		case ERRGETBIRTHDAYSCAN:
+		case ErrGetBirthdayScan:
 			err := json.NewEncoder(ctx).Encode(ResultError{
 				Status:  http.StatusInternalServerError,
-				Explain: ERRDB,
+				Explain: ErrDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ERRENCODE)
+				fmt.Printf("Console: %s\n", ErrEncode)
 				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			fmt.Printf("Console: %s\n", ERRGETBIRTHDAYSCAN)
+			fmt.Printf("Console: %s\n", ErrGetBirthdayScan)
 			return errors.New("fatal")
-		case ERRGETPROFILECOURIERSCAN:
+		case ErrGetProfileCourierScan:
 			err := json.NewEncoder(ctx).Encode(ResultError{
 				Status:  http.StatusInternalServerError,
-				Explain: ERRDB,
+				Explain: ErrDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ERRENCODE)
+				fmt.Printf("Console: %s\n", ErrEncode)
 				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			fmt.Printf("Console: %s\n", ERRGETPROFILECOURIERSCAN)
+			fmt.Printf("Console: %s\n", ErrGetProfileCourierScan)
 			return errors.New("fatal")
-		case ERRGETPROFILEHOSTSCAN:
+		case ErrGetProfileHostScan:
 			err := json.NewEncoder(ctx).Encode(ResultError{
 				Status:  http.StatusInternalServerError,
-				Explain: ERRDB,
+				Explain: ErrDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ERRENCODE)
+				fmt.Printf("Console: %s\n", ErrEncode)
 				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			fmt.Printf("Console: %s\n", ERRGETPROFILEHOSTSCAN)
+			fmt.Printf("Console: %s\n", ErrGetProfileHostScan)
 			return errors.New("fatal")
-		case ERRCLIENTSCAN:
+		case ErrClientScan:
 			err := json.NewEncoder(ctx).Encode(ResultError{
 				Status:  http.StatusInternalServerError,
-				Explain: ERRDB,
+				Explain: ErrDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ERRENCODE)
+				fmt.Printf("Console: %s\n", ErrEncode)
 				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			fmt.Printf("Console: %s\n", ERRCLIENTSCAN)
+			fmt.Printf("Console: %s\n", ErrClientScan)
 			return errors.New("fatal")
-		case ERRHOSTSCAN:
+		case ErrHostScan:
 			err := json.NewEncoder(ctx).Encode(ResultError{
 				Status:  http.StatusInternalServerError,
-				Explain: ERRDB,
+				Explain: ErrDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ERRENCODE)
+				fmt.Printf("Console: %s\n", ErrEncode)
 				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			fmt.Printf("Console: %s\n", ERRHOSTSCAN)
+			fmt.Printf("Console: %s\n", ErrHostScan)
 			return errors.New("fatal")
-		case ERRCORIERSCAN:
+		case ErrCourierScan:
 			err := json.NewEncoder(ctx).Encode(ResultError{
 				Status:  http.StatusInternalServerError,
-				Explain: ERRDB,
+				Explain: ErrDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ERRENCODE)
+				fmt.Printf("Console: %s\n", ErrEncode)
 				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			fmt.Printf("Console: %s\n", ERRCORIERSCAN)
+			fmt.Printf("Console: %s\n", ErrCourierScan)
 			return errors.New("fatal")
 		}
 	}

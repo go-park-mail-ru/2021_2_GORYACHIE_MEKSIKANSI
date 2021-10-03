@@ -11,38 +11,31 @@ import (
 
 type Wrapper struct {
 	Conn        *pgxpool.Pool
-	Transaction pgx.Tx
 }
 
-func (db *Wrapper) GeneralSignUp(signup *Registration) (int, error) {
+func (db *Wrapper) GeneralSignUp(signup *Registration, 	transaction pgx.Tx) (int, error) {
 	var userId int
-	var err error
 
 	salt := randString(LENSALT)
 
-	row := db.Transaction.QueryRow(context.Background(),
+	err := transaction.QueryRow(context.Background(),
 		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-		signup.Name, signup.Email, signup.Phone, mid.HashPassword(signup.Password, salt), salt)
-	if err != nil {
-		return 0, errors.New(errorsConst.ERRINFOQUERY)
-	}
+		signup.Name, signup.Email, signup.Phone, mid.HashPassword(signup.Password, salt), salt).Scan(&userId)
 
-		err = row.Scan(&userId)
-		if err != nil {
-			errorText := err.Error()
-            if errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_phone_key\" (SQLSTATE 23505)" ||
-				errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_email_key\" (SQLSTATE 23505)" {
-            	return 0, errors.New(errorsConst.ERRUNIQUE)
-			}
-            return 0, errors.New(errorsConst.ERRINFOSCAN)
+	if err != nil {
+		errorText := err.Error()
+		if errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_phone_key\" (SQLSTATE 23505)" ||
+			errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_email_key\" (SQLSTATE 23505)" {
+			return 0, errors.New(errorsConst.ErrGeneralInfoUnique)
 		}
+		return 0, errors.New(errorsConst.ErrGeneralInfoScan)
+	}
 
 	return userId, nil
 }
 
 func (db *Wrapper) SignupHost(signup *Registration) (*mid.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
-	db.Transaction = tx
 
 	defer func(tx pgx.Tx, ctx context.Context) {
 		err := tx.Rollback(ctx)
@@ -51,22 +44,22 @@ func (db *Wrapper) SignupHost(signup *Registration) (*mid.Defense, error) {
 		}
 	}(tx, context.Background())
 
-	userId, err := db.GeneralSignUp(signup)
+	userId, err := db.GeneralSignUp(signup, tx)
 	if err != nil {
 		return nil, err
 	}
 
 	var temp mid.Defense
 	cookie := temp.GenerateNew()
-	err = db.AddTransactionCookie(cookie, userId)
+	err = db.AddTransactionCookie(cookie, tx, userId)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = db.Transaction.Exec(context.Background(),
+	_, err = tx.Exec(context.Background(),
 		"INSERT INTO host (client_id) VALUES ($1)", userId)
 	if err != nil {
-		return nil, errors.New(errorsConst.ERRINSERTHOSTQUERY)
+		return nil, errors.New(errorsConst.ErrInsertHost)
 	}
 	err = tx.Commit(context.Background())
 	return cookie, nil
@@ -74,7 +67,6 @@ func (db *Wrapper) SignupHost(signup *Registration) (*mid.Defense, error) {
 
 func (db *Wrapper) SignupCourier(signup *Registration) (*mid.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
-	db.Transaction = tx
 
 	defer func(tx pgx.Tx, ctx context.Context) {
 		err := tx.Rollback(ctx)
@@ -83,23 +75,23 @@ func (db *Wrapper) SignupCourier(signup *Registration) (*mid.Defense, error) {
 		}
 	}(tx, context.Background())
 
-	userId, err := db.GeneralSignUp(signup)
+	userId, err := db.GeneralSignUp(signup, tx)
 	if err != nil {
 		return nil, err
 	}
 
 	var tmp mid.Defense
 	cookie := tmp.GenerateNew()
-	err = db.AddTransactionCookie(cookie, userId)
+	err = db.AddTransactionCookie(cookie, tx, userId)
 	if err != nil {
 		return nil, err
 	}
 
 
-	_, err = db.Transaction.Exec(context.Background(),
+	_, err = tx.Exec(context.Background(),
 		"INSERT INTO courier (client_id) VALUES ($1)", userId)
 	if err != nil {
-		return nil, errors.New(errorsConst.ERRINSERTCOURIERQUERY)
+		return nil, errors.New(errorsConst.ErrInsertCourier)
 	}
 	err = tx.Commit(context.Background())
 
@@ -108,7 +100,6 @@ func (db *Wrapper) SignupCourier(signup *Registration) (*mid.Defense, error) {
 
 func (db *Wrapper) SignupClient(signup *Registration) (*mid.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
-	db.Transaction = tx
 
 	defer func(tx pgx.Tx, ctx context.Context) {
 		err := tx.Rollback(ctx)
@@ -117,34 +108,34 @@ func (db *Wrapper) SignupClient(signup *Registration) (*mid.Defense, error) {
 		}
 	}(tx, context.Background())
 
-	userId, err := db.GeneralSignUp(signup)
+	userId, err := db.GeneralSignUp(signup, tx)
 	if err != nil {
 		return nil, err
 	}
 
 	var tmp mid.Defense
 	cookie := tmp.GenerateNew()
-	err = db.AddTransactionCookie(cookie, userId)
+	err = db.AddTransactionCookie(cookie, tx, userId)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = db.Transaction.Exec(context.Background(),
+	_, err = tx.Exec(context.Background(),
 		"INSERT INTO client (client_id, date_birthday) VALUES ($1, $2)", userId, signup.Birthday)
 	if err != nil {
-		return nil, errors.New(errorsConst.ERRINSERTCLIENTQUERY)
+		return nil, errors.New(errorsConst.ErrInsertClient)
 	}
 	err = tx.Commit(context.Background())
 
 	return cookie, nil
 }
 
-func (db *Wrapper) AddTransactionCookie(cookie *mid.Defense, id int) error {
-	_, err := db.Transaction.Exec(context.Background(),
+func (db *Wrapper) AddTransactionCookie(cookie *mid.Defense, Transaction pgx.Tx, id int) error {
+	_, err := Transaction.Exec(context.Background(),
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
 	if err != nil {
-		return errors.New(errorsConst.ERRINSERTCOOKIEQUERY)
+		return errors.New(errorsConst.ErrInsertTransactionCookie)
 	}
 
 	return nil
@@ -158,14 +149,14 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 		"SELECT salt FROM general_user_info WHERE email = $1",
 		email).Scan(&salt)
 	if err != nil {
-		return 0, errors.New(errorsConst.ERRMAILSCAN)
+		return 0, errors.New(errorsConst.ErrSelectSalt)
 	}
 
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT id FROM general_user_info WHERE email = $1 AND password = $2",
 		email, mid.HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
-		return 0, errors.New(errorsConst.ERRNOTLOGINORPASSWORD)
+		return 0, errors.New(errorsConst.ErrLoginOrPasswordIncorrect)
 	}
 
 	return userId, nil
@@ -179,14 +170,14 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 		"SELECT salt FROM general_user_info WHERE phone = $1",
 		phone).Scan(&salt)
 	if err != nil {
-		return 0, errors.New(errorsConst.ERRPHONESCAN)
+		return 0, errors.New(errorsConst.ErrSelectSalt)
 	}
 
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT id FROM general_user_info WHERE phone = $1 AND password = $2",
 		phone, mid.HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
-		return 0, errors.New(errorsConst.ERRNOTLOGINORPASSWORD)
+		return 0, errors.New(errorsConst.ErrLoginOrPasswordIncorrect)
 	}
 	return userId, nil
 }
@@ -196,7 +187,7 @@ func (db *Wrapper) DeleteCookie(cookie *mid.Defense) error {
 		"DELETE FROM cookie WHERE session_id = $1 AND csrf_token = $2",
 		cookie.SessionId, cookie.CsrfToken)
 	if err != nil {
-		return errors.New(errorsConst.ERRDELETECOOKIEQUERY)
+		return errors.New(errorsConst.ErrDeleteCookie)
 	}
 
 	return nil
@@ -207,7 +198,7 @@ func (db *Wrapper) AddCookie(cookie *mid.Defense, id int) error {
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
 	if err != nil {
-		return errors.New(errorsConst.ERRINSERTLOGINCOOKIEQUERY)
+		return errors.New(errorsConst.ErrInsertCookie)
 	}
 
 	return nil

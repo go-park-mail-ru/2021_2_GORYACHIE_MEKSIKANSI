@@ -18,7 +18,7 @@ func (db *Wrapper) getRoleById(id int) (string, error) {
 	err := db.Conn.QueryRow(context.Background(),
 		"SELECT id FROM host WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err.Error() != "no rows in result set" {
-		return "", errors.New(errorsConst.ERRHOSTSCAN)
+		return "", errors.New(errorsConst.ErrHostScan)
 	}
 	if role != 0 {
 		return "host", nil
@@ -27,7 +27,7 @@ func (db *Wrapper) getRoleById(id int) (string, error) {
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT id FROM client WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err.Error() != "no rows in result set" {
-		return "", errors.New(errorsConst.ERRCLIENTSCAN)
+		return "", errors.New(errorsConst.ErrClientScan)
 	}
 	if role != 0 {
 		return "client", nil
@@ -36,7 +36,7 @@ func (db *Wrapper) getRoleById(id int) (string, error) {
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT id FROM courier WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err.Error() != "no rows in result set" {
-		return "", errors.New(errorsConst.ERRCORIERSCAN)
+		return "", errors.New(errorsConst.ErrCourierScan)
 	}
 	if role != 0 {
 		return "courier", nil
@@ -51,7 +51,7 @@ func (db *Wrapper) GetProfileHost(id int) (*Profile, error) {
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
 			&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
-		return nil, errors.New(errorsConst.ERRGETPROFILEHOSTSCAN)
+		return nil, errors.New(errorsConst.ErrGetProfileHostScan)
 	}
 
 	return &profile, err
@@ -63,13 +63,13 @@ func (db *Wrapper) GetProfileClient(id int) (*Profile, error) {
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
 			&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
-		return nil, errors.New(errorsConst.ERRGETPROFILECLIENTSCAN)
+		return nil, errors.New(errorsConst.ErrGetProfileClientScan)
 	}
 
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT date_birthday FROM client WHERE client_id = $1", id).Scan(&profile.Birthday)
 	if err != nil {
-		return nil, errors.New(errorsConst.ERRGETBIRTHDAYSCAN)
+		return nil, errors.New(errorsConst.ErrGetBirthdayScan)
 	}
 
 	return &profile, nil
@@ -81,7 +81,7 @@ func (db *Wrapper) GetProfileCourier(id int) (*Profile, error) {
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
 			&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
-		return nil, errors.New(errorsConst.ERRGETPROFILECOURIERSCAN)
+		return nil, errors.New(errorsConst.ErrGetProfileCourierScan)
 
 	}
 	return &profile, nil

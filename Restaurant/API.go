@@ -39,7 +39,7 @@ func (r *RestaurantInfo) ProductsHandler(ctx *fasthttp.RequestCtx) {
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusOK)
-		fmt.Printf("Console: %s\n", errors.ERRENCODE)
+		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())

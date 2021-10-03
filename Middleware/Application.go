@@ -48,52 +48,8 @@ func CreateDb() (*pgxpool.Pool, error) {
 	var err error
 	conn, err := pgxpool.Connect(context.Background(), "postgres://" + config.DBLOGIN + ":" + config.DBPASSWORD + "@" + config.DBHOST + ":" + config.DBPORT + "/" + config.DBNAME)
 	if err != nil {
-		return nil, errors.New(errorsConst.ERRNOTCONNECT)
+		return nil, errors.New(errorsConst.ErrNotConnect)
 	}
-	if config.DEBUG {
-		_, err = conn.Exec(context.Background(), "DROP TABLE IF EXISTS restaurant, general_user_info, host, client, cookie, courier CASCADE")
-		if err != nil {
-			return nil, errors.New(errorsConst.ERRDELETEQUERY)
-		}
-	}
-
-	tableGeneralUserInfo:= "CREATE TABLE IF NOT EXISTS general_user_info (id SERIAL PRIMARY KEY, name text NOT NULL, password varchar(64) NOT NULL, salt varchar(5) NOT NULL, phone varchar(15) UNIQUE NOT NULL, email text UNIQUE, avatar text DEFAULT '/uploads/', date_registration timestamp DEFAULT NOW() NOT NULL, deleted boolean DEFAULT false);"
-	tableRestaurant := "CREATE TABLE IF NOT EXISTS restaurant (id serial PRIMARY KEY, owner INTEGER, FOREIGN KEY (owner) REFERENCES general_user_info (id) On DELETE CASCADE, name text NOT NULL, description text NOT NULL, created timestamp DEFAULT NOW() NOT NULL, deleted boolean DEFAULT false, avatar text DEFAULT '/uploads/', min_price int DEFAULT 0, price_delivery int NOT NULL, min_delivery_time int, max_delivery_time int, city text NOT NULL, street text NOT NULL, house text NOT NULL, floor int, rating double precision, location text);"
-	tableCookie := "CREATE TABLE IF NOT EXISTS cookie (id serial PRIMARY KEY, client_id INTEGER, FOREIGN KEY (client_id) REFERENCES general_user_info (id) On DELETE CASCADE, session_id text NOT NULL, date_life timestamp NOT NULL, csrf_token varchar(256) NOT NULL);"
-	tableHost := "CREATE TABLE IF NOT EXISTS host (id serial PRIMARY KEY, client_id INTEGER UNIQUE, FOREIGN KEY (client_id) REFERENCES general_user_info (id) On DELETE CASCADE);"
-	tableClient := "CREATE TABLE IF NOT EXISTS client (id serial PRIMARY KEY, client_id INTEGER UNIQUE, FOREIGN KEY (client_id) REFERENCES general_user_info (id) On DELETE CASCADE, date_birthday timestamp NOT NULL);"
-	tableCourier := "CREATE TABLE IF NOT EXISTS courier (id serial PRIMARY KEY, client_id  INTEGER UNIQUE, FOREIGN KEY (client_id) REFERENCES general_user_info (id) On DELETE CASCADE);"
-	_, err = conn.Exec(context.Background(), tableGeneralUserInfo + tableRestaurant + tableCookie + tableHost + tableClient + tableCourier)
-	if err != nil {
-		return nil, errors.New(errorsConst.ERRCREATEQUERY)
-	}
-
-	if config.DEBUG {
-		_, err = conn.Exec(context.Background(),
-			"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5)",
-			"root", "root@root", "88888888888", HashPassword("rootroot", "salt"), "salt")
-
-		if err != nil {
-			return nil, errors.New(errorsConst.ERRINSERTROOTQUERY)
-		}
-
-		_, err = conn.Exec(context.Background(),
-			"INSERT INTO client (client_id, date_birthday) VALUES ($1, $2)",
-			"1", time.Now())
-		if err != nil {
-			return nil, errors.New(errorsConst.ERRINSERTROOTCLIENTQUERY)
-		}
-
-		for i := 0; i < 500; i++ {
-			_, err := conn.Exec(context.Background(),
-				"INSERT INTO restaurant (name, description, owner, price_delivery, city, street, house, rating, min_delivery_time, max_delivery_time, avatar, floor, location) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)",
-				makeName(), makeName(), 1, randomInteger(200, 300), "city", "street", "house", randomInteger(1, 5), randomInteger(30, 40), randomInteger(50, 60), "http://mir-s3-cdn-cf.behance.net/project_modules/1400_opt_1/96672465571661.5afc10a864fc2.jpg", randomInteger(1, 163), "location")
-			if err != nil {
-				return nil, errors.New(errorsConst.ERRINSERTQUERY)
-			}
-		}
-	}
-
 	return conn, nil
 }
 
@@ -105,9 +61,9 @@ func CheckAccess(conn *pgxpool.Pool, cookie *Defense) (bool, error) {
 		cookie.SessionId, cookie.CsrfToken).Scan(&id, &timeLiveCookie)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return false, errors.New(errorsConst.ERRSIDNOTFOUND)
+			return false, errors.New(errorsConst.ErrCheckAccessCookieNotFound)
 		}
-		return false, errors.New(errorsConst.ERRCOOKIEANDCSRFSCAN)
+		return false, errors.New(errorsConst.ErrCookieNotScan)
 	}
 
 	if time.Now().Before(timeLiveCookie) {
@@ -123,7 +79,7 @@ func NewCsrf(conn *pgxpool.Pool, cookie *Defense) (string, error) {
 		"UPDATE cookie SET csrf_token = $1 WHERE session_id = $2",
 		csrfToken, cookie.SessionId)
 	if err != nil {
-		return "", errors.New(errorsConst.ERRUPDATECSRFQUERY)
+		return "", errors.New(errorsConst.ErrUpdateCSRF)
 	}
 
 	return csrfToken, nil
@@ -137,9 +93,9 @@ func GetIdByCookie(conn *pgxpool.Pool, cookie *Defense) (int, error) {
 		cookie.SessionId).Scan(&id, &timeLiveCookie)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return 0, errors.New(errorsConst.ERRCOOKIEIDNOTFOUND)
+			return 0, errors.New(errorsConst.ErrCookieNotFound)
 		}
-		return 0, errors.New(errorsConst.ERRCOOKIESCAN)
+		return 0, errors.New(errorsConst.ErrCookieScan)
 	}
 
 	realTime := time.Now()
@@ -147,5 +103,5 @@ func GetIdByCookie(conn *pgxpool.Pool, cookie *Defense) (int, error) {
 		return id, nil
 	}
 
-	return 0, errors.New(errorsConst.ERRCOOKIEEXPIRED)
+	return 0, errors.New(errorsConst.ErrCookieExpired)
 }
