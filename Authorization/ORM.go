@@ -13,40 +13,34 @@ type Wrapper struct {
 	Conn        *pgxpool.Pool
 }
 
-func (db *Wrapper) GeneralSignUp(signup *Registration, 	transaction pgx.Tx) (int, error) {
+func (db *Wrapper) GeneralSignUp(signup *Registration, transaction pgx.Tx) (int, error) {
 	var userId int
 
 	salt := randString(LENSALT)
 
 	err := transaction.QueryRow(context.Background(),
 		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-
 		signup.Name, signup.Email, signup.Phone, mid.HashPassword(signup.Password, salt), salt).Scan(&userId)
-        
+
 		if err != nil {
 			errorText := err.Error()
             if errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_phone_key\" (SQLSTATE 23505)" ||
 				errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_email_key\" (SQLSTATE 23505)" {
             	return 0, &errorsConst.Errors{
-					Text: errorsConst.ERRUNIQUE,
+					Text: errorsConst.ErrGeneralInfoUnique,
 					Time: time.Now(),
 				}
 			}
             return 0, &errorsConst.Errors {
-				Text: errorsConst.ErrGeneralInfoUnique,
+				Text: errorsConst.ErrGeneralInfoScan,
 				Time: time.Now(),
 			}
-
 		}
-		return 0, errors.New(errorsConst.ErrGeneralInfoScan)
-	}
-
 	return userId, nil
 }
 
 func (db *Wrapper) SignupHost(signup *Registration) (*mid.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
-
 	defer func(tx pgx.Tx, ctx context.Context) {
 		err := tx.Rollback(ctx)
 		if err != nil {
@@ -99,7 +93,6 @@ func (db *Wrapper) SignupCourier(signup *Registration) (*mid.Defense, error) {
 	if err != nil {
 		return nil, err
 	}
-
 
 	_, err = tx.Exec(context.Background(),
 		"INSERT INTO courier (client_id) VALUES ($1)", userId)
@@ -226,7 +219,6 @@ func (db *Wrapper) DeleteCookie(cookie *mid.Defense) error {
 			Time: time.Now(),
 		}
 	}
-
 	return nil
 }
 
@@ -240,6 +232,5 @@ func (db *Wrapper) AddCookie(cookie *mid.Defense, id int) error {
 			Time: time.Now(),
 		}
 	}
-
 	return nil
 }
