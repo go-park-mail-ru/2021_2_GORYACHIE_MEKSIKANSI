@@ -1,8 +1,19 @@
 package Errors
 
+import "time"
+
 type ResultError struct {
 	Status	int         `json:"status"`
 	Explain	string		`json:"parsedJSON,omitempty"`
+}
+
+type Errors struct {
+	Text string
+	Time time.Time
+}
+
+func (e *Errors) Error() string {
+	return e.Text
 }
 
 const(

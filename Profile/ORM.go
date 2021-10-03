@@ -2,9 +2,8 @@ package Profile
 
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
-	//mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
+	"time"
 	"context"
-	"errors"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -18,7 +17,10 @@ func (db *Wrapper) getRoleById(id int) (string, error) {
 	err := db.Conn.QueryRow(context.Background(),
 		"SELECT id FROM host WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err.Error() != "no rows in result set" {
-		return "", errors.New(errorsConst.ErrHostScan)
+		return "", &errorsConst.Errors{
+			Text: errorsConst.ErrHostScan,
+			Time: time.Now(),
+		}
 	}
 	if role != 0 {
 		return "host", nil
@@ -27,7 +29,10 @@ func (db *Wrapper) getRoleById(id int) (string, error) {
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT id FROM client WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err.Error() != "no rows in result set" {
-		return "", errors.New(errorsConst.ErrClientScan)
+		return "", &errorsConst.Errors{
+			Text: errorsConst.ErrClientScan,
+			Time: time.Now(),
+		}
 	}
 	if role != 0 {
 		return "client", nil
@@ -36,7 +41,10 @@ func (db *Wrapper) getRoleById(id int) (string, error) {
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT id FROM courier WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err.Error() != "no rows in result set" {
-		return "", errors.New(errorsConst.ErrCourierScan)
+		return "", &errorsConst.Errors{
+			Text: errorsConst.ErrCourierScan,
+			Time: time.Now(),
+		}
 	}
 	if role != 0 {
 		return "courier", nil
@@ -51,7 +59,10 @@ func (db *Wrapper) GetProfileHost(id int) (*Profile, error) {
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
 			&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
-		return nil, errors.New(errorsConst.ErrGetProfileHostScan)
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ErrGetProfileHostScan,
+			Time: time.Now(),
+		}
 	}
 
 	return &profile, err
@@ -63,13 +74,19 @@ func (db *Wrapper) GetProfileClient(id int) (*Profile, error) {
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
 			&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
-		return nil, errors.New(errorsConst.ErrGetProfileClientScan)
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ErrGetProfileClientScan,
+			Time: time.Now(),
+		}
 	}
 
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT date_birthday FROM client WHERE client_id = $1", id).Scan(&profile.Birthday)
 	if err != nil {
-		return nil, errors.New(errorsConst.ErrGetBirthdayScan)
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ErrGetBirthdayScan,
+			Time: time.Now(),
+		}
 	}
 
 	return &profile, nil
@@ -81,8 +98,10 @@ func (db *Wrapper) GetProfileCourier(id int) (*Profile, error) {
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
 			&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
-		return nil, errors.New(errorsConst.ErrGetProfileCourierScan)
-
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ErrGetProfileCourierScan,
+			Time: time.Now(),
+		}
 	}
 	return &profile, nil
 }

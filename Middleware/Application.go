@@ -7,14 +7,13 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
-	"errors"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"math/big"
 	"time"
 )
 
 
-func randomInteger(min int, max int) int {
+func RandomInteger(min int, max int) int {
 	nBig, err := rand.Int(rand.Reader, big.NewInt(int64(max - min)))
 	if err != nil {
 		return 5
@@ -41,14 +40,17 @@ func makeName() string {
 	"Osteria", "Vero", "Cafe Renzo", "Miyake", "Sushi Tomo", "Kanpai", "Pizza My Heart", "New York Pizza",
 	"California Pizza Kitchen", "Round Table", "Loving Hut", "Garden Fresh", "Cafe Epi", "Tai Pan",
 	}
-	return restNames[randomInteger(0, len(restNames)- 1)]
+	return restNames[RandomInteger(0, len(restNames)- 1)]
 }
 
 func CreateDb() (*pgxpool.Pool, error) {
 	var err error
 	conn, err := pgxpool.Connect(context.Background(), "postgres://" + config.DBLOGIN + ":" + config.DBPASSWORD + "@" + config.DBHOST + ":" + config.DBPORT + "/" + config.DBNAME)
 	if err != nil {
-		return nil, errors.New(errorsConst.ErrNotConnect)
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ErrNotConnect,
+			Time: time.Now(),
+		}
 	}
 	return conn, nil
 }
@@ -61,9 +63,15 @@ func CheckAccess(conn *pgxpool.Pool, cookie *Defense) (bool, error) {
 		cookie.SessionId, cookie.CsrfToken).Scan(&id, &timeLiveCookie)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return false, errors.New(errorsConst.ErrCheckAccessCookieNotFound)
+			return false, &errorsConst.Errors{
+				Text: errorsConst.ErrCheckAccessCookieNotFound,
+				Time: time.Now(),
+			}
 		}
-		return false, errors.New(errorsConst.ErrCookieNotScan)
+		return false, &errorsConst.Errors{
+			Text: errorsConst.ErrCookieNotScan,
+			Time: time.Now(),
+		}
 	}
 
 	if time.Now().Before(timeLiveCookie) {
@@ -79,7 +87,10 @@ func NewCsrf(conn *pgxpool.Pool, cookie *Defense) (string, error) {
 		"UPDATE cookie SET csrf_token = $1 WHERE session_id = $2",
 		csrfToken, cookie.SessionId)
 	if err != nil {
-		return "", errors.New(errorsConst.ErrUpdateCSRF)
+		return "", &errorsConst.Errors{
+			Text: errorsConst.ErrUpdateCSRF,
+			Time: time.Now(),
+		}
 	}
 
 	return csrfToken, nil
@@ -93,9 +104,15 @@ func GetIdByCookie(conn *pgxpool.Pool, cookie *Defense) (int, error) {
 		cookie.SessionId).Scan(&id, &timeLiveCookie)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return 0, errors.New(errorsConst.ErrCookieNotFound)
+			return 0, &errorsConst.Errors{
+				Text: errorsConst.ErrCookieNotFound,
+				Time: time.Now(),
+			}
 		}
-		return 0, errors.New(errorsConst.ErrCookieScan)
+		return 0, &errorsConst.Errors{
+			Text: errorsConst.ErrCookieScan,
+			Time: time.Now(),
+		}
 	}
 
 	realTime := time.Now()
@@ -103,5 +120,8 @@ func GetIdByCookie(conn *pgxpool.Pool, cookie *Defense) (int, error) {
 		return id, nil
 	}
 
-	return 0, errors.New(errorsConst.ErrCookieExpired)
+	return 0, &errorsConst.Errors{
+		Text: errorsConst.ErrCookieExpired,
+		Time: time.Now(),
+	}
 }

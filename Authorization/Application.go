@@ -2,20 +2,17 @@ package Authorization
 
 import (
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
-	"math/rand"
 	"strings"
-	"time"
 )
 
 const LENSALT = 5
 
 func randString(length int) string {
-	rand.Seed(time.Now().UnixNano())
 	chars := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
 	var b strings.Builder
 
 	for i := 0; i < length; i++ {
-		b.WriteRune(chars[rand.Intn(len(chars))])
+		b.WriteRune(chars[mid.RandomInteger(0, len(chars))])
 	}
 
 	return b.String()
