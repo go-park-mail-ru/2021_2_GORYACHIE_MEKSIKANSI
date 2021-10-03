@@ -41,7 +41,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	err := json.Unmarshal(ctx.Request.Body(), &signUpAll)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusOK)
-		fmt.Printf("Console: %s\n", errors.ERRUNMARSHAL)
+		fmt.Printf("Console: %s\n", errors.ErrUnmarshal)
 		return
 	}
 
@@ -68,7 +68,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusOK)
-		fmt.Printf("Console: %s\n", errors.ERRENCODE)
+		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
@@ -80,7 +80,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	err := json.Unmarshal(ctx.Request.Body(), &userLogin)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusOK)
-		fmt.Printf("Console: %s\n", errors.ERRUNMARSHAL)
+		fmt.Printf("Console: %s\n", errors.ErrUnmarshal)
 		return
 	}
 	cookieHTTP := fasthttp.Cookie{}
@@ -101,7 +101,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusOK)
-		fmt.Printf("Console: %s\n", errors.ERRENCODE)
+		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
 
@@ -134,7 +134,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 		Status: http.StatusOK,
 	})
 	if err != nil {
-		return 
+		return
 	}
 
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
@@ -154,7 +154,7 @@ func(u *UserInfo) CheckLoggedInHandler(ctx *fasthttp.RequestCtx) {
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusOK)
-		fmt.Printf("Console: %s\n", errors.ERRENCODE)
+		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
 	ctx.Response.SetStatusCode(http.StatusOK)

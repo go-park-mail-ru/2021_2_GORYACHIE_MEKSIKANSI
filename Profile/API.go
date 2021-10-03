@@ -50,8 +50,8 @@ func (u *ProfileInfo) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	ctx.Response.SetStatusCode(http.StatusOK)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusOK)
-		fmt.Printf("Console: %s\n", errors.ERRENCODE)
-		return 
+		fmt.Printf("Console: %s\n", errors.ErrEncode)
+		return
 	}
 
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())

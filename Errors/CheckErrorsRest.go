@@ -11,44 +11,31 @@ import (
 func CheckErrorRestaurant(err error, ctx *fasthttp.RequestCtx) error {
 	if err != nil {
 		switch err.Error() {
-		case  ERRQUERY:
+		case ErrRestaurantsNotFound:
 			err := json.NewEncoder(ctx).Encode(ResultError{
 				Status:  http.StatusInternalServerError,
-				Explain:  ERRDB,
+				Explain: ErrDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n",  ERRENCODE)
+				fmt.Printf("Console: %s\n", ErrEncode)
 				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			fmt.Printf("Console: %s\n",  ERRQUERY)
+			fmt.Printf("Console: %s\n", ErrRestaurantsNotFound)
 			return errors.New("fatal")
-		case  ERRSCAN:
+		case ErrRestaurantScan:
 			err := json.NewEncoder(ctx).Encode(ResultError{
 				Status:  http.StatusInternalServerError,
-				Explain:  ERRDB,
+				Explain: ErrDB,
 			})
 			if err != nil {
 				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n",  ERRENCODE)
+				fmt.Printf("Console: %s\n", ErrEncode)
 				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			fmt.Printf("Console: %s\n",  ERRSCAN)
-			return errors.New("fatal")
-		case ERRRESTNULL:
-			err := json.NewEncoder(ctx).Encode(ResultError{
-				Status:  http.StatusBadRequest,
-				Explain: ERRRESTNULL,
-			})
-			if err != nil {
-				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n",  ERRENCODE)
-				return errors.New("fatal")
-			}
-			ctx.Response.SetStatusCode(http.StatusOK)
-			fmt.Printf("Console: %s\n", ERRRESTNULL)
+			fmt.Printf("Console: %s\n", ErrRestaurantScan)
 			return errors.New("fatal")
 		}
 	}

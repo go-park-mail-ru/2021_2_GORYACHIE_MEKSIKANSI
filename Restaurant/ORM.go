@@ -16,7 +16,7 @@ func (db *Wrapper) GetRestaurants() ([]Restaurant, error) {
 		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant ORDER BY random() LIMIT 50")
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ERRQUERY,
+			Text: errorsConst.ErrRestaurantsNotFound,
 			Time: time.Now(),
 		}
 	}
@@ -28,7 +28,7 @@ func (db *Wrapper) GetRestaurants() ([]Restaurant, error) {
 			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating)
 		if err != nil {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.ERRSCAN,
+				Text: errorsConst.ErrRestaurantScan,
 				Time: time.Now(),
 			}
 		}

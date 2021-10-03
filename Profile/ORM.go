@@ -18,7 +18,7 @@ func (db *Wrapper) getRoleById(id int) (string, error) {
 		"SELECT id FROM host WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err.Error() != "no rows in result set" {
 		return "", &errorsConst.Errors{
-			Text: errorsConst.ERRHOSTSCAN,
+			Text: errorsConst.ErrHostScan,
 			Time: time.Now(),
 		}
 	}
@@ -30,7 +30,7 @@ func (db *Wrapper) getRoleById(id int) (string, error) {
 		"SELECT id FROM client WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err.Error() != "no rows in result set" {
 		return "", &errorsConst.Errors{
-			Text: errorsConst.ERRCLIENTSCAN,
+			Text: errorsConst.ErrClientScan,
 			Time: time.Now(),
 		}
 	}
@@ -42,7 +42,7 @@ func (db *Wrapper) getRoleById(id int) (string, error) {
 		"SELECT id FROM courier WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err.Error() != "no rows in result set" {
 		return "", &errorsConst.Errors{
-			Text: errorsConst.ERRCORIERSCAN,
+			Text: errorsConst.ErrCourierScan,
 			Time: time.Now(),
 		}
 	}
@@ -60,7 +60,7 @@ func (db *Wrapper) GetProfileHost(id int) (*Profile, error) {
 			&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ERRGETPROFILEHOSTSCAN,
+			Text: errorsConst.ErrGetProfileHostScan,
 			Time: time.Now(),
 		}
 	}
@@ -75,7 +75,7 @@ func (db *Wrapper) GetProfileClient(id int) (*Profile, error) {
 			&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ERRGETPROFILECLIENTSCAN,
+			Text: errorsConst.ErrGetProfileClientScan,
 			Time: time.Now(),
 		}
 	}
@@ -84,7 +84,7 @@ func (db *Wrapper) GetProfileClient(id int) (*Profile, error) {
 		"SELECT date_birthday FROM client WHERE client_id = $1", id).Scan(&profile.Birthday)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ERRGETBIRTHDAYSCAN,
+			Text: errorsConst.ErrGetBirthdayScan,
 			Time: time.Now(),
 		}
 	}
@@ -99,10 +99,9 @@ func (db *Wrapper) GetProfileCourier(id int) (*Profile, error) {
 			&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ERRGETPROFILECOURIERSCAN,
+			Text: errorsConst.ErrGetProfileCourierScan,
 			Time: time.Now(),
 		}
-
 	}
 	return &profile, nil
 }
