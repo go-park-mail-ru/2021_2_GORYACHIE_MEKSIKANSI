@@ -47,4 +47,5 @@ const(
 	ErrRestaurantsNotFound       = "ERROR: restaurants not found"
 	ErrRestaurantScan            = "ERROR: restaurant scan error"
 	ErrCookieNotFound            = "ERROR: cookie not found"
+	ErrRestaurantsNotSelect      = "ERROR: restaurant not select"  // TODO
 )
