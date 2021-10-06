@@ -34,7 +34,6 @@ func runServer(port string) {
 	api.GET("", restaurantInfo.RestaurantHandler)
 	api.POST("login", userInfo.LoginHandler)
 	api.POST("signup", userInfo.SignUpHandler)
-	api.GET("check", userInfo.CheckLoggedInHandler)
 
 	withCors := cors.NewCorsHandler(cors.Options{
 		AllowedOrigins: 	[]string{config.ALLOWEDORIGINSDOMEN + ":" + config.ALLOWEDORIGINSPORT},

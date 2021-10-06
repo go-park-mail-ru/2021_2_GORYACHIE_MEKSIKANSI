@@ -13,13 +13,17 @@ import (
 )
 
 type Profile struct {
-	Type     string    `json:"type"`
 	Name     string    `json:"name"`
-	Email    string    `json:"email,omitempty"`
-	Phone    string    `json:"phone,omitempty"`
+	Email    string    `json:"email"`
+	Phone    string    `json:"phone"`
 	Avatar   string    `json:"avatar"`
 	Birthday time.Time `json:"birthday,omitempty"`
 }
+
+type ProfileResponse struct {
+	ProfileUser	interface{}	`json:"profile"`
+}
+
 
 type ProfileInfo struct {
 	ConnectionDB *pgxpool.Pool
@@ -44,7 +48,9 @@ func (u *ProfileInfo) ProfileHandler(ctx *fasthttp.RequestCtx) {
 
 	err = json.NewEncoder(ctx).Encode(&auth.Result{
 		Status: http.StatusOK,
-		Body:   profile,
+		Body:   &ProfileResponse{
+			profile,
+		},
 	})
 	ctx.Response.SetStatusCode(http.StatusOK)
 	if err != nil {

@@ -15,13 +15,23 @@ type UserInfo struct {
 	ConnectionDB *pgxpool.Pool
 }
 
-type Registration struct {
+type RegistrationRequest struct {
 	TypeUser string		`json:"type"`
 	Name     string 	`json:"name"`
 	Email    string		`json:"email"`
 	Phone    string		`json:"phone"`
 	Password string		`json:"password"`
-	Birthday time.Time	`json:"birthday"`
+}
+
+type User struct {
+	TypeUser string		`json:"type"`
+	Name     string    	`json:"name"`
+	Email    string		`json:"email"`
+	Phone    string		`json:"phone"`
+}
+
+type RegistrationResponse struct {
+	User	interface{}	`json:"user"`
 }
 
 type Authorization struct {
@@ -31,13 +41,13 @@ type Authorization struct {
 }
 
 type Result struct {
-	Status int         `json:"status,omitempty"`
-	Body   interface{} `json:"parsedJSON,omitempty"`
+	Status int         `json:"status"`
+	Body   interface{} `json:"body,omitempty"`
 }
 
 func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	wrapper := Wrapper{Conn: u.ConnectionDB}
-	signUpAll := Registration{}
+	signUpAll := RegistrationRequest{}
 	err := json.Unmarshal(ctx.Request.Body(), &signUpAll)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusOK)
@@ -59,11 +69,13 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 
 	err = json.NewEncoder(ctx).Encode(&Result{
 		Status: http.StatusOK,
-		Body: &Registration{
-			TypeUser: signUpAll.TypeUser,
-			Name:     signUpAll.Name,
-			Email:    signUpAll.Email,
-			Phone:    signUpAll.Phone,
+		Body: &RegistrationResponse{
+			User: &User{
+				TypeUser: signUpAll.TypeUser,
+				Name:     signUpAll.Name,
+				Email:    signUpAll.Email,
+				Phone:    signUpAll.Phone,
+			},
 		},
 	})
 	if err != nil {
@@ -137,26 +149,5 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
-}
-
-func(u *UserInfo) CheckLoggedInHandler(ctx *fasthttp.RequestCtx) {
-	cookieDB := mid.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
-	_ , err := mid.GetIdByCookie(u.ConnectionDB, &cookieDB)
-
-	errOut := errors.CheckErrorLoggedIn(err, ctx)
-	if errOut != nil {
-		return
-	}
-
-	err = json.NewEncoder(ctx).Encode(&Result{
-		Status: http.StatusOK,
-	})
-	if err != nil {
-		ctx.Response.SetStatusCode(http.StatusOK)
-		fmt.Printf("Console: %s\n", errors.ErrEncode)
-		return
-	}
-	ctx.Response.SetStatusCode(http.StatusOK)
 	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }

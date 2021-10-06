@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS restaurant, general_user_info, host, client, cookie, courier, card, address_user, dishes, event, favorite_restaurant, feedback, manager, order_list, order_user, promocode, promocode_on_food, restaurant_category, structure_dishes, worker CASCADE;
-
 CREATE TABLE IF NOT EXISTS  general_user_info
 (
     id SERIAL PRIMARY KEY,
@@ -39,9 +37,9 @@ CREATE TABLE IF NOT EXISTS  cookie (
     id serial PRIMARY KEY,
     client_id int,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
-    session_id text NOT NULL,
+    session_id varchar(92) NOT NULL,
     date_life timestamp NOT NULL,
-    csrf_token varchar(64) NOT NULL
+    csrf_token varchar(92) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS  host (
@@ -54,7 +52,7 @@ CREATE TABLE IF NOT EXISTS  client (
     id serial PRIMARY KEY,
     client_id int UNIQUE,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
-    date_birthday timestamp NOT NULL
+    date_birthday timestamp DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS  courier (
@@ -220,6 +218,3 @@ CREATE TABLE IF NOT EXISTS  cart(
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
     FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE
 );
-
-INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ('root', 'root@root', 88888888888, 'ca2e080a74ed1590cd141171c20e164d40d058fb45817c7b59f83159d059a6c0', 'salt');
-INSERT INTO client (client_id, date_birthday) VALUES (1, NOW());

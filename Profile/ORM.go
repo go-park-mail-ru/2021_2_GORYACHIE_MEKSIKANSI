@@ -2,9 +2,9 @@ package Profile
 
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
-	"time"
 	"context"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"time"
 )
 
 type Wrapper struct {
@@ -82,7 +82,7 @@ func (db *Wrapper) GetProfileClient(id int) (*Profile, error) {
 
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT date_birthday FROM client WHERE client_id = $1", id).Scan(&profile.Birthday)
-	if err != nil {
+	if err != nil && err.Error() != "can't scan into dest[0]: cannot assign NULL to *time.Time" {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ErrGetBirthdayScan,
 			Time: time.Now(),

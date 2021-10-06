@@ -21,7 +21,7 @@ const(
 	ErrDB                        = "ERROR: database is not responding"
 	ErrEncode                    = "ERROR: Encode"
 	ErrUnmarshal                 = "ERROR: unmarshal json"
-	ErrAuth                      = "ERROR: authorization failed"
+	ErrAuth                      = "Вы не авторизированы"
 )
 
 // Error of Authorization
@@ -36,6 +36,8 @@ const(
 	ErrDeleteCookie              = "ERROR: cookie not delete"
 	ErrInsertCookie              = "ERROR: cookie not insert"
 	ErrGeneralInfoUnique         = "Телефон или Email уже зарегистрирован"
+	ErrPhoneFormat               = "Неверный формат телефона"
+	ErrUserNotFoundLogin         = "ERROR: user not found"
 )
 
 // Error of Middleware
@@ -47,6 +49,12 @@ const(
 	ErrUpdateCSRF                = "ERROR: csrf not updated"
 	ErrCookieExpired             = "ERROR: cookie expired"
 	ErrCookieNotFound            = "ERROR: cookie not found"
+	ErrFileNotFound              = "ERROR: CreateTables.sql not found" // TODO: add handler
+	ErrDeleteFileNotFound        = "ERROR: DeleteTables.sql not found" // TODO: add handler
+	ErrFillFileNotFound          = "ERROR: Fill.sql not found"         // TODO: add handler
+	ErrNotCreateTables           = "ERROR: table not create"           // TODO: add handler
+	ErrNotDeleteTables           = "ERROR: table not delete"           // TODO: add handler
+	ErrNotFillTables             = "ERROR: table not fill"             // TODO: add handler
 )
 
 // Error of profile

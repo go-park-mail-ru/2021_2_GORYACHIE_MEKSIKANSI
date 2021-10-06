@@ -20,6 +20,10 @@ type Restaurant struct {
 	Rating              float32 `json:"rating"`
 }
 
+type RestaurantResponse struct {
+	RestaurantsGet	interface{}	`json:"restaurants"`
+}
+
 type RestaurantInfo struct {
 	ConnectionDB *pgxpool.Pool
 }
@@ -35,7 +39,9 @@ func (r *RestaurantInfo) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 	ctx.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&auth.Result{
 		Status: http.StatusOK,
-		Body: restaurant,
+		Body: &RestaurantResponse {
+			RestaurantsGet: restaurant,
+		},
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusOK)

@@ -18,7 +18,7 @@ func randString(length int) string {
 	return b.String()
 }
 
-func SignUp(db Wrapper, signup *Registration) (*mid.Defense, error) {
+func SignUp(db Wrapper, signup *RegistrationRequest) (*mid.Defense, error) {
 	var cookie *mid.Defense
 	var err error
 	switch signup.TypeUser {

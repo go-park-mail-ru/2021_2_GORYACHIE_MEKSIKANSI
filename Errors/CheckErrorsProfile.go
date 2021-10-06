@@ -50,7 +50,7 @@ func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx) error {
 			return errors.New("fatal")
 		case ErrCookieExpired:
 			errEncode := json.NewEncoder(ctx).Encode( ResultError{
-				Status:  http.StatusUnauthorized, // подумать над другим кодом
+				Status:  http.StatusUnauthorized,
 				Explain: ErrCookieExpired,
 			})
 			if errEncode != nil {

@@ -24,6 +24,19 @@ func CheckErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 			ctx.Response.SetStatusCode(http.StatusOK)
 			fmt.Printf("Console: %s\n", ErrGeneralInfoUnique)
 			return errors.New("fatal")
+		case ErrPhoneFormat:
+			errEncode := json.NewEncoder(ctx).Encode( ResultError{
+				Status:  http.StatusUnauthorized,
+				Explain: ErrPhoneFormat,
+			})
+			if errEncode != nil {
+				ctx.Response.SetStatusCode(http.StatusInternalServerError)
+				fmt.Printf("Console: %s\n", ErrEncode)
+				return errors.New("fatal")
+			}
+			ctx.Response.SetStatusCode(http.StatusOK)
+			fmt.Printf("Console: %s\n", ErrPhoneFormat)
+			return errors.New("fatal")
 		case ErrGeneralInfoScan, ErrInsertHost, ErrInsertTransactionCookie, ErrInsertCourier, ErrInsertClient:
 			errEncode := json.NewEncoder(ctx).Encode( ResultError{
 				Status:  http.StatusInternalServerError,
@@ -45,7 +58,7 @@ func CheckErrorSignUp(errIn error, ctx *fasthttp.RequestCtx) error {
 func CheckErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 	if err != nil {
 		switch err.Error() {
-		case ErrLoginOrPasswordIncorrect:  // 409, объединить логин/пароль и email
+		case ErrLoginOrPasswordIncorrect, ErrUserNotFoundLogin:
 			errEncode := json.NewEncoder(ctx).Encode( ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: ErrLoginOrPasswordIncorrect,
@@ -56,7 +69,7 @@ func CheckErrorLogin(err error, ctx *fasthttp.RequestCtx) error {
 				return errors.New("fatal")
 			}
 			ctx.Response.SetStatusCode(http.StatusOK)
-			fmt.Printf("Console: %s\n", ErrLoginOrPasswordIncorrect)
+			fmt.Printf("Console: %s\n", err.Error())
 			return errors.New("fatal")
 		case ErrInsertCookie, ErrSelectSaltInLogin:
 			errEncode := json.NewEncoder(ctx).Encode( ResultError{
@@ -120,42 +133,8 @@ func CheckErrorLogoutAccess(err error, ctx *fasthttp.RequestCtx) error {
 				fmt.Printf("Console: %s\n", ErrEncode)
 				return errors.New("fatal")
 			}
-			ctx.Response.SetStatusCode(http.StatusUnauthorized)
-			fmt.Printf("Console: %s\n", ErrCheckAccessCookieNotFound)
-			return errors.New("fatal")
-		}
-	}
-	return nil
-}
-
-func CheckErrorLoggedIn(err error, ctx *fasthttp.RequestCtx) error {
-	if err != nil {
-		switch err.Error() {
-		case ErrCookieScan:
-			errEncode := json.NewEncoder(ctx).Encode( ResultError{
-				Status:  http.StatusInternalServerError,
-				Explain: ErrDB,
-			})
-			if errEncode != nil {
-				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ErrEncode)
-				return errors.New("fatal")
-			}
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			fmt.Printf("Console: %s\n", ErrCookieScan)
-			return errors.New("fatal")
-		case ErrCookieExpired, ErrCookieNotFound, ErrCheckAccessCookieNotFound:
-			errEncoder := json.NewEncoder(ctx).Encode( ResultError{
-				Status:  http.StatusUnauthorized,
-				Explain: ErrCookieExpired,
-			})
-			if errEncoder != nil {
-				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ErrEncode)
-				return errors.New("fatal")
-			}
 			ctx.Response.SetStatusCode(http.StatusOK)
-			fmt.Printf("Console: %s\n", err.Error())
+			fmt.Printf("Console: %s\n", ErrCheckAccessCookieNotFound)
 			return errors.New("fatal")
 		}
 	}

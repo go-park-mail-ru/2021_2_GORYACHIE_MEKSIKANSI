@@ -8,7 +8,9 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"io/ioutil"
 	"math/big"
+	"strings"
 	"time"
 )
 
@@ -32,11 +34,74 @@ func HashPassword(password string, salt string) string {
 
 func CreateDb() (*pgxpool.Pool, error) {
 	var err error
-	conn, err := pgxpool.Connect(context.Background(), "postgres://" + config.DBLOGIN + ":" + config.DBPASSWORD + "@" + config.DBHOST + ":" + config.DBPORT + "/" + config.DBNAME)
+	conn, err := pgxpool.Connect(context.Background(),
+		"postgres://" + config.DBLOGIN + ":" + config.DBPASSWORD +
+		"@" + config.DBHOST + ":" + config.DBPORT + "/" + config.DBNAME)
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ErrNotConnect,
 			Time: time.Now(),
+		}
+	}
+
+	if config.DEBUG {
+		file, err := ioutil.ReadFile("PostgreSQL/DeleteTables.sql")
+		if err != nil {
+			return nil, &errorsConst.Errors{
+				Text: errorsConst.ErrDeleteFileNotFound,
+				Time: time.Now(),
+			}
+		}
+
+		requests := strings.Split(string(file), ";")
+		for _, request := range requests {
+			_, err = conn.Exec(context.Background(), request)
+			if err != nil {
+				return nil, &errorsConst.Errors{
+					Text: errorsConst.ErrNotDeleteTables,
+					Time: time.Now(),
+				}
+			}
+		}
+	}
+
+	file, err := ioutil.ReadFile("PostgreSQL/CreateTables.sql")
+	if err != nil {
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ErrFileNotFound,
+			Time: time.Now(),
+		}
+	}
+
+	requests := strings.Split(string(file), ";")
+	for _, request := range requests {
+		_, err = conn.Exec(context.Background(), request)
+		if err != nil {
+			return nil, &errorsConst.Errors{
+				Text: errorsConst.ErrNotCreateTables,
+				Time: time.Now(),
+			}
+		}
+	}
+
+	if config.DEBUG {
+		file, err := ioutil.ReadFile("PostgreSQL/Fill.sql")
+		if err != nil {
+			return nil, &errorsConst.Errors{
+				Text: errorsConst.ErrFillFileNotFound,
+				Time: time.Now(),
+			}
+		}
+
+		requests := strings.Split(string(file), ";")
+		for _, request := range requests {
+			_, err = conn.Exec(context.Background(), request)
+			if err != nil {
+				return nil, &errorsConst.Errors{
+					Text: errorsConst.ErrNotFillTables,
+					Time: time.Now(),
+				}
+			}
 		}
 	}
 	return conn, nil

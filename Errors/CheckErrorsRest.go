@@ -13,7 +13,7 @@ func CheckErrorRestaurant(err error, ctx *fasthttp.RequestCtx) error {
 		switch err.Error() {
 		case ErrRestaurantsNotFound:
 			errEncode := json.NewEncoder(ctx).Encode(ResultError{
-				Status:  http.StatusNoContent,
+				Status:  http.StatusNotFound,
 				Explain: ErrRestaurantsNotFound,
 			})
 			if errEncode != nil {

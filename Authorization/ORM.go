@@ -6,6 +6,7 @@ import (
 	"context"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"strconv"
 	"time"
 )
 
@@ -13,10 +14,17 @@ type Wrapper struct {
 	Conn        *pgxpool.Pool
 }
 
-func (db *Wrapper) GeneralSignUp(signup *Registration, transaction pgx.Tx) (int, error) {
+func (db *Wrapper) GeneralSignUp(signup *RegistrationRequest, transaction pgx.Tx) (int, error) {
 	var userId int
 
 	salt := randString(LENSALT)
+
+	if _, err := strconv.Atoi(signup.Phone); err != nil {
+		return 0, &errorsConst.Errors{
+			Text: errorsConst.ErrPhoneFormat,
+			Time: time.Now(),
+		}
+	}
 
 	err := transaction.QueryRow(context.Background(),
 		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
@@ -31,7 +39,7 @@ func (db *Wrapper) GeneralSignUp(signup *Registration, transaction pgx.Tx) (int,
 					Time: time.Now(),
 				}
 			}
-            return 0, &errorsConst.Errors {
+            return 0, &errorsConst.Errors{
 				Text: errorsConst.ErrGeneralInfoScan,
 				Time: time.Now(),
 			}
@@ -39,7 +47,7 @@ func (db *Wrapper) GeneralSignUp(signup *Registration, transaction pgx.Tx) (int,
 	return userId, nil
 }
 
-func (db *Wrapper) SignupHost(signup *Registration) (*mid.Defense, error) {
+func (db *Wrapper) SignupHost(signup *RegistrationRequest) (*mid.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
 	defer func(tx pgx.Tx, ctx context.Context) {
 		err := tx.Rollback(ctx)
@@ -72,7 +80,7 @@ func (db *Wrapper) SignupHost(signup *Registration) (*mid.Defense, error) {
 	return cookie, nil
 }
 
-func (db *Wrapper) SignupCourier(signup *Registration) (*mid.Defense, error) {
+func (db *Wrapper) SignupCourier(signup *RegistrationRequest) (*mid.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
 
 	defer func(tx pgx.Tx, ctx context.Context) {
@@ -107,7 +115,7 @@ func (db *Wrapper) SignupCourier(signup *Registration) (*mid.Defense, error) {
 	return cookie, err
 }
 
-func (db *Wrapper) SignupClient(signup *Registration) (*mid.Defense, error) {
+func (db *Wrapper) SignupClient(signup *RegistrationRequest) (*mid.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
 
 	defer func(tx pgx.Tx, ctx context.Context) {
@@ -130,7 +138,7 @@ func (db *Wrapper) SignupClient(signup *Registration) (*mid.Defense, error) {
 	}
 
 	_, err = tx.Exec(context.Background(),
-		"INSERT INTO client (client_id, date_birthday) VALUES ($1, $2)", userId, signup.Birthday)
+		"INSERT INTO client (client_id) VALUES ($1)", userId)
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ErrInsertClient,
@@ -164,6 +172,12 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 		"SELECT salt FROM general_user_info WHERE email = $1",
 		email).Scan(&salt)
 	if err != nil {
+		if err.Error() == "no rows in result set" {
+			return 0, &errorsConst.Errors{
+				Text: errorsConst.ErrUserNotFoundLogin,
+				Time: time.Now(),
+			}
+		}
 		return 0, &errorsConst.Errors{
 			Text: errorsConst.ErrSelectSaltInLogin,
 			Time: time.Now(),
@@ -191,6 +205,12 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 		"SELECT salt FROM general_user_info WHERE phone = $1",
 		phone).Scan(&salt)
 	if err != nil {
+		if err.Error() == "no rows in result set" {
+			return 0, &errorsConst.Errors{
+				Text: errorsConst.ErrUserNotFoundLogin,
+				Time: time.Now(),
+			}
+		}
 		return 0, &errorsConst.Errors{
 			Text: errorsConst.ErrSelectSaltInLogin,
 			Time: time.Now(),
