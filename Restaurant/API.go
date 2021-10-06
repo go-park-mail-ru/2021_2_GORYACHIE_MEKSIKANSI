@@ -24,7 +24,7 @@ type RestaurantInfo struct {
 	ConnectionDB *pgxpool.Pool
 }
 
-func (r *RestaurantInfo) ProductsHandler(ctx *fasthttp.RequestCtx) {
+func (r *RestaurantInfo) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 	WrapperDB := Wrapper{Conn: r.ConnectionDB}
 	restaurant, err := AllRestaurants(WrapperDB)
 	err = errors.CheckErrorRestaurant(err, ctx)

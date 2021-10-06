@@ -26,13 +26,12 @@ type ProfileInfo struct {
 }
 
 func (u *ProfileInfo) ProfileHandler(ctx *fasthttp.RequestCtx) {
-	cookieHTTP := fasthttp.Cookie{}
 	wrapper := Wrapper{Conn: u.ConnectionDB}
 	cookieDB := mid.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 
 	id, err := mid.GetIdByCookie(u.ConnectionDB, &cookieDB)
 
-	errOut := errors.CheckErrorProfileCookie(err, ctx, &cookieHTTP)
+	errOut := errors.CheckErrorProfileCookie(err, ctx)
 	if errOut != nil {
 		return
 	}

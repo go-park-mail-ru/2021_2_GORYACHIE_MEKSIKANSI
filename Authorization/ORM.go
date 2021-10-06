@@ -165,7 +165,7 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 		email).Scan(&salt)
 	if err != nil {
 		return 0, &errorsConst.Errors{
-			Text: errorsConst.ErrSelectSalt,
+			Text: errorsConst.ErrSelectSaltInLogin,
 			Time: time.Now(),
 		}
 	}
@@ -192,7 +192,7 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 		phone).Scan(&salt)
 	if err != nil {
 		return 0, &errorsConst.Errors{
-			Text: errorsConst.ErrSelectSalt,
+			Text: errorsConst.ErrSelectSaltInLogin,
 			Time: time.Now(),
 		}
 	}

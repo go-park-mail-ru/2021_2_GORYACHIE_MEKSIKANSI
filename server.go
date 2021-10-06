@@ -29,10 +29,9 @@ func runServer(port string) {
 
 	myRouter := router.New()
 	api := myRouter.Group("/api/")
-
 	api.GET("profile", profileInfo.ProfileHandler)
 	api.POST("logout", userInfo.LogoutHandler)
-	api.GET("", restaurantInfo.ProductsHandler)
+	api.GET("", restaurantInfo.RestaurantHandler)
 	api.POST("login", userInfo.LoginHandler)
 	api.POST("signup", userInfo.SignUpHandler)
 	api.GET("check", userInfo.CheckLoggedInHandler)
