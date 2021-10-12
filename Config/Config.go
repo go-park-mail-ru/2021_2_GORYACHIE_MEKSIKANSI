@@ -1,12 +1,12 @@
 package Config
 
 const (
-	DEBUG = false
-	ALLOWEDORIGINSDOMEN = "http://127.0.0.1"
-	ALLOWEDORIGINSPORT = "3000"
-	DBLOGIN = "Captain-matroskin"
-	DBPASSWORD = "74tbr6r54f78"
-	DBNAME = "hot_mexicans_db"
-	DBHOST = "localhost"
-	DBPORT = "5432"
+	DEBUG               = false
+	AllowedOriginsDomen = "http://127.0.0.1"
+	AllowedOriginsPort = "3000"
+	DBLogin    = "Captain-matroskin"
+	DBPassword = "74tbr6r54f78"
+	DBName = "hot_mexicans_db"
+	DBHost = "localhost"
+	DBPort = "5432"
 )

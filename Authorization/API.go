@@ -9,6 +9,7 @@ import (
 	"github.com/valyala/fasthttp"
 	"net/http"
 	"time"
+
 )
 
 type UserInfo struct {
@@ -50,7 +51,8 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	signUpAll := RegistrationRequest{}
 	err := json.Unmarshal(ctx.Request.Body(), &signUpAll)
 	if err != nil {
-		ctx.Response.SetStatusCode(http.StatusOK)
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
 		fmt.Printf("Console: %s\n", errors.ErrUnmarshal)
 		return
 	}
@@ -58,10 +60,20 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	cookieHTTP := fasthttp.Cookie{}
 	cookieDB, errIn := SignUp(wrapper, &signUpAll)
 
-	errOut := errors.CheckErrorSignUp(errIn, ctx)
-	if errOut != nil{
-		return
+	errOut, resultOut, codeHTTP := errors.CheckErrorSignUp(errIn)
+	if errOut != nil {
+		switch errOut.Error() {
+		case errors.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			return
+		case errors.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOut)
+			return
+		}
 	}
+
 	mid.SetCookieResponse(&cookieHTTP, *cookieDB, mid.KEYCOOKIESESSION)
 	ctx.Response.Header.SetCookie(&cookieHTTP)
 	ctx.Response.Header.Set("X-Csrf-Token", cookieDB.CsrfToken)
@@ -79,11 +91,12 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 		},
 	})
 	if err != nil {
-		ctx.Response.SetStatusCode(http.StatusOK)
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrEncode))
 		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
-	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
+
 }
 
 func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
@@ -91,16 +104,26 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	userLogin := Authorization{}
 	err := json.Unmarshal(ctx.Request.Body(), &userLogin)
 	if err != nil {
-		ctx.Response.SetStatusCode(http.StatusOK)
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
 		fmt.Printf("Console: %s\n", errors.ErrUnmarshal)
 		return
 	}
 	cookieHTTP := fasthttp.Cookie{}
 	cookieDB, err := Login(wrapper, &userLogin)
 
-	errOut := errors.CheckErrorLogin(err, ctx)
+	errOut, resultOut, codeHTTP := errors.CheckErrorLogin(err)
 	if errOut != nil {
-		return
+		switch errOut.Error() {
+		case errors.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			return
+		case errors.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOut)
+			return
+		}
 	}
 
 	mid.SetCookieResponse(&cookieHTTP, *cookieDB, mid.KEYCOOKIESESSION)
@@ -112,12 +135,12 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 		Status: http.StatusOK,
 	})
 	if err != nil {
-		ctx.Response.SetStatusCode(http.StatusOK)
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrEncode))
 		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
 
-	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }
 
 func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
@@ -126,15 +149,33 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	cookieDB := mid.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
 	_, err := mid.CheckAccess(u.ConnectionDB, &cookieDB)
-	errAccess := errors.CheckErrorLogoutAccess(err, ctx)
-	if errAccess != nil {
-		return
+	errAccess, resultOutAccess, codeHTTP := errors.CheckErrorLogoutAccess(err)
+	if resultOutAccess != nil {
+		switch errAccess.Error() {
+		case errors.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			return
+		case errors.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOutAccess)
+			return
+		}
 	}
 
 	err = Logout(wrapper, &cookieDB)
-	errOut := errors.CheckErrorLogout(err, ctx)
+	errOut, resultOut, codeHTTP:= errors.CheckErrorLogout(err)
 	if errOut != nil {
-		return
+		switch errOut.Error() {
+		case errors.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			return
+		case errors.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOut)
+			return
+		}
 	}
 
 	cookieDB.DateLife = time.Now().Add(time.Hour * -3)
@@ -146,8 +187,10 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 		Status: http.StatusOK,
 	})
 	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrEncode))
+		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
 
-	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }

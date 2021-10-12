@@ -2,44 +2,55 @@ package Errors
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"github.com/valyala/fasthttp"
 	"net/http"
+	"time"
 )
 
-func CheckErrorRestaurant(err error, ctx *fasthttp.RequestCtx) error {
+func CheckErrorRestaurant(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrRestaurantsNotFound:
-			errEncode := json.NewEncoder(ctx).Encode(ResultError{
+			result, errMarshal:= json.Marshal(ResultError{
 				Status:  http.StatusNotFound,
 				Explain: ErrRestaurantsNotFound,
 			})
-			if errEncode != nil {
-				ctx.Response.SetStatusCode(http.StatusOK)
-				fmt.Printf("Console: %s\n", ErrEncode)
-				return errors.New("fatal")
+			if errMarshal != nil {
+				fmt.Printf("Console: %s\n", ErrMarshal)
+				return &Errors{
+						Text: ErrMarshal,
+						Time: time.Now(),
+					},
+					nil, http.StatusInternalServerError
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
 			fmt.Printf("Console: %s\n", ErrRestaurantsNotFound)
-			return errors.New("fatal")
+			return &Errors{
+					Text: ErrCheck,
+					Time: time.Now(),
+				},
+				result, http.StatusOK
 		case ErrRestaurantScan:
-			errEncode := json.NewEncoder(ctx).Encode(ResultError{
+			result, errMarshal:= json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
-			if errEncode != nil {
-				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ErrEncode)
-				return errors.New("fatal")
+			if errMarshal != nil {
+				fmt.Printf("Console: %s\n", ErrMarshal)
+				return &Errors{
+						Text: ErrMarshal,
+						Time: time.Now(),
+					},
+					nil, http.StatusInternalServerError
 			}
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			fmt.Printf("Console: %s\n", ErrRestaurantScan)
-			return errors.New("fatal")
+			fmt.Printf("Console: %s\n", err.Error())
+			return &Errors{
+					Text: ErrCheck,
+					Time: time.Now(),
+				},
+				result, http.StatusInternalServerError
 		}
 	}
-	return nil
+	return nil, nil, HttpNil
 }
 
 

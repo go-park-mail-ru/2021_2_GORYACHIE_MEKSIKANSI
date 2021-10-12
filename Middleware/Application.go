@@ -14,7 +14,6 @@ import (
 	"time"
 )
 
-
 func RandomInteger(min int, max int) int {
 	nBig, err := rand.Int(rand.Reader, big.NewInt(int64(max - min)))
 	if err != nil {
@@ -35,8 +34,8 @@ func HashPassword(password string, salt string) string {
 func CreateDb() (*pgxpool.Pool, error) {
 	var err error
 	conn, err := pgxpool.Connect(context.Background(),
-		"postgres://" + config.DBLOGIN + ":" + config.DBPASSWORD +
-		"@" + config.DBHOST + ":" + config.DBPORT + "/" + config.DBNAME)
+		"postgres://" + config.DBLogin+ ":" + config.DBPassword+
+		"@" + config.DBHost+ ":" + config.DBPort+ "/" + config.DBName)
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ErrNotConnect,

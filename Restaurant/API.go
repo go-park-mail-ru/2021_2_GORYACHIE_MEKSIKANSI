@@ -31,9 +31,18 @@ type RestaurantInfo struct {
 func (r *RestaurantInfo) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 	WrapperDB := Wrapper{Conn: r.ConnectionDB}
 	restaurant, err := AllRestaurants(WrapperDB)
-	err = errors.CheckErrorRestaurant(err, ctx)
-	if err != nil {
-		return
+	errOut, resultOutAccess, codeHTTP  := errors.CheckErrorRestaurant(err)
+	if resultOutAccess != nil {
+		switch errOut.Error() {
+		case errors.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			return
+		case errors.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOutAccess)
+			return
+		}
 	}
 
 	ctx.SetStatusCode(http.StatusOK)
@@ -48,5 +57,4 @@ func (r *RestaurantInfo) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
-	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }

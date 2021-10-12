@@ -11,11 +11,6 @@ type Wrapper struct {
 	Conn *pgxpool.Pool
 }
 
-type InterfaceRestaurant interface {
-	GetRestaurants(InterfaceRestaurant) ([]Restaurant, error)
-}
-
-//func GetRestaurants(db InterfaceRestaurant) ([]Restaurant, error) {
 func (db *Wrapper) GetRestaurants() ([]Restaurant, error) {
 	row, err := db.Conn.Query(context.Background(),
 		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant ORDER BY random() LIMIT 50")

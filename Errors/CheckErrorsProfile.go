@@ -2,80 +2,102 @@ package Errors
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"github.com/valyala/fasthttp"
 	"net/http"
+	"time"
 )
 
-func CheckErrorProfile(err error, ctx *fasthttp.RequestCtx) error {
+func CheckErrorProfile(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrGetProfileClientScan, ErrGetBirthdayScan, ErrGetProfileCourierScan, ErrGetProfileHostScan,
 		ErrClientScan, ErrHostScan, ErrCourierScan:
-			errEncode := json.NewEncoder(ctx).Encode(ResultError{
+			result, errMarshal:= json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
-			if errEncode != nil {
-				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ErrEncode)
-				return errors.New("fatal")
+			if errMarshal != nil {
+				fmt.Printf("Console: %s\n", ErrMarshal)
+				return &Errors{
+						Text: ErrMarshal,
+						Time: time.Now(),
+					},
+					nil, http.StatusInternalServerError
 			}
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", err.Error())
-			return errors.New("fatal")
+			return &Errors{
+					Text: ErrCheck,
+					Time: time.Now(),
+				},
+				result, http.StatusInternalServerError
 		}
 	}
-	return nil
+	return nil, nil, HttpNil
 }
 
 
-func CheckErrorProfileCookie(err error, ctx *fasthttp.RequestCtx) error {
+func CheckErrorProfileCookie(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-
 		case ErrCookieScan:
-			errEncode := json.NewEncoder(ctx).Encode( ResultError{
+			result, errMarshal:= json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
-			if errEncode != nil {
-				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ErrEncode)
-				return errors.New("fatal")
+			if errMarshal != nil {
+				fmt.Printf("Console: %s\n", ErrMarshal)
+				return &Errors{
+						Text: ErrMarshal,
+						Time: time.Now(),
+					},
+					nil, http.StatusInternalServerError
 			}
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", ErrCookieScan)
-			return errors.New("fatal")
+			return &Errors{
+					Text: ErrCheck,
+					Time: time.Now(),
+				},
+				result, http.StatusInternalServerError
 		case ErrCookieExpired:
-			errEncode := json.NewEncoder(ctx).Encode( ResultError{
+			result, errMarshal:= json.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: ErrCookieExpired,
 			})
-			if errEncode != nil {
-				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ErrEncode)
-				return errors.New("fatal")
+			if errMarshal != nil {
+				fmt.Printf("Console: %s\n", ErrMarshal)
+				return &Errors{
+						Text: ErrMarshal,
+						Time: time.Now(),
+					},
+					nil, http.StatusInternalServerError
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
 			fmt.Printf("Console: %s\n", ErrCookieExpired)
-			return errors.New("fatal")
+			return &Errors{
+					Text: ErrCheck,
+					Time: time.Now(),
+				},
+				result, http.StatusOK
 		case ErrCookieNotFound:
-			errEncode := json.NewEncoder(ctx).Encode( ResultError{
+			result, errMarshal:= json.Marshal(ResultError{
 				Status:  http.StatusConflict,
 				Explain: ErrAuth,
 			})
-			if errEncode != nil {
-				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				fmt.Printf("Console: %s\n", ErrEncode)
-				return errors.New("fatal")
+			if errMarshal != nil {
+				fmt.Printf("Console: %s\n", ErrMarshal)
+				return &Errors{
+						Text: ErrMarshal,
+						Time: time.Now(),
+					},
+					nil, http.StatusInternalServerError
 			}
-			ctx.Response.SetStatusCode(http.StatusOK)
 			fmt.Printf("Console: %s\n", ErrCookieNotFound)
-			return errors.New("fatal")
+			return &Errors{
+					Text: ErrCheck,
+					Time: time.Now(),
+				},
+				result, http.StatusOK
 		}
 	}
-	return nil
+	return nil, nil, HttpNil
 }
 
