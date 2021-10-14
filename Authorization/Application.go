@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-const LENSALT = 5
+const LenSalt = 5
 
 func randString(length int) string {
 	chars := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")

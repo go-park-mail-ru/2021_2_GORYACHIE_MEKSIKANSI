@@ -2,22 +2,22 @@ package Authorization
 
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	"2021_2_GORYACHIE_MEKSIKANSI/Interface"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	"context"
 	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"strconv"
 	"time"
 )
 
 type Wrapper struct {
-	Conn        *pgxpool.Pool
+	Conn Interface.ConnectionInterface
 }
 
 func (db *Wrapper) GeneralSignUp(signup *RegistrationRequest, transaction pgx.Tx) (int, error) {
 	var userId int
 
-	salt := randString(LENSALT)
+	salt := randString(LenSalt)
 
 	if _, err := strconv.Atoi(signup.Phone); err != nil {
 		return 0, &errorsConst.Errors{

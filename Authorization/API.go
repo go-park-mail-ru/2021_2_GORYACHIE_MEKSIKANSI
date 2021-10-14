@@ -74,7 +74,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	mid.SetCookieResponse(&cookieHTTP, *cookieDB, mid.KEYCOOKIESESSION)
+	mid.SetCookieResponse(&cookieHTTP, *cookieDB, mid.KeyCookieSessionId)
 	ctx.Response.Header.SetCookie(&cookieHTTP)
 	ctx.Response.Header.Set("X-Csrf-Token", cookieDB.CsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
@@ -126,7 +126,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	mid.SetCookieResponse(&cookieHTTP, *cookieDB, mid.KEYCOOKIESESSION)
+	mid.SetCookieResponse(&cookieHTTP, *cookieDB, mid.KeyCookieSessionId)
 	ctx.Response.Header.SetCookie(&cookieHTTP)
 	ctx.Response.Header.Set("X-CSRF-Token", cookieDB.CsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
@@ -179,7 +179,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	cookieDB.DateLife = time.Now().Add(time.Hour * -3)
-	mid.SetCookieResponse(&cookieHTTP, cookieDB, mid.KEYCOOKIESESSION)
+	mid.SetCookieResponse(&cookieHTTP, cookieDB, mid.KeyCookieSessionId)
 	ctx.Response.Header.SetCookie(&cookieHTTP)
 	ctx.Response.SetStatusCode(http.StatusOK)
 

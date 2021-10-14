@@ -2,13 +2,13 @@ package Restaurant
 
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	"2021_2_GORYACHIE_MEKSIKANSI/Interface"
 	"context"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"time"
 )
 
 type Wrapper struct {
-	Conn *pgxpool.Pool
+	Conn Interface.ConnectionInterface
 }
 
 func (db *Wrapper) GetRestaurants() ([]Restaurant, error) {

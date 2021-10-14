@@ -7,10 +7,10 @@ import (
 )
 
 const (
-	DAYLIVECOOKIE		= 5
-	LENSESSINID			= 92
-	LENCSRFTOKEN 		= 92
-	KEYCOOKIESESSION	= "session_id"
+	DayLiveCookie 		= 5
+	LenSessionId		= 92
+	LenCsrfToken		= 92
+	KeyCookieSessionId	= "session_id"
 )
 
 type Defense struct {
@@ -39,8 +39,8 @@ func randString(length int) string {
 }
 
 func (c Defense) GenerateNew() *Defense {
-	c.DateLife = time.Now().Add(time.Hour * 24 * DAYLIVECOOKIE)
-	c.SessionId = randString(LENSESSINID)
-	c.CsrfToken = randString(LENCSRFTOKEN)
+	c.DateLife = time.Now().Add(time.Hour * 24 * DayLiveCookie)
+	c.SessionId = randString(LenSessionId)
+	c.CsrfToken = randString(LenCsrfToken)
 	return &c
 }

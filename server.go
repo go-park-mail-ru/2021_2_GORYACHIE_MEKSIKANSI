@@ -37,7 +37,6 @@ func runServer(port string) {
 
 	siteHandler := checkAuthMiddleware(myRouter.Handler)
 
-
 	withCors := cors.NewCorsHandler(cors.Options{
 		AllowedOrigins: 	[]string{config.AllowedOriginsDomen + ":" + config.AllowedOriginsPort},
 		AllowedHeaders: 	[]string{"access-control-allow-origin", "content-type", "x-csrf-token", "access-control-expose-headers"},
@@ -49,7 +48,6 @@ func runServer(port string) {
 	})
 
 	err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(siteHandler))
-	//err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(siteHandler))
 	if err != nil {
 		fmt.Printf("Console: ERROR: fatall lListenAndServe")
 		return
@@ -62,7 +60,7 @@ func main() {
 
 func checkAuthMiddleware(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
-		fmt.Printf("ConsoleMiddle:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
+		fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 		h(ctx)
 	})
 }

@@ -3,12 +3,12 @@ package Profile
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	"context"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"2021_2_GORYACHIE_MEKSIKANSI/Interface"
 	"time"
 )
 
 type Wrapper struct {
-	Conn *pgxpool.Pool
+	Conn Interface.ConnectionInterface
 }
 
 func (db *Wrapper) getRoleById(id int) (string, error) {
