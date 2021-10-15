@@ -6,7 +6,6 @@ package mocks
 
 import (
 	Utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
-	Utils0 "2021_2_GORYACHIE_MEKSIKANSI/Utils/Restaurant"
 	context "context"
 	reflect "reflect"
 
@@ -136,10 +135,10 @@ func (m *MockWrapperRestaurant) EXPECT() *MockWrapperRestaurantMockRecorder {
 }
 
 // GetRestaurants mocks base method.
-func (m *MockWrapperRestaurant) GetRestaurants() ([]Utils0.Restaurant, error) {
+func (m *MockWrapperRestaurant) GetRestaurants() ([]Utils.Restaurant, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetRestaurants")
-	ret0, _ := ret[0].([]Utils0.Restaurant)
+	ret0, _ := ret[0].([]Utils.Restaurant)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
