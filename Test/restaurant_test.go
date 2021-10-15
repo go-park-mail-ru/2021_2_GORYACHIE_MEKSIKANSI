@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/jackc/pgconn"
-	"github.com/jackc/pgproto3"
+	"github.com/jackc/pgproto3/v2"
 	"testing"
 )
 
