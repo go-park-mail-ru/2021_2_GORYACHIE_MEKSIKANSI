@@ -31,6 +31,7 @@ type WrapperAuthorization interface {
 	LoginByEmail(email string, password string) (int, error)
 	LoginByPhone(phone string, password string) (int, error)
 	DeleteCookie(cookie *Defense) error
+	GenerateNew() *Defense
 	AddCookie(cookie *Defense, id int) error
 }
 

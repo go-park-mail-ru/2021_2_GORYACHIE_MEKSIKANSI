@@ -84,8 +84,16 @@ func TestLoginApplication(t *testing.T) {
 		Return(1, nil)
 	m.
 		EXPECT().
+		GenerateNew().
+		Return(&spaceDefense)
+	m.
+		EXPECT().
 		LoginByPhone("1", "1").
 		Return(1, nil)
+	m.
+		EXPECT().
+		GenerateNew().
+		Return(&spaceDefense)
 	m.
 		EXPECT().
 		LoginByPhone("1", "1").
@@ -93,7 +101,7 @@ func TestLoginApplication(t *testing.T) {
 	m.
 		EXPECT().
 		AddCookie(&spaceDefense, 1).
-		Return(nil).Times(2)
+		Return(nil)
 	m.
 		EXPECT().
 		AddCookie(&spaceDefense, 1).
@@ -114,6 +122,13 @@ func TestLoginApplication(t *testing.T) {
 		fmt.Printf("equal\n")
 	}
 	result, _ = auth.Login(m, &auth.Authorization{Phone: "1", Password: "1"})
+	if gomock.Nil().Matches(result) != true {
+		//t.Errorf("Not equal\n")
+		fmt.Printf("Not equal\n")
+	} else {
+		fmt.Printf("equal\n")
+	}
+	result, _ = auth.Login(m, &auth.Authorization{})
 	if gomock.Nil().Matches(result) != true {
 		//t.Errorf("Not equal\n")
 		fmt.Printf("Not equal\n")

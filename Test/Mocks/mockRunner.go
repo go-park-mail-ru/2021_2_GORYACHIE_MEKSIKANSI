@@ -283,6 +283,20 @@ func (mr *MockWrapperAuthorizationMockRecorder) DeleteCookie(arg0 interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCookie", reflect.TypeOf((*MockWrapperAuthorization)(nil).DeleteCookie), arg0)
 }
 
+// GenerateNew mocks base method.
+func (m *MockWrapperAuthorization) GenerateNew() *Utils.Defense {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GenerateNew")
+	ret0, _ := ret[0].(*Utils.Defense)
+	return ret0
+}
+
+// GenerateNew indicates an expected call of GenerateNew.
+func (mr *MockWrapperAuthorizationMockRecorder) GenerateNew() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateNew", reflect.TypeOf((*MockWrapperAuthorization)(nil).GenerateNew))
+}
+
 // LoginByEmail mocks base method.
 func (m *MockWrapperAuthorization) LoginByEmail(arg0, arg1 string) (int, error) {
 	m.ctrl.T.Helper()

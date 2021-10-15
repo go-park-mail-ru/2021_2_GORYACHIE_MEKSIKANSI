@@ -45,8 +45,7 @@ func Login(db utils.WrapperAuthorization, login *Authorization) (*utils.Defense,
 		return nil, err
 	}
 
-	var tmp utils.Defense
-	cookie := tmp.GenerateNew()
+	cookie := db.GenerateNew()
 	err = db.AddCookie(cookie, userId)
 
 	if err != nil {

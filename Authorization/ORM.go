@@ -14,6 +14,11 @@ type Wrapper struct {
 	Conn Utils.ConnectionInterface
 }
 
+func (db *Wrapper) GenerateNew() *utils.Defense {
+	var tmp utils.Defense
+	return tmp.GenerateNew()
+}
+
 func (db *Wrapper) GeneralSignUp(signup *utils.RegistrationRequest, transaction pgx.Tx) (int, error) {
 	var userId int
 
