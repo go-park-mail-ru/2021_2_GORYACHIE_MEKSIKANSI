@@ -2,21 +2,18 @@ package Restaurant
 
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
+	res "2021_2_GORYACHIE_MEKSIKANSI/Utils/Restaurant"
 	"context"
-	"github.com/jackc/pgx/v4/pgxpool"
+	//"github.com/jackc/pgx/v4/pgxpool"
 	"time"
 )
 
 type Wrapper struct {
-	Conn *pgxpool.Pool
+	Conn Utils.ConnectionInterface
 }
 
-type InterfaceRestaurant interface {
-	GetRestaurants(InterfaceRestaurant) ([]Restaurant, error)
-}
-
-//func GetRestaurants(db InterfaceRestaurant) ([]Restaurant, error) {
-func (db *Wrapper) GetRestaurants() ([]Restaurant, error) {
+func (db *Wrapper) GetRestaurants() ([]res.Restaurant, error) {
 	row, err := db.Conn.Query(context.Background(),
 		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant ORDER BY random() LIMIT 50")
 	if err != nil {
@@ -26,8 +23,8 @@ func (db *Wrapper) GetRestaurants() ([]Restaurant, error) {
 		}
 	}
 
-	restaurant := Restaurant{}
-	var result []Restaurant
+	restaurant := res.Restaurant{}
+	var result []res.Restaurant
 	for row.Next() {
 		err := row.Scan(&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery,
 			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating)

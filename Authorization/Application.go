@@ -1,25 +1,14 @@
 package Authorization
 
 import (
-	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
-	"strings"
+	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 )
 
-const LENSALT = 5
+const LenSalt = 5
 
-func randString(length int) string {
-	chars := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
-	var b strings.Builder
 
-	for i := 0; i < length; i++ {
-		b.WriteRune(chars[mid.RandomInteger(0, len(chars))])
-	}
-
-	return b.String()
-}
-
-func SignUp(db Wrapper, signup *RegistrationRequest) (*mid.Defense, error) {
-	var cookie *mid.Defense
+func SignUp(db utils.WrapperAuthorization, signup *utils.RegistrationRequest) (*utils.Defense, error) {
+	var cookie *utils.Defense
 	var err error
 	switch signup.TypeUser {
 	case "client":
@@ -39,7 +28,7 @@ func SignUp(db Wrapper, signup *RegistrationRequest) (*mid.Defense, error) {
 	return cookie, nil
 }
 
-func Login(db Wrapper, login *Authorization) (*mid.Defense, error) {
+func Login(db utils.WrapperAuthorization, login *Authorization) (*utils.Defense, error) {
 	var userId int
 	var err error
 	switch {
@@ -56,7 +45,7 @@ func Login(db Wrapper, login *Authorization) (*mid.Defense, error) {
 		return nil, err
 	}
 
-	var tmp mid.Defense
+	var tmp utils.Defense
 	cookie := tmp.GenerateNew()
 	err = db.AddCookie(cookie, userId)
 
@@ -66,7 +55,7 @@ func Login(db Wrapper, login *Authorization) (*mid.Defense, error) {
 	return cookie, nil
 }
 
-func Logout(db Wrapper, cookie *mid.Defense) error {
+func Logout(db utils.WrapperAuthorization, cookie *utils.Defense) error {
 	err := db.DeleteCookie(cookie)
 	return err
 }

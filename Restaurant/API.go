@@ -3,6 +3,7 @@ package Restaurant
 import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
 	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	rest "2021_2_GORYACHIE_MEKSIKANSI/Utils/Restaurant"
 	"encoding/json"
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -10,36 +11,32 @@ import (
 	"net/http"
 )
 
-type Restaurant struct {
-	Id                  int     `json:"id"`
-	Img                 string  `json:"img"`
-	Name                string  `json:"name"`
-	CostForFreeDelivery int     `json:"costForFreeDelivery"`
-	MinDelivery         int     `json:"minDeliveryTime"`
-	MaxDelivery         int     `json:"maxDeliveryTime"`
-	Rating              float32 `json:"rating"`
-}
-
-type RestaurantResponse struct {
-	RestaurantsGet	interface{}	`json:"restaurants"`
-}
-
 type RestaurantInfo struct {
 	ConnectionDB *pgxpool.Pool
 }
 
 func (r *RestaurantInfo) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 	WrapperDB := Wrapper{Conn: r.ConnectionDB}
-	restaurant, err := AllRestaurants(WrapperDB)
-	err = errors.CheckErrorRestaurant(err, ctx)
-	if err != nil {
-		return
+	restaurant, err := AllRestaurants(&WrapperDB)
+	errOut, resultOutAccess, codeHTTP  := errors.CheckErrorRestaurant(err)
+	if resultOutAccess != nil {
+		switch errOut.Error() {
+		case errors.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			return
+		case errors.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOutAccess)
+			return
+		}
 	}
 
 	ctx.SetStatusCode(http.StatusOK)
+
 	err = json.NewEncoder(ctx).Encode(&auth.Result{
 		Status: http.StatusOK,
-		Body: &RestaurantResponse {
+		Body: &rest.RestaurantResponse {
 			RestaurantsGet: restaurant,
 		},
 	})
@@ -48,5 +45,4 @@ func (r *RestaurantInfo) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
-	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }

@@ -2,7 +2,7 @@ package main
 
 import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
-	config "2021_2_GORYACHIE_MEKSIKANSI/Config"
+	config "2021_2_GORYACHIE_MEKSIKANSI/Configs"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	profile "2021_2_GORYACHIE_MEKSIKANSI/Profile"
 	restaurant "2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
@@ -35,8 +35,10 @@ func runServer(port string) {
 	api.POST("login", userInfo.LoginHandler)
 	api.POST("signup", userInfo.SignUpHandler)
 
+	siteHandler := checkAuthMiddleware(myRouter.Handler)
+
 	withCors := cors.NewCorsHandler(cors.Options{
-		AllowedOrigins: 	[]string{config.ALLOWEDORIGINSDOMEN + ":" + config.ALLOWEDORIGINSPORT},
+		AllowedOrigins: 	[]string{config.AllowedOriginsDomen + ":" + config.AllowedOriginsPort},
 		AllowedHeaders: 	[]string{"access-control-allow-origin", "content-type", "x-csrf-token", "access-control-expose-headers"},
 		AllowedMethods:   	[]string{"GET", "POST", "OPTIONS"},
 		ExposedHeaders:		[]string{"X-Csrf-Token"},
@@ -45,7 +47,7 @@ func runServer(port string) {
 		Debug:            	true,
 	})
 
-	err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(myRouter.Handler))
+	err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(siteHandler))
 	if err != nil {
 		fmt.Printf("Console: ERROR: fatall lListenAndServe")
 		return
@@ -54,4 +56,11 @@ func runServer(port string) {
 
 func main() {
 	runServer(":5000")
+}
+
+func checkAuthMiddleware(h fasthttp.RequestHandler) fasthttp.RequestHandler {
+	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
+		fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
+		h(ctx)
+	})
 }

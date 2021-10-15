@@ -18,10 +18,13 @@ func (e *Errors) Error() string {
 
 // Error of server
 const(
-	ErrDB                        = "ERROR: database is not responding"
-	ErrEncode                    = "ERROR: Encode"
-	ErrUnmarshal                 = "ERROR: unmarshal json"
-	ErrAuth                      = "Вы не авторизированы"
+	ErrDB						= "ERROR: database is not responding"
+	ErrEncode					= "ERROR: Encode"
+	ErrMarshal					= "ERROR: marshaling in json"
+	ErrCheck					= "ERROR: err check"
+	ErrUnmarshal				= "ERROR: unmarshal json"
+	ErrAuth						= "Вы не авторизированы"
+	HttpNil						= 0
 )
 
 // Error of Authorization

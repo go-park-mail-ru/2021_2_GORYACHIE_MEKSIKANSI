@@ -3,21 +3,22 @@ package Authorization
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
+	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
+	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
 	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"strconv"
 	"time"
 )
 
 type Wrapper struct {
-	Conn        *pgxpool.Pool
+	Conn Utils.ConnectionInterface
 }
 
-func (db *Wrapper) GeneralSignUp(signup *RegistrationRequest, transaction pgx.Tx) (int, error) {
+func (db *Wrapper) GeneralSignUp(signup *utils.RegistrationRequest, transaction pgx.Tx) (int, error) {
 	var userId int
 
-	salt := randString(LENSALT)
+	salt := utils.RandString(LenSalt)
 
 	if _, err := strconv.Atoi(signup.Phone); err != nil {
 		return 0, &errorsConst.Errors{
@@ -47,7 +48,7 @@ func (db *Wrapper) GeneralSignUp(signup *RegistrationRequest, transaction pgx.Tx
 	return userId, nil
 }
 
-func (db *Wrapper) SignupHost(signup *RegistrationRequest) (*mid.Defense, error) {
+func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest) (*utils.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
 	defer func(tx pgx.Tx, ctx context.Context) {
 		err := tx.Rollback(ctx)
@@ -61,7 +62,7 @@ func (db *Wrapper) SignupHost(signup *RegistrationRequest) (*mid.Defense, error)
 		return nil, err
 	}
 
-	var temp mid.Defense
+	var temp utils.Defense
 	cookie := temp.GenerateNew()
 	err = db.AddTransactionCookie(cookie, tx, userId)
 	if err != nil {
@@ -80,7 +81,7 @@ func (db *Wrapper) SignupHost(signup *RegistrationRequest) (*mid.Defense, error)
 	return cookie, nil
 }
 
-func (db *Wrapper) SignupCourier(signup *RegistrationRequest) (*mid.Defense, error) {
+func (db *Wrapper) SignupCourier(signup *utils.RegistrationRequest) (*utils.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
 
 	defer func(tx pgx.Tx, ctx context.Context) {
@@ -95,7 +96,7 @@ func (db *Wrapper) SignupCourier(signup *RegistrationRequest) (*mid.Defense, err
 		return nil, err
 	}
 
-	var tmp mid.Defense
+	var tmp utils.Defense
 	cookie := tmp.GenerateNew()
 	err = db.AddTransactionCookie(cookie, tx, userId)
 	if err != nil {
@@ -115,7 +116,7 @@ func (db *Wrapper) SignupCourier(signup *RegistrationRequest) (*mid.Defense, err
 	return cookie, err
 }
 
-func (db *Wrapper) SignupClient(signup *RegistrationRequest) (*mid.Defense, error) {
+func (db *Wrapper) SignupClient(signup *utils.RegistrationRequest) (*utils.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
 
 	defer func(tx pgx.Tx, ctx context.Context) {
@@ -130,7 +131,7 @@ func (db *Wrapper) SignupClient(signup *RegistrationRequest) (*mid.Defense, erro
 		return nil, err
 	}
 
-	var tmp mid.Defense
+	var tmp utils.Defense
 	cookie := tmp.GenerateNew()
 	err = db.AddTransactionCookie(cookie, tx, userId)
 	if err != nil {
@@ -150,7 +151,7 @@ func (db *Wrapper) SignupClient(signup *RegistrationRequest) (*mid.Defense, erro
 	return cookie, nil
 }
 
-func (db *Wrapper) AddTransactionCookie(cookie *mid.Defense, Transaction pgx.Tx, id int) error {
+func (db *Wrapper) AddTransactionCookie(cookie *utils.Defense, Transaction pgx.Tx, id int) error {
 	_, err := Transaction.Exec(context.Background(),
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
@@ -229,7 +230,7 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 	return userId, nil
 }
 
-func (db *Wrapper) DeleteCookie(cookie *mid.Defense) error {
+func (db *Wrapper) DeleteCookie(cookie *utils.Defense) error {
 	_, err := db.Conn.Exec(context.Background(),
 		"DELETE FROM cookie WHERE session_id = $1 AND csrf_token = $2",
 		cookie.SessionId, cookie.CsrfToken)
@@ -242,7 +243,7 @@ func (db *Wrapper) DeleteCookie(cookie *mid.Defense) error {
 	return nil
 }
 
-func (db *Wrapper) AddCookie(cookie *mid.Defense, id int) error {
+func (db *Wrapper) AddCookie(cookie *utils.Defense, id int) error {
 	_, err := db.Conn.Exec(context.Background(),
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)

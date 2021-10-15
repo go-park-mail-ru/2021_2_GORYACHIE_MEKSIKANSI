@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS  address_user (
     flat int,
     porch int,
     floor int,
-    intercom int,
+    intercom text,
     comment text DEFAULT '',
     alias text DEFAULT '',
     location text,

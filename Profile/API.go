@@ -4,25 +4,13 @@ import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
 	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
+	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"encoding/json"
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	"net/http"
-	"time"
 )
-
-type Profile struct {
-	Name     string    `json:"name"`
-	Email    string    `json:"email"`
-	Phone    string    `json:"phone"`
-	Avatar   string    `json:"avatar"`
-	Birthday time.Time `json:"birthday,omitempty"`
-}
-
-type ProfileResponse struct {
-	ProfileUser	interface{}	`json:"profile"`
-}
 
 
 type ProfileInfo struct {
@@ -31,33 +19,51 @@ type ProfileInfo struct {
 
 func (u *ProfileInfo) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	wrapper := Wrapper{Conn: u.ConnectionDB}
-	cookieDB := mid.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
+	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 
 	id, err := mid.GetIdByCookie(u.ConnectionDB, &cookieDB)
 
-	errOut := errors.CheckErrorProfileCookie(err, ctx)
-	if errOut != nil {
-		return
+	errAccess, resultOutAccess, codeHTTP := errors.CheckErrorProfileCookie(err)
+	if resultOutAccess != nil {
+		switch errAccess.Error() {
+		case errors.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			return
+		case errors.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOutAccess)
+			return
+		}
 	}
 
-	profile, err := GetProfile(wrapper, id)
-	err = errors.CheckErrorProfile(err, ctx)
-	if err != nil {
-		return
+	profile, err := GetProfile(&wrapper, id)
+	errOut, resultOutAccess, codeHTTP  := errors.CheckErrorProfile(err)
+	if resultOutAccess != nil {
+		switch errOut.Error() {
+		case errors.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			return
+		case errors.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOutAccess)
+			return
+		}
 	}
 
+	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&auth.Result{
 		Status: http.StatusOK,
-		Body:   &ProfileResponse{
+		Body:   &utils.ProfileResponse{
 			profile,
 		},
 	})
-	ctx.Response.SetStatusCode(http.StatusOK)
 	if err != nil {
-		ctx.Response.SetStatusCode(http.StatusOK)
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrEncode))
 		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
 
-	fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 }
