@@ -2,10 +2,12 @@ package Utils
 
 import (
 	"crypto/rand"
+	"crypto/sha256"
+	"encoding/hex"
 	"math/big"
 	"strings"
-	"time"
 )
+
 
 const (
 	DayLiveCookie 		= 5
@@ -13,16 +15,10 @@ const (
 	LenCsrfToken		= 92
 )
 
-type Defense struct {
-	DateLife  time.Time
-	SessionId string
-	CsrfToken string
-}
-
 func RandomInteger(min int, max int) int {
 	nBig, err := rand.Int(rand.Reader, big.NewInt(int64(max - min)))
 	if err != nil {
-		return 5
+		return max - min
 	}
 	n := nBig.Int64()
 	return int(n) + min
@@ -39,9 +35,9 @@ func RandString(length int) string {
 	return b.String()
 }
 
-func (c Defense) GenerateNew() *Defense {
-	c.DateLife = time.Now().Add(time.Hour * 24 * DayLiveCookie)
-	c.SessionId = RandString(LenSessionId)
-	c.CsrfToken = RandString(LenCsrfToken)
-	return &c
+func HashPassword(password string, salt string) string {
+	h := sha256.New()
+	h.Write([]byte(salt + password))
+	hash := hex.EncodeToString(h.Sum(nil))
+	return hash
 }

@@ -2,7 +2,6 @@ package Authorization
 
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
-	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
@@ -29,7 +28,7 @@ func (db *Wrapper) GeneralSignUp(signup *utils.RegistrationRequest, transaction 
 
 	err := transaction.QueryRow(context.Background(),
 		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-		signup.Name, signup.Email, signup.Phone, mid.HashPassword(signup.Password, salt), salt).Scan(&userId)
+		signup.Name, signup.Email, signup.Phone, utils.HashPassword(signup.Password, salt), salt).Scan(&userId)
 
 		if err != nil {
 			errorText := err.Error()
@@ -187,7 +186,7 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT id FROM general_user_info WHERE email = $1 AND password = $2",
-		email, mid.HashPassword(password, salt)).Scan(&userId)
+		email, utils.HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
 		return 0, &errorsConst.Errors{
 			Text: errorsConst.ErrLoginOrPasswordIncorrect,
@@ -220,7 +219,7 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT id FROM general_user_info WHERE phone = $1 AND password = $2",
-		phone, mid.HashPassword(password, salt)).Scan(&userId)
+		phone, utils.HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
 		return 0, &errorsConst.Errors{
 			Text: errorsConst.ErrLoginOrPasswordIncorrect,

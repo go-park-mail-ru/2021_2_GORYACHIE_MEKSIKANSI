@@ -3,7 +3,7 @@ package Restaurant
 import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
 	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
-	rest "2021_2_GORYACHIE_MEKSIKANSI/Utils/Restaurant"
+	res "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"encoding/json"
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -36,7 +36,7 @@ func (r *RestaurantInfo) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 
 	err = json.NewEncoder(ctx).Encode(&auth.Result{
 		Status: http.StatusOK,
-		Body: &rest.RestaurantResponse {
+		Body: &res.RestaurantResponse {
 			RestaurantsGet: restaurant,
 		},
 	})

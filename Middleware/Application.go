@@ -5,20 +5,11 @@ import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"io/ioutil"
 	"strings"
 	"time"
 )
-
-func HashPassword(password string, salt string) string {
-	h := sha256.New()
-	h.Write([]byte(salt + password))
-	hash := hex.EncodeToString(h.Sum(nil))
-	return hash
-}
 
 
 func CreateDb() (*pgxpool.Pool, error) {

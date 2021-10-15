@@ -4,11 +4,46 @@ import (
 	profile "2021_2_GORYACHIE_MEKSIKANSI/Profile"
 	mocks "2021_2_GORYACHIE_MEKSIKANSI/Test/Mocks"
 	pr "2021_2_GORYACHIE_MEKSIKANSI/Utils"
+	"context"
 	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"testing"
 )
+type Row struct {
+}
+
+func (r *Row) Scan(dest ...interface{}) error {
+	return nil
+}
+
+func TestProfile(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	m.
+		EXPECT().
+		QueryRow(
+		context.Background(),
+		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", 1,
+		).
+		Return(&Row{})
+	m.
+		EXPECT().
+		QueryRow(
+		context.Background(),
+		"SELECT date_birthday FROM client WHERE client_id = $1", 1,
+		).
+		Return(&Row{})
+	testUser := &profile.Wrapper{Conn: m}
+	result, _ := testUser.GetProfileClient(1)
+	if gomock.Nil().Matches(result) != true {
+		t.Errorf("Not equal\n")
+	} else {
+		fmt.Printf("equal\n")
+	}
+}
 
 func TestProfileApplication(t *testing.T) {
 	ctrl := gomock.NewController(t)
