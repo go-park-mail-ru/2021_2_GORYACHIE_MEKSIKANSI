@@ -2,7 +2,7 @@ package main
 
 import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
-	config "2021_2_GORYACHIE_MEKSIKANSI/Config"
+	config "2021_2_GORYACHIE_MEKSIKANSI/Configs"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	profile "2021_2_GORYACHIE_MEKSIKANSI/Profile"
 	restaurant "2021_2_GORYACHIE_MEKSIKANSI/Restaurant"

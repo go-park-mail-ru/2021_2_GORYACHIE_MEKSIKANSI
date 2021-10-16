@@ -1,35 +1,15 @@
 package Middleware
 
 import (
-	config "2021_2_GORYACHIE_MEKSIKANSI/Config"
+	config "2021_2_GORYACHIE_MEKSIKANSI/Configs"
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
-	"crypto/rand"
-	"crypto/sha256"
-	"encoding/hex"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"io/ioutil"
-	"math/big"
 	"strings"
 	"time"
 )
-
-func RandomInteger(min int, max int) int {
-	nBig, err := rand.Int(rand.Reader, big.NewInt(int64(max - min)))
-	if err != nil {
-		return 5
-	}
-	n := nBig.Int64()
-	return int(n) + min
-}
-
-func HashPassword(password string, salt string) string {
-	h := sha256.New()
-	h.Write([]byte(salt + password))
-	hash := hex.EncodeToString(h.Sum(nil))
-	return hash
-}
-
 
 func CreateDb() (*pgxpool.Pool, error) {
 	var err error
@@ -106,7 +86,7 @@ func CreateDb() (*pgxpool.Pool, error) {
 	return conn, nil
 }
 
-func CheckAccess(conn *pgxpool.Pool, cookie *Defense) (bool, error) {
+func CheckAccess(conn *pgxpool.Pool, cookie *utils.Defense) (bool, error) {
 	var timeLiveCookie time.Time
 	var id int
 	err := conn.QueryRow(context.Background(),
@@ -132,8 +112,8 @@ func CheckAccess(conn *pgxpool.Pool, cookie *Defense) (bool, error) {
 	return false, nil
 }
 
-func NewCsrf(conn *pgxpool.Pool, cookie *Defense) (string, error) {
-	csrfToken := randString(5)
+func NewCsrf(conn *pgxpool.Pool, cookie *utils.Defense) (string, error) {
+	csrfToken := utils.RandString(5)
 	_, err := conn.Exec(context.Background(),
 		"UPDATE cookie SET csrf_token = $1 WHERE session_id = $2",
 		csrfToken, cookie.SessionId)
@@ -147,7 +127,7 @@ func NewCsrf(conn *pgxpool.Pool, cookie *Defense) (string, error) {
 	return csrfToken, nil
 }
 
-func GetIdByCookie(conn *pgxpool.Pool, cookie *Defense) (int, error) {
+func GetIdByCookie(conn *pgxpool.Pool, cookie *utils.Defense) (int, error) {
 	var timeLiveCookie time.Time
 	var id int
 	err := conn.QueryRow(context.Background(),

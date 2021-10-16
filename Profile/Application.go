@@ -1,12 +1,15 @@
 package Profile
+import (
+	profile "2021_2_GORYACHIE_MEKSIKANSI/Utils"
+)
 
-func GetProfile(db Wrapper, id int) (*Profile, error) {
-	role, err := db.getRoleById(id)
+func GetProfile(db profile.WrapperProfile, id int) (*profile.Profile, error) {
+	role, err := db.GetRoleById(id)
 	if err != nil {
 		return nil, err
 	}
 
-	var result *Profile
+	var result *profile.Profile
 	switch role {
 	case "client":
 		result, err = db.GetProfileClient(id)

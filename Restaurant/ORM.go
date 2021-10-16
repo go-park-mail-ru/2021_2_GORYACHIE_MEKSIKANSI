@@ -2,16 +2,16 @@ package Restaurant
 
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
-	"2021_2_GORYACHIE_MEKSIKANSI/Interface"
+	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
 	"time"
 )
 
 type Wrapper struct {
-	Conn Interface.ConnectionInterface
+	Conn Utils.ConnectionInterface
 }
 
-func (db *Wrapper) GetRestaurants() ([]Restaurant, error) {
+func (db *Wrapper) GetRestaurants() ([]Utils.Restaurant, error) {
 	row, err := db.Conn.Query(context.Background(),
 		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant ORDER BY random() LIMIT 50")
 	if err != nil {
@@ -21,8 +21,8 @@ func (db *Wrapper) GetRestaurants() ([]Restaurant, error) {
 		}
 	}
 
-	restaurant := Restaurant{}
-	var result []Restaurant
+	restaurant := Utils.Restaurant{}
+	var result []Utils.Restaurant
 	for row.Next() {
 		err := row.Scan(&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery,
 			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating)

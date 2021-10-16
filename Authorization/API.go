@@ -3,6 +3,7 @@ package Authorization
 import (
 	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
+	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"encoding/json"
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -16,23 +17,11 @@ type UserInfo struct {
 	ConnectionDB *pgxpool.Pool
 }
 
-type RegistrationRequest struct {
-	TypeUser string		`json:"type"`
-	Name     string 	`json:"name"`
-	Email    string		`json:"email"`
-	Phone    string		`json:"phone"`
-	Password string		`json:"password"`
-}
-
 type User struct {
 	TypeUser string		`json:"type"`
 	Name     string    	`json:"name"`
 	Email    string		`json:"email"`
 	Phone    string		`json:"phone"`
-}
-
-type RegistrationResponse struct {
-	User	interface{}	`json:"user"`
 }
 
 type Authorization struct {
@@ -48,7 +37,7 @@ type Result struct {
 
 func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	wrapper := Wrapper{Conn: u.ConnectionDB}
-	signUpAll := RegistrationRequest{}
+	signUpAll := utils.RegistrationRequest{}
 	err := json.Unmarshal(ctx.Request.Body(), &signUpAll)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
@@ -58,7 +47,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	cookieHTTP := fasthttp.Cookie{}
-	cookieDB, errIn := SignUp(wrapper, &signUpAll)
+	cookieDB, errIn := SignUp(&wrapper, &signUpAll)
 
 	errOut, resultOut, codeHTTP := errors.CheckErrorSignUp(errIn)
 	if errOut != nil {
@@ -81,7 +70,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 
 	err = json.NewEncoder(ctx).Encode(&Result{
 		Status: http.StatusOK,
-		Body: &RegistrationResponse{
+		Body: &utils.RegistrationResponse{
 			User: &User{
 				TypeUser: signUpAll.TypeUser,
 				Name:     signUpAll.Name,
@@ -110,7 +99,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 	cookieHTTP := fasthttp.Cookie{}
-	cookieDB, err := Login(wrapper, &userLogin)
+	cookieDB, err := Login(&wrapper, &userLogin)
 
 	errOut, resultOut, codeHTTP := errors.CheckErrorLogin(err)
 	if errOut != nil {
@@ -146,7 +135,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	wrapper := Wrapper{Conn: u.ConnectionDB}
 	cookieHTTP := fasthttp.Cookie{}
-	cookieDB := mid.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
+	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
 	_, err := mid.CheckAccess(u.ConnectionDB, &cookieDB)
 	errAccess, resultOutAccess, codeHTTP := errors.CheckErrorLogoutAccess(err)
@@ -163,7 +152,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = Logout(wrapper, &cookieDB)
+	err = Logout(&wrapper, &cookieDB)
 	errOut, resultOut, codeHTTP:= errors.CheckErrorLogout(err)
 	if errOut != nil {
 		switch errOut.Error() {
