@@ -6,14 +6,11 @@ import (
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	profile "2021_2_GORYACHIE_MEKSIKANSI/Profile"
 	restaurant "2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
-	_ "encoding/json"
 	"fmt"
 	cors "github.com/AdhityaRamadhanus/fasthttpcors"
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
-	_ "net/http"
 	"os"
-	_ "time"
 )
 
 func runServer(port string) {
@@ -28,14 +25,18 @@ func runServer(port string) {
 	profileInfo := profile.ProfileInfo{ConnectionDB: connectionPostgres}
 
 	myRouter := router.New()
-	api := myRouter.Group("/api/")
-	api.GET("profile", profileInfo.ProfileHandler)
-	api.POST("logout", userInfo.LogoutHandler)
-	api.GET("", restaurantInfo.RestaurantHandler)
-	api.POST("login", userInfo.LoginHandler)
-	api.POST("signup", userInfo.SignUpHandler)
+	api := myRouter.Group("/api")
+	//version := api.Group("/v1")
+	restaurants := api.Group("/restaurant")
+	api.GET("/profile", profileInfo.ProfileHandler)
+	api.POST("/logout", userInfo.LogoutHandler)
+	api.POST("/login", userInfo.LoginHandler)
+	api.POST("/signup", userInfo.SignUpHandler)
 
-	siteHandler := checkAuthMiddleware(myRouter.Handler)
+	api.GET("/", restaurantInfo.RestaurantHandler)
+	restaurants.GET("/", restaurantInfo.RestaurantDishesHandler)
+
+	siteHandler := mid.CheckAuthMiddleware(myRouter.Handler)
 
 	withCors := cors.NewCorsHandler(cors.Options{
 		AllowedOrigins: 	[]string{config.AllowedOriginsDomen + ":" + config.AllowedOriginsPort},
@@ -56,11 +57,4 @@ func runServer(port string) {
 
 func main() {
 	runServer(":5000")
-}
-
-func checkAuthMiddleware(h fasthttp.RequestHandler) fasthttp.RequestHandler {
-	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
-		fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
-		h(ctx)
-	})
 }

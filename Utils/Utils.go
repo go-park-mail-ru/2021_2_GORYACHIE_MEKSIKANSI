@@ -4,16 +4,27 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
+	"github.com/valyala/fasthttp"
 	"math/big"
 	"strings"
 )
-
 
 const (
 	DayLiveCookie 		= 5
 	LenSessionId		= 92
 	LenCsrfToken		= 92
+	KeyCookieSessionId	= "session_id"
 )
+
+
+
+func SetCookieResponse(cookieHTTP *fasthttp.Cookie, cookieDB Defense, sessionId string) {
+	cookieHTTP.SetExpire(cookieDB.DateLife)
+	cookieHTTP.SetKey(sessionId)
+	cookieHTTP.SetValue(cookieDB.SessionId)
+	cookieHTTP.SetHTTPOnly(true)
+	cookieHTTP.SetPath("/")
+}
 
 func RandomInteger(min int, max int) int {
 	nBig, err := rand.Int(rand.Reader, big.NewInt(int64(max - min)))
