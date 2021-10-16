@@ -81,7 +81,6 @@ func CheckErrorLogin(err error) (error, []byte, int) {
 				Explain: ErrLoginOrPasswordIncorrect,
 			})
 			if errMarshal != nil {
-				//ctx.Response.SetStatusCode(http.StatusInternalServerError)
 				fmt.Printf("Console: %s\n", ErrMarshal)
 				return &Errors{
 						Text: ErrMarshal,
@@ -89,7 +88,6 @@ func CheckErrorLogin(err error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			//ctx.Response.SetStatusCode(http.StatusOK)
 			fmt.Printf("Console: %s\n", err.Error())
 			return &Errors{
 					Text: ErrCheck,
@@ -102,7 +100,6 @@ func CheckErrorLogin(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				//ctx.Response.SetStatusCode(http.StatusInternalServerError)
 				fmt.Printf("Console: %s\n", ErrMarshal)
 				return &Errors{
 						Text: ErrMarshal,
@@ -110,7 +107,6 @@ func CheckErrorLogin(err error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			//ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			fmt.Printf("Console: %s\n", err.Error())
 			return &Errors{
 					Text: ErrCheck,
@@ -123,13 +119,12 @@ func CheckErrorLogin(err error) (error, []byte, int) {
 }
 
 func CheckErrorLogout(err error) (error, []byte, int) {
-	if err != nil && err.Error() != ErrDeleteCookie {
+	if err != nil && err.Error() == ErrDeleteCookie {
 		result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				//ctx.Response.SetStatusCode(http.StatusInternalServerError)
 				fmt.Printf("Console: %s\n", ErrMarshal)
 				return &Errors{
 						Text: ErrMarshal,
@@ -137,7 +132,6 @@ func CheckErrorLogout(err error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			//ctx.Response.SetStatusCode(http.StatusOK)
 			fmt.Printf("Console: %s\n", ErrDeleteCookie)
 		return &Errors{
 				Text: ErrCheck,

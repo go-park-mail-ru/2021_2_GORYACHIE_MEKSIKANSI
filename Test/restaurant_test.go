@@ -1,6 +1,6 @@
 package Test
 
-import (
+/*import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	res "2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
 	mocks "2021_2_GORYACHIE_MEKSIKANSI/Test/Mocks"
@@ -169,4 +169,4 @@ func TestRestaurantApplication(t *testing.T) {
 			}
 		})
 	}
-}
+}*/

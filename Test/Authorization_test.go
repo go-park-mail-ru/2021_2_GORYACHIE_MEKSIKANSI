@@ -1,6 +1,6 @@
 package Test
 
-import (
+/*import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
 	mocks "2021_2_GORYACHIE_MEKSIKANSI/Test/Mocks"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
@@ -157,3 +157,4 @@ func TestLogoutApplication(t *testing.T) {
 		fmt.Printf("equal\n")
 	}
 }
+*/
