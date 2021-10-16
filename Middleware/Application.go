@@ -11,7 +11,6 @@ import (
 	"time"
 )
 
-
 func CreateDb() (*pgxpool.Pool, error) {
 	var err error
 	conn, err := pgxpool.Connect(context.Background(),

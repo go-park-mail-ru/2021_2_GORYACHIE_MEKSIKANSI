@@ -1,8 +1,8 @@
 package Middleware
 
 import (
-	"github.com/valyala/fasthttp"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
+	"github.com/valyala/fasthttp"
 )
 
 const (

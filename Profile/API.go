@@ -12,7 +12,6 @@ import (
 	"net/http"
 )
 
-
 type ProfileInfo struct {
 	ConnectionDB *pgxpool.Pool
 }
