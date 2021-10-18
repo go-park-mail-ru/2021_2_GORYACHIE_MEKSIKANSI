@@ -232,6 +232,76 @@ func (mr *MockWrapperProfileMockRecorder) GetRoleById(arg0 interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRoleById", reflect.TypeOf((*MockWrapperProfile)(nil).GetRoleById), arg0)
 }
 
+// UpdateAvatar mocks base method.
+func (m *MockWrapperProfile) UpdateAvatar(arg0 int, arg1 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateAvatar", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateAvatar indicates an expected call of UpdateAvatar.
+func (mr *MockWrapperProfileMockRecorder) UpdateAvatar(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAvatar", reflect.TypeOf((*MockWrapperProfile)(nil).UpdateAvatar), arg0, arg1)
+}
+
+// UpdateEmail mocks base method.
+func (m *MockWrapperProfile) UpdateEmail(arg0 int, arg1 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateEmail", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateEmail indicates an expected call of UpdateEmail.
+func (mr *MockWrapperProfileMockRecorder) UpdateEmail(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateEmail", reflect.TypeOf((*MockWrapperProfile)(nil).UpdateEmail), arg0, arg1)
+}
+
+// UpdateName mocks base method.
+func (m *MockWrapperProfile) UpdateName(arg0 int, arg1 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateName", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateName indicates an expected call of UpdateName.
+func (mr *MockWrapperProfileMockRecorder) UpdateName(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateName", reflect.TypeOf((*MockWrapperProfile)(nil).UpdateName), arg0, arg1)
+}
+
+// UpdatePassword mocks base method.
+func (m *MockWrapperProfile) UpdatePassword(arg0 int, arg1 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePassword", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdatePassword indicates an expected call of UpdatePassword.
+func (mr *MockWrapperProfileMockRecorder) UpdatePassword(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePassword", reflect.TypeOf((*MockWrapperProfile)(nil).UpdatePassword), arg0, arg1)
+}
+
+// UpdatePhone mocks base method.
+func (m *MockWrapperProfile) UpdatePhone(arg0 int, arg1 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePhone", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdatePhone indicates an expected call of UpdatePhone.
+func (mr *MockWrapperProfileMockRecorder) UpdatePhone(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePhone", reflect.TypeOf((*MockWrapperProfile)(nil).UpdatePhone), arg0, arg1)
+}
+
 // MockWrapperAuthorization is a mock of WrapperAuthorization interface.
 type MockWrapperAuthorization struct {
 	ctrl     *gomock.Controller

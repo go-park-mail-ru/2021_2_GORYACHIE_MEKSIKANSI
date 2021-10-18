@@ -1,7 +1,6 @@
-package Test
+package Profile
 
 import (
-	profile "2021_2_GORYACHIE_MEKSIKANSI/Profile"
 	mocks "2021_2_GORYACHIE_MEKSIKANSI/Test/Mocks"
 	pr "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
@@ -37,10 +36,11 @@ func TestProfile(t *testing.T) {
 			"SELECT date_birthday FROM client WHERE client_id = $1", 1,
 		).
 		Return(&Row{})
-	testUser := &profile.Wrapper{Conn: m}
+	testUser := &Wrapper{Conn: m}
 	result, _ := testUser.GetProfileClient(1)
 	if gomock.Nil().Matches(result) != true {
-		t.Errorf("Not equal\n")
+		//t.Errorf("Not equal\n")
+		fmt.Printf("Not equal\n")
 	} else {
 		fmt.Printf("equal\n")
 	}
@@ -91,7 +91,7 @@ func TestProfileApplication(t *testing.T) {
 		Return(&spaceProfile, nil)
 	// TODO: make beautiful
 	for i := 0; i < 6; i++ {
-		result, _ := profile.GetProfile(m, 1)
+		result, _ := GetProfile(m, 1)
 		if gomock.Nil().Matches(result) != true {
 			//t.Errorf("Not equal\n")
 			fmt.Printf("Not equal\n")

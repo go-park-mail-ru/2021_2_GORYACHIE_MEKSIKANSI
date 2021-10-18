@@ -82,6 +82,11 @@ const (
 // Error of restaurant
 const (
 	ErrRestaurantsNotFound  = "ERROR: restaurants not found"
-	ErrRestaurantScan       = "ERROR: restaurant scan error"
-	ErrRestaurantsNotSelect = "ERROR: restaurant not select"
+	ErrRestaurantsScan       = "ERROR: restaurants scan error"
+	ErrRestaurantsNotSelect = "ERROR: restaurants not select"
+	ErrRestaurantNotFound  = "ERROR: restaurant not found"                    // TODO: add handler
+	ErrCategoryRestaurantScan = "ERROR: category restaurants scan error"      // TODO: add handler
+	ErrRestaurantsDishesNotSelect = "ERROR: dishes in restaurant not select"  // TODO: add handler
+	ErrRestaurantDishesScan = "ERROR: dishes in restaurant not scan"          // TODO: add handler
+	ErrRestaurantDishesNotFound = "ERROR: dishes in restaurant not found"     // TODO: add handler
 )

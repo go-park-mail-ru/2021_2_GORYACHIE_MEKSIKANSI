@@ -29,7 +29,7 @@ func CheckErrorRestaurant(err error) (error, []byte, int) {
 					Time: time.Now(),
 				},
 				result, http.StatusOK
-		case ErrRestaurantScan:
+		case ErrRestaurantsScan:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
