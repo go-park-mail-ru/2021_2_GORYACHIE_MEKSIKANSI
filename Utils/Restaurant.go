@@ -10,6 +10,18 @@ type Restaurant struct {
 	Rating              float32 `json:"rating"`
 }
 
+// TODO: rename
+type RestaurantAndCategory struct {
+	Id                  int     `json:"id"`
+	Img                 string  `json:"img"`
+	Name                string  `json:"name"`
+	CostForFreeDelivery int     `json:"costForFreeDelivery"`
+	MinDelivery         int     `json:"minDeliveryTime"`
+	MaxDelivery         int     `json:"maxDeliveryTime"`
+	Rating              float32 `json:"rating"`
+	Tags                []interface{} `json:"tags"`
+}
+
 type RestaurantResponse struct {
 	RestaurantsGet interface{} `json:"restaurants"`
 }
@@ -23,6 +35,7 @@ type Dishes struct {
 	Img         string        `json:"img"`
 	Title       string        `json:"title"`
 	Cost        int           `json:"cost"`
+	Ccal        int           `json:"ccal"`
 	Description string        `json:"description"`
 	Radios      []interface{} `json:"radios"`
 	Ingredient  []interface{} `json:"CheckboxesRows"` // TODO: завтра подумать над итогом json названием

@@ -11,3 +11,11 @@ func AllRestaurants(db rest.WrapperRestaurant) ([]rest.Restaurant, error) {
 	}
 	return result, nil
 }
+
+func GetRestaurant(db rest.WrapperRestaurant, id int) (*rest.RestaurantAndCategory, []rest.Dishes, error) {
+	restInfo, dishes, err := db.GetRestaurant(id)
+	if err != nil {
+		return nil, nil, err
+	}
+	return restInfo, dishes, nil
+}
