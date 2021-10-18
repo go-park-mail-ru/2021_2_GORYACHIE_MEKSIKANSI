@@ -11,7 +11,7 @@ func CheckErrorRestaurant(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrRestaurantsNotFound:
-			result, errMarshal:= json.Marshal(ResultError{
+			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusNotFound,
 				Explain: ErrRestaurantsNotFound,
 			})
@@ -30,7 +30,7 @@ func CheckErrorRestaurant(err error) (error, []byte, int) {
 				},
 				result, http.StatusOK
 		case ErrRestaurantScan:
-			result, errMarshal:= json.Marshal(ResultError{
+			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -59,5 +59,3 @@ func CheckErrorRestaurantDishes(err error) (error, []byte, int) {
 	}
 	return nil, nil, HttpNil
 }
-
-

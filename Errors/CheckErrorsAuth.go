@@ -11,24 +11,24 @@ func CheckErrorSignUp(errIn error) (error, []byte, int) {
 	if errIn != nil {
 		switch errIn.Error() {
 		case ErrGeneralInfoUnique:
-			result, errMarshal:= json.Marshal(ResultError{
+			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusConflict,
 				Explain: ErrGeneralInfoUnique,
 			})
 			if errMarshal != nil {
 				fmt.Printf("Console: %s\n", ErrMarshal)
 				return &Errors{
-					Text: ErrMarshal,
-					Time: time.Now(),
-				},
-				nil, http.StatusInternalServerError
+						Text: ErrMarshal,
+						Time: time.Now(),
+					},
+					nil, http.StatusInternalServerError
 			}
 			fmt.Printf("Console: %s\n", ErrGeneralInfoUnique)
 			return &Errors{
-				Text: ErrCheck,
-				Time: time.Now(),
-			},
-			result, http.StatusOK
+					Text: ErrCheck,
+					Time: time.Now(),
+				},
+				result, http.StatusOK
 		case ErrPhoneFormat:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
@@ -121,18 +121,18 @@ func CheckErrorLogin(err error) (error, []byte, int) {
 func CheckErrorLogout(err error) (error, []byte, int) {
 	if err != nil && err.Error() == ErrDeleteCookie {
 		result, errMarshal := json.Marshal(ResultError{
-				Status:  http.StatusInternalServerError,
-				Explain: ErrDB,
-			})
-			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
-				return &Errors{
-						Text: ErrMarshal,
-						Time: time.Now(),
-					},
-					nil, http.StatusInternalServerError
-			}
-			fmt.Printf("Console: %s\n", ErrDeleteCookie)
+			Status:  http.StatusInternalServerError,
+			Explain: ErrDB,
+		})
+		if errMarshal != nil {
+			fmt.Printf("Console: %s\n", ErrMarshal)
+			return &Errors{
+					Text: ErrMarshal,
+					Time: time.Now(),
+				},
+				nil, http.StatusInternalServerError
+		}
+		fmt.Printf("Console: %s\n", ErrDeleteCookie)
 		return &Errors{
 				Text: ErrCheck,
 				Time: time.Now(),

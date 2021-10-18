@@ -11,8 +11,8 @@ func CheckErrorProfile(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrGetProfileClientScan, ErrGetBirthdayScan, ErrGetProfileCourierScan, ErrGetProfileHostScan,
-		ErrClientScan, ErrHostScan, ErrCourierScan:
-			result, errMarshal:= json.Marshal(ResultError{
+			ErrClientScan, ErrHostScan, ErrCourierScan:
+			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -35,12 +35,11 @@ func CheckErrorProfile(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-
 func CheckErrorProfileCookie(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrCookieScan:
-			result, errMarshal:= json.Marshal(ResultError{
+			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -59,7 +58,7 @@ func CheckErrorProfileCookie(err error) (error, []byte, int) {
 				},
 				result, http.StatusInternalServerError
 		case ErrCookieExpired:
-			result, errMarshal:= json.Marshal(ResultError{
+			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: ErrCookieExpired,
 			})
@@ -78,7 +77,7 @@ func CheckErrorProfileCookie(err error) (error, []byte, int) {
 				},
 				result, http.StatusOK
 		case ErrCookieNotFound:
-			result, errMarshal:= json.Marshal(ResultError{
+			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusConflict,
 				Explain: ErrAuth,
 			})

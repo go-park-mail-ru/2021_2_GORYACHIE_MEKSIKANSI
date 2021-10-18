@@ -10,6 +10,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"testing"
 )
+
 type Row struct {
 }
 
@@ -25,15 +26,15 @@ func TestProfile(t *testing.T) {
 	m.
 		EXPECT().
 		QueryRow(
-		context.Background(),
-		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", 1,
+			context.Background(),
+			"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", 1,
 		).
 		Return(&Row{})
 	m.
 		EXPECT().
 		QueryRow(
-		context.Background(),
-		"SELECT date_birthday FROM client WHERE client_id = $1", 1,
+			context.Background(),
+			"SELECT date_birthday FROM client WHERE client_id = $1", 1,
 		).
 		Return(&Row{})
 	testUser := &profile.Wrapper{Conn: m}

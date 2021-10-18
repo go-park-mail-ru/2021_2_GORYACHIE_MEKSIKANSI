@@ -11,12 +11,12 @@ import (
 )
 
 func TestCheckErrorProfile(t *testing.T) {
-	testTable := []struct{
-		errorInput    Errors
-		errorExpected string
-		resultExpected string
+	testTable := []struct {
+		errorInput       Errors
+		errorExpected    string
+		resultExpected   string
 		codeHTTPExpected int
-	} {
+	}{
 		{
 			errorInput: Errors{
 				Text: ErrGetProfileClientScan,
@@ -24,7 +24,7 @@ func TestCheckErrorProfile(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
 		{
@@ -34,7 +34,7 @@ func TestCheckErrorProfile(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
 		{
@@ -44,7 +44,7 @@ func TestCheckErrorProfile(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
 		{
@@ -54,7 +54,7 @@ func TestCheckErrorProfile(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
 		{
@@ -64,7 +64,7 @@ func TestCheckErrorProfile(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
 		{
@@ -74,7 +74,7 @@ func TestCheckErrorProfile(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
 		{
@@ -84,10 +84,9 @@ func TestCheckErrorProfile(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
-
 	}
 
 	for _, testCase := range testTable {
@@ -117,19 +116,19 @@ func TestCheckErrorProfile(t *testing.T) {
 }
 
 func TestCheckErrorProfileCookie(t *testing.T) {
-	testTable := []struct{
-		errorInput    Errors
-		errorExpected string
-		resultExpected string
+	testTable := []struct {
+		errorInput       Errors
+		errorExpected    string
+		resultExpected   string
 		codeHTTPExpected int
-	} {
+	}{
 		{
 			errorInput: Errors{
 				Text: ErrCookieNotFound,
 				Time: time.Now(),
 			},
 			errorExpected:    ErrCheck,
-			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusConflict) +",\"explain\":\"" + ErrAuth + "\"}",
+			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusConflict) + ",\"explain\":\"" + ErrAuth + "\"}",
 			codeHTTPExpected: http.StatusOK,
 		},
 		{
@@ -138,7 +137,7 @@ func TestCheckErrorProfileCookie(t *testing.T) {
 				Time: time.Now(),
 			},
 			errorExpected:    ErrCheck,
-			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) +",\"explain\":\"" + ErrCookieExpired + "\"}",
+			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) + ",\"explain\":\"" + ErrCookieExpired + "\"}",
 			codeHTTPExpected: http.StatusOK,
 		},
 		{
@@ -148,10 +147,9 @@ func TestCheckErrorProfileCookie(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
-
 	}
 
 	for _, testCase := range testTable {

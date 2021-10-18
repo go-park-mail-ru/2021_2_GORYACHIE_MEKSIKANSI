@@ -37,7 +37,7 @@ func (u *ProfileInfo) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	profile, err := GetProfile(&wrapper, id)
-	errOut, resultOutAccess, codeHTTP  := errors.CheckErrorProfile(err)
+	errOut, resultOutAccess, codeHTTP := errors.CheckErrorProfile(err)
 	if resultOutAccess != nil {
 		switch errOut.Error() {
 		case errors.ErrMarshal:
@@ -54,7 +54,7 @@ func (u *ProfileInfo) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&auth.Result{
 		Status: http.StatusOK,
-		Body:   &utils.ProfileResponse{
+		Body: &utils.ProfileResponse{
 			profile,
 		},
 	})

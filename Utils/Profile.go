@@ -11,5 +11,5 @@ type Profile struct {
 }
 
 type ProfileResponse struct {
-	ProfileUser	interface{}	`json:"profile"`
+	ProfileUser interface{} `json:"profile"`
 }

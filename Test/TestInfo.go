@@ -1,5 +1,5 @@
 package Test
 
-const(
+const (
 	NilStr = "nil"
 )

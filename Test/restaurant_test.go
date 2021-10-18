@@ -17,7 +17,7 @@ import (
 
 type Rows struct {
 	testName string
-	count int
+	count    int
 }
 
 func (r *Rows) Close() {
@@ -67,38 +67,38 @@ func (r *Rows) Next() bool {
 
 var restaurantTests = []struct {
 	testName string
-	out []rest.Restaurant
-	err error
-	row Rows
-	outErr string
+	out      []rest.Restaurant
+	err      error
+	row      Rows
+	outErr   string
 }{
 	{
 		testName: "One",
-		out: nil,
-		err: errors.New("text"),
-		row: Rows{},
-		outErr: errorsConst.ErrRestaurantsNotSelect,
+		out:      nil,
+		err:      errors.New("text"),
+		row:      Rows{},
+		outErr:   errorsConst.ErrRestaurantsNotSelect,
 	},
 	{
 		testName: "Two",
-		out: nil,
-		err: nil,
-		row: Rows{testName: "Two"},
-		outErr: errorsConst.ErrRestaurantScan,
+		out:      nil,
+		err:      nil,
+		row:      Rows{testName: "Two"},
+		outErr:   errorsConst.ErrRestaurantScan,
 	},
 	{
 		testName: "Three",
-		out: nil,
-		err: nil,
-		row: Rows{testName: "Three"},
-		outErr: errorsConst.ErrRestaurantsNotFound,
+		out:      nil,
+		err:      nil,
+		row:      Rows{testName: "Three"},
+		outErr:   errorsConst.ErrRestaurantsNotFound,
 	},
 	{
 		testName: "Four",
-		out: []rest.Restaurant{rest.Restaurant{}},
-		err: nil,
-		row: Rows{"Four", 0},
-		outErr: "",
+		out:      []rest.Restaurant{rest.Restaurant{}},
+		err:      nil,
+		row:      Rows{"Four", 0},
+		outErr:   "",
 	},
 }
 
@@ -128,24 +128,23 @@ func TestRestaurants(t *testing.T) {
 
 }
 
-
 var restaurantApplicationTests = []struct {
 	testName string
-	out []rest.Restaurant
-	outErr string
-	err error
+	out      []rest.Restaurant
+	outErr   string
+	err      error
 }{
 	{
 		testName: "One",
-		out: []rest.Restaurant{},
-		err: nil,
-		outErr: "",
+		out:      []rest.Restaurant{},
+		err:      nil,
+		outErr:   "",
 	},
 	{
 		testName: "Two",
-		out: nil,
-		err: errors.New("text"),
-		outErr: "text",
+		out:      nil,
+		err:      errors.New("text"),
+		outErr:   "text",
 	},
 }
 

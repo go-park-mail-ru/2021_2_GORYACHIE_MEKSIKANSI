@@ -14,8 +14,8 @@ import (
 func CreateDb() (*pgxpool.Pool, error) {
 	var err error
 	conn, err := pgxpool.Connect(context.Background(),
-		"postgres://" + config.DBLogin+ ":" + config.DBPassword+
-		"@" + config.DBHost+ ":" + config.DBPort+ "/" + config.DBName)
+		"postgres://"+config.DBLogin+":"+config.DBPassword+
+			"@"+config.DBHost+":"+config.DBPort+"/"+config.DBName)
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ErrNotConnect,
@@ -147,7 +147,7 @@ func GetIdByCookie(conn *pgxpool.Pool, cookie *utils.Defense) (int, error) {
 	}
 
 	realTime := time.Now()
-    if realTime.Before(timeLiveCookie) {
+	if realTime.Before(timeLiveCookie) {
 		return id, nil
 	}
 

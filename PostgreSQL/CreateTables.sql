@@ -212,9 +212,10 @@ CREATE TABLE IF NOT EXISTS  order_list (
     );
 
 CREATE TABLE IF NOT EXISTS  cart(
-    id serial,
+    id serial PRIMARY KEY,
     client_id int,
-    restaurant int,
+    food int,
+    count_food int DEFAULT 1 NOT NULL,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
-    FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE
+    FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE
 );

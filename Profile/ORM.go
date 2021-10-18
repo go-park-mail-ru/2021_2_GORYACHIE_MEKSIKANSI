@@ -58,7 +58,7 @@ func (db *Wrapper) GetProfileHost(id int) (*prof.Profile, error) {
 	var profile = prof.Profile{}
 	err := db.Conn.QueryRow(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
-			&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
+		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ErrGetProfileHostScan,
@@ -73,7 +73,7 @@ func (db *Wrapper) GetProfileClient(id int) (*prof.Profile, error) {
 	var profile = prof.Profile{}
 	err := db.Conn.QueryRow(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
-			&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
+		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ErrGetProfileClientScan,
@@ -97,7 +97,7 @@ func (db *Wrapper) GetProfileCourier(id int) (*prof.Profile, error) {
 	var profile = prof.Profile{}
 	err := db.Conn.QueryRow(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
-			&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
+		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ErrGetProfileCourierScan,
@@ -105,4 +105,97 @@ func (db *Wrapper) GetProfileCourier(id int) (*prof.Profile, error) {
 		}
 	}
 	return &profile, nil
+}
+
+func (db *Wrapper) UpdateName(id int, newName string) error {
+	_, err := db.Conn.Exec(context.Background(),
+		"UPDATE general_user_info SET name = $1 WHERE id = $2",
+		newName, id)
+	if err != nil {
+		return &errorsConst.Errors{
+			Text: errorsConst.ErrUpdateName,
+			Time: time.Now(),
+		}
+	}
+
+	return nil
+}
+
+func (db *Wrapper) UpdateEmail(id int, newEmail string) error {
+	_, err := db.Conn.Exec(context.Background(),
+		"UPDATE general_user_info SET email = $1 WHERE id = $2",
+		newEmail, id)
+	if err != nil {
+		if err.Error() == "" {
+			return &errorsConst.Errors{
+				Text: errorsConst.ErrUpdateEmailRepeat,
+				Time: time.Now(),
+			}
+		}
+		return &errorsConst.Errors{
+			Text: errorsConst.ErrUpdateEmail,
+			Time: time.Now(),
+		}
+	}
+
+	return nil
+}
+
+func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
+	var salt string
+	err := db.Conn.QueryRow(context.Background(),
+		"SELECT salt FROM general_user_info WHERE id = $1",
+		id).Scan(&salt)
+	if err != nil {
+		return &errorsConst.Errors{
+			Text: errorsConst.ErrSelectSaltInUpdate,
+			Time: time.Now(),
+		}
+	}
+
+	_, err = db.Conn.Exec(context.Background(),
+		"UPDATE general_user_info SET password = $1 WHERE id = $2",
+		prof.HashPassword(newPassword, salt), id)
+	if err != nil {
+		return &errorsConst.Errors{
+			Text: errorsConst.ErrUpdatePassword,
+			Time: time.Now(),
+		}
+	}
+
+	return nil
+}
+
+func (db *Wrapper) UpdatePhone(id int, newPhone string) error {
+	_, err := db.Conn.Exec(context.Background(),
+		"UPDATE general_user_info SET phone = $1 WHERE id = $2",
+		newPhone, id)
+	if err != nil {
+		if err.Error() == "" {
+			return &errorsConst.Errors{
+				Text: errorsConst.ErrUpdatePhoneRepeat,
+				Time: time.Now(),
+			}
+		}
+		return &errorsConst.Errors{
+			Text: errorsConst.ErrUpdatePhone,
+			Time: time.Now(),
+		}
+	}
+
+	return nil
+}
+
+func (db *Wrapper) UpdateAvatar(id int, newAvatar string) error {
+	_, err := db.Conn.Exec(context.Background(),
+		"UPDATE general_user_info SET avatar = $1 WHERE id = $2",
+		newAvatar, id)
+	if err != nil {
+		return &errorsConst.Errors{
+			Text: errorsConst.ErrUpdateAvatar,
+			Time: time.Now(),
+		}
+	}
+
+	return nil
 }

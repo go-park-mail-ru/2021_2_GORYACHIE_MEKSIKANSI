@@ -10,7 +10,6 @@ import (
 	"github.com/valyala/fasthttp"
 	"net/http"
 	"time"
-
 )
 
 type UserInfo struct {
@@ -18,10 +17,10 @@ type UserInfo struct {
 }
 
 type User struct {
-	TypeUser string		`json:"type"`
-	Name     string    	`json:"name"`
-	Email    string		`json:"email"`
-	Phone    string		`json:"phone"`
+	TypeUser string `json:"type"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
 }
 
 type Authorization struct {
@@ -153,7 +152,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	err = Logout(&wrapper, &cookieDB)
-	errOut, resultOut, codeHTTP:= errors.CheckErrorLogout(err)
+	errOut, resultOut, codeHTTP := errors.CheckErrorLogout(err)
 	if errOut != nil {
 		switch errOut.Error() {
 		case errors.ErrMarshal:

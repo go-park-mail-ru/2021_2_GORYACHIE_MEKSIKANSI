@@ -39,13 +39,13 @@ func runServer(port string) {
 	siteHandler := mid.CheckAuthMiddleware(myRouter.Handler)
 
 	withCors := cors.NewCorsHandler(cors.Options{
-		AllowedOrigins: 	[]string{config.AllowedOriginsDomen + ":" + config.AllowedOriginsPort},
-		AllowedHeaders: 	[]string{"access-control-allow-origin", "content-type", "x-csrf-token", "access-control-expose-headers"},
-		AllowedMethods:   	[]string{"GET", "POST", "OPTIONS"},
-		ExposedHeaders:		[]string{"X-Csrf-Token"},
-		AllowCredentials:	true,
-		AllowMaxAge:     	5600,
-		Debug:            	true,
+		AllowedOrigins:   []string{config.AllowedOriginsDomen + ":" + config.AllowedOriginsPort},
+		AllowedHeaders:   []string{"access-control-allow-origin", "content-type", "x-csrf-token", "access-control-expose-headers"},
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		ExposedHeaders:   []string{"X-Csrf-Token"},
+		AllowCredentials: true,
+		AllowMaxAge:      5600,
+		Debug:            true,
 	})
 
 	err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(siteHandler))

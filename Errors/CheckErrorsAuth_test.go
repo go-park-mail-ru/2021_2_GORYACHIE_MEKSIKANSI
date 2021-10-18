@@ -11,19 +11,19 @@ import (
 )
 
 func TestCheckErrorSignUp(t *testing.T) {
-	testTable := []struct{
-		errorInput    Errors
-		errorExpected string
-		resultExpected string
+	testTable := []struct {
+		errorInput       Errors
+		errorExpected    string
+		resultExpected   string
 		codeHTTPExpected int
-	} {
+	}{
 		{
 			errorInput: Errors{
 				Text: ErrGeneralInfoUnique,
 				Time: time.Now(),
 			},
 			errorExpected:    ErrCheck,
-			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusConflict) +",\"explain\":\"" + ErrGeneralInfoUnique + "\"}",
+			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusConflict) + ",\"explain\":\"" + ErrGeneralInfoUnique + "\"}",
 			codeHTTPExpected: http.StatusOK,
 		},
 		{
@@ -32,7 +32,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 				Time: time.Now(),
 			},
 			errorExpected:    ErrCheck,
-			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) +",\"explain\":\"" + ErrPhoneFormat + "\"}",
+			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) + ",\"explain\":\"" + ErrPhoneFormat + "\"}",
 			codeHTTPExpected: http.StatusOK,
 		},
 		{
@@ -42,7 +42,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
 		{
@@ -52,7 +52,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
 		{
@@ -62,7 +62,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
 		{
@@ -72,7 +72,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
 		{
@@ -82,10 +82,9 @@ func TestCheckErrorSignUp(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
-
 	}
 
 	for _, testCase := range testTable {
@@ -115,12 +114,12 @@ func TestCheckErrorSignUp(t *testing.T) {
 }
 
 func TestCheckErrorLogin(t *testing.T) {
-	testTable := []struct{
-		errorInput    Errors
-		errorExpected string
-		resultExpected string
+	testTable := []struct {
+		errorInput       Errors
+		errorExpected    string
+		resultExpected   string
 		codeHTTPExpected int
-	} {
+	}{
 		{
 			errorInput: Errors{
 				Text: ErrLoginOrPasswordIncorrect,
@@ -137,7 +136,7 @@ func TestCheckErrorLogin(t *testing.T) {
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
-			resultExpected: "{\"status\":" +  strconv.Itoa(http.StatusUnauthorized) +
+			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) +
 				",\"explain\":\"" + ErrLoginOrPasswordIncorrect + "\"}",
 			codeHTTPExpected: http.StatusOK,
 		},
@@ -148,7 +147,7 @@ func TestCheckErrorLogin(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
 		{
@@ -158,10 +157,9 @@ func TestCheckErrorLogin(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
-
 	}
 
 	for _, testCase := range testTable {
@@ -191,14 +189,13 @@ func TestCheckErrorLogin(t *testing.T) {
 	)
 }
 
-
 func TestCheckErrorLogout(t *testing.T) {
-	testTable := []struct{
-		errorInput    Errors
-		errorExpected string
-		resultExpected string
+	testTable := []struct {
+		errorInput       Errors
+		errorExpected    string
+		resultExpected   string
 		codeHTTPExpected int
-	} {
+	}{
 		{
 			errorInput: Errors{
 				Text: ErrDeleteCookie,
@@ -206,7 +203,7 @@ func TestCheckErrorLogout(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
 	}
@@ -239,19 +236,19 @@ func TestCheckErrorLogout(t *testing.T) {
 }
 
 func TestCheckErrorLogoutAccess(t *testing.T) {
-	testTable := []struct{
-		errorInput    Errors
-		errorExpected string
-		resultExpected string
+	testTable := []struct {
+		errorInput       Errors
+		errorExpected    string
+		resultExpected   string
 		codeHTTPExpected int
-	} {
+	}{
 		{
 			errorInput: Errors{
 				Text: ErrCheckAccessCookieNotFound,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
-			resultExpected: "{\"status\":" +  strconv.Itoa(http.StatusUnauthorized) +
+			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) +
 				",\"explain\":\"" + ErrCheckAccessCookieNotFound + "\"}",
 			codeHTTPExpected: http.StatusOK,
 		},
@@ -262,10 +259,9 @@ func TestCheckErrorLogoutAccess(t *testing.T) {
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
-
 	}
 
 	for _, testCase := range testTable {

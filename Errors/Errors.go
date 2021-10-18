@@ -3,8 +3,8 @@ package Errors
 import "time"
 
 type ResultError struct {
-	Status	int         `json:"status"`
-	Explain	string		`json:"explain,omitempty"`
+	Status  int    `json:"status"`
+	Explain string `json:"explain,omitempty"`
 }
 
 type Errors struct {
@@ -17,34 +17,34 @@ func (e *Errors) Error() string {
 }
 
 // Error of server
-const(
-	ErrDB						= "ERROR: database is not responding"
-	ErrEncode					= "ERROR: Encode"
-	ErrMarshal					= "ERROR: marshaling in json"
-	ErrCheck					= "ERROR: err check"
-	ErrUnmarshal				= "ERROR: unmarshal json"
-	ErrAuth						= "Вы не авторизированы"
-	HttpNil						= 0
+const (
+	ErrDB        = "ERROR: database is not responding"
+	ErrEncode    = "ERROR: Encode"
+	ErrMarshal   = "ERROR: marshaling in json"
+	ErrCheck     = "ERROR: err check"
+	ErrUnmarshal = "ERROR: unmarshal json"
+	ErrAuth      = "Вы не авторизированы"
+	HttpNil      = 0
 )
 
 // Error of Authorization
-const(
-	ErrSelectSaltInLogin         = "ERROR: salt in login not scan"
-	ErrLoginOrPasswordIncorrect  = "Неправильный логин или пароль"
-	ErrGeneralInfoScan           = "ERROR: general_user_info not scan"
-	ErrInsertHost                = "ERROR: host not insert"
-	ErrInsertCourier             = "ERROR: courier not insert"
-	ErrInsertClient              = "ERROR: client not insert"
-	ErrInsertTransactionCookie   = "ERROR: cookie with transaction not insert"
-	ErrDeleteCookie              = "ERROR: cookie not delete"
-	ErrInsertCookie              = "ERROR: cookie not insert"
-	ErrGeneralInfoUnique         = "Телефон или Email уже зарегистрирован"
-	ErrPhoneFormat               = "Неверный формат телефона"
-	ErrUserNotFoundLogin         = "ERROR: user not found"
+const (
+	ErrSelectSaltInLogin        = "ERROR: salt in login not scan"
+	ErrLoginOrPasswordIncorrect = "Неправильный логин или пароль"
+	ErrGeneralInfoScan          = "ERROR: general_user_info not scan"
+	ErrInsertHost               = "ERROR: host not insert"
+	ErrInsertCourier            = "ERROR: courier not insert"
+	ErrInsertClient             = "ERROR: client not insert"
+	ErrInsertTransactionCookie  = "ERROR: cookie with transaction not insert"
+	ErrDeleteCookie             = "ERROR: cookie not delete"
+	ErrInsertCookie             = "ERROR: cookie not insert"
+	ErrGeneralInfoUnique        = "Телефон или Email уже зарегистрирован"
+	ErrPhoneFormat              = "Неверный формат телефона"
+	ErrUserNotFoundLogin        = "ERROR: user not found"
 )
 
 // Error of Middleware
-const(
+const (
 	ErrNotConnect                = "ERROR: db not connect"
 	ErrCookieNotScan             = "ERROR: cookie not scan"
 	ErrCookieScan                = "ERROR: cookie not scan"
@@ -61,19 +61,27 @@ const(
 )
 
 // Error of profile
-const(
-	ErrClientScan                = "ERROR: check user on client not scan"
-	ErrHostScan                  = "ERROR: check user on host not scan"
-	ErrCourierScan               = "ERROR: check user on courier not scan"
-	ErrGetProfileHostScan        = "ERROR: get profile host not scan"
-	ErrGetProfileClientScan      = "ERROR: get profile client not scan"
-	ErrGetProfileCourierScan     = "ERROR: get profile courier not scan"
-	ErrGetBirthdayScan           = "ERROR: birthday not scan"
+const (
+	ErrClientScan            = "ERROR: check user on client not scan"
+	ErrHostScan              = "ERROR: check user on host not scan"
+	ErrCourierScan           = "ERROR: check user on courier not scan"
+	ErrGetProfileHostScan    = "ERROR: get profile host not scan"
+	ErrGetProfileClientScan  = "ERROR: get profile client not scan"
+	ErrGetProfileCourierScan = "ERROR: get profile courier not scan"
+	ErrGetBirthdayScan       = "ERROR: birthday not scan"
+	ErrUpdateName            = "ERROR: name not update"          // TODO: add handler
+	ErrUpdateEmail           = "ERROR: email not update"         // TODO: add handler
+	ErrUpdateEmailRepeat     = "ERROR: email already exist"      // TODO: add handler
+	ErrUpdatePhone           = "ERROR: phone not update"         // TODO: add handler
+	ErrUpdatePhoneRepeat     = "ERROR: phone already not update" // TODO: add handler
+	ErrSelectSaltInUpdate    = "ERROR: salt not found in update" // TODO: add handler
+	ErrUpdatePassword        = "ERROR: password not update"      // TODO: add handler
+	ErrUpdateAvatar          = "ERROR: avatar not update"        // TODO: add handler
 )
 
 // Error of restaurant
-const(
-	ErrRestaurantsNotFound       = "ERROR: restaurants not found"
-	ErrRestaurantScan            = "ERROR: restaurant scan error"
-	ErrRestaurantsNotSelect      = "ERROR: restaurant not select"
+const (
+	ErrRestaurantsNotFound  = "ERROR: restaurants not found"
+	ErrRestaurantScan       = "ERROR: restaurant scan error"
+	ErrRestaurantsNotSelect = "ERROR: restaurant not select"
 )

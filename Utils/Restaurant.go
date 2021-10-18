@@ -11,7 +11,7 @@ type Restaurant struct {
 }
 
 type RestaurantResponse struct {
-	RestaurantsGet	interface{}	`json:"restaurants"`
+	RestaurantsGet interface{} `json:"restaurants"`
 }
 
 type DishesResponse struct {
@@ -19,28 +19,28 @@ type DishesResponse struct {
 }
 
 type Dishes struct {
-	Id				int				`json:"id"`
-	Img				string			`json:"img"`
-	Title			string			`json:"title"`
-	Cost			int				`json:"cost"`
-	Description		string			`json:"description"`
-	Radios			[]interface{}	`json:"radios"`
-	Ingredient		[]interface{}	`json:"CheckboxesRows"`  // TODO: завтра подумать над итогом json названием
+	Id          int           `json:"id"`
+	Img         string        `json:"img"`
+	Title       string        `json:"title"`
+	Cost        int           `json:"cost"`
+	Description string        `json:"description"`
+	Radios      []interface{} `json:"radios"`
+	Ingredient  []interface{} `json:"CheckboxesRows"` // TODO: завтра подумать над итогом json названием
 }
 
 type Radios struct {
-	Title	string			`json:"title"`
-	Id		int				`json:"id"`
-	Rows	[]interface{}	`json:"rows"`
+	Title string        `json:"title"`
+	Id    int           `json:"id"`
+	Rows  []interface{} `json:"rows"`
 }
 
-type Rows struct {
-	Id		int		`json:"id"`
-	Name	string	`json:"name"`
+type CheckboxesRows struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 type Ingredient struct {
-	Id		int		`json:"id"`
-	Title	string	`json:"title"`
-	Cost	int		`json:"cost"`
+	Id    int    `json:"id"`
+	Title string `json:"title"`
+	Cost  int    `json:"cost"`
 }

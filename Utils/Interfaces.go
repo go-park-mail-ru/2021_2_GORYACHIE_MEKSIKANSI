@@ -22,6 +22,11 @@ type WrapperProfile interface {
 	GetProfileClient(id int) (*Profile, error)
 	GetProfileHost(id int) (*Profile, error)
 	GetProfileCourier(id int) (*Profile, error)
+	UpdateName(id int, newName string) error
+	UpdateEmail(id int, newEmail string) error
+	UpdatePassword(id int, newPassword string) error
+	UpdatePhone(id int, newPhone string) error
+	UpdateAvatar(id int, newAvatar string) error
 }
 
 type WrapperAuthorization interface {
@@ -34,4 +39,3 @@ type WrapperAuthorization interface {
 	GenerateNew() *Defense
 	AddCookie(cookie *Defense, id int) error
 }
-

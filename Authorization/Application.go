@@ -6,7 +6,6 @@ import (
 
 const LenSalt = 5
 
-
 func SignUp(db utils.WrapperAuthorization, signup *utils.RegistrationRequest) (*utils.Defense, error) {
 	var cookie *utils.Defense
 	var err error

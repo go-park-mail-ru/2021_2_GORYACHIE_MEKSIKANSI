@@ -1,7 +1,10 @@
-INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ('root', 'root@root', 88888888888, 'ca2e080a74ed1590cd141171c20e164d40d058fb45817c7b59f83159d059a6c0', 'salt');
+INSERT INTO general_user_info (name, email, phone, password, salt)
+VALUES ('root','root@root', 88888888888,'ca2e080a74ed1590cd141171c20e164d40d058fb45817c7b59f83159d059a6c0', 'salt');
+
 INSERT INTO client (client_id, date_birthday) VALUES (1, NOW());
 
-INSERT INTO restaurant (owner, name, description, price_delivery, min_delivery_time, max_delivery_time, city, street, house, floor, rating, location) VALUES
+INSERT INTO restaurant (owner, name, description, price_delivery, min_delivery_time, max_delivery_time, city,
+                        street, house, floor, rating, location) VALUES
       (1, 'Cheesecake Factory', 'description', 100, 15, 90, 'city', 'street', 'house', 100, 5, 'location'),
       (1, 'Shokolaat', 'description', 10, 25, 65, 'city', 'street', 'house', 100, 3, 'location'),
       (1, 'Gordon Biersch', 'description', 15, 35, 40, 'city', 'street', 'house', 100, 4, 'location'),
