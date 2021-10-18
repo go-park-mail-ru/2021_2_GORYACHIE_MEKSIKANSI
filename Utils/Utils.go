@@ -16,6 +16,10 @@ const (
 	KeyCookieSessionId = "session_id"
 )
 
+type ResponseStatus struct {
+	StatusHTTP int `json:"status"`
+}
+
 func SetCookieResponse(cookieHTTP *fasthttp.Cookie, cookieDB Defense, sessionId string) {
 	cookieHTTP.SetExpire(cookieDB.DateLife)
 	cookieHTTP.SetKey(sessionId)

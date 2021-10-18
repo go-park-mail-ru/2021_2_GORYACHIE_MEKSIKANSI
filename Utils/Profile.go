@@ -13,3 +13,23 @@ type Profile struct {
 type ProfileResponse struct {
 	ProfileUser interface{} `json:"profile"`
 }
+
+type UpdateName struct {
+	Name string `json:"name"`
+}
+
+type UpdateEmail struct {
+	Email string `json:"email"`
+}
+
+type UpdatePassword struct {
+	Password string `json:"password"`
+}
+
+type UpdatePhone struct {
+	Phone string `json:"Phone"`
+}
+
+type UpdateAvatar struct {
+	Name string `json:"name"` // TODO(N): проверить тип
+}

@@ -265,7 +265,7 @@ func TestCheckErrorLogoutAccess(t *testing.T) {
 	}
 
 	for _, testCase := range testTable {
-		errOut, resultOut, codeHTTP := CheckErrorLogoutAccess(&testCase.errorInput)
+		errOut, resultOut, codeHTTP := CheckErrorAccess(&testCase.errorInput)
 		assert.Equal(t, testCase.errorExpected, errOut.Error(),
 			codeHTTP, testCase.codeHTTPExpected,
 			fmt.Sprintf("Expected %s, %s, %d", testCase.errorExpected, testCase.resultExpected, testCase.codeHTTPExpected),
@@ -279,7 +279,7 @@ func TestCheckErrorLogoutAccess(t *testing.T) {
 	}
 
 	var err error
-	errOut, resultOut, codeHTTP := CheckErrorLogoutAccess(err)
+	errOut, resultOut, codeHTTP := CheckErrorAccess(err)
 	assert.Equal(t, nil, errOut,
 		fmt.Sprintf("Expected %s, %s, %d", test.NilStr, test.NilStr, HttpNil),
 	)

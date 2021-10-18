@@ -142,7 +142,7 @@ func CheckErrorLogout(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorLogoutAccess(err error) (error, []byte, int) {
+func CheckErrorAccess(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrCookieNotScan:

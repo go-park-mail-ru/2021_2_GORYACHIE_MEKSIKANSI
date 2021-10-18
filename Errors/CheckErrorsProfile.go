@@ -35,7 +35,7 @@ func CheckErrorProfile(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileCookie(err error) (error, []byte, int) {
+func CheckErrorCookie(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrCookieScan:
@@ -96,6 +96,13 @@ func CheckErrorProfileCookie(err error) (error, []byte, int) {
 				},
 				result, http.StatusOK
 		}
+	}
+	return nil, nil, HttpNil
+}
+
+func CheckErrorProfileUpdateName (err error) (error, []byte, int) {
+	if err != nil {
+
 	}
 	return nil, nil, HttpNil
 }

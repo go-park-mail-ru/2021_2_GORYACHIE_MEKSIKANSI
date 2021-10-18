@@ -153,7 +153,7 @@ func TestCheckErrorProfileCookie(t *testing.T) {
 	}
 
 	for _, testCase := range testTable {
-		errOut, resultOut, codeHTTP := CheckErrorProfileCookie(&testCase.errorInput)
+		errOut, resultOut, codeHTTP := CheckErrorCookie(&testCase.errorInput)
 		assert.Equal(t, testCase.errorExpected, errOut.Error(),
 			fmt.Sprintf("Expected %s, %s, %d", testCase.errorExpected, testCase.resultExpected, testCase.codeHTTPExpected),
 		)
@@ -165,7 +165,7 @@ func TestCheckErrorProfileCookie(t *testing.T) {
 		)
 	}
 	var err error
-	errOut, resultOut, codeHTTP := CheckErrorProfileCookie(err)
+	errOut, resultOut, codeHTTP := CheckErrorCookie(err)
 	assert.Equal(t, nil, errOut,
 		fmt.Sprintf("Expected %s, %s, %d", test.NilStr, test.NilStr, HttpNil),
 	)

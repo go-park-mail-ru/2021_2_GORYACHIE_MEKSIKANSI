@@ -22,19 +22,22 @@ func runServer(port string) {
 	}
 	userInfo := auth.UserInfo{ConnectionDB: connectionPostgres}
 	restaurantInfo := restaurant.RestaurantInfo{ConnectionDB: connectionPostgres}
-	profileInfo := profile.ProfileInfo{ConnectionDB: connectionPostgres}
+	profileInfo := profile.InfoProfile{ConnectionDB: connectionPostgres}
 
 	myRouter := router.New()
 	api := myRouter.Group("/api")
 	//version := api.Group("/v1")
+	user := api.Group("/user")
 	restaurants := api.Group("/restaurant")
-	api.GET("/profile", profileInfo.ProfileHandler)
-	api.POST("/logout", userInfo.LogoutHandler)
-	api.POST("/login", userInfo.LoginHandler)
-	api.POST("/signup", userInfo.SignUpHandler)
+	api.POST("/logout", userInfo.LogoutHandler)  // TODO(N): user
+	api.POST("/login", userInfo.LoginHandler)  // TODO(N): user
+	api.POST("/signup", userInfo.SignUpHandler)  // TODO(N): user
 
-	api.GET("/", restaurantInfo.RestaurantHandler)
-	restaurants.GET("/", restaurantInfo.RestaurantDishesHandler)
+	api.GET("/", restaurantInfo.RestaurantHandler)  // TODO(N): restaurant
+	restaurants.GET("/", restaurantInfo.RestaurantDishesHandler)  // TODO(N): restaurant
+
+	api.GET("/profile", profileInfo.ProfileHandler)  // TODO(N): user
+	user.PUT("/name", profileInfo.UpdateUserName)
 
 	siteHandler := mid.CheckAuthMiddleware(myRouter.Handler)
 
