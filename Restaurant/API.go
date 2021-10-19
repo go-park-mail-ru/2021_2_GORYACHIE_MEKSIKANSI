@@ -74,7 +74,7 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 
 	restaurant, err := GetRestaurant(&WrapperDB, id)
 
-	errOut, resultOutAccess, codeHTTP  := errors.CheckErrorRestaurantId(err)
+	errOut, resultOutAccess, codeHTTP  := errors.CheckErrorRestaurantId(err)  // должна появиться новая ошибка +1
 	if resultOutAccess != nil {
 		switch errOut.Error() {
 		case errors.ErrMarshal:
