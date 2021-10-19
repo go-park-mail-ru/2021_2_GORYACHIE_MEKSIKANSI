@@ -9,6 +9,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	"net/http"
+	"strconv"
 )
 
 type RestaurantInfo struct {
@@ -81,11 +82,26 @@ func (r *RestaurantInfo) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 
 func (r *RestaurantInfo) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	WrapperDB := Wrapper{Conn: r.ConnectionDB}
-	println(ctx.UserValue("id"))
-	//ab := ctx.UserValue("id")
+	idUrl := ctx.UserValue("id")
+	var id int
+	var errorAtoi error
+	switch idUrl.(type) {
+	case string:
+		id, errorAtoi = strconv.Atoi(idUrl.(string))
+		if errorAtoi != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrAtoi))
+			fmt.Printf("Console: %s\n", errors.ErrAtoi)
+			return
+		}
+	default:
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrNotString))
+		fmt.Printf("Console: %s\n", errors.ErrNotString)
+		return
+	}
 
-	//fmt.Fprintf(ctx, "GG", ctx.UserValue("id"))
-	restaurant, err := GetRestaurant(&WrapperDB, 1) // TODO(N): id - kostyl
+	restaurant, err := GetRestaurant(&WrapperDB, id)
 
 	errOut, resultOutAccess, codeHTTP  := errors.CheckErrorRestaurantId(err)
 	if resultOutAccess != nil {
@@ -110,7 +126,8 @@ func (r *RestaurantInfo) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 			},
 		})
 		if err != nil {
-			ctx.Response.SetStatusCode(http.StatusOK)
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrEncode))
 			fmt.Printf("Console: %s\n", errors.ErrEncode)
 			return
 		}
