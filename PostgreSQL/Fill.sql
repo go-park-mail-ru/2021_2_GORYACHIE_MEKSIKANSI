@@ -63,5 +63,5 @@ INSERT INTO restaurant (owner, name, description, price_delivery, min_delivery_t
 INSERT INTO restaurant_category (restaurant, category) VALUES (1, 'category');
 INSERT INTO restaurant_category (restaurant, category) VALUES (1, 'text');
 
-INSERT INTO dishes (name, cost, restaurant, description, protein, falt, Kilocalorie, carbohydrates, category_dishes, category_restaurant) VALUES
+INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant) VALUES
       ('name', 0, 1, 'descr', 1, 1, 1, 1, 'cat_dis', 'cat_rest');

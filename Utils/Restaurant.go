@@ -19,24 +19,24 @@ type RestaurantIdResponse struct {
 }
 
 type RestaurantId struct {
-	Id                  int     `json:"id"`
-	Img                 string  `json:"img"`
-	Name                string  `json:"name"`
-	CostForFreeDelivery int     `json:"costFFD"`  // TODO(N): надо бы rename json
-	MinDelivery         int     `json:"minDTime"`
-	MaxDelivery         int     `json:"maxDTime"`
-	Rating              float32 `json:"rating"`
+	Id                  int         `json:"id"`
+	Img                 string      `json:"img"`
+	Name                string      `json:"name"`
+	CostForFreeDelivery int         `json:"costFFD"` // TODO(N): надо бы rename json
+	MinDelivery         int         `json:"minDTime"`
+	MaxDelivery         int         `json:"maxDTime"`
+	Rating              float32     `json:"rating"`
 	Tags                interface{} `json:"tags"`
 	Menu                interface{} `json:"menu"`
 }
 
 type Tag struct {
-	Id 	 int    `json:"id"`
+	Id   int    `json:"id"`
 	Name string `json:"name"`
 }
 
 type Menu struct {
-	Name       string        `json:"name"`
+	Name       string      `json:"name"`
 	DishesMenu interface{} `json:"dishes"`
 }
 
@@ -53,20 +53,20 @@ type DishesResponse struct {
 }
 
 type Dishes struct {
-	Id          int           `json:"id"`
-	Img         string        `json:"img"`
-	Title       string        `json:"title"`
-	Cost        int           `json:"cost"`
-	Ccal        int           `json:"ccal"`
-	Description string        `json:"description"`
-	Radios      interface{}   `json:"radios"`
-	Ingredient  interface{}   `json:"CheckboxesRows"` // TODO: завтра подумать над итогом json названием
+	Id          int         `json:"id"`
+	Img         string      `json:"img"`
+	Title       string      `json:"title"`
+	Cost        int         `json:"cost"`
+	Ccal        int         `json:"ccal"`
+	Description string      `json:"description"`
+	Radios      interface{} `json:"radios"`
+	Ingredient  interface{} `json:"CheckboxesRows"` // TODO: завтра подумать над итогом json названием
 }
 
 type Radios struct {
-	Title string        `json:"title"`
-	Id    int           `json:"id"`
-	Rows  []interface{} `json:"rows"`
+	Title string      `json:"title"`
+	Id    int         `json:"id"`
+	Rows  interface{} `json:"rows"`
 }
 
 type CheckboxesRows struct {

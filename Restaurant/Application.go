@@ -21,3 +21,13 @@ func GetRestaurant(db rest.WrapperRestaurant, id int) (*rest.RestaurantId, error
 	restInfo.Tags = tags
 	return restInfo, nil
 }
+
+func RestaurantDishes(db rest.WrapperRestaurant, restId int, dishesId int) (*rest.Dishes, error) {
+	dishes, radios, ingredient, err := db.RestaurantDishes(restId, dishesId)
+	if err != nil {
+		return nil, err
+	}
+	dishes.Radios = radios
+	dishes.Ingredient = ingredient
+	return dishes, nil
+}

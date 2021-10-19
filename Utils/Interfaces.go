@@ -16,6 +16,7 @@ type ConnectionInterface interface {
 type WrapperRestaurant interface {
 	GetRestaurants() ([]Restaurants, error)
 	GetRestaurant(id int) (*RestaurantId, []Tag, []Menu, error)
+	RestaurantDishes(restId int, dishesId int) (*Dishes, []Radios, []Ingredient, error)
 }
 
 type WrapperProfile interface {
