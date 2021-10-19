@@ -12,11 +12,11 @@ import (
 	"strconv"
 )
 
-type RestaurantInfo struct {
+type InfoRestaurant struct {
 	ConnectionDB *pgxpool.Pool
 }
 
-func (r *RestaurantInfo) RestaurantHandler(ctx *fasthttp.RequestCtx) {
+func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 	WrapperDB := Wrapper{Conn: r.ConnectionDB}
 
 	restaurant, err := AllRestaurants(&WrapperDB)
@@ -50,7 +50,7 @@ func (r *RestaurantInfo) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 	}
 }
 
-func (r *RestaurantInfo) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
+func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	WrapperDB := Wrapper{Conn: r.ConnectionDB}
 
 	idUrl := ctx.UserValue("idRes")
@@ -104,7 +104,7 @@ func (r *RestaurantInfo) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	}
 }
 
-func (r *RestaurantInfo) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
+func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 	WrapperDB := Wrapper{Conn: r.ConnectionDB}
 
 	idResIn := ctx.UserValue("idRes")

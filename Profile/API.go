@@ -10,6 +10,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	"net/http"
+	"strconv"
 )
 
 type InfoProfile struct {
@@ -18,22 +19,14 @@ type InfoProfile struct {
 
 func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	wrapper := Wrapper{Conn: u.ConnectionDB}
-	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
-	// TODO(N): add x-csrf-token
-	id, err := mid.GetIdByCookie(u.ConnectionDB, &cookieDB)
+	// TODO(N): add x-csrf-
 
-	errAccess, resultOutAccess, codeHTTP := errors.CheckErrorCookie(err)
-	if resultOutAccess != nil {
-		switch errAccess.Error() {
-		case errors.ErrMarshal:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
-			return
-		case errors.ErrCheck:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody(resultOutAccess)
-			return
-		}
+	id, errorConvert:= strconv.Atoi(ctx.UserValue("id").(string))
+	if errorConvert != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrAtoi))
+		fmt.Printf("Console: %s\n", errors.ErrAtoi)
+		return
 	}
 
 	profile, err := GetProfile(&wrapper, id)
@@ -96,19 +89,12 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	id, err := mid.GetIdByCookie(u.ConnectionDB, &cookieDB)
-	errAccess, resultOutAccess, codeHTTP = errors.CheckErrorCookie(err)
-	if resultOutAccess != nil {
-		switch errAccess.Error() {
-		case errors.ErrMarshal:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
-			return
-		case errors.ErrCheck:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody(resultOutAccess)
-			return
-		}
+	id, errorConvert:= strconv.Atoi(ctx.UserValue("id").(string))
+	if errorConvert != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrAtoi))
+		fmt.Printf("Console: %s\n", errors.ErrAtoi)
+		return
 	}
 
 	err = UpdateName(&wrapper, id, userName.Name)

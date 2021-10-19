@@ -74,7 +74,7 @@ type CheckboxesRows struct {
 	Name string `json:"name"`
 }
 
-type Ingredient struct {
+type Checkboxes struct { // TODO(N): мб Checkboxes и в api такое же?
 	Id    int    `json:"id"`
 	Title string `json:"title"`
 	Cost  int    `json:"cost"`
