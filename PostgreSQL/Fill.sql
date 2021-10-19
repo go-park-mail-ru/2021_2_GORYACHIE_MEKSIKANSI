@@ -65,3 +65,12 @@ INSERT INTO restaurant_category (restaurant, category) VALUES (1, 'text');
 
 INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant) VALUES
       ('name', 0, 1, 'descr', 1, 1, 1, 1, 'cat_dis', 'cat_rest');
+
+INSERT INTO radios (name, food) VALUES ('name', 1);
+INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie) VALUES ('name', 1, 1, 1, 1, 1);
+INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie) VALUES ('name2', 1, 1, 1, 1, 1);
+INSERT INTO radios (name, food) VALUES ('name2', 1);
+INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie) VALUES ('name', 2, 1, 1, 1, 1);
+INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie) VALUES ('name2', 2, 1, 1, 1, 1);
+INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element) VALUES ('name', 1, 1, 1, 1, 1, 1, 1);
+INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element) VALUES ('name2', 1, 2, 2, 2, 2, 2, 2);

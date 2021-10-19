@@ -158,7 +158,8 @@ CREATE TABLE IF NOT EXISTS address_user (
 
 CREATE TABLE IF NOT EXISTS structure_dishes (
     id serial PRIMARY KEY,
-    element text DEFAULT '' NOT NULL,
+    name text DEFAULT '' NOT NULL,
+    cost int,
     food int,
     FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE,
     protein double precision NOT NULL,
@@ -167,8 +168,25 @@ CREATE TABLE IF NOT EXISTS structure_dishes (
     kilocalorie int,
     count_element int NOT NULL,
     changed boolean DEFAULT false NOT NULL,
-    deleted boolean DEFAULT false NOT NULL,
-    choice text NOT NULL
+    deleted boolean DEFAULT false NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS radios (
+   id serial PRIMARY KEY,
+   name text DEFAULT '' NOT NULL,
+   food int,
+   FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS structure_radios (
+    id serial PRIMARY KEY,
+    name text DEFAULT '' NOT NULL,
+    radios int,
+    FOREIGN KEY (radios) REFERENCES radios (id) ON DELETE CASCADE,
+    protein double precision NOT NULL,
+    falt double precision NOT NULL,
+    carbohydrates double precision NOT NULL,
+    kilocalorie int NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS promocode (

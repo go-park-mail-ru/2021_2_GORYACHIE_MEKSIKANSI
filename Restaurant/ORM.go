@@ -120,10 +120,10 @@ func (db *Wrapper) GetRestaurant(id int) (*Utils.RestaurantId, []Utils.Tag, []Ut
 	return &restaurant, tags, result, nil
 }
 
-func (db *Wrapper) RestaurantDishes(restId int, dishesId int) (*Utils.Dishes, []Utils.Radios, []Utils.Ingredient, error) {
+func (db *Wrapper) RestaurantDishes(restId int, dishesId int) (*Utils.Dishes, []Utils.Radios, []Utils.Checkboxes, error) {
 	var dishes Utils.Dishes
 	var radios []Utils.Radios
-	var ingredients []Utils.Ingredient
+	var checkboxes []Utils.Checkboxes
 	_ = db.Conn.QueryRow(context.Background(),
 		"SELECT id, avatar, name, cost, kilocalorie, description FROM dishes WHERE id = $1 AND restaurant = $2",
 		dishesId, restId).Scan(
@@ -132,9 +132,9 @@ func (db *Wrapper) RestaurantDishes(restId int, dishesId int) (*Utils.Dishes, []
 	rowDishes, _ := db.Conn.Query(context.Background(),
 		"SELECT id, name, cost FROM structure_dishes WHERE food = $1", dishesId)
 	for rowDishes.Next() {
-		var ingredient Utils.Ingredient
-		_ = rowDishes.Scan(&ingredient.Id, &ingredient.Title, &ingredient.Cost)
-		ingredients = append(ingredients, ingredient)
+		var checkbox Utils.Checkboxes
+		_ = rowDishes.Scan(&checkbox.Id, &checkbox.Title, &checkbox.Cost)
+		checkboxes = append(checkboxes, checkbox)
 	}
 
 	rowDishes, _ = db.Conn.Query(context.Background(),
@@ -158,5 +158,5 @@ func (db *Wrapper) RestaurantDishes(restId int, dishesId int) (*Utils.Dishes, []
 		radios[i].Rows = rows
 	}
 
-	return &dishes, radios, ingredients, nil
+	return &dishes, radios, checkboxes, nil
 }
