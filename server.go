@@ -27,18 +27,19 @@ func runServer(port string) {
 
 	myRouter := router.New()
 	api := myRouter.Group("/api")
-	//version := api.Group("/v1")
-	user := api.Group("/user")
-	restaurants := api.Group("/restaurant")
-	api.POST("/logout", userInfo.LogoutHandler)  // TODO(N): user
-	api.POST("/login", userInfo.LoginHandler)  // TODO(N): user
-	api.POST("/signup", userInfo.SignUpHandler)  // TODO(N): user
+	version := api.Group("/v1")
+	user := version.Group("/user")
+	restaurants := version.Group("/restaurant")
 
-	api.GET("/", restaurantInfo.RestaurantHandler)                    // TODO(N): restaurant
-	restaurants.GET("/dishes", restaurantInfo.RestaurantDishesHandler) // TODO(N): restaurant
-	restaurants.GET("/{id}", restaurantInfo.RestaurantIdHandler)           // TODO(N): restaurant
+	user.POST("/login", userInfo.LoginHandler)
+	user.POST("/signup", userInfo.SignUpHandler)
+	user.POST("/logout", userInfo.LogoutHandler)
 
-	api.GET("/profile", profileInfo.ProfileHandler)  // TODO(N): user
+	restaurants.GET("/", restaurantInfo.RestaurantHandler)
+	restaurants.GET("/{idRes}/dishes/{idDish}", restaurantInfo.RestaurantDishesHandler)
+	restaurants.GET("/{idRes}", restaurantInfo.RestaurantIdHandler)
+
+	user.GET("/", profileInfo.ProfileHandler)
 	user.PUT("/name", profileInfo.UpdateUserName)
 
 	siteHandler := mid.CheckAuthMiddleware(myRouter.Handler)
