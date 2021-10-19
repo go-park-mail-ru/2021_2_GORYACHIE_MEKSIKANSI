@@ -29,7 +29,7 @@ func TestCheckErrorRestaurant(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: ErrRestaurantScan,
+				Text: ErrRestaurantsScan,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,

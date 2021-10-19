@@ -55,18 +55,18 @@ type DishesResponse struct {
 type Dishes struct {
 	Id          int         `json:"id"`
 	Img         string      `json:"img"`
-	Title       string      `json:"title"`
+	Title       string      `json:"name"`
 	Cost        int         `json:"cost"`
 	Ccal        int         `json:"ccal"`
-	Description string      `json:"description"`
+	Description string      `json:"desc"`
 	Radios      interface{} `json:"radios"`
-	Ingredient  interface{} `json:"CheckboxesRows"` // TODO: завтра подумать над итогом json названием
+	Ingredient  interface{} `json:"ingredients"`
 }
 
 type Radios struct {
-	Title string      `json:"title"`
+	Title string      `json:"name"`
 	Id    int         `json:"id"`
-	Rows  interface{} `json:"rows"`
+	Rows  interface{} `json:"opt"`
 }
 
 type CheckboxesRows struct {
@@ -76,6 +76,6 @@ type CheckboxesRows struct {
 
 type Checkboxes struct { // TODO(N): мб Checkboxes и в api такое же?
 	Id    int    `json:"id"`
-	Title string `json:"title"`
+	Title string `json:"name"`
 	Cost  int    `json:"cost"`
 }

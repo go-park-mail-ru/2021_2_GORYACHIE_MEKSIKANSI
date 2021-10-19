@@ -37,7 +37,7 @@ func runServer(port string) {
 	user.POST("/logout", userInfo.LogoutHandler)
 
 	restaurants.GET("/", restaurantInfo.RestaurantHandler)
-	restaurants.GET("/{idRes}/dishes/{idDish}", restaurantInfo.RestaurantDishesHandler)
+	restaurants.GET("/{idRes}/dish/{idDish}", restaurantInfo.RestaurantDishesHandler)
 	restaurants.GET("/{idRes}", restaurantInfo.RestaurantIdHandler)
 
 	user.GET("/", infoMiddleware.GetIdByCookieMiddleware(profileInfo.ProfileHandler))
@@ -57,7 +57,7 @@ func runServer(port string) {
 
 	err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(printURL))
 	if err != nil {
-		fmt.Printf("Console: ERROR: fatall lListenAndServe")
+		fmt.Printf("Console: ERROR: fatal ListenAndServe")
 		return
 	}
 }
