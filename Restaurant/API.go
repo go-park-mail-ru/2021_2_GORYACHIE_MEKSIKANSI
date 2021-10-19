@@ -126,7 +126,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	idDishIn := ctx.UserValue("idDishIn")
+	idDishIn := ctx.UserValue("idDish")
 	var idDish int
 	switch idDishIn.(type) {
 	case string:
