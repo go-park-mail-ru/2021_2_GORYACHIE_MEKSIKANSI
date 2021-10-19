@@ -12,12 +12,13 @@ import (
 	"strconv"
 )
 
-type RestaurantInfo struct {
+type InfoRestaurant struct {
 	ConnectionDB *pgxpool.Pool
 }
 
-func (r *RestaurantInfo) RestaurantHandler(ctx *fasthttp.RequestCtx) {
+func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 	WrapperDB := Wrapper{Conn: r.ConnectionDB}
+
 	restaurant, err := AllRestaurants(&WrapperDB)
 	errOut, resultOutAccess, codeHTTP := errors.CheckErrorRestaurant(err)
 	if resultOutAccess != nil {
@@ -42,53 +43,23 @@ func (r *RestaurantInfo) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 		},
 	})
 	if err != nil {
-		ctx.Response.SetStatusCode(http.StatusOK)
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrEncode))
 		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
 }
 
-func (r *RestaurantInfo) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
-	/*	WrapperDB := Wrapper{Conn: r.ConnectionDB}
-		dishes, err := RestaurantDishes(&WrapperDB)
-		errOut, resultOutAccess, codeHTTP  := errors.CheckErrorRestaurantDishes(err)
-		if resultOutAccess != nil {
-			switch errOut.Error() {
-			case errors.ErrMarshal:
-				ctx.Response.SetStatusCode(codeHTTP)
-				ctx.Response.SetBody([]byte(errors.ErrMarshal))
-				return
-			case errors.ErrCheck:
-				ctx.Response.SetStatusCode(codeHTTP)
-				ctx.Response.SetBody(resultOutAccess)
-				return
-			}
-		}*/
-
-	ctx.SetStatusCode(http.StatusOK)
-
-	/*	err = json.NewEncoder(ctx).Encode(&auth.Result{
-			Status: http.StatusOK,
-			Body: &utils.DishesResponse {
-				DishesGet: dishes,
-			},
-		})
-		if err != nil {
-			ctx.Response.SetStatusCode(http.StatusOK)
-			fmt.Printf("Console: %s\n", errors.ErrEncode)
-			return
-		}*/
-}
-
-func (r *RestaurantInfo) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
+func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	WrapperDB := Wrapper{Conn: r.ConnectionDB}
-	idUrl := ctx.UserValue("id")
+
+	idUrl := ctx.UserValue("idRes")
 	var id int
-	var errorAtoi error
+	var errorConvert error
 	switch idUrl.(type) {
 	case string:
-		id, errorAtoi = strconv.Atoi(idUrl.(string))
-		if errorAtoi != nil {
+		id, errorConvert = strconv.Atoi(idUrl.(string))
+		if errorConvert != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
 			fmt.Printf("Console: %s\n", errors.ErrAtoi)
@@ -103,7 +74,7 @@ func (r *RestaurantInfo) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 
 	restaurant, err := GetRestaurant(&WrapperDB, id)
 
-	errOut, resultOutAccess, codeHTTP  := errors.CheckErrorRestaurantId(err)
+	errOut, resultOutAccess, codeHTTP  := errors.CheckErrorRestaurantId(err)  // должна появиться новая ошибка +1
 	if resultOutAccess != nil {
 		switch errOut.Error() {
 		case errors.ErrMarshal:
@@ -119,10 +90,81 @@ func (r *RestaurantInfo) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 
 	ctx.SetStatusCode(http.StatusOK)
 
+	err = json.NewEncoder(ctx).Encode(&auth.Result{
+		Status: http.StatusOK,
+		Body: &utils.RestaurantIdResponse {
+			RestaurantsGet: restaurant,
+		},
+	})
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrEncode))
+		fmt.Printf("Console: %s\n", errors.ErrEncode)
+		return
+	}
+}
+
+func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
+	WrapperDB := Wrapper{Conn: r.ConnectionDB}
+
+	idResIn := ctx.UserValue("idRes")
+	var idRes int
+	var errorConvert error
+	switch idResIn.(type) {
+	case string:
+		idRes, errorConvert = strconv.Atoi(idResIn.(string))
+		if errorConvert != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrAtoi))
+			fmt.Printf("Console: %s\n", errors.ErrAtoi)
+			return
+		}
+	default:
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrNotString))
+		fmt.Printf("Console: %s\n", errors.ErrNotString)
+		return
+	}
+
+	idDishIn := ctx.UserValue("idDishIn")
+	var idDish int
+	switch idDishIn.(type) {
+	case string:
+		idDish, errorConvert = strconv.Atoi(idDishIn.(string))
+		if errorConvert != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrAtoi))
+			fmt.Printf("Console: %s\n", errors.ErrAtoi)
+			return
+		}
+	default:
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrNotString))
+		fmt.Printf("Console: %s\n", errors.ErrNotString)
+		return
+	}
+
+		dishes, err := RestaurantDishes(&WrapperDB, idRes, idDish)
+		errOut, resultOutAccess, codeHTTP  := errors.CheckErrorRestaurantDishes(err)
+		if resultOutAccess != nil {
+			switch errOut.Error() {
+			case errors.ErrMarshal:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody([]byte(errors.ErrMarshal))
+				return
+			case errors.ErrCheck:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody(resultOutAccess)
+				return
+			}
+		}
+
+	ctx.SetStatusCode(http.StatusOK)
+
 		err = json.NewEncoder(ctx).Encode(&auth.Result{
 			Status: http.StatusOK,
-			Body: &utils.RestaurantIdResponse {
-				RestaurantsGet: restaurant,
+			Body: &utils.DishesResponse {
+				DishesGet: dishes,
 			},
 		})
 		if err != nil {
