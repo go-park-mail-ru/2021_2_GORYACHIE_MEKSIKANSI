@@ -66,7 +66,7 @@ func (r *Rows) Next() bool {
 
 var restaurantTests = []struct {
 	testName string
-	out      []rest.Restaurant
+	out      []rest.Restaurants
 	err    error
 	row    Rows
 	outErr string
@@ -83,7 +83,7 @@ var restaurantTests = []struct {
 		out:      nil,
 		err:      nil,
 		row:      Rows{testName: "Two"},
-		outErr:   errorsConst.ErrRestaurantScan,
+		outErr:   errorsConst.ErrRestaurantsScan,
 	},
 	{
 		testName: "Three",
@@ -94,7 +94,7 @@ var restaurantTests = []struct {
 	},
 	{
 		testName: "Four",
-		out:      []rest.Restaurant{rest.Restaurant{}},
+		out:      []rest.Restaurants{rest.Restaurants{}},
 		err:      nil,
 		row:      Rows{"Four", 0},
 		outErr:   "",
@@ -129,13 +129,13 @@ func TestRestaurants(t *testing.T) {
 
 var restaurantApplicationTests = []struct {
 	testName string
-	out      []rest.Restaurant
+	out      []rest.Restaurants
 	outErr   string
 	err      error
 }{
 	{
 		testName: "One",
-		out:      []rest.Restaurant{},
+		out:      []rest.Restaurants{},
 		err:      nil,
 		outErr:   "",
 	},
@@ -156,7 +156,7 @@ func TestRestaurantApplication(t *testing.T) {
 		m.
 			EXPECT().
 			GetRestaurants().
-			Return([]rest.Restaurant{}, tt.err)
+			Return([]rest.Restaurants{}, tt.err)
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := AllRestaurants(m)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))

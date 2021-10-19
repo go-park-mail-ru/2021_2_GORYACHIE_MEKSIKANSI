@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS dishes (
     description text NOT NULL,
     protein double precision NOT NULL,
     falt double precision NOT NULL,
-    ccal int NOT NULL,
+    Kilocalorie int NOT NULL,
     carbohydrates double precision NOT NULL,
     category_dishes text NOT NULL,
     category_restaurant text NOT NULL,

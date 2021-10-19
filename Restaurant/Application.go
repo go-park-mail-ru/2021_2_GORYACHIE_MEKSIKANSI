@@ -4,7 +4,7 @@ import (
 	rest "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 )
 
-func AllRestaurants(db rest.WrapperRestaurant) ([]rest.Restaurant, error) {
+func AllRestaurants(db rest.WrapperRestaurant) ([]rest.Restaurants, error) {
 	result, err := db.GetRestaurants()
 	if err != nil {
 		return nil, err
@@ -12,10 +12,12 @@ func AllRestaurants(db rest.WrapperRestaurant) ([]rest.Restaurant, error) {
 	return result, nil
 }
 
-func GetRestaurant(db rest.WrapperRestaurant, id int) (*rest.RestaurantAndCategory, []rest.Dishes, error) {
-	restInfo, dishes, err := db.GetRestaurant(id)
+func GetRestaurant(db rest.WrapperRestaurant, id int) (*rest.RestaurantId, error) {
+	restInfo, tags, dishes, err := db.GetRestaurant(id)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	return restInfo, dishes, nil
+	restInfo.Menu = dishes
+	restInfo.Tags = tags
+	return restInfo, nil
 }

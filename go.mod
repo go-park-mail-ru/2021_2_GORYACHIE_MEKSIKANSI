@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/AdhityaRamadhanus/fasthttpcors v0.0.0-20170121111917-d4c07198763a
+	github.com/buaazp/fasthttprouter v0.1.1
 	github.com/fasthttp/router v1.4.3
 	github.com/golang/mock v1.6.0
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect

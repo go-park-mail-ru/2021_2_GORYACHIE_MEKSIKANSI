@@ -11,6 +11,7 @@ import (
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
 	"os"
+
 )
 
 func runServer(port string) {
@@ -33,8 +34,9 @@ func runServer(port string) {
 	api.POST("/login", userInfo.LoginHandler)  // TODO(N): user
 	api.POST("/signup", userInfo.SignUpHandler)  // TODO(N): user
 
-	api.GET("/", restaurantInfo.RestaurantHandler)  // TODO(N): restaurant
-	restaurants.GET("/", restaurantInfo.RestaurantDishesHandler)  // TODO(N): restaurant
+	api.GET("/", restaurantInfo.RestaurantHandler)                    // TODO(N): restaurant
+	restaurants.GET("/dishes", restaurantInfo.RestaurantDishesHandler) // TODO(N): restaurant
+	restaurants.GET("/{id}", restaurantInfo.RestaurantIdHandler)           // TODO(N): restaurant
 
 	api.GET("/profile", profileInfo.ProfileHandler)  // TODO(N): user
 	user.PUT("/name", profileInfo.UpdateUserName)

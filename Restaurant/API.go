@@ -36,7 +36,7 @@ func (r *RestaurantInfo) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 
 	err = json.NewEncoder(ctx).Encode(&auth.Result{
 		Status: http.StatusOK,
-		Body: &utils.RestaurantResponse{
+		Body: &utils.RestaurantsResponse{
 			RestaurantsGet: restaurant,
 		},
 	})
@@ -77,4 +77,41 @@ func (r *RestaurantInfo) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 			fmt.Printf("Console: %s\n", errors.ErrEncode)
 			return
 		}*/
+}
+
+func (r *RestaurantInfo) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
+	WrapperDB := Wrapper{Conn: r.ConnectionDB}
+	println(ctx.UserValue("id"))
+	//ab := ctx.UserValue("id")
+
+	//fmt.Fprintf(ctx, "GG", ctx.UserValue("id"))
+	restaurant, err := GetRestaurant(&WrapperDB, 1) // TODO(N): id - kostyl
+
+	errOut, resultOutAccess, codeHTTP  := errors.CheckErrorRestaurantId(err)
+	if resultOutAccess != nil {
+		switch errOut.Error() {
+		case errors.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			return
+		case errors.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOutAccess)
+			return
+		}
+	}
+
+	ctx.SetStatusCode(http.StatusOK)
+
+		err = json.NewEncoder(ctx).Encode(&auth.Result{
+			Status: http.StatusOK,
+			Body: &utils.RestaurantIdResponse {
+				RestaurantsGet: restaurant,
+			},
+		})
+		if err != nil {
+			ctx.Response.SetStatusCode(http.StatusOK)
+			fmt.Printf("Console: %s\n", errors.ErrEncode)
+			return
+		}
 }

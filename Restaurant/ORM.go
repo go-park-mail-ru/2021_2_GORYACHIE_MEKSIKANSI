@@ -11,7 +11,7 @@ type Wrapper struct {
 	Conn Utils.ConnectionInterface
 }
 
-func (db *Wrapper) GetRestaurants() ([]Utils.Restaurant, error) {
+func (db *Wrapper) GetRestaurants() ([]Utils.Restaurants, error) {
 	row, err := db.Conn.Query(context.Background(),
 		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant ORDER BY random() LIMIT 50")
 	if err != nil {
@@ -21,8 +21,8 @@ func (db *Wrapper) GetRestaurants() ([]Utils.Restaurant, error) {
 		}
 	}
 
-	restaurant := Utils.Restaurant{}
-	var result []Utils.Restaurant
+	restaurant := Utils.Restaurants{}
+	var result []Utils.Restaurants
 	for row.Next() {
 		err := row.Scan(&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery,
 			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating)
@@ -45,32 +45,33 @@ func (db *Wrapper) GetRestaurants() ([]Utils.Restaurant, error) {
 	return result, nil
 }
 
-func (db *Wrapper) GetRestaurant(id int) (*Utils.RestaurantAndCategory, []Utils.Dishes, error) {
-	var restaurant Utils.RestaurantAndCategory
+func (db *Wrapper) GetRestaurant(id int) (*Utils.RestaurantId, []Utils.Tag, []Utils.Menu, error) {
+	var restaurant Utils.RestaurantId
 	err := db.Conn.QueryRow(context.Background(),
 		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant WHERE id = $1", id).Scan(&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery,
 			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating)
 	if err != nil {
-		return nil, nil, &errorsConst.Errors{
+		return nil, nil, nil, &errorsConst.Errors{
 			Text: errorsConst.ErrRestaurantNotFound,
 			Time: time.Now(),
 		}
 	}
 
 	rowCategory, err := db.Conn.Query(context.Background(),
-		"SELECT category FROM restaurant_category WHERE restaurant = $1", id)
+		"SELECT id, category FROM restaurant_category WHERE restaurant = $1", id)
 	if err != nil {
-		return nil, nil, &errorsConst.Errors{
+		return nil, nil, nil, &errorsConst.Errors{
 			Text: errorsConst.ErrRestaurantsNotSelect,
 			Time: time.Now(),
 		}
 	}
-	var tags []string
-	var tag string
+
+	var tags []Utils.Tag
+	tag := Utils.Tag{}
 	for rowCategory.Next() {
-		err := rowCategory.Scan(&tag)
+		err := rowCategory.Scan(&tag.Id, &tag.Name)
 		if err != nil {
-			return nil, nil, &errorsConst.Errors{
+			return nil, nil, nil, &errorsConst.Errors{
 				Text: errorsConst.ErrCategoryRestaurantScan,
 				Time: time.Now(),
 			}
@@ -79,47 +80,42 @@ func (db *Wrapper) GetRestaurant(id int) (*Utils.RestaurantAndCategory, []Utils.
 	}
 
 	if tags == nil {
-		return nil, nil, &errorsConst.Errors{
+		return nil, nil, nil, &errorsConst.Errors{
 			Text: errorsConst.ErrRestaurantsNotFound,
 			Time: time.Now(),
 		}
 	}
 
-	// TODO: remake struct
-	s := make([]interface{}, len(tags))
-	for i, v := range tags {
-		s[i] = v
-	}
-	restaurant.Tags = s
-
 	rowDishes, err := db.Conn.Query(context.Background(),
-		"SELECT id, avatar, name, cost, ccal, category_restaurant FROM dishes WHERE restaurant = $1", id)
+		"SELECT id, avatar, name, cost, Kilocalorie, category_restaurant FROM dishes WHERE restaurant = $1", id)
 	if err != nil {
-		return nil, nil, &errorsConst.Errors{
+		return nil, nil, nil, &errorsConst.Errors{
 			Text: errorsConst.ErrRestaurantsDishesNotSelect,
 			Time: time.Now(),
 		}
 	}
 
-	dishes := Utils.Dishes{}
-	var result []Utils.Dishes
+	dishes := Utils.DishesMenu{}
+	var result []Utils.Menu
 	for rowDishes.Next() {
-		err := rowDishes.Scan(&dishes.Id, &dishes.Img, &dishes.Cost, &dishes.Ccal)
+		var menu Utils.Menu
+		err := rowDishes.Scan(&dishes.Id, &dishes.Img, &dishes.Name, &dishes.Cost, &dishes.Kilocalorie, &menu.Name)
 		if err != nil {
-			return nil, nil, &errorsConst.Errors{
+			return nil, nil, nil, &errorsConst.Errors{
 				Text: errorsConst.ErrRestaurantDishesScan,
 				Time: time.Now(),
 			}
 		}
-		result = append(result, dishes)
+		menu.DishesMenu = dishes
+		result = append(result, menu)
 	}
 
 	if result == nil {
-		return nil, nil, &errorsConst.Errors{
+		return nil, nil, nil, &errorsConst.Errors{
 			Text: errorsConst.ErrRestaurantDishesNotFound,
 			Time: time.Now(),
 		}
 	}
 
-	return &restaurant, result, nil
+	return &restaurant, tags, result, nil
 }
