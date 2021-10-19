@@ -130,18 +130,14 @@ func (db *Wrapper) RestaurantDishes(restId int, dishesId int) (*Utils.Dishes, []
 		&dishes.Id, &dishes.Img, &dishes.Title, &dishes.Cost, &dishes.Ccal, &dishes.Description)
 
 	rowDishes, _ := db.Conn.Query(context.Background(),
-		"SELECT id, name, cost FROM structure_dishes WHERE food = $1", dishesId)
+		"SELECT structure_dishes.id, structure_dishes.name, structure_dishes.cost, radios.id, radios.name FROM structure_dishes JOIN radios ON structure_dishes.food = radios.food WHERE structure_dishes.food = $1", dishesId)
 	for rowDishes.Next() {
 		var checkbox Utils.Checkboxes
-		_ = rowDishes.Scan(&checkbox.Id, &checkbox.Title, &checkbox.Cost)
-		checkboxes = append(checkboxes, checkbox)
-	}
-
-	rowDishes, _ = db.Conn.Query(context.Background(),
-		"SELECT id, name FROM radios WHERE food = $1", dishesId)
-	for rowDishes.Next() {
 		var rad Utils.Radios
-		_ = rowDishes.Scan(&rad.Id, &rad.Title)
+
+		_ = rowDishes.Scan(&checkbox.Id, &checkbox.Title, &checkbox.Cost, &rad.Id, &rad.Title)
+
+		checkboxes = append(checkboxes, checkbox)
 		radios = append(radios, rad)
 	}
 
