@@ -2,6 +2,7 @@ package Profile
 
 import (
 	profile "2021_2_GORYACHIE_MEKSIKANSI/Utils"
+	"time"
 )
 
 func GetProfile(db profile.WrapperProfile, id int) (*profile.Profile, error) {
@@ -61,6 +62,22 @@ func UpdatePhone(db profile.WrapperProfile, id int, newPhone string) error {
 }
 
 func UpdateAvatar(db profile.WrapperProfile, id int, newAvatar string) error {
+	err := db.UpdateAvatar(id, newAvatar)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func UpdateBirthday(db profile.WrapperProfile, id int, newBirthday time.Time) error {
+	err := db.UpdateBirthday(id, newBirthday)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func UpdateAddress(db profile.WrapperProfile, id int, newAvatar string) error {
 	err := db.UpdateAvatar(id, newAvatar)
 	if err != nil {
 		return err

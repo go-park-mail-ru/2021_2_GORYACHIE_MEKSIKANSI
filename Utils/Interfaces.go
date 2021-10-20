@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
+	"time"
 )
 
 type ConnectionInterface interface {
@@ -29,6 +30,8 @@ type WrapperProfile interface {
 	UpdatePassword(id int, newPassword string) error
 	UpdatePhone(id int, newPhone string) error
 	UpdateAvatar(id int, newAvatar string) error
+	UpdateBirthday(id int, newBirthday time.Time) error
+
 }
 
 type WrapperAuthorization interface {

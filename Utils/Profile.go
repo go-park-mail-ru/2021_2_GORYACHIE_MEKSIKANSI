@@ -31,5 +31,9 @@ type UpdatePhone struct {
 }
 
 type UpdateAvatar struct {
-	Name string `json:"name"` // TODO(N): проверить тип
+	Avatar string `json:"avatar"` // TODO(N): проверить тип
+}
+
+type UpdateBirthday struct {
+	Birthday time.Time `json:"birthday"`
 }

@@ -71,14 +71,15 @@ const (
 	ErrGetProfileClientScan  = "ERROR: get profile client not scan"
 	ErrGetProfileCourierScan = "ERROR: get profile courier not scan"
 	ErrGetBirthdayScan       = "ERROR: birthday not scan"
-	ErrUpdateName            = "ERROR: name not update"          // TODO: add handler
-	ErrUpdateEmail           = "ERROR: email not update"         // TODO: add handler
-	ErrUpdateEmailRepeat     = "ERROR: email already exist"      // TODO: add handler
-	ErrUpdatePhone           = "ERROR: phone not update"         // TODO: add handler
-	ErrUpdatePhoneRepeat     = "ERROR: phone already not update" // TODO: add handler
-	ErrSelectSaltInUpdate    = "ERROR: salt not found in update" // TODO: add handler
-	ErrUpdatePassword        = "ERROR: password not update"      // TODO: add handler
-	ErrUpdateAvatar          = "ERROR: avatar not update"        // TODO: add handler
+	ErrUpdateName            = "ERROR: name not update"
+	ErrUpdateEmail           = "ERROR: email not update"
+	ErrUpdateEmailRepeat     = "ERROR: email already exist"
+	ErrUpdatePhone           = "ERROR: phone not update"
+	ErrUpdatePhoneRepeat     = "ERROR: phone already exist"
+	ErrSelectSaltInUpdate    = "ERROR: salt not found in update"
+	ErrUpdatePassword        = "ERROR: password not update"
+	ErrUpdateAvatar          = "ERROR: avatar not update"
+	ErrUpdateBirthday        = "ERROR: birthday not update"
 )
 
 // Error of restaurant

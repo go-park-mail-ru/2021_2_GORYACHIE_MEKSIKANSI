@@ -199,3 +199,17 @@ func (db *Wrapper) UpdateAvatar(id int, newAvatar string) error {
 
 	return nil
 }
+
+func (db *Wrapper) UpdateBirthday(id int, newBirthday time.Time) error {
+	_, err := db.Conn.Exec(context.Background(),
+		"UPDATE client SET date_birthday = $1 WHERE client_id = $2",
+		newBirthday, id)
+	if err != nil {
+		return &errorsConst.Errors{
+			Text: errorsConst.ErrUpdateBirthday,
+			Time: time.Now(),
+		}
+	}
+
+	return nil
+}

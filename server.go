@@ -35,19 +35,25 @@ func runServer(port string) {
 	user.POST("/login", userInfo.LoginHandler)
 	user.POST("/signup", userInfo.SignUpHandler)
 	user.POST("/logout", userInfo.LogoutHandler)
+	user.GET("/", infoMiddleware.GetIdByCookieMiddleware(profileInfo.ProfileHandler))
+	user.PUT("/name", infoMiddleware.GetIdByCookieMiddleware(profileInfo.UpdateUserName))
+	user.PUT("/email", infoMiddleware.GetIdByCookieMiddleware(profileInfo.UpdateUserEmail))
+	user.PUT("/password", infoMiddleware.GetIdByCookieMiddleware(profileInfo.UpdateUserPassword))
+	user.PUT("/phone", infoMiddleware.GetIdByCookieMiddleware(profileInfo.UpdateUserPhone))
+	user.PUT("/avatar", infoMiddleware.GetIdByCookieMiddleware(profileInfo.UpdateUserAvatar))
+	user.PUT("/birthday", infoMiddleware.GetIdByCookieMiddleware(profileInfo.UpdateUserBirthday))
+	//user.PUT("/address", infoMiddleware.GetIdByCookieMiddleware(profileInfo.UpdateUserAddress))
 
 	restaurants.GET("/", restaurantInfo.RestaurantHandler)
 	restaurants.GET("/{idRes}/dish/{idDish}", restaurantInfo.RestaurantDishesHandler)
 	restaurants.GET("/{idRes}", restaurantInfo.RestaurantIdHandler)
 
-	user.GET("/", infoMiddleware.GetIdByCookieMiddleware(profileInfo.ProfileHandler))
-	user.PUT("/name", profileInfo.UpdateUserName)
-
 	printURL := infoMiddleware.PrintURLMiddleware(myRouter.Handler)
 
 	withCors := cors.NewCorsHandler(cors.Options{
 		AllowedOrigins:   []string{config.AllowedOriginsDomen + ":" + config.AllowedOriginsPort},
-		AllowedHeaders:   []string{"access-control-allow-origin", "content-type", "x-csrf-token", "access-control-expose-headers"},
+		AllowedHeaders:   []string{"access-control-allow-origin", "content-type",
+			"x-csrf-token", "access-control-expose-headers"},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 		ExposedHeaders:   []string{"X-Csrf-Token"},
 		AllowCredentials: true,
