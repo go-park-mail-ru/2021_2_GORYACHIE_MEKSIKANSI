@@ -68,7 +68,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	ctx.Response.SetStatusCode(http.StatusOK)
 
 	err = json.NewEncoder(ctx).Encode(&Result{
-		Status: http.StatusOK,
+		Status: http.StatusCreated,
 		Body: &utils.RegistrationResponse{
 			User: &User{
 				TypeUser: signUpAll.TypeUser,
@@ -84,7 +84,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
-
+	//ctx.Response.Header.SetContentType("application/json")  // TODO(N): с фронтом обговорить
 }
 
 func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {

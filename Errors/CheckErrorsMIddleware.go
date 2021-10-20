@@ -29,7 +29,7 @@ func CheckErrorCookie(err error) (error, []byte, int) {
 					Time: time.Now(),
 				},
 				result, http.StatusInternalServerError
-		case ErrCookieExpired:
+		case ErrCookieExpired, ErrCookieNotFound:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: ErrCookieExpired,
@@ -42,16 +42,24 @@ func CheckErrorCookie(err error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrCookieExpired)
+			fmt.Printf("Console: %s\n", err.Error())
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
 				},
 				result, http.StatusOK
-		case ErrCookieNotFound:
+		}
+	}
+	return nil, nil, HttpNil
+}
+
+func CheckErrorAccess(err error) (error, []byte, int) {
+	if err != nil {
+		switch err.Error() {
+		case ErrCookieNotScan:
 			result, errMarshal := json.Marshal(ResultError{
-				Status:  http.StatusConflict,
-				Explain: ErrAuth,
+				Status:  http.StatusInternalServerError,
+				Explain: ErrDB,
 			})
 			if errMarshal != nil {
 				fmt.Printf("Console: %s\n", ErrMarshal)
@@ -61,7 +69,26 @@ func CheckErrorCookie(err error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrCookieNotFound)
+			fmt.Printf("Console: %s\n", ErrCookieNotScan)
+			return &Errors{
+					Text: ErrCheck,
+					Time: time.Now(),
+				},
+				result, http.StatusInternalServerError
+		case ErrCheckAccessCookieNotFound:
+			result, errMarshal := json.Marshal(ResultError{
+				Status:  http.StatusUnauthorized,
+				Explain: ErrCheckAccessCookieNotFound,
+			})
+			if errMarshal != nil {
+				fmt.Printf("Console: %s\n", ErrMarshal)
+				return &Errors{
+						Text: ErrMarshal,
+						Time: time.Now(),
+					},
+					nil, http.StatusInternalServerError
+			}
+			fmt.Printf("Console: %s\n", ErrCheckAccessCookieNotFound)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),

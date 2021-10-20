@@ -41,3 +41,27 @@ func (m *InfoMiddleware) GetIdByCookieMiddleware(h fasthttp.RequestHandler) fast
 		h(ctx)
 	})
 }
+
+func (m *InfoMiddleware) CheckAccessMiddleware(h fasthttp.RequestHandler) fasthttp.RequestHandler {
+	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
+		cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
+		cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
+
+		_, err := CheckAccess(m.ConnectionDB, &cookieDB)
+		errAccess, resultOutAccess, codeHTTP := errors.CheckErrorAccess(err)
+		if errAccess != nil {
+			switch errAccess.Error() {
+			case errors.ErrMarshal:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody([]byte(errors.ErrMarshal))
+				return
+			case errors.ErrCheck:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody(resultOutAccess)
+				return
+			}
+		}
+
+		h(ctx)
+	})
+}
