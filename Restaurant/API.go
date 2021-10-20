@@ -21,7 +21,7 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 
 	restaurant, err := AllRestaurants(&WrapperDB)
 	errOut, resultOutAccess, codeHTTP := errors.CheckErrorRestaurant(err)
-	if resultOutAccess != nil {
+	if errOut != nil {
 		switch errOut.Error() {
 		case errors.ErrMarshal:
 			ctx.Response.SetStatusCode(codeHTTP)
@@ -65,6 +65,8 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 			fmt.Printf("Console: %s\n", errors.ErrAtoi)
 			return
 		}
+	case int:
+		id = idUrl.(int)
 	default:
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrNotString))
@@ -75,7 +77,7 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	restaurant, err := GetRestaurant(&WrapperDB, id)
 
 	errOut, resultOutAccess, codeHTTP  := errors.CheckErrorRestaurantId(err)  // должна появиться новая ошибка +1
-	if resultOutAccess != nil {
+	if errOut != nil {
 		switch errOut.Error() {
 		case errors.ErrMarshal:
 			ctx.Response.SetStatusCode(codeHTTP)
@@ -119,6 +121,8 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 			fmt.Printf("Console: %s\n", errors.ErrAtoi)
 			return
 		}
+	case int:
+		idRes = idResIn.(int)
 	default:
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrNotString))
@@ -137,6 +141,8 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 			fmt.Printf("Console: %s\n", errors.ErrAtoi)
 			return
 		}
+	case int:
+		idDish = idDishIn.(int)
 	default:
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrNotString))
@@ -146,7 +152,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 
 		dishes, err := RestaurantDishes(&WrapperDB, idRes, idDish)
 		errOut, resultOutAccess, codeHTTP  := errors.CheckErrorRestaurantDishes(err)
-		if resultOutAccess != nil {
+		if errOut != nil {
 			switch errOut.Error() {
 			case errors.ErrMarshal:
 				ctx.Response.SetStatusCode(codeHTTP)

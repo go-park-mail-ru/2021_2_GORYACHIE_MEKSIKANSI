@@ -87,25 +87,41 @@ func (db *Wrapper) GetRestaurant(id int) (*Utils.RestaurantId, []Utils.Tag, []Ut
 	}
 
 	rowDishes, err := db.Conn.Query(context.Background(),
-		"SELECT id, avatar, name, cost, kilocalorie, category_restaurant FROM dishes WHERE restaurant = $1", id)
+		"SELECT DISTINCT category_restaurant FROM dishes WHERE restaurant = $1", id)
 	if err != nil {
 		return nil, nil, nil, &errorsConst.Errors{
-			Text: errorsConst.ErrRestaurantsDishesNotSelect,
+			Text: errorsConst.ErrRestaurantsDishesNotSelect,// TODO: new error
 			Time: time.Now(),
 		}
 	}
 
-	dishes := Utils.DishesMenu{}
 	var result []Utils.Menu
 	for rowDishes.Next() {
 		var menu Utils.Menu
-		err := rowDishes.Scan(&dishes.Id, &dishes.Img, &dishes.Name, &dishes.Cost, &dishes.Kilocalorie, &menu.Name)
+		var dishes []Utils.DishesMenu
+		dish := Utils.DishesMenu{}
+		err := rowDishes.Scan(&menu.Name)
+
+		rowDishes, err := db.Conn.Query(context.Background(),
+			"SELECT id, avatar, name, cost, kilocalorie FROM dishes WHERE category_restaurant = $1", menu.Name)
 		if err != nil {
 			return nil, nil, nil, &errorsConst.Errors{
-				Text: errorsConst.ErrRestaurantDishesScan,
+				Text: errorsConst.ErrRestaurantsDishesNotSelect,
 				Time: time.Now(),
 			}
 		}
+
+		for rowDishes.Next() {
+			err := rowDishes.Scan(&dish.Id, &dish.Img, &dish.Name, &dish.Cost, &dish.Kilocalorie)
+			if err != nil {
+				return nil, nil, nil, &errorsConst.Errors{
+					Text: errorsConst.ErrRestaurantDishesScan,
+					Time: time.Now(),
+				}
+			}
+			dishes = append(dishes, dish)
+		}
+
 		menu.DishesMenu = dishes
 		result = append(result, menu)
 	}
@@ -123,21 +139,26 @@ func (db *Wrapper) GetRestaurant(id int) (*Utils.RestaurantId, []Utils.Tag, []Ut
 func (db *Wrapper) RestaurantDishes(restId int, dishesId int) (*Utils.Dishes, []Utils.Radios, []Utils.Ingredients, error) {
 	var dishes Utils.Dishes
 	var radios []Utils.Radios
-	var checkboxes []Utils.Ingredients
+	var ingredients []Utils.Ingredients
 	_ = db.Conn.QueryRow(context.Background(),
 		"SELECT id, avatar, name, cost, kilocalorie, description FROM dishes WHERE id = $1 AND restaurant = $2",
 		dishesId, restId).Scan(
 		&dishes.Id, &dishes.Img, &dishes.Title, &dishes.Cost, &dishes.Ccal, &dishes.Description)
 
 	rowDishes, _ := db.Conn.Query(context.Background(),
-		"SELECT structure_dishes.id, structure_dishes.name, structure_dishes.cost, radios.id, radios.name FROM structure_dishes JOIN radios ON structure_dishes.food = radios.food WHERE structure_dishes.food = $1", dishesId)
+		"SELECT id, name, cost FROM structure_dishes WHERE food = $1", dishesId)
 	for rowDishes.Next() {
-		var checkbox Utils.Ingredients
+		var ingredient Utils.Ingredients
+		_ = rowDishes.Scan(&ingredient.Id, &ingredient.Title, &ingredient.Cost)
+		ingredients = append(ingredients, ingredient)
+	}
+	dishes.Ingredient = ingredients
+
+	rowDishes, _ = db.Conn.Query(context.Background(),
+		"SELECT id, name FROM radios WHERE food = $1", dishesId)
+	for rowDishes.Next() {
 		var rad Utils.Radios
-
-		_ = rowDishes.Scan(&checkbox.Id, &checkbox.Title, &checkbox.Cost, &rad.Id, &rad.Title)
-
-		checkboxes = append(checkboxes, checkbox)
+		_ = rowDishes.Scan(&rad.Id, &rad.Title)
 		radios = append(radios, rad)
 	}
 
@@ -154,5 +175,5 @@ func (db *Wrapper) RestaurantDishes(restId int, dishesId int) (*Utils.Dishes, []
 		radios[i].Rows = rows
 	}
 
-	return &dishes, radios, checkboxes, nil
+	return &dishes, radios, ingredients, nil
 }

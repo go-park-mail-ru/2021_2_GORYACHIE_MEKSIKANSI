@@ -138,7 +138,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
 	_, err := mid.CheckAccess(u.ConnectionDB, &cookieDB)
 	errAccess, resultOutAccess, codeHTTP := errors.CheckErrorAccess(err)
-	if resultOutAccess != nil {
+	if errAccess != nil {
 		switch errAccess.Error() {
 		case errors.ErrMarshal:
 			ctx.Response.SetStatusCode(codeHTTP)

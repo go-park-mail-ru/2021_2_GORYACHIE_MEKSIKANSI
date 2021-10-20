@@ -21,17 +21,30 @@ func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	wrapper := Wrapper{Conn: u.ConnectionDB}
 	// TODO(N): add x-csrf-
 
-	id, errorConvert:= strconv.Atoi(ctx.UserValue("id").(string))
-	if errorConvert != nil {
+	idUrl := ctx.UserValue("id")
+	var id int
+	var errorConvert error
+	switch idUrl.(type) {
+	case string:
+		id, errorConvert = strconv.Atoi(idUrl.(string))
+		if errorConvert != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrAtoi))
+			fmt.Printf("Console: %s\n", errors.ErrAtoi)
+			return
+		}
+	case int:
+		id = idUrl.(int)
+	default:
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrAtoi))
-		fmt.Printf("Console: %s\n", errors.ErrAtoi)
+		ctx.Response.SetBody([]byte(errors.ErrNotString))
+		fmt.Printf("Console: %s\n", errors.ErrNotString)
 		return
 	}
 
 	profile, err := GetProfile(&wrapper, id)
 	errOut, resultOutAccess, codeHTTP := errors.CheckErrorProfile(err)
-	if resultOutAccess != nil {
+	if errOut != nil {
 		switch errOut.Error() {
 		case errors.ErrMarshal:
 			ctx.Response.SetStatusCode(codeHTTP)
@@ -76,7 +89,7 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 
 	_, err = mid.CheckAccess(u.ConnectionDB, &cookieDB)
 	errAccess, resultOutAccess, codeHTTP := errors.CheckErrorAccess(err)
-	if resultOutAccess != nil {
+	if errAccess != nil {
 		switch errAccess.Error() {
 		case errors.ErrMarshal:
 			ctx.Response.SetStatusCode(codeHTTP)
@@ -99,7 +112,7 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 
 	err = UpdateName(&wrapper, id, userName.Name)
 	errOut, resultOutAccess, codeHTTP := errors.CheckErrorProfileUpdateName(err)  // work in progress on CheckError
-	if resultOutAccess != nil {
+	if errOut != nil {
 		switch errOut.Error() {
 		case errors.ErrMarshal:
 			ctx.Response.SetStatusCode(codeHTTP)

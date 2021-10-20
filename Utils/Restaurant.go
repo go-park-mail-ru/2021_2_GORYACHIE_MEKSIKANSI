@@ -8,10 +8,10 @@ type Restaurants struct {
 	Id                  int     `json:"id"`
 	Img                 string  `json:"img"`
 	Name                string  `json:"name"`
-	CostForFreeDelivery int     `json:"costForFreeDelivery"`
-	MinDelivery         int     `json:"minDeliveryTime"`
-	MaxDelivery         int     `json:"maxDeliveryTime"`
-	Rating              float32 `json:"rating"`
+	CostForFreeDelivery int     `json:"costFFD"`
+	MinDelivery         int     `json:"minDTime"`
+	MaxDelivery         int     `json:"maxDTime"`
+	Rating              float32 `json:"rate"`
 }
 
 type RestaurantIdResponse struct {
