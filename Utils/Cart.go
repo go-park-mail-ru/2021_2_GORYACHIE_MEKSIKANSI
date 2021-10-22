@@ -1,30 +1,43 @@
 package Utils
 
-type CartResponse struct {
-	Restaurant RestaurantCart   `json:"restaurant"`
-	Dishes     []DishesCart     `json:"dishes"`
+type Cart struct {
+	Restaurant RestaurantCart `json:"restaurant"`
+	Dishes     []DishesCart   `json:"dishes"`
 }
 
 type RestaurantCart struct {
-	Id int `json:"id"`
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 type DishesCart struct {
-	Id           int           `json:"id"`
-	ItemNumber   int           `json:"itNum"`
-	Name         string        `json:"name"`
-	Count        int           `json:"count"`
-	Cost         int           `json:"cost"`
-	Description  string        `json:"desc"`
-	RadiosCart   []RadiosCart   `json:"radios"`
-	CheckboxCart []CheckboxCart   `json:"checkbox"`
+	Id             int              `json:"id"`
+	ItemNumber     int              `json:"itNum"`
+	Img            string           `json:"img"`
+	Name           string           `json:"name"`
+	Count          int              `json:"count"`
+	Cost           int              `json:"cost"`
+	Description    string           `json:"desc"`
+	RadiosCart     []RadiosCart     `json:"radios"`
+	IngredientCart []IngredientCart `json:"Ingredient"`
 }
 
 type RadiosCart struct {
-	RadiosId int `json:"rid"`
-	Id       int `json:"id"`
+	Id       int    `json:"id"`
+	RadiosId int    `json:"rid"`
+	Name     string `json:"name"`
 }
 
-type CheckboxCart struct {
-	Id int `json:"id"`
+type IngredientCart struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+type CastErrs struct {
+	CastDishesErrs []CastDishesErrs `json:"dishesErrs"`
+}
+
+type CastDishesErrs struct {
+	ItemNumber int    `json:"itNum"`
+	Explain    string `json:"explain"`
 }

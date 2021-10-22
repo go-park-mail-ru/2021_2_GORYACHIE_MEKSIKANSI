@@ -9,15 +9,16 @@ type Wrapper struct {
 	Conn Utils.ConnectionInterface
 }
 
-func (db *Wrapper) GetCart(id int) (Utils.CartResponse, error) {
-	var cart Utils.CartResponse
+func (db *Wrapper) GetCart(id int) (Utils.Cart, error) {
+	var cart Utils.Cart
 	var dishes []Utils.DishesCart
 	var radios []Utils.RadiosCart
-	var ingredients []Utils.CheckboxCart
-	i := 0
+	var ingredients []Utils.IngredientCart
 
 	var restaurant Utils.RestaurantCart
 	restaurant.Id = id
+	_ = db.Conn.QueryRow(context.Background(),
+		"SELECT name FROM restaurant WHERE id = $1", id).Scan(&restaurant.Name)
 	cart.Restaurant = restaurant
 
 	rows, _ := db.Conn.Query(context.Background(),
@@ -26,27 +27,31 @@ func (db *Wrapper) GetCart(id int) (Utils.CartResponse, error) {
 		var dish Utils.DishesCart
 		_ = rows.Scan(&dish.Id, &dish.Count)
 		rows, _ := db.Conn.Query(context.Background(),
-			"SELECT name, cost, description FROM dishes WHERE id = $1", dish.Id)
+			"SELECT name, cost, description, number_item, avatar FROM dishes WHERE id = $1", dish.Id)
 		for rows.Next() {
-			i++
-			dish.ItemNumber = i
-
-			_ = rows.Scan(&dish.Name, &dish.Cost, &dish.Description)
+			_ = rows.Scan(&dish.Name, &dish.Cost, &dish.Description, &dish.ItemNumber, &dish.Img)
 
 			rows, _ := db.Conn.Query(context.Background(),
 				"SELECT checkbox FROM cart_structure_food WHERE client_id = $1", dish.Id)
 			for rows.Next() {
-				var ingredient Utils.CheckboxCart
+				var ingredient Utils.IngredientCart
 				_ = rows.Scan(&ingredient.Id)
+
+				_ = db.Conn.QueryRow(context.Background(),
+					"SELECT name FROM structure_dishes WHERE id = $1", ingredient.Id).Scan(&ingredient.Name)
 				ingredients = append(ingredients, ingredient)
 			}
-			dish.CheckboxCart = ingredients
+			dish.IngredientCart = ingredients
 
 			rows, _ = db.Conn.Query(context.Background(),
 				"SELECT radios_id, radios FROM cart_radios_food WHERE client_id = $1", dish.Id)
 			for rows.Next() {
 				var radio Utils.RadiosCart
 				_ = rows.Scan(&radio.RadiosId, &radio.Id)
+
+				_ = db.Conn.QueryRow(context.Background(),
+					"SELECT name FROM structure_radios WHERE id = $1", radio.Id).Scan(&radio.Name)
+
 				radios = append(radios, radio)
 			}
 			dish.RadiosCart = radios
@@ -69,22 +74,56 @@ func (db *Wrapper) DeleteCart(id int) error {
 }
 
 
-func (db *Wrapper) UpdateCart(dishes []Utils.DishesCart, restaurantId int, clientId int) error {
-	for _, dish := range dishes {
+func (db *Wrapper) UpdateCart(cart Utils.Cart, clientId int) ([]Utils.CastDishesErrs, error) {
+	var dishesErrors []Utils.CastDishesErrs
+	for _, dish := range cart.Dishes {
+		var dishesError Utils.CastDishesErrs
 		check := 0
-		_ = db.Conn.QueryRow(context.Background(),
-			"SELECT id FROM dishes WHERE restaurant = $1 ", restaurantId).Scan(&check)
-
-		if dish.Count == 0 {
-			_, _ = db.Conn.Exec(context.Background(),
-				"DELETE FROM cart WHERE food = $1 AND client_id = $2",
-				dish.Id, clientId)
+		err := db.Conn.QueryRow(context.Background(),
+			"SELECT id FROM dishes WHERE id = $1 ", dish.Id).Scan(&check)
+		if err != nil {
+			dishesError.ItemNumber = dish.ItemNumber
+			dishesError.Explain = dish.Name
+			dishesErrors = append(dishesErrors, dishesError)
+			continue
 		}
+
 		_, _ = db.Conn.Exec(context.Background(),
-			"INSERT INTO cart (client_id, food, count_food) VALUES ($1, $2, $3)" +
-			" ON CONFLICT (client_id, food) DO UPDATE SET count_food = $3",
+			"INSERT INTO cart (client_id, food, count_food) VALUES ($1, $2, $3)",
 			clientId, dish.Id, dish.Count)
+
+		for _, ingredient := range dish.IngredientCart {
+			check := 0
+			err := db.Conn.QueryRow(context.Background(),
+				"SELECT id FROM structure_dishes WHERE id = $1 ", ingredient.Id).Scan(&check)
+			if err != nil {
+				dishesError.ItemNumber = dish.ItemNumber
+				dishesError.Explain = dish.Name
+				dishesErrors = append(dishesErrors, dishesError)
+				continue
+			}
+
+			_, _ = db.Conn.Exec(context.Background(),
+				"INSERT INTO cart_structure_food (checkbox, client_id) VALUES ($1, $2)",
+				ingredient.Id, clientId)
+		}
+
+		for _, radios := range dish.RadiosCart {
+			check := 0
+			err := db.Conn.QueryRow(context.Background(),
+				"SELECT id FROM structure_radios WHERE id = $1", radios.Id).Scan(&check)
+			if err != nil {
+				dishesError.ItemNumber = dish.ItemNumber
+				dishesError.Explain = dish.Name
+				dishesErrors = append(dishesErrors, dishesError)
+				continue
+			}
+
+			_, _ = db.Conn.Exec(context.Background(),
+				"INSERT INTO cart_radios_food (radios_id, radios, client_id) VALUES ($1, $2, $3)",
+				radios.RadiosId, radios.Id, clientId)
+		}
 	}
 
-	return nil
+	return dishesErrors, nil
 }

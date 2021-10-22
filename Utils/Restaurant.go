@@ -60,7 +60,7 @@ type Dishes struct {
 	Ccal        int         `json:"ccal"`
 	Description string      `json:"desc"`
 	Radios      interface{} `json:"radios"`
-	Ingredient  interface{} `json:"ingredients"`
+	Ingredient  interface{} `json:"ingredient"`
 }
 
 type Radios struct {

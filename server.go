@@ -33,7 +33,7 @@ func runServer(port string) {
 	versionGroup := apiGroup.Group("/v1")
 	userGroup := versionGroup.Group("/user")
 	restaurantGroup := versionGroup.Group("/restaurant")
-	cartGroup := versionGroup.Group("/cart")
+	cartGroup := userGroup.Group("/cart")
 
 	userGroup.POST("/login", userInfo.LoginHandler)
 	userGroup.POST("/signup", userInfo.SignUpHandler)
@@ -52,6 +52,7 @@ func runServer(port string) {
 	restaurantGroup.GET("/{idRes}", restaurantInfo.RestaurantIdHandler)
 
 	cartGroup.GET("/", infoMiddleware.GetIdByCookieMiddl(cartInfo.GetCartHandler))
+	cartGroup.PUT("/", infoMiddleware.GetIdByCookieMiddl(cartInfo.UpdateCartHandler))
 
 	printURL := infoMiddleware.PrintURLMiddl(myRouter.Handler)
 

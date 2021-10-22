@@ -60,14 +60,16 @@ INSERT INTO restaurant (owner, name, description, price_delivery, min_delivery_t
       (1, 'Tai Pan', 'description', 0, 15, 30, 'city', 'street', 'house', 100, 4.2, 'location')
 ;
 
+INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1', NOW(), '1');
+
 INSERT INTO restaurant_category (restaurant, category) VALUES (1, 'category');
 INSERT INTO restaurant_category (restaurant, category) VALUES (1, 'text');
 
-INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant) VALUES
-      ('name', 0, 1, 'descr', 1, 1, 1, 1, 'cat_dis', 'cat_rest');
+INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, number_item) VALUES
+      ('name', 0, 1, 'descr', 1, 1, 1, 1, 'cat_dis', 'cat_rest', 1);
 
-INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant) VALUES
-      ('name2', 0, 1, 'descr2', 2, 2, 2, 2, 'cat_dis2', 'cat_rest2');
+INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, number_item) VALUES
+      ('name2', 0, 1, 'descr2', 2, 2, 2, 2, 'cat_dis2', 'cat_rest2', 1);
 
 INSERT INTO radios (name, food) VALUES ('name', 1);
 
@@ -80,6 +82,3 @@ INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kiloca
 INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element) VALUES ('name', 1, 1, 1, 1, 1, 1, 1);
 INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element) VALUES ('name2', 1, 2, 2, 2, 2, 2, 2);
 
-INSERT INTO cart (client_id, food) VALUES (1, 1);
-INSERT INTO cart_structure_food (checkbox, client_id) VALUES (1, 1);
-INSERT INTO cart_radios_food (radios_id, radios, client_id) VALUES (1, 1, 1);
