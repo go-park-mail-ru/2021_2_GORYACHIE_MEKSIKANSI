@@ -72,8 +72,8 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	}
-	// TODO(N): Надо получить csrf токен
-	//ctx.Response.Header.Set("X-CSRF-Token", cookieDB.CsrfToken)
+
+	ctx.Response.Header.Set("X-CSRF-Token", cookieDB.CsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
