@@ -2,7 +2,7 @@ package Cart
 
 import (
 	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
-	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
+	//mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"encoding/json"
 	"fmt"
@@ -22,20 +22,20 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
 
-	_, err := mid.CheckAccess(c.ConnectionDB, &cookieDB)
-	errAccess, resultOutAccess, codeHTTP := errors.CheckErrorAccess(err)
-	if errAccess != nil {
-		switch errAccess.Error() {
-		case errors.ErrMarshal:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
-			return
-		case errors.ErrCheck:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody(resultOutAccess)
-			return
-		}
-	}
+	//_, err := mid.CheckAccess(c.ConnectionDB, &cookieDB)
+	//errAccess, resultOutAccess, codeHTTP := errors.CheckErrorAccess(err)
+	//if errAccess != nil {
+	//	switch errAccess.Error() {
+	//	case errors.ErrMarshal:
+	//		ctx.Response.SetStatusCode(codeHTTP)
+	//		ctx.Response.SetBody([]byte(errors.ErrMarshal))
+	//		return
+	//	case errors.ErrCheck:
+	//		ctx.Response.SetStatusCode(codeHTTP)
+	//		ctx.Response.SetBody(resultOutAccess)
+	//		return
+	//	}
+	//}
 
 	idUrl := ctx.UserValue("id")
 	var id int
@@ -58,7 +58,7 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	cart, err, cookieDB.CsrfToken := GetCart(&wrapper, id)
+	cart, err := GetCart(&wrapper, id)
 	errOut, resultOutAccess, codeHTTP := errors.CheckErrorGetCart(err)
 	if errOut != nil {
 		switch errOut.Error() {

@@ -234,11 +234,31 @@ CREATE TABLE IF NOT EXISTS order_list (
     FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS cart(
+CREATE TABLE IF NOT EXISTS cart (
     id serial PRIMARY KEY,
     client_id int,
     food int,
     count_food int DEFAULT 1 NOT NULL,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
-    FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE
+    FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE,
+    UNIQUE (client_id, food)
+);
+
+CREATE TABLE IF NOT EXISTS cart_structure_food (
+    id serial PRIMARY KEY,
+    checkbox int,
+    client_id int,
+    FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
+    FOREIGN KEY (checkbox) REFERENCES structure_dishes (id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS cart_radios_food (
+    id serial PRIMARY KEY,
+    radios_id int,
+    radios int,
+    client_id int,
+    FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
+    FOREIGN KEY (radios_id) REFERENCES radios (id) ON DELETE CASCADE,
+    FOREIGN KEY (radios) REFERENCES structure_radios (id) ON DELETE CASCADE
 );

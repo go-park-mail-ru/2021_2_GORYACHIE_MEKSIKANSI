@@ -70,10 +70,16 @@ INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalo
       ('name2', 0, 1, 'descr2', 2, 2, 2, 2, 'cat_dis2', 'cat_rest2');
 
 INSERT INTO radios (name, food) VALUES ('name', 1);
+
 INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie) VALUES ('name', 1, 1, 1, 1, 1);
 INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie) VALUES ('name2', 1, 1, 1, 1, 1);
+
 INSERT INTO radios (name, food) VALUES ('name2', 1);
 INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie) VALUES ('name', 2, 1, 1, 1, 1);
 INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie) VALUES ('name2', 2, 1, 1, 1, 1);
 INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element) VALUES ('name', 1, 1, 1, 1, 1, 1, 1);
 INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element) VALUES ('name2', 1, 2, 2, 2, 2, 2, 2);
+
+INSERT INTO cart (client_id, food) VALUES (1, 1);
+INSERT INTO cart_structure_food (checkbox, client_id) VALUES (1, 1);
+INSERT INTO cart_radios_food (radios_id, radios, client_id) VALUES (1, 1, 1);

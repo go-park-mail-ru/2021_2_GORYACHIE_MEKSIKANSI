@@ -29,6 +29,11 @@ type Authorization struct {
 	Password string `json:"password"`
 }
 
+type Result struct {
+	Status int         `json:"status"`
+	Body   interface{} `json:"body,omitempty"`
+}
+
 func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	wrapper := Wrapper{Conn: u.ConnectionDB}
 	signUpAll := utils.RegistrationRequest{}

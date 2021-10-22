@@ -1,8 +1,8 @@
 package Utils
 
 type CartResponse struct {
-	Restaurant interface{}   `json:"restaurant"`
-	Dishes     []interface{} `json:"dishes"`
+	Restaurant RestaurantCart   `json:"restaurant"`
+	Dishes     []DishesCart     `json:"dishes"`
 }
 
 type RestaurantCart struct {
@@ -16,8 +16,8 @@ type DishesCart struct {
 	Count        int           `json:"count"`
 	Cost         int           `json:"cost"`
 	Description  string        `json:"desc"`
-	RadiosCart   []interface{} `json:"radios"`
-	CheckboxCart []interface{} `json:"checkbox"`
+	RadiosCart   []RadiosCart   `json:"radios"`
+	CheckboxCart []CheckboxCart   `json:"checkbox"`
 }
 
 type RadiosCart struct {

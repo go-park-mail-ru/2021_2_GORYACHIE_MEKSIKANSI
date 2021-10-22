@@ -44,3 +44,9 @@ type WrapperAuthorization interface {
 	GenerateNew() *Defense
 	AddCookie(cookie *Defense, id int) error
 }
+
+type WrapperCart interface {
+	GetCart(id int) (CartResponse, error)
+	UpdateCart(dishes []DishesCart, restaurantId int, clientId int) error
+	DeleteCart(id int) error
+}
