@@ -60,7 +60,7 @@ INSERT INTO restaurant (owner, name, description, price_delivery, min_delivery_t
       (1, 'Tai Pan', 'description', 0, 15, 30, 'city', 'street', 'house', 100, 4.2, 'location')
 ;
 
-INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1', NOW(), '1');
+INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1', NOW(), '');
 
 INSERT INTO restaurant_category (restaurant, category) VALUES (1, 'category');
 INSERT INTO restaurant_category (restaurant, category) VALUES (1, 'text');

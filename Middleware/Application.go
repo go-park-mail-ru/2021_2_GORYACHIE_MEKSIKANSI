@@ -5,7 +5,6 @@ import (
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
 	"github.com/jackc/pgx/v4/pgxpool"
-
 	"time"
 )
 
@@ -70,6 +69,7 @@ func GetIdByCookie(conn *pgxpool.Pool, cookie *utils.Defense) (int, error) {
 	}
 
 	realTime := time.Now()
+
 	if realTime.Before(timeLiveCookie) {
 		return id, nil
 	}
