@@ -12,14 +12,14 @@ type InfoMiddleware struct {
 	ConnectionDB *pgxpool.Pool
 }
 
-func (m *InfoMiddleware) PrintURLMiddleware(h fasthttp.RequestHandler) fasthttp.RequestHandler {
+func (m *InfoMiddleware) PrintURLMiddl(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
 		fmt.Printf("Console:  method: %s, url: %s\n", string(ctx.Method()), ctx.URI())
 		h(ctx)
 	})
 }
 
-func (m *InfoMiddleware) GetIdByCookieMiddleware(h fasthttp.RequestHandler) fasthttp.RequestHandler {
+func (m *InfoMiddleware) GetIdByCookieMiddl(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
 		cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 		id, err := GetIdByCookie(m.ConnectionDB, &cookieDB)
@@ -36,7 +36,8 @@ func (m *InfoMiddleware) GetIdByCookieMiddleware(h fasthttp.RequestHandler) fast
 				return
 			}
 		}
-
+		//ctx.Response.Header.SetContentType("charset=UTF-8")
+		//ctx.Response.Header.SetContentType("application/json")
 		ctx.SetUserValue("id", id)
 		h(ctx)
 	})
@@ -61,6 +62,7 @@ func (m *InfoMiddleware) CheckAccessMiddleware(h fasthttp.RequestHandler) fastht
 				return
 			}
 		}
+		//ctx.Response.Header.SetContentType("application/json")
 
 		h(ctx)
 	})

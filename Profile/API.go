@@ -1,7 +1,6 @@
 package Profile
 
 import (
-	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
 	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
@@ -58,7 +57,7 @@ func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	ctx.Response.SetStatusCode(http.StatusOK)
-	err = json.NewEncoder(ctx).Encode(&auth.Result{
+	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 		Body: &utils.ProfileResponse{
 			ProfileUser: profile,

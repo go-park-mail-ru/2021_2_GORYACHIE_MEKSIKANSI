@@ -32,7 +32,7 @@ func CheckErrorCookie(err error) (error, []byte, int) {
 		case ErrCookieExpired, ErrCookieNotFound:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
-				Explain: ErrCookieExpired,
+				Explain: err.Error(),
 			})
 			if errMarshal != nil {
 				fmt.Printf("Console: %s\n", ErrMarshal)

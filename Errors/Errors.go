@@ -93,3 +93,8 @@ const (
 	ErrRestaurantDishesScan = "ERROR: dishes in restaurant not scan"
 	ErrRestaurantDishesNotFound = "ERROR: dishes in restaurant not found"
 )
+
+// Error of Cart
+const (
+
+)

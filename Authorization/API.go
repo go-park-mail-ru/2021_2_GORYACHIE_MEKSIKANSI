@@ -29,11 +29,6 @@ type Authorization struct {
 	Password string `json:"password"`
 }
 
-type Result struct {
-	Status int         `json:"status"`
-	Body   interface{} `json:"body,omitempty"`
-}
-
 func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	wrapper := Wrapper{Conn: u.ConnectionDB}
 	signUpAll := utils.RegistrationRequest{}
@@ -67,7 +62,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.Set("X-Csrf-Token", cookieDB.CsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 
-	err = json.NewEncoder(ctx).Encode(&Result{
+	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusCreated,
 		Body: &utils.RegistrationResponse{
 			User: &User{
@@ -119,7 +114,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.Set("X-CSRF-Token", cookieDB.CsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 
-	err = json.NewEncoder(ctx).Encode(&Result{
+	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 	})
 	if err != nil {
@@ -171,7 +166,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.SetCookie(&cookieHTTP)
 	ctx.Response.SetStatusCode(http.StatusOK)
 
-	err = json.NewEncoder(ctx).Encode(&Result{
+	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 	})
 	if err != nil {

@@ -11,3 +11,9 @@ type RegistrationRequest struct {
 type RegistrationResponse struct {
 	User interface{} `json:"user"`
 }
+
+type Result struct {
+	Status int         `json:"status"`
+	Body   interface{} `json:"body,omitempty"`
+}
+

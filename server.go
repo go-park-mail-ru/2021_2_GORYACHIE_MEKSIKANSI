@@ -2,6 +2,7 @@ package main
 
 import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
+	cart "2021_2_GORYACHIE_MEKSIKANSI/Cart"
 	config "2021_2_GORYACHIE_MEKSIKANSI/Configs"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	profile "2021_2_GORYACHIE_MEKSIKANSI/Profile"
@@ -25,34 +26,38 @@ func runServer(port string) {
 	restaurantInfo := restaurant.InfoRestaurant{ConnectionDB: connectionPostgres}
 	profileInfo := profile.InfoProfile{ConnectionDB: connectionPostgres}
 	infoMiddleware := mid.InfoMiddleware{ConnectionDB: connectionPostgres}
+	cartInfo := cart.InfoCart{ConnectionDB: connectionPostgres}
 
 	myRouter := router.New()
-	api := myRouter.Group("/api")
-	version := api.Group("/v1")
-	user := version.Group("/user")
-	restaurants := version.Group("/restaurant")
+	apiGroup := myRouter.Group("/api")
+	versionGroup := apiGroup.Group("/v1")
+	userGroup := versionGroup.Group("/user")
+	restaurantGroup := versionGroup.Group("/restaurant")
+	cartGroup := versionGroup.Group("/cart")
 
-	user.POST("/login", userInfo.LoginHandler)
-	user.POST("/signup", userInfo.SignUpHandler)
-	user.POST("/logout", userInfo.LogoutHandler)
-	user.GET("/", infoMiddleware.GetIdByCookieMiddleware(profileInfo.ProfileHandler))
-	user.PUT("/name", infoMiddleware.GetIdByCookieMiddleware(profileInfo.UpdateUserName))
-	user.PUT("/email", infoMiddleware.GetIdByCookieMiddleware(profileInfo.UpdateUserEmail))
-	user.PUT("/password", infoMiddleware.GetIdByCookieMiddleware(profileInfo.UpdateUserPassword))
-	user.PUT("/phone", infoMiddleware.GetIdByCookieMiddleware(profileInfo.UpdateUserPhone))
-	user.PUT("/avatar", infoMiddleware.GetIdByCookieMiddleware(profileInfo.UpdateUserAvatar))
-	user.PUT("/birthday", infoMiddleware.GetIdByCookieMiddleware(profileInfo.UpdateUserBirthday))
-	//user.PUT("/address", infoMiddleware.GetIdByCookieMiddleware(profileInfo.UpdateUserAddress))
+	userGroup.POST("/login", userInfo.LoginHandler)
+	userGroup.POST("/signup", userInfo.SignUpHandler)
+	userGroup.POST("/logout", userInfo.LogoutHandler)
+	userGroup.GET("/", infoMiddleware.GetIdByCookieMiddl(profileInfo.ProfileHandler))
+	userGroup.PUT("/name", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserName))
+	userGroup.PUT("/email", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserEmail))
+	userGroup.PUT("/password", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserPassword))
+	userGroup.PUT("/phone", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserPhone))
+	userGroup.PUT("/avatar", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserAvatar))
+	userGroup.PUT("/birthday", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserBirthday))
+	//user.PUT("/address", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserAddress))
 
-	restaurants.GET("/", restaurantInfo.RestaurantHandler)
-	restaurants.GET("/{idRes}/dish/{idDish}", restaurantInfo.RestaurantDishesHandler)
-	restaurants.GET("/{idRes}", restaurantInfo.RestaurantIdHandler)
+	restaurantGroup.GET("/", restaurantInfo.RestaurantHandler)
+	restaurantGroup.GET("/{idRes}/dish/{idDish}", restaurantInfo.RestaurantDishesHandler)
+	restaurantGroup.GET("/{idRes}", restaurantInfo.RestaurantIdHandler)
 
-	printURL := infoMiddleware.PrintURLMiddleware(myRouter.Handler)
+	cartGroup.GET("/", infoMiddleware.GetIdByCookieMiddl(cartInfo.GetCartHandler))
+
+	printURL := infoMiddleware.PrintURLMiddl(myRouter.Handler)
 
 	withCors := cors.NewCorsHandler(cors.Options{
-		AllowedOrigins:   []string{config.AllowedOriginsDomen + ":" + config.AllowedOriginsPort},
-		AllowedHeaders:   []string{"access-control-allow-origin", "content-type",
+		AllowedOrigins: []string{config.AllowedOriginsDomen + ":" + config.AllowedOriginsPort},
+		AllowedHeaders: []string{"access-control-allow-origin", "content-type",
 			"x-csrf-token", "access-control-expose-headers"},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 		ExposedHeaders:   []string{"X-Csrf-Token"},
