@@ -139,7 +139,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	_, err = UpdateCart(&wrapper, cart, id)  // TODO
+	resultUpdate, err := UpdateCart(&wrapper, cart, id)  // TODO возврат ошибок
 	errOut, resultOutAccess, codeHTTP := errors.CheckErrorUpdateCart(err)
 	if errOut != nil {
 		switch errOut.Error() {
@@ -153,18 +153,21 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	}
-
 	ctx.Response.Header.Set("X-CSRF-Token", cookieDB.CsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
-	err = json.NewEncoder(ctx).Encode(&utils.Result{
-		Status: http.StatusOK,
-		Body: cart,
-	})
-	if err != nil {
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		fmt.Printf("Console: %s\n", errors.ErrEncode)
-		return
+	if resultUpdate != nil {
+		err = json.NewEncoder(ctx).Encode(&utils.Result{
+			Status: http.StatusOK,
+			Body: resultUpdate,
+		})
+		if err != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrEncode))
+			fmt.Printf("Console: %s\n", errors.ErrEncode)
+			return
+		}
 	}
+
+
 
 }
