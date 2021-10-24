@@ -20,9 +20,9 @@ func (e *Errors) Error() string {
 const (
 	ErrDB        = "ERROR: database is not responding"
 	ErrEncode    = "ERROR: Encode"
-	ErrAtoi      = "ERROR: func Atoi convert string in int"
-	ErrNotString = "ERROR: expected Id type string, but type not string"
-	ErrMarshal   = "ERROR: marshaling in json"
+	ErrAtoi            = "ERROR: func Atoi convert string in int"
+	ErrNotStringAndInt = "ERROR: expected type string or int"
+	ErrMarshal         = "ERROR: marshaling in json"
 	ErrCheck     = "ERROR: err check"
 	ErrUnmarshal = "ERROR: unmarshal json"
 	ErrAuth      = "Вы не авторизированы"

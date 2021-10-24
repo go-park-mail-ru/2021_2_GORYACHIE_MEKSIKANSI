@@ -2,7 +2,6 @@ package Cart
 
 import (
 	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
-	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"encoding/json"
 	"fmt"
@@ -18,24 +17,6 @@ type InfoCart struct {
 
 func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 	wrapper := Wrapper{Conn: c.ConnectionDB}
-
-	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
-	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
-
-	_, err := mid.CheckAccess(c.ConnectionDB, &cookieDB)
-	errAccess, resultOutAccess, codeHTTP := errors.CheckErrorAccess(err)
-	if errAccess != nil {
-		switch errAccess.Error() {
-		case errors.ErrMarshal:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
-			return
-		case errors.ErrCheck:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody(resultOutAccess)
-			return
-		}
-	}
 
 	idUrl := ctx.UserValue("id")
 	var id int
@@ -53,8 +34,8 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 		id = idUrl.(int)
 	default:
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotString))
-		fmt.Printf("Console: %s\n", errors.ErrNotString)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
 		return
 	}
 
@@ -73,7 +54,6 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	ctx.Response.Header.Set("X-CSRF-Token", cookieDB.CsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
@@ -100,22 +80,18 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
-	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
-
-	_, err = mid.CheckAccess(c.ConnectionDB, &cookieDB)
-	errAccess, resultOutAccess, codeHTTP := errors.CheckErrorAccess(err)
-	if errAccess != nil {
-		switch errAccess.Error() {
-		case errors.ErrMarshal:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
-			return
-		case errors.ErrCheck:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody(resultOutAccess)
-			return
-		}
+	TokenContext := ctx.UserValue("X-Csrf-Token")
+	var XCsrfToken string
+	switch TokenContext.(type) {
+	case string:
+		XCsrfToken = TokenContext.(string)
+	case int:
+		XCsrfToken = strconv.Itoa(TokenContext.(int))
+	default:
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
+		return
 	}
 
 	idUrl := ctx.UserValue("id")
@@ -134,8 +110,8 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 		id = idUrl.(int)
 	default:
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotString))
-		fmt.Printf("Console: %s\n", errors.ErrNotString)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
 		return
 	}
 
@@ -153,7 +129,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	}
-	ctx.Response.Header.Set("X-CSRF-Token", cookieDB.CsrfToken)
+	ctx.Response.Header.Set("X-CSRF-Token", XCsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 	if resultUpdate != nil {
 		err = json.NewEncoder(ctx).Encode(&utils.Result{
@@ -167,7 +143,5 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	}
-
-
 
 }

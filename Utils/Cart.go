@@ -19,7 +19,7 @@ type DishesCart struct {
 	Cost           int              `json:"cost"`
 	Description    string           `json:"desc"`
 	RadiosCart     []RadiosCart     `json:"radios"`
-	IngredientCart []IngredientCart `json:"Ingredient"`
+	IngredientCart []IngredientCart `json:"ingredients"`
 }
 
 type RadiosCart struct {

@@ -36,8 +36,8 @@ func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
 		id = idUrl.(int)
 	default:
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotString))
-		fmt.Printf("Console: %s\n", errors.ErrNotString)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
 		return
 	}
 
@@ -117,8 +117,8 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 		id = idUrl.(int)
 	default:
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotString))
-		fmt.Printf("Console: %s\n", errors.ErrNotString)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
 		return
 	}
 
@@ -195,8 +195,8 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 		id = idUrl.(int)
 	default:
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotString))
-		fmt.Printf("Console: %s\n", errors.ErrNotString)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
 		return
 	}
 
@@ -273,8 +273,8 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 		id = idUrl.(int)
 	default:
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotString))
-		fmt.Printf("Console: %s\n", errors.ErrNotString)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
 		return
 	}
 
@@ -351,8 +351,8 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 		id = idUrl.(int)
 	default:
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotString))
-		fmt.Printf("Console: %s\n", errors.ErrNotString)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
 		return
 	}
 
@@ -429,8 +429,8 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 		id = idUrl.(int)
 	default:
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotString))
-		fmt.Printf("Console: %s\n", errors.ErrNotString)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
 		return
 	}
 
@@ -507,8 +507,8 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 		id = idUrl.(int)
 	default:
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotString))
-		fmt.Printf("Console: %s\n", errors.ErrNotString)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
 		return
 	}
 

@@ -45,14 +45,14 @@ func runServer(port string) {
 	userGroup.PUT("/phone", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserPhone))
 	userGroup.PUT("/avatar", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserAvatar))
 	userGroup.PUT("/birthday", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserBirthday))
-	//user.PUT("/address", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserAddress))
+	//userGroup.PUT("/address", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserAddress))
 
 	restaurantGroup.GET("/", restaurantInfo.RestaurantHandler)
 	restaurantGroup.GET("/{idRes}/dish/{idDish}", restaurantInfo.RestaurantDishesHandler)
 	restaurantGroup.GET("/{idRes}", restaurantInfo.RestaurantIdHandler)
 
 	cartGroup.GET("/", infoMiddleware.GetIdByCookieMiddl(cartInfo.GetCartHandler))
-	cartGroup.PUT("/", infoMiddleware.GetIdByCookieMiddl(cartInfo.UpdateCartHandler))
+	cartGroup.PUT("/", infoMiddleware.CheckAccessMiddl(infoMiddleware.GetIdByCookieMiddl(cartInfo.UpdateCartHandler)))
 
 	printURL := infoMiddleware.PrintURLMiddl(myRouter.Handler)
 
