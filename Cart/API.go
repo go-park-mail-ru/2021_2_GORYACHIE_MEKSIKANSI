@@ -71,7 +71,7 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	wrapper := Wrapper{Conn: c.ConnectionDB}
 
-	var cart utils.Cart
+	var cart utils.CartResponse
 	err := json.Unmarshal(ctx.Request.Body(), &cart)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)

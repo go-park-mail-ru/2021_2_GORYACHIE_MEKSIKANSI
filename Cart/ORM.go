@@ -9,13 +9,13 @@ type Wrapper struct {
 	Conn Utils.ConnectionInterface
 }
 
-func (db *Wrapper) GetCart(id int) (Utils.Cart, error) {
-	var cart Utils.Cart
-	var dishes []Utils.DishesCart
-	var radios []Utils.RadiosCart
-	var ingredients []Utils.IngredientCart
+func (db *Wrapper) GetCart(id int) (Utils.CartResponse, error) {
+	var cart Utils.CartResponse
+	var dishes []Utils.DishesCartResponse
+	var radios []Utils.RadiosCartResponse
+	var ingredients []Utils.IngredientCartResponse
 
-	var restaurant Utils.RestaurantCart
+	var restaurant Utils.RestaurantCartResponse
 	restaurant.Id = id
 	_ = db.Conn.QueryRow(context.Background(),
 		"SELECT name FROM restaurant WHERE id = $1", id).Scan(&restaurant.Name)
@@ -24,7 +24,7 @@ func (db *Wrapper) GetCart(id int) (Utils.Cart, error) {
 	rows, _ := db.Conn.Query(context.Background(),
 		"SELECT food, count_food FROM cart WHERE client_id = $1", id)
 	for rows.Next() {
-		var dish Utils.DishesCart
+		var dish Utils.DishesCartResponse
 		_ = rows.Scan(&dish.Id, &dish.Count)
 		rows, _ := db.Conn.Query(context.Background(),
 			"SELECT name, cost, description, number_item, avatar FROM dishes WHERE id = $1", dish.Id)
@@ -34,7 +34,7 @@ func (db *Wrapper) GetCart(id int) (Utils.Cart, error) {
 			rows, _ := db.Conn.Query(context.Background(),
 				"SELECT checkbox FROM cart_structure_food WHERE client_id = $1", dish.Id)
 			for rows.Next() {
-				var ingredient Utils.IngredientCart
+				var ingredient Utils.IngredientCartResponse
 				_ = rows.Scan(&ingredient.Id)
 
 				_ = db.Conn.QueryRow(context.Background(),
@@ -46,7 +46,7 @@ func (db *Wrapper) GetCart(id int) (Utils.Cart, error) {
 			rows, _ = db.Conn.Query(context.Background(),
 				"SELECT radios_id, radios FROM cart_radios_food WHERE client_id = $1", dish.Id)
 			for rows.Next() {
-				var radio Utils.RadiosCart
+				var radio Utils.RadiosCartResponse
 				_ = rows.Scan(&radio.RadiosId, &radio.Id)
 
 				_ = db.Conn.QueryRow(context.Background(),
@@ -74,7 +74,7 @@ func (db *Wrapper) DeleteCart(id int) error {
 }
 
 
-func (db *Wrapper) UpdateCart(cart Utils.Cart, clientId int) ([]Utils.CastDishesErrs, error) {
+func (db *Wrapper) UpdateCart(cart Utils.CartResponse, clientId int) ([]Utils.CastDishesErrs, error) {
 	var dishesErrors []Utils.CastDishesErrs
 	for _, dish := range cart.Dishes {
 		var dishesError Utils.CastDishesErrs
