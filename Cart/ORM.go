@@ -161,10 +161,11 @@ func (db *Wrapper) UpdateCart(newCart Utils.CartRequest, clientId int) (*Utils.C
 	for i, dish := range newCart.Dishes {
 		var dishes Utils.DishesCartResponse
 		var dishesError Utils.CastDishesErrs
+		count := 0
 		err := db.Conn.QueryRow(context.Background(),
-			"SELECT id, avatar, cost, name, description FROM dishes WHERE id = $1 AND restaurant = $2",
+			"SELECT id, avatar, cost, name, description, count FROM dishes WHERE id = $1 AND restaurant = $2",
 			dish.Id, newCart.Restaurant.Id).Scan(
-				&dishes.Id, &dishes.Img, &dishes.Cost, &dishes.Name, &dishes.Description)
+				&dishes.Id, &dishes.Img, &dishes.Cost, &dishes.Name, &dishes.Description, &count)
 		if err != nil {
 			if err.Error() == "no rows in result set" {
 				return nil, nil, &errorsConst.Errors{
@@ -172,6 +173,12 @@ func (db *Wrapper) UpdateCart(newCart Utils.CartRequest, clientId int) (*Utils.C
 					Time: time.Now(),
 				}
 			}
+			dishesError.ItemNumber = dish.ItemNumber
+			dishesError.Explain = dishes.Name
+			dishesErrors = append(dishesErrors, dishesError)
+			continue
+		}
+		if dish.Count > count && count != -1 {
 			dishesError.ItemNumber = dish.ItemNumber
 			dishesError.Explain = dishes.Name
 			dishesErrors = append(dishesErrors, dishesError)

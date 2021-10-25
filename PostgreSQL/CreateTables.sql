@@ -126,6 +126,7 @@ CREATE TABLE IF NOT EXISTS dishes (
     id serial PRIMARY KEY,
     name text NOT NULL,
     cost int,
+    count int,
     restaurant int,
     FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE,
     description text NOT NULL,
