@@ -76,7 +76,7 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 
 	restaurant, err := GetRestaurant(&WrapperDB, id)
 
-	errOut, resultOutAccess, codeHTTP  := errors.CheckErrorRestaurantId(err)  // должна появиться новая ошибка +1
+	errOut, resultOutAccess, codeHTTP := errors.CheckErrorRestaurantId(err) // должна появиться новая ошибка +1
 	if errOut != nil {
 		switch errOut.Error() {
 		case errors.ErrMarshal:
@@ -94,7 +94,7 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 
 	err = json.NewEncoder(ctx).Encode(&auth.Result{
 		Status: http.StatusOK,
-		Body: &utils.RestaurantIdResponse {
+		Body: &utils.RestaurantIdResponse{
 			RestaurantsGet: restaurant,
 		},
 	})
@@ -150,33 +150,33 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-		dishes, err := RestaurantDishes(&WrapperDB, idRes, idDish)
-		errOut, resultOutAccess, codeHTTP  := errors.CheckErrorRestaurantDishes(err)
-		if errOut != nil {
-			switch errOut.Error() {
-			case errors.ErrMarshal:
-				ctx.Response.SetStatusCode(codeHTTP)
-				ctx.Response.SetBody([]byte(errors.ErrMarshal))
-				return
-			case errors.ErrCheck:
-				ctx.Response.SetStatusCode(codeHTTP)
-				ctx.Response.SetBody(resultOutAccess)
-				return
-			}
+	dishes, err := RestaurantDishes(&WrapperDB, idRes, idDish)
+	errOut, resultOutAccess, codeHTTP := errors.CheckErrorRestaurantDishes(err)
+	if errOut != nil {
+		switch errOut.Error() {
+		case errors.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			return
+		case errors.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOutAccess)
+			return
 		}
+	}
 
 	ctx.SetStatusCode(http.StatusOK)
 
-		err = json.NewEncoder(ctx).Encode(&auth.Result{
-			Status: http.StatusOK,
-			Body: &utils.DishesResponse {
-				DishesGet: dishes,
-			},
-		})
-		if err != nil {
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrEncode))
-			fmt.Printf("Console: %s\n", errors.ErrEncode)
-			return
-		}
+	err = json.NewEncoder(ctx).Encode(&auth.Result{
+		Status: http.StatusOK,
+		Body: &utils.DishesResponse{
+			DishesGet: dishes,
+		},
+	})
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrEncode))
+		fmt.Printf("Console: %s\n", errors.ErrEncode)
+		return
+	}
 }

@@ -9,7 +9,7 @@ import (
 
 func CheckErrorGetCart(err error) (error, []byte, int) {
 	if err != nil {
-		switch err.Error(){
+		switch err.Error() {
 		case GetCartRestaurantNotScan, GetCartCartNotFound, GetCartCartNotScan,
 			GetCartDishesNotFound, GetCartDishesNotScan, GetCartRestaurantNotSelect,
 			GetCartCheckboxNotScan, GetCartRadiosNotSelect, GetCartRadiosNotScan, GetCartStructRadiosNowScan:
@@ -57,9 +57,9 @@ func CheckErrorGetCart(err error) (error, []byte, int) {
 
 func CheckErrorUpdateCart(err error) (error, []byte, int) {
 	if err != nil {
-		switch err.Error(){
+		switch err.Error() {
 		case CartNotDelete, StructureFoodNotDelete, CartRadiosFoodNotDelete, UpdateCartCartNotInsert,
-		UpdateCartStructureFoodNotInsert, UpdateCartRadiosNotInsert, GetPriceDeliveryNotFound, GetPriceDeliveryNotScan,
+			UpdateCartStructureFoodNotInsert, UpdateCartRadiosNotInsert, GetPriceDeliveryNotFound, GetPriceDeliveryNotScan,
 			UpdateCartCartNotSelect:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,

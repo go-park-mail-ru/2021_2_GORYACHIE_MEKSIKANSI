@@ -35,9 +35,9 @@ func CheckErrorProfile(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdateName (err error) (error, []byte, int) {
+func CheckErrorProfileUpdateName(err error) (error, []byte, int) {
 	if err != nil {
-		switch err.Error(){
+		switch err.Error() {
 		case ErrUpdateName:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
@@ -62,9 +62,9 @@ func CheckErrorProfileUpdateName (err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdateEmail (err error) (error, []byte, int) {
+func CheckErrorProfileUpdateEmail(err error) (error, []byte, int) {
 	if err != nil {
-		switch err.Error(){
+		switch err.Error() {
 		case ErrUpdateEmail:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
@@ -108,9 +108,9 @@ func CheckErrorProfileUpdateEmail (err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdatePassword (err error) (error, []byte, int) {
+func CheckErrorProfileUpdatePassword(err error) (error, []byte, int) {
 	if err != nil {
-		switch err.Error(){
+		switch err.Error() {
 		case ErrUpdatePassword, ErrSelectSaltInUpdate:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
@@ -135,9 +135,9 @@ func CheckErrorProfileUpdatePassword (err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdatePhone (err error) (error, []byte, int) {
+func CheckErrorProfileUpdatePhone(err error) (error, []byte, int) {
 	if err != nil {
-		switch err.Error(){
+		switch err.Error() {
 		case ErrUpdatePhone:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
@@ -181,9 +181,9 @@ func CheckErrorProfileUpdatePhone (err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdateAvatar (err error) (error, []byte, int) {
+func CheckErrorProfileUpdateAvatar(err error) (error, []byte, int) {
 	if err != nil {
-		switch err.Error(){
+		switch err.Error() {
 		case ErrUpdateAvatar:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
@@ -208,9 +208,9 @@ func CheckErrorProfileUpdateAvatar (err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdateBirthday (err error) (error, []byte, int) {
+func CheckErrorProfileUpdateBirthday(err error) (error, []byte, int) {
 	if err != nil {
-		switch err.Error(){
+		switch err.Error() {
 		case ErrUpdateBirthday:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,

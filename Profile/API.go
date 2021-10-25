@@ -139,7 +139,7 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 
 	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
-			StatusHTTP: http.StatusOK,
+		StatusHTTP: http.StatusOK,
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
@@ -217,7 +217,7 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 
 	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
-			StatusHTTP: http.StatusOK,
+		StatusHTTP: http.StatusOK,
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
@@ -295,7 +295,7 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 
 	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
-			StatusHTTP: http.StatusOK,
+		StatusHTTP: http.StatusOK,
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
@@ -373,7 +373,7 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 
 	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
-			StatusHTTP: http.StatusOK,
+		StatusHTTP: http.StatusOK,
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
@@ -451,7 +451,7 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 
 	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
-			StatusHTTP: http.StatusOK,
+		StatusHTTP: http.StatusOK,
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
@@ -529,7 +529,7 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 
 	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
-			StatusHTTP: http.StatusOK,
+		StatusHTTP: http.StatusOK,
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)

@@ -35,7 +35,7 @@ func GetCart(db Utils.WrapperCart, id int) (*Utils.CartResponse, error) {
 		for _, ingredient := range dish.IngredientCart {
 			ingredientCost = ingredientCost + ingredient.Cost
 		}
-		sumCost = sumCost + dish.Cost * dish.Count + ingredientCost
+		sumCost = sumCost + dish.Cost*dish.Count + ingredientCost
 		result.Dishes[i].Cost = sumCost
 	}
 	cost.SumCost = sumCost
@@ -49,7 +49,7 @@ func GetCart(db Utils.WrapperCart, id int) (*Utils.CartResponse, error) {
 	return result, nil
 }
 
-func UpdateCart(db Utils.WrapperCart, dishes Utils.CartRequest,  clientId int) (*Utils.CartResponse, []Utils.CastDishesErrs, error) {
+func UpdateCart(db Utils.WrapperCart, dishes Utils.CartRequest, clientId int) (*Utils.CartResponse, []Utils.CastDishesErrs, error) {
 	if dishes.Restaurant.Id == -1 {
 		return nil, nil, DeleteCart(db, clientId)
 	}
@@ -84,7 +84,7 @@ func UpdateCart(db Utils.WrapperCart, dishes Utils.CartRequest,  clientId int) (
 		for _, ingredient := range dish.IngredientCart {
 			ingredientCost = ingredientCost + ingredient.Cost
 		}
-		sumCost = sumCost + dish.Cost * dish.Count + ingredientCost
+		sumCost = sumCost + dish.Cost*dish.Count + ingredientCost
 		result.Dishes[i].Cost = sumCost
 	}
 	var cost Utils.CostCartResponse

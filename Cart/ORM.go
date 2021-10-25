@@ -20,7 +20,7 @@ func (db *Wrapper) GetCart(id int) (*Utils.CartResponse, error) {
 
 	var restaurant Utils.RestaurantIdCastResponse
 	rows, err := db.Conn.Query(context.Background(),
-		"SELECT food, count_food, number_item, name, cost, description, avatar, restaurant_id FROM cart" +
+		"SELECT food, count_food, number_item, name, cost, description, avatar, restaurant_id FROM cart"+
 			" JOIN dishes ON cart.food = dishes.id WHERE client_id = $1", id)
 
 	var dish *Utils.DishesCartResponse
@@ -61,7 +61,7 @@ func (db *Wrapper) GetCart(id int) (*Utils.CartResponse, error) {
 
 			err = db.Conn.QueryRow(context.Background(),
 				"SELECT name, cost FROM structure_dishes WHERE id = $1", ingredient.Id).Scan(
-					&ingredient.Name, &ingredient.Cost)
+				&ingredient.Name, &ingredient.Cost)
 			ingredients = append(ingredients, ingredient)
 		}
 		if ingredients != nil {
@@ -120,7 +120,6 @@ func (db *Wrapper) GetCart(id int) (*Utils.CartResponse, error) {
 	return cart, nil
 }
 
-
 func (db *Wrapper) DeleteCart(id int) error {
 	_, err := db.Conn.Exec(context.Background(),
 		"DELETE FROM cart WHERE client_id = $1", id)
@@ -149,11 +148,9 @@ func (db *Wrapper) DeleteCart(id int) error {
 	return nil
 }
 
-
 func (db *Wrapper) GetConn() Utils.ConnectionInterface {
 	return db.Conn
 }
-
 
 func (db *Wrapper) UpdateCart(newCart Utils.CartRequest, clientId int) (*Utils.CartResponse, []Utils.CastDishesErrs, error) {
 	var dishesErrors []Utils.CastDishesErrs
@@ -165,7 +162,7 @@ func (db *Wrapper) UpdateCart(newCart Utils.CartRequest, clientId int) (*Utils.C
 		err := db.Conn.QueryRow(context.Background(),
 			"SELECT id, avatar, cost, name, description, count FROM dishes WHERE id = $1 AND restaurant = $2",
 			dish.Id, newCart.Restaurant.Id).Scan(
-				&dishes.Id, &dishes.Img, &dishes.Cost, &dishes.Name, &dishes.Description, &count)
+			&dishes.Id, &dishes.Img, &dishes.Cost, &dishes.Name, &dishes.Description, &count)
 		if err != nil {
 			if err.Error() == "no rows in result set" {
 				return nil, nil, &errorsConst.Errors{
@@ -200,7 +197,7 @@ func (db *Wrapper) UpdateCart(newCart Utils.CartRequest, clientId int) (*Utils.C
 			var ingredients Utils.IngredientCartResponse
 			err := db.Conn.QueryRow(context.Background(),
 				"SELECT id, name, cost FROM structure_dishes WHERE id = $1 ", ingredient.Id).Scan(
-					&ingredients.Id, &ingredients.Name, &ingredients.Cost)
+				&ingredients.Id, &ingredients.Name, &ingredients.Cost)
 			if err != nil {
 				dishesError.ItemNumber = dish.ItemNumber
 				dishesError.Explain = cart.Dishes[i].IngredientCart[j].Name
@@ -224,7 +221,7 @@ func (db *Wrapper) UpdateCart(newCart Utils.CartRequest, clientId int) (*Utils.C
 			var radios Utils.RadiosCartResponse
 			err := db.Conn.QueryRow(context.Background(),
 				"SELECT id, name FROM structure_radios WHERE id = $1", radio.Id).Scan(
-					&radios.Id, &radios.Name)
+				&radios.Id, &radios.Name)
 			if err != nil {
 				dishesError.ItemNumber = dish.ItemNumber
 				dishesError.Explain = cart.Dishes[i].RadiosCart[j].Name

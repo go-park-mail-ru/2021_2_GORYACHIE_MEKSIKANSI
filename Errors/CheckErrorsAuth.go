@@ -141,4 +141,3 @@ func CheckErrorLogout(err error) (error, []byte, int) {
 	}
 	return nil, nil, HttpNil
 }
-

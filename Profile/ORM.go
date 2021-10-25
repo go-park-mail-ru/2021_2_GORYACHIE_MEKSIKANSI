@@ -128,7 +128,7 @@ func (db *Wrapper) UpdateEmail(id int, newEmail string) error {
 	if err != nil {
 		textError := err.Error()
 		println(textError)
-		if textError == "ERROR: duplicate key value violates unique constraint " +
+		if textError == "ERROR: duplicate key value violates unique constraint "+
 			"\"general_user_info_email_key\" (SQLSTATE 23505)" {
 			return &errorsConst.Errors{
 				Text: errorsConst.ErrUpdateEmailRepeat,
@@ -174,8 +174,8 @@ func (db *Wrapper) UpdatePhone(id int, newPhone string) error {
 		"UPDATE general_user_info SET phone = $1 WHERE id = $2",
 		newPhone, id)
 	if err != nil {
-		if err.Error() == "ERROR: duplicate key value violates unique constraint " +
-			"\"general_user_info_phone_key\" (SQLSTATE 23505)"{
+		if err.Error() == "ERROR: duplicate key value violates unique constraint "+
+			"\"general_user_info_phone_key\" (SQLSTATE 23505)" {
 			return &errorsConst.Errors{
 				Text: errorsConst.ErrUpdatePhoneRepeat,
 				Time: time.Now(),

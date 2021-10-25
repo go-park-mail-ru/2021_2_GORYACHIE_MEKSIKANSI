@@ -67,9 +67,9 @@ func (r *Rows) Next() bool {
 var restaurantTests = []struct {
 	testName string
 	out      []rest.Restaurants
-	err    error
-	row    Rows
-	outErr string
+	err      error
+	row      Rows
+	outErr   string
 }{
 	{
 		testName: "One",
