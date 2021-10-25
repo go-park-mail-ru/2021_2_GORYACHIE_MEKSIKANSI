@@ -60,7 +60,7 @@ func (db *Wrapper) GetCart(id int) (*Utils.CartResponse, error) {
 			}
 
 			err = db.Conn.QueryRow(context.Background(),
-				"SELECT name, cost FROM structure_dishes WHERE id = $1", ingredient.Id).Scan( // TODO(N): не запускать 2 раза
+				"SELECT name, cost FROM structure_dishes WHERE id = $1", ingredient.Id).Scan(
 					&ingredient.Name, &ingredient.Cost)
 			ingredients = append(ingredients, ingredient)
 		}

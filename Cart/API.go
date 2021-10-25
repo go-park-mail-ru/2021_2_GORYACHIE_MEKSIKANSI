@@ -53,13 +53,6 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	}
-/*	if cart.Dishes[0].IngredientCart == nil {  // TODO(N): выяснить с фронтом отсылку json
-		ctx.Response.SetStatusCode(http.StatusOK)
-		err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
-			StatusHTTP: http.StatusOK,
-		})
-		return
-	}*/
 	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
@@ -121,7 +114,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	result, resultUpdateErrors, err := UpdateCart(&wrapper, cart, id) // TODO возврат ошибок
+	result, resultUpdateErrors, err := UpdateCart(&wrapper, cart, id)
 	errOut, resultOutAccess, codeHTTP := errors.CheckErrorUpdateCart(err)
 	if errOut != nil {
 		switch errOut.Error() {
@@ -151,9 +144,22 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	err = json.NewEncoder(ctx).Encode(&utils.Result{
-		Status: http.StatusOK,
-		Body:   result,
+	if result != nil {
+		err = json.NewEncoder(ctx).Encode(&utils.Result{
+			Status: http.StatusOK,
+			Body:   result,
+		})
+		if err != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrEncode))
+			fmt.Printf("Console: %s\n", errors.ErrEncode)
+			return
+
+		}
+	}
+
+	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
+		StatusHTTP: http.StatusOK,
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)

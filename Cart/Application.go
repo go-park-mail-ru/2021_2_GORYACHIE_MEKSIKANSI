@@ -36,7 +36,7 @@ func GetCart(db Utils.WrapperCart, id int) (*Utils.CartResponse, error) {
 			ingredientCost = ingredientCost + ingredient.Cost
 		}
 		sumCost = sumCost + dish.Cost * dish.Count + ingredientCost
-		result.Dishes[i].Count = ingredientCost
+		result.Dishes[i].Cost = sumCost
 	}
 	cost.SumCost = sumCost
 	if sumCost >= rest.CostForFreeDelivery {

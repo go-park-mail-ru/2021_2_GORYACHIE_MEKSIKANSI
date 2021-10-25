@@ -30,7 +30,7 @@ type DishesCartResponse struct {
 
 type RadiosCartResponse struct {
 	Name     string `json:"name"`
-	RadiosId int    `json:"rid"`
+	RadiosId int    `json:"rId"`
 	Id       int    `json:"id"`
 }
 
