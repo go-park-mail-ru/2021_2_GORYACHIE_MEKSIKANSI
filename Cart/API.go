@@ -53,7 +53,13 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	}
-
+/*	if cart.Dishes[0].IngredientCart == nil {  // TODO(N): выяснить с фронтом отсылку json
+		ctx.Response.SetStatusCode(http.StatusOK)
+		err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
+			StatusHTTP: http.StatusOK,
+		})
+		return
+	}*/
 	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,

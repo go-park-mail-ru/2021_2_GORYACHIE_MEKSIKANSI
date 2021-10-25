@@ -27,6 +27,7 @@ const (
 	ErrUnmarshal = "ERROR: unmarshal json"
 	ErrAuth      = "Вы не авторизированы"
 	HttpNil      = 0
+	ErrCartNull = "Ваша корзина пустая"
 )
 
 // Error of Authorization
@@ -92,9 +93,42 @@ const (
 	ErrRestaurantsDishesNotSelect = "ERROR: dishes in restaurant not select"
 	ErrRestaurantDishesScan = "ERROR: dishes in restaurant not scan"
 	ErrRestaurantDishesNotFound = "ERROR: dishes in restaurant not found"
+	DishesDishesNotFound = "ERROR: dishes not found"
+	DishesDishesNotScan = "ERROR: dishes not scan"
+	DishesStructDishesNotSelect = "ERROR: dishes not select"
+	DishesStructDishesNotScan = "ERROR: dishes not scan"
+	DishesStructDishesNotFound = "ERROR: dishes not found"
+	DishesStructRadiosNotSelect = "ERROR: radios not select"
+	DishesRadiosNotFound = "ERROR: radios not found"
+	DishesRadiosNotScan = "ERROR: radios not scan"
+	DishesStructRadiosNotFound = "ERROR: radios not found"
+	DishesStructRadiosNotScan = "ERROR: radios not scan"
+	ErrTagNotFound = "ERROR: tag not found"
 )
 
 // Error of Cart
 const (
-
+	GetCartRestaurantNotFound = "ERROR: restaurant not found"
+	GetCartRestaurantNotScan = "ERROR: restaurant not scan"
+	GetCartCartNotFound      = "ERROR: cart not found"
+	GetCartCartNotScan = "ERROR: cart not scan"
+	GetCartDishesNotFound = "ERROR: dishes not found"
+	GetCartDishesNotScan = "ERROR: dishes not scan"
+	GetCartRestaurantNotSelect = "ERROR: restaurant not select"
+	GetCartCheckboxNotFound = "ERROR: checkbox not found"
+	GetCartCheckboxNotScan = "ERROR: checkbox not scan"
+	GetCartRadiosNotSelect = "ERROR: radios not select"
+	GetCartRadiosNotFound = "ERROR: radios not found"
+	GetCartRadiosNotScan = "ERROR: radios not scan"
+	GetCartStructRadiosNotFound = "ERROR: struct radios not found"
+	GetCartStructRadiosNowScan = "ERROR: struct radios not scan"
+	CartNotDelete = "ERROR: cat not delete"
+	StructureFoodNotDelete = "ERROR: food not delete"
+	CartRadiosFoodNotDelete = "ERROR: radios not delete"
+	UpdateCartCartNotInsert = "ERROR: cart not insert"
+	UpdateCartStructureFoodNotInsert = "ERROR: structure food not insert"
+	UpdateCartRadiosNotInsert = "ERROR: radios not insert"
+	GetPriceDeliveryNotFound = "ERROR: delivery not found"
+	GetPriceDeliveryNotScan = "ERROR: delivery not scan"
+	GetCartCartNotSelect = ""
 )

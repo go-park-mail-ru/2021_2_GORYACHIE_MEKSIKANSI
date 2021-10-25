@@ -9,11 +9,17 @@ func calculatePriceDelivery(db Utils.WrapperCart, id int) (int, error) {
 	return db.GetPriceDelivery(id)
 }
 
-func GetCart(db Utils.WrapperCart, id int) (Utils.CartResponse, error) {
+func GetCart(db Utils.WrapperCart, id int) (*Utils.CartResponse, error) {
 	var cost Utils.CostCartResponse
-	result, _ := db.GetCart(id)
+	result, err := db.GetCart(id)
+	if err != nil {
+		return nil, err
+	}
 	wrapper := Restaurant.Wrapper{Conn: db.GetConn()}
-	rest, _ := wrapper.GetGeneralInfoRestaurant(result.Restaurant.Id)
+	rest, err := wrapper.GetGeneralInfoRestaurant(result.Restaurant.Id)
+	if err != nil {
+		return nil, err
+	}
 
 	result.Restaurant.Id = rest.Id
 	result.Restaurant.Img = rest.Img
@@ -52,9 +58,15 @@ func UpdateCart(db Utils.WrapperCart, dishes Utils.CartRequest,  clientId int) (
 	if err != nil {
 		return nil, nil, err
 	}
-	result, errCast, _ := db.UpdateCart(dishes, clientId)
+	result, errCast, err := db.UpdateCart(dishes, clientId)
+	if err != nil {
+		return nil, nil, err
+	}
 	wrapper := Restaurant.Wrapper{Conn: db.GetConn()}
-	rest, _ := wrapper.GetGeneralInfoRestaurant(dishes.Restaurant.Id)
+	rest, err := wrapper.GetGeneralInfoRestaurant(dishes.Restaurant.Id)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	result.Restaurant.Id = rest.Id
 	result.Restaurant.Img = rest.Img
@@ -84,7 +96,7 @@ func UpdateCart(db Utils.WrapperCart, dishes Utils.CartRequest,  clientId int) (
 	}
 	cost.SumCost = cost.DCost + cost.SumCost
 	result.Cost = cost
-	return &result, errCast, nil
+	return result, errCast, nil
 }
 
 func DeleteCart(db Utils.WrapperCart, id int) error {

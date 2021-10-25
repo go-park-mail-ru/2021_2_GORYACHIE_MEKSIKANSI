@@ -24,8 +24,8 @@ type DishesCartResponse struct {
 	Count          int                      `json:"count"`
 	Cost           int                      `json:"cost"`
 	Description    string                   `json:"desc"`
-	RadiosCart     []RadiosCartResponse     `json:"radios"`
-	IngredientCart []IngredientCartResponse `json:"ingredients"`
+	RadiosCart     []RadiosCartResponse     `json:"radios,omitempty"`
+	IngredientCart []IngredientCartResponse `json:"ingredients,omitempty"`
 }
 
 type RadiosCartResponse struct {

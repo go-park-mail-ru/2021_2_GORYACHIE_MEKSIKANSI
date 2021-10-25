@@ -59,11 +59,26 @@ INSERT INTO restaurant (owner, name, description, price_delivery, min_delivery_t
       (1, 'Cafe Epi', 'description', 0, 15, 30, 'city', 'street', 'house', 100, 2.1, 'location'),
       (1, 'Tai Pan', 'description', 0, 15, 30, 'city', 'street', 'house', 100, 4.2, 'location')
 ;
+UPDATE restaurant
+SET
+    avatar = (
+            array[
+            'https://nypost.com/wp-content/uploads/sites/2/2020/05/mcdonalds-feature.jpg?quality=90&strip=all',
+            'https://top-samyh.ru/assets/components/phpthumbof/cache/alias4.8ec1866f31359b98f52e8c1d06fc6bcb.1eabef41af95455b89f319c7ba68f516.jpg',
+            'https://kod.ru/content/images/2020/11/KFC_has_unveiled_a_new-27a410c3f16231bf8ac7977a566697c4.png',
+            'https://avatars.mds.yandex.net/get-zen_doc/51081/pub_5f96d7f1bc35081b5203ce74_5f96dd8924d0d15a6614547a/scale_1200',
+            'https://pokatim.ru/uploads/posts/2020-08/1598606636_rpwswmq3ullhobrcmp5evrhuifhl6x5k0nnt8dda.jpeg',
+            'https://ligabiznesa.ru/wp-content/uploads/2020/01/ris.-1.-logotip-dodo-picca.jpg',
+            'https://skidka-na-prazdnik.ru/wp-content/uploads/2020/06/xxl.jpg',
+            'https://avatars.mds.yandex.net/get-zen_doc/1878571/pub_5d1f02fb24e56600ad2b65d5_5d1f036ff221ef00adfa7d8f/scale_1200'
+                ]
+        ) [floor(random() * 8 + 1)]
+;
 
 INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1', NOW(), '');
 
-INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, avatar)
-SELECT 'name', random() * (500 - 10) + 10, 1, 'descr', 1, 1, 1, 1, 'cat_dis', 'cat_rest', 'https://s.fishki.net/upload/users/2019/11/29/1518141/85ae61606d59ee2b2701adeed30a1d71.png' FROM generate_series(1, 70);
+INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant)
+SELECT 'name', random() * (500 - 10) + 10, random() * (53 - 1) + 1, 'descr', 1, 1, 1, 1, 'cat_dis', 'cat_rest' FROM generate_series(1, 1000);
 UPDATE dishes
 SET
     name = (
@@ -122,11 +137,23 @@ SET
                 'Описание Четверного бургера',
                 'Описание Пятерного бургера'
                 ]
-           ) [floor(random() * 5 + 1)]
+           ) [floor(random() * 5 + 1)],
+    avatar = (
+            array[
+            'https://s.fishki.net/upload/users/2019/11/29/1518141/85ae61606d59ee2b2701adeed30a1d71.png',
+            'https://pbs.twimg.com/media/EBGtDaiVAAAv8Nh.jpg',
+            'https://avatars.mds.yandex.net/i?id=8190d1c6f0a87d9dcc258676e69b5018-2431862-images-thumbs&n=13',
+            'https://avatars.mds.yandex.net/get-altay/1031166/2a00000162001941c99c64ec1cf8a9fa2edd/XXL',
+            'https://moscow-restaurants.ru/netcat_files/38/26/1391/IMG_9985.jpeg_800.jpg',
+            'https://www.iphones.ru/wp-content/plugins/wonderm00ns-simple-facebook-open-graph-tags/fbimg.php?img=https%3A%2F%2Fwww.iphones.ru%2Fwp-content%2Fuploads%2F2018%2F08%2FBurgerN.jpg',
+            'https://imageproxy.ru/img/crop/1380x920/https/xn--h1ame.xn--80adxhks/storage/app/uploads/public/5e2/700/f07/5e2700f079c4c587329799.jpg',
+            'https://worldofmeat.ru/wp-content/uploads/2020/09/64777fa0b34f8985bdbfbaa242baccdd.jpg'
+            ]
+            ) [floor(random() * 8 + 1)]
 ;
 
 INSERT INTO restaurant_category (restaurant, category)
-SELECT 1, 'name' FROM generate_series(1, 5);
+SELECT random() * (53 - 1) + 1, 'name' FROM generate_series(1, 500);
 UPDATE restaurant_category
 SET
     category = (
@@ -150,7 +177,7 @@ SET
 ;
 
 INSERT INTO radios (name, food)
-SELECT 'name', random() * (70 - 1) + 1 FROM generate_series(1, 70);
+SELECT 'name', random() * (1000 - 1) + 1 FROM generate_series(1, 1000);
 UPDATE radios
 SET
     name = (
@@ -167,7 +194,7 @@ SET
 ;
 
 INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie)
-SELECT 'name', random() * (70 - 1) + 1, 1, 1, 1, 1 FROM generate_series(1, 150);
+SELECT 'name', random() * (1000 - 1) + 1, 1, 1, 1, 1 FROM generate_series(1, 1000);
 UPDATE structure_radios
 SET
     name = (
@@ -185,7 +212,7 @@ SET
 ;
 
 INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element)
-SELECT 'name', random() * (70 - 1) + 1, random() * (25 - 1) + 1, 1, 1, 1, 1, random() * (5 - 1) + 1 FROM generate_series(1, 150);
+SELECT 'name', random() * (1000 - 1) + 1, random() * (25 - 1) + 1, 1, 1, 1, 1, random() * (5 - 1) + 1 FROM generate_series(1, 2000);
 UPDATE structure_dishes
 SET
     name = (

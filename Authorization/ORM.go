@@ -38,7 +38,7 @@ func (db *Wrapper) GeneralSignUp(signup *utils.RegistrationRequest, transaction 
 	if err != nil {
 		errorText := err.Error()
 		if errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_phone_key\" (SQLSTATE 23505)" ||
-			errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_email_key\" (SQLSTATE 23505)" {
+			errorText == "0ERROR: duplicate key value violates unique constraint \"general_user_info_email_key\" (SQLSTATE 2355)" {
 			return 0, &errorsConst.Errors{
 				Text: errorsConst.ErrGeneralInfoUnique,
 				Time: time.Now(),

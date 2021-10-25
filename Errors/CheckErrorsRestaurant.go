@@ -57,7 +57,7 @@ func CheckErrorRestaurantId(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error(){
 		case ErrRestaurantNotFound, ErrCategoryRestaurantScan, ErrRestaurantsDishesNotSelect,
-		ErrRestaurantDishesScan, ErrRestaurantDishesNotFound:
+		ErrRestaurantDishesScan, ErrRestaurantDishesNotFound, ErrTagNotFound:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
