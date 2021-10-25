@@ -1,9 +1,9 @@
 package Utils
 
 type CartResponse struct {
-	Restaurant RestaurantId         `json:"restaurant"`
-	Dishes []DishesCartResponse     `json:"dishes"`
-	Cost   CostCartResponse         `json:"cost"`
+	Restaurant RestaurantIdCastResponse `json:"restaurant"`
+	Dishes     []DishesCartResponse     `json:"dishes"`
+	Cost       CostCartResponse     `json:"cost"`
 }
 
 /*type RestaurantCartResponse struct {
@@ -12,18 +12,18 @@ type CartResponse struct {
 }*/
 
 type CostCartResponse struct {
-	DCost int `json:"dCost"`
+	DCost   int `json:"dCost"`
 	SumCost int `json:"sumCost"`
 }
 
 type DishesCartResponse struct {
-	Id             int              `json:"id"`
-	ItemNumber     int              `json:"itNum"`
-	Img            string           `json:"img"`
-	Name           string           `json:"name"`
-	Count          int              `json:"count"`
-	Cost           int              `json:"cost"`
-	Description    string               `json:"desc"`
+	Id             int                      `json:"id"`
+	ItemNumber     int                      `json:"itNum"`
+	Img            string                   `json:"img"`
+	Name           string                   `json:"name"`
+	Count          int                      `json:"count"`
+	Cost           int                      `json:"cost"`
+	Description    string                   `json:"desc"`
 	RadiosCart     []RadiosCartResponse     `json:"radios"`
 	IngredientCart []IngredientCartResponse `json:"ingredients"`
 }
@@ -38,6 +38,16 @@ type IngredientCartResponse struct {
 	Name string `json:"name"`
 	Id   int    `json:"id"`
 	Cost int    `json:"cost"`
+}
+
+type RestaurantIdCastResponse struct {
+	Id                  int     `json:"id"`
+	Img                 string  `json:"img"`
+	Name                string  `json:"name"`
+	CostForFreeDelivery int     `json:"costFFD"`
+	MinDelivery         int     `json:"minDTime"`
+	MaxDelivery         int     `json:"maxDTime"`
+	Rating              float32 `json:"rating"`
 }
 
 type CastErrs struct {
@@ -59,17 +69,35 @@ type RestaurantRequest struct {
 }
 
 type DishesRequest struct {
-	Id int `json:"id"`
-	Count int `json:"count"`
-	Radios []RadiosCartRequest `json:"radios"`
+	Id          int                      `json:"id"`
+	ItemNumber  int                      `json:"itNum"`
+	Count       int                      `json:"count"`
+	Radios      []RadiosCartRequest      `json:"radios"`
 	Ingredients []IngredientsCartRequest `json:"ingredients"`
 }
 
 type RadiosCartRequest struct {
 	RadiosId int `json:"rId"`
-	Id int `json:"id"`
+	Id       int `json:"id"`
 }
 
 type IngredientsCartRequest struct {
 	Id int `json:"id"`
+}
+
+func (c *CartResponse) Cast(a CartRequest) {
+	for i, dish := range a.Dishes {
+		c.Dishes[i].Id = dish.Id
+		c.Dishes[i].ItemNumber = dish.ItemNumber
+		c.Dishes[i].Count = dish.Count
+
+		for j, ingredient := range dish.Ingredients {
+			c.Dishes[i].IngredientCart[j].Id = ingredient.Id
+		}
+
+		for j, radios := range dish.Radios {
+			c.Dishes[i].RadiosCart[j].Id = radios.Id
+			c.Dishes[i].RadiosCart[j].RadiosId = radios.RadiosId
+		}
+	}
 }

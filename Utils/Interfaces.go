@@ -31,7 +31,6 @@ type WrapperProfile interface {
 	UpdatePhone(id int, newPhone string) error
 	UpdateAvatar(id int, newAvatar string) error
 	UpdateBirthday(id int, newBirthday time.Time) error
-
 }
 
 type WrapperAuthorization interface {
@@ -47,6 +46,8 @@ type WrapperAuthorization interface {
 
 type WrapperCart interface {
 	GetCart(id int) (CartResponse, error)
-	UpdateCart(dishes CartResponse, clientId int) ([]CastDishesErrs, error)
+	UpdateCart(dishes CartRequest, clientId int) (CartResponse, []CastDishesErrs, error)
 	DeleteCart(id int) error
+	GetConn() ConnectionInterface
+	GetPriceDelivery(id int) (int, error)
 }

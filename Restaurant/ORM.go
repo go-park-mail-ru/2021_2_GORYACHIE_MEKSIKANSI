@@ -45,16 +45,25 @@ func (db *Wrapper) GetRestaurants() ([]Utils.Restaurants, error) {
 	return result, nil
 }
 
-func (db *Wrapper) GetRestaurant(id int) (*Utils.RestaurantId, []Utils.Tag, []Utils.Menu, error) {
+func (db *Wrapper) GetGeneralInfoRestaurant(id int) (*Utils.RestaurantId, error) {
 	var restaurant Utils.RestaurantId
 	err := db.Conn.QueryRow(context.Background(),
-		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant WHERE id = $1", id).Scan(&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery,
-		&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating)
+		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant WHERE id = $1", id).Scan(
+			&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery, &restaurant.MinDelivery,
+			&restaurant.MaxDelivery, &restaurant.Rating)
 	if err != nil {
-		return nil, nil, nil, &errorsConst.Errors{
+		return nil, &errorsConst.Errors{
 			Text: errorsConst.ErrRestaurantNotFound,
 			Time: time.Now(),
 		}
+	}
+	return &restaurant, nil
+}
+
+func (db *Wrapper) GetRestaurant(id int) (*Utils.RestaurantId, []Utils.Tag, []Utils.Menu, error) {
+	restaurant, err := db.GetGeneralInfoRestaurant(id)
+	if err != nil {
+		return nil, nil, nil, err
 	}
 
 	rowCategory, err := db.Conn.Query(context.Background(),
@@ -65,7 +74,6 @@ func (db *Wrapper) GetRestaurant(id int) (*Utils.RestaurantId, []Utils.Tag, []Ut
 			Time: time.Now(),
 		}
 	}
-
 	var tags []Utils.Tag
 	tag := Utils.Tag{}
 	for rowCategory.Next() {
@@ -133,7 +141,7 @@ func (db *Wrapper) GetRestaurant(id int) (*Utils.RestaurantId, []Utils.Tag, []Ut
 		}
 	}
 
-	return &restaurant, tags, result, nil
+	return restaurant, tags, result, nil
 }
 
 func (db *Wrapper) RestaurantDishes(restId int, dishesId int) (*Utils.Dishes, []Utils.Radios, []Utils.Ingredients, error) {

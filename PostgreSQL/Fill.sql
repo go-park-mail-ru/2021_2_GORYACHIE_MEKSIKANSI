@@ -5,7 +5,7 @@ INSERT INTO client (client_id, date_birthday) VALUES (1, NOW());
 
 INSERT INTO restaurant (owner, name, description, price_delivery, min_delivery_time, max_delivery_time, city,
                         street, house, floor, rating, location) VALUES
-      (1, 'Cheesecake Factory', 'description', 100, 15, 90, 'city', 'street', 'house', 100, 5, 'location'),
+      (1, 'Cheesecake Factory', 'description', 250, 15, 90, 'city', 'street', 'house', 100, 5, 'location'),
       (1, 'Shokolaat', 'description', 10, 25, 65, 'city', 'street', 'house', 100, 3, 'location'),
       (1, 'Gordon Biersch', 'description', 15, 35, 40, 'city', 'street', 'house', 100, 4, 'location'),
       (1, 'Crepevine', 'description', 350, 22, 30, 'city', 'street', 'house', 100, 2, 'location'),
@@ -62,14 +62,91 @@ INSERT INTO restaurant (owner, name, description, price_delivery, min_delivery_t
 
 INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1', NOW(), '');
 
-INSERT INTO restaurant_category (restaurant, category) VALUES (1, 'category');
-INSERT INTO restaurant_category (restaurant, category) VALUES (1, 'text');
+INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant)
+SELECT 'name', random() * (500 - 10) + 10, 1, 'descr', 1, 1, 1, 1, 'cat_dis', 'cat_rest' FROM generate_series(1, 10);
+UPDATE dishes
+SET
+    name = (
+            array[
+                'Бургер',
+            'Двойной бургер',
+            'Тройной бургер',
+            'Четверной бургер',
+            'Пятерной бургер',
+            'Картофель',
+            'Сибас',
+            'Икра',
+            'Белый хлеб',
+            'Молоко',
+            'Кефир',
+            'Печенье',
+            'Арахис',
+            'Колбаса',
+            'Сыр',
+            'Пицца пеппрони',
+            'Пицца Ассорти',
+            'Пицца Четыре сыра',
+            'Кока-кола',
+            'Фанта',
+            'Спрайт',
+            'Чёрый чай',
+            'Кофе',
+            'Кофе (негорячий)'
+                ]
+        ) [floor(random() * 5 + 1)],
+    category_dishes = (
+            array[
+                'Суп',
+                'Вода',
+                'Почти кола',
+                'Арбузы',
+                'Что-то похожее на еду'
+                ]
+           ) [floor(random() * 5 + 1)],
+    category_restaurant = (
+            array[
+                'Вкусно',
+                'Напитки',
+                'Что-то похожее на еду',
+                'Пиццы',
+                'Суши',
+                'Десерт'
+                ]
+           ) [floor(random() * 5 + 1)],
+    description = (
+            array[
+                'Описание Бургера',
+                'Описание Вкусной еды',
+                'Описание Данного предмета',
+                'Описание Четверного бургера',
+                'Описание Пятерного бургера'
+                ]
+           ) [floor(random() * 5 + 1)]
+;
 
-INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, number_item) VALUES
-      ('name', 0, 1, 'descr', 1, 1, 1, 1, 'cat_dis', 'cat_rest', 1);
-
-INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, number_item) VALUES
-      ('name2', 0, 1, 'descr2', 2, 2, 2, 2, 'cat_dis2', 'cat_rest2', 1);
+INSERT INTO restaurant_category (restaurant, category)
+SELECT 1, 'name' FROM generate_series(1, 5);
+UPDATE restaurant_category
+SET
+    category = (
+            array[
+                'Хороший',
+                'Лучший',
+                'Единственный',
+                'Кака',
+                'Лучший, т.к. единственный',
+                'Хз',
+                'Призрак',
+                'Суши-бар',
+                'Кальянная',
+                'Пиццерия',
+                'Бар',
+                'Хенкальная',
+                'Общепит',
+                'Тестовый'
+                ]
+        ) [floor(random() * 5 + 1)]
+;
 
 INSERT INTO radios (name, food) VALUES ('name', 1);
 
@@ -82,3 +159,6 @@ INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kiloca
 INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element) VALUES ('name', 1, 1, 1, 1, 1, 1, 1);
 INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element) VALUES ('name2', 1, 2, 2, 2, 2, 2, 2);
 
+INSERT INTO cart (client_id, food, count_food, number_item, restaurant_id) VALUES (1, 1, 1, 1, 1);
+INSERT INTO cart_structure_food (client_id, checkbox) VALUES (1, 1);
+INSERT INTO cart_radios_food (client_id, radios_id, radios) VALUES (1, 1, 1);
