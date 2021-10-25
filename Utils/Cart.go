@@ -2,7 +2,7 @@ package Utils
 
 type CartResponse struct {
 	Restaurant RestaurantIdCastResponse `json:"restaurant"`
-	Dishes     []DishesCartResponse     `json:"dishes"`
+	Dishes     []DishesCartResponse     `json:"cart"`
 	Cost       CostCartResponse     `json:"cost"`
 }
 

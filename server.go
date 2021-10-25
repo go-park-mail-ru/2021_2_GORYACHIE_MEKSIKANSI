@@ -60,7 +60,7 @@ func runServer(port string) {
 		AllowedOrigins: []string{config.AllowedOriginsDomen + ":" + config.AllowedOriginsPort},
 		AllowedHeaders: []string{"access-control-allow-origin", "content-type",
 			"x-csrf-token", "access-control-expose-headers"},
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS", "PUT"},
 		ExposedHeaders:   []string{"X-Csrf-Token"},
 		AllowCredentials: true,
 		AllowMaxAge:      5600,

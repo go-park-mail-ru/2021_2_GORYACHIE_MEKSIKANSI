@@ -59,8 +59,8 @@ type Dishes struct {
 	Cost        int         `json:"cost"`
 	Ccal        int         `json:"ccal"`
 	Description string      `json:"desc"`
-	Radios      interface{} `json:"radios"`
-	Ingredient  interface{} `json:"ingredients"`
+	Radios      interface{} `json:"radios,omitempty"`
+	Ingredient  interface{} `json:"ingredients,omitempty"`
 }
 
 type Radios struct {
