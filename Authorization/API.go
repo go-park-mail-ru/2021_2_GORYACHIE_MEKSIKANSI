@@ -9,6 +9,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -181,4 +182,32 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
+}
+
+func (u *UserInfo) PayHandler(ctx *fasthttp.RequestCtx) {
+	TokenContext := ctx.UserValue("X-Csrf-Token")
+	var XCsrfToken string
+	switch TokenContext.(type) {
+	case string:
+		XCsrfToken = TokenContext.(string)
+	case int:
+		XCsrfToken = strconv.Itoa(TokenContext.(int))
+	default:
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
+		return
+	}
+
+	ctx.Response.Header.Set("X-CSRF-Token", XCsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
+	err := json.NewEncoder(ctx).Encode(&utils.Result{
+		Status: http.StatusOK,
+	})
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrEncode))
+		fmt.Printf("Console: %s\n", errors.ErrEncode)
+		return
+	}
 }
