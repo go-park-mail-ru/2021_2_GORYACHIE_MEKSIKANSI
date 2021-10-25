@@ -207,36 +207,36 @@ func (db *Wrapper) RestaurantDishes(restId int, dishesId int) (*Utils.Dishes, []
 				Time: time.Now(),
 			}
 		}
-		radios = append(radios, rad)
-	}
-	if radios != nil {
-		for i, rad := range radios {
-			rowDishes, err := db.Conn.Query(context.Background(),
-				"SELECT id, name FROM structure_radios WHERE radios = $1", rad.Id)
-			if err != nil {
-				return nil, nil, nil, &errorsConst.Errors{
-					Text: errorsConst.DishesStructRadiosNotSelect,
-					Time: time.Now(),
-				}
+		rowDishes, err := db.Conn.Query(context.Background(),
+			"SELECT id, name FROM structure_radios WHERE radios = $1", rad.Id)
+		if err != nil {
+			return nil, nil, nil, &errorsConst.Errors{
+				Text: errorsConst.DishesStructRadiosNotSelect,
+				Time: time.Now(),
 			}
+		}
 
-			var rows []Utils.CheckboxesRows
-			for rowDishes.Next() {
-				var row Utils.CheckboxesRows
-				err := rowDishes.Scan(&row.Id, &row.Name)
-				if err != nil {
+		var rows []Utils.CheckboxesRows
+		for rowDishes.Next() {
+			var row Utils.CheckboxesRows
+			err := rowDishes.Scan(&row.Id, &row.Name)
+			if err != nil {
+				if err.Error() == "no rows in result set" {
 					return nil, nil, nil, &errorsConst.Errors{
-						Text: errorsConst.DishesStructRadiosNotScan,
+						Text: errorsConst.DishesStructRadiosNotFound,
 						Time: time.Now(),
 					}
 				}
-				rows = append(rows, row)
+				return nil, nil, nil, &errorsConst.Errors{
+					Text: errorsConst.DishesStructRadiosNotScan,
+					Time: time.Now(),
+				}
 			}
-			if rows == nil {
-				continue
-			}
-
-			radios[i].Rows = rows
+			rows = append(rows, row)
+		}
+		if rows != nil {
+			rad.Rows = rows
+			radios = append(radios, rad)
 		}
 	}
 

@@ -59,6 +59,7 @@ INSERT INTO restaurant (owner, name, description, price_delivery, min_delivery_t
       (1, 'Cafe Epi', 'description', 0, 15, 30, 'city', 'street', 'house', 100, 2.1, 'location'),
       (1, 'Tai Pan', 'description', 0, 15, 30, 'city', 'street', 'house', 100, 4.2, 'location')
 ;
+
 UPDATE restaurant
 SET
     avatar = (
@@ -78,7 +79,7 @@ SET
 INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1', NOW(), '');
 
 INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant)
-SELECT 'name', random() * (500 - 10) + 10, random() * (53 - 1) + 1, 'descr', 1, 1, 1, 1, 'cat_dis', 'cat_rest' FROM generate_series(1, 1000);
+SELECT 'name', random() * (500 - 10) + 10, random() * (53 - 1) + 1, 'description', 1, 1, 1, 1, 'text', 'text' FROM generate_series(1, 1000);
 UPDATE dishes
 SET
     name = (
@@ -182,10 +183,10 @@ UPDATE radios
 SET
     name = (
             array[
-                'Комплимент от повора',
+                'Комплимент от повара',
                 'Бургер',
                 'Напиток',
-                'Секретный ингридиент',
+                'Секретный ингредиент',
                 'Что-то к чаю',
                 'Снеки',
                 'В одном из них яд. Угадай где)'
@@ -203,7 +204,7 @@ SET
                     'Картофель фри',
                     'Коктейль',
                     'Вкусный бургер',
-                    'Волос повора',
+                    'Волос повара',
                     'Яблоки',
                     'Кошка',
                     'Кака'

@@ -59,8 +59,8 @@ func UpdateCart(db Utils.WrapperCart, dishes Utils.CartRequest,  clientId int) (
 		return nil, nil, err
 	}
 	result, errCast, err := db.UpdateCart(dishes, clientId)
-	if err != nil {
-		return nil, nil, err
+	if err != nil || errCast != nil {
+		return nil, errCast, err
 	}
 	wrapper := Restaurant.Wrapper{Conn: db.GetConn()}
 	rest, err := wrapper.GetGeneralInfoRestaurant(dishes.Restaurant.Id)

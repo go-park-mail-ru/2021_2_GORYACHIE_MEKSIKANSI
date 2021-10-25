@@ -126,6 +126,7 @@ const (
 	StructureFoodNotDelete = "ERROR: food not delete"
 	CartRadiosFoodNotDelete = "ERROR: radios not delete"
 	UpdateCartCartNotInsert = "ERROR: cart not insert"
+	UpdateCartCartNotSelect = "ERROR: cart not select"
 	UpdateCartStructureFoodNotInsert = "ERROR: structure food not insert"
 	UpdateCartRadiosNotInsert = "ERROR: radios not insert"
 	GetPriceDeliveryNotFound = "ERROR: delivery not found"

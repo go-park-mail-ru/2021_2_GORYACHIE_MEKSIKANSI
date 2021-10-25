@@ -19,113 +19,93 @@ func (db *Wrapper) GetCart(id int) (*Utils.CartResponse, error) {
 	var ingredients []Utils.IngredientCartResponse
 
 	var restaurant Utils.RestaurantIdCastResponse
-	restaurant.Id = id
-	err := db.Conn.QueryRow(context.Background(),
-		"SELECT restaurant_id FROM cart WHERE client_id = $1", id).Scan(&restaurant.Id)
-	if err != nil {
-		if err.Error() == "no rows in result set" {
-			return nil, &errorsConst.Errors{
-				Text: errorsConst.GetCartRestaurantNotFound,
-				Time: time.Now(),
-			}
-		}
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.GetCartRestaurantNotScan,
-			Time: time.Now(),
-		}
-	}
-	cart.Restaurant = restaurant
-
 	rows, err := db.Conn.Query(context.Background(),
-		"SELECT food, count_food, number_item FROM cart WHERE client_id = $1", id)
-	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.GetCartCartNotSelect,
-			Time: time.Now(),
-		}
-	}
+		"SELECT food, count_food, number_item, name, cost, description, avatar, restaurant_id FROM cart" +
+			" JOIN dishes ON cart.food = dishes.id WHERE client_id = $1", id)
+
+	var dish *Utils.DishesCartResponse
+	dish = &Utils.DishesCartResponse{}
 
 	for rows.Next() {
-		var dish *Utils.DishesCartResponse
-		dish = &Utils.DishesCartResponse{}
-		err = rows.Scan(&dish.Id, &dish.Count, &dish.ItemNumber)
-		rows, err = db.Conn.Query(context.Background(),
-			"SELECT name, cost, description, avatar FROM dishes WHERE id = $1", dish.Id)
+		err = rows.Scan(&dish.Id, &dish.Count, &dish.ItemNumber, &dish.Name, &dish.Cost, &dish.Description, &dish.Img, &restaurant.Id)
 		if err != nil {
+			if err.Error() == "no rows in result set" {
+				return nil, &errorsConst.Errors{
+					Text: errorsConst.GetCartDishesNotFound,
+					Time: time.Now(),
+				}
+			}
 			return nil, &errorsConst.Errors{
 				Text: errorsConst.GetCartDishesNotScan,
 				Time: time.Now(),
 			}
 		}
-		for rows.Next() {
-			err = rows.Scan(&dish.Name, &dish.Cost, &dish.Description, &dish.Img)
 
-			rows, err := db.Conn.Query(context.Background(),
-				"SELECT checkbox FROM cart_structure_food WHERE client_id = $1", id)
-			if err != nil {
-				return nil, &errorsConst.Errors{
-					Text: errorsConst.GetCartRestaurantNotSelect,
-					Time: time.Now(),
-				}
+		rows, err := db.Conn.Query(context.Background(),
+			"SELECT checkbox FROM cart_structure_food WHERE client_id = $1", id)
+		if err != nil {
+			return nil, &errorsConst.Errors{
+				Text: errorsConst.GetCartRestaurantNotSelect,
+				Time: time.Now(),
 			}
-			for rows.Next() {
-				var ingredient Utils.IngredientCartResponse
-				err = rows.Scan(&ingredient.Id)
-				if err != nil {
-					return nil, &errorsConst.Errors{
-						Text: errorsConst.GetCartCheckboxNotScan,
-						Time: time.Now(),
-					}
-				}
-
-				err = db.Conn.QueryRow(context.Background(),
-					"SELECT name, cost FROM structure_dishes WHERE id = $1", ingredient.Id).Scan( // TODO(N): не запускать 2 раза
-						&ingredient.Name, &ingredient.Cost)
-				ingredients = append(ingredients, ingredient)
-			}
-			if ingredients != nil {
-				dish.IngredientCart = ingredients
-			}
-
-			rows, err = db.Conn.Query(context.Background(),
-				"SELECT radios_id, radios FROM cart_radios_food WHERE client_id = $1", id)
-			if err != nil {
-				return nil, &errorsConst.Errors{
-					Text: errorsConst.GetCartRadiosNotSelect,
-					Time: time.Now(),
-				}
-			}
-			for rows.Next() {
-				var radio Utils.RadiosCartResponse
-				err = rows.Scan(&radio.RadiosId, &radio.Id)
-				if err != nil {
-					return nil, &errorsConst.Errors{
-						Text: errorsConst.GetCartRadiosNotScan,
-						Time: time.Now(),
-					}
-				}
-
-				err = db.Conn.QueryRow(context.Background(),
-					"SELECT name FROM structure_radios WHERE id = $1", radio.Id).Scan(&radio.Name)
-				if err != nil {
-					if err.Error() == "no rows in result set" {
-						return nil, &errorsConst.Errors{
-							Text: errorsConst.GetCartStructRadiosNotFound,
-							Time: time.Now(),
-						}
-					}
-					return nil, &errorsConst.Errors{
-						Text: errorsConst.GetCartStructRadiosNowScan,
-						Time: time.Now(),
-					}
-				}
-				radios = append(radios, radio)
-			}
-			if radios != nil {
-				dish.RadiosCart = radios
-			}
-			dishes = append(dishes, *dish)
 		}
+		for rows.Next() {
+			var ingredient Utils.IngredientCartResponse
+			err = rows.Scan(&ingredient.Id)
+			if err != nil {
+				return nil, &errorsConst.Errors{
+					Text: errorsConst.GetCartCheckboxNotScan,
+					Time: time.Now(),
+				}
+			}
+
+			err = db.Conn.QueryRow(context.Background(),
+				"SELECT name, cost FROM structure_dishes WHERE id = $1", ingredient.Id).Scan( // TODO(N): не запускать 2 раза
+					&ingredient.Name, &ingredient.Cost)
+			ingredients = append(ingredients, ingredient)
+		}
+		if ingredients != nil {
+			dish.IngredientCart = ingredients
+		}
+
+		rows, err = db.Conn.Query(context.Background(),
+			"SELECT radios_id, radios FROM cart_radios_food WHERE client_id = $1", id)
+		if err != nil {
+			return nil, &errorsConst.Errors{
+				Text: errorsConst.GetCartRadiosNotSelect,
+				Time: time.Now(),
+			}
+		}
+		for rows.Next() {
+			var radio Utils.RadiosCartResponse
+			err = rows.Scan(&radio.RadiosId, &radio.Id)
+			if err != nil {
+				return nil, &errorsConst.Errors{
+					Text: errorsConst.GetCartRadiosNotScan,
+					Time: time.Now(),
+				}
+			}
+
+			err = db.Conn.QueryRow(context.Background(),
+				"SELECT name FROM structure_radios WHERE id = $1", radio.Id).Scan(&radio.Name)
+			if err != nil {
+				if err.Error() == "no rows in result set" {
+					return nil, &errorsConst.Errors{
+						Text: errorsConst.GetCartStructRadiosNotFound,
+						Time: time.Now(),
+					}
+				}
+				return nil, &errorsConst.Errors{
+					Text: errorsConst.GetCartStructRadiosNowScan,
+					Time: time.Now(),
+				}
+			}
+			radios = append(radios, radio)
+		}
+		if radios != nil {
+			dish.RadiosCart = radios
+		}
+		dishes = append(dishes, *dish)
 	}
 	if cart == nil {
 		if err.Error() == "no rows in result set" {
@@ -135,6 +115,7 @@ func (db *Wrapper) GetCart(id int) (*Utils.CartResponse, error) {
 			}
 		}
 	}
+	cart.Restaurant = restaurant
 	cart.Dishes = dishes
 	return cart, nil
 }
@@ -181,9 +162,16 @@ func (db *Wrapper) UpdateCart(newCart Utils.CartRequest, clientId int) (*Utils.C
 		var dishes Utils.DishesCartResponse
 		var dishesError Utils.CastDishesErrs
 		err := db.Conn.QueryRow(context.Background(),
-			"SELECT id, avatar, cost, name, description FROM dishes WHERE id = $1 ", dish.Id).Scan(
+			"SELECT id, avatar, cost, name, description FROM dishes WHERE id = $1 AND restaurant = $2",
+			dish.Id, newCart.Restaurant.Id).Scan(
 				&dishes.Id, &dishes.Img, &dishes.Cost, &dishes.Name, &dishes.Description)
 		if err != nil {
+			if err.Error() == "no rows in result set" {
+				return nil, nil, &errorsConst.Errors{
+					Text: errorsConst.UpdateCartCartNotSelect,
+					Time: time.Now(),
+				}
+			}
 			dishesError.ItemNumber = dish.ItemNumber
 			dishesError.Explain = dishes.Name
 			dishesErrors = append(dishesErrors, dishesError)
