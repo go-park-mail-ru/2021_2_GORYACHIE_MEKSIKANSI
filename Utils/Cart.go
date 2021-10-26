@@ -2,14 +2,16 @@ package Utils
 
 type CartResponse struct {
 	Restaurant RestaurantIdCastResponse `json:"restaurant"`
-	Dishes     []DishesCartResponse     `json:"cart"`
+	Dishes     []DishesCartResponse     `json:"dishes"`
 	Cost       CostCartResponse         `json:"cost"`
 }
 
-/*type RestaurantCartResponse struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
-}*/
+type CartGetErrorsResponse struct {
+	Restaurant RestaurantIdCastResponse `json:"restaurant"`
+	Dishes     []DishesCartResponse     `json:"dishes"`
+	Cost       CostCartResponse         `json:"cost"`
+	DishErr    CastErrs                 `json:"dishesErrs,omitempty"`
+}
 
 type CostCartResponse struct {
 	DCost   int `json:"dCost"`
@@ -57,6 +59,7 @@ type CastErrs struct {
 type CastDishesErrs struct {
 	ItemNumber int    `json:"itNum"`
 	Explain    string `json:"explain"`
+	CountAvail int    `json:"countAvail"`
 }
 
 type CartRequest struct {
