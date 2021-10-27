@@ -14,7 +14,7 @@ type ResponseCartErrors struct {
 	Restaurant RestaurantIdCastResponse `json:"restaurant"`
 	Dishes     []DishesCartResponse     `json:"dishes"`
 	Cost       CostCartResponse         `json:"cost"`
-	DishErr    []CastErrs               `json:"dishesErrs,omitempty"`
+	DishErr    []CastDishesErrs         `json:"dishesErrs,omitempty"`
 }
 
 type CostCartResponse struct {

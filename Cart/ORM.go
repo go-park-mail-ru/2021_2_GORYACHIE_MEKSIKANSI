@@ -49,7 +49,6 @@ func (db *Wrapper) GetCart(id int) (*Utils.ResponseCartErrors, []Utils.CastDishe
 			dishesError.NameDish = dish.Name
 			dishesError.CountAvail = count
 			dishesErrors = append(dishesErrors, dishesError)
-			continue
 		}
 
 		rows, err := db.Conn.Query(context.Background(),
