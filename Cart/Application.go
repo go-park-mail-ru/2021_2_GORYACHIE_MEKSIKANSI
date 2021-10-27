@@ -48,9 +48,11 @@ func GetCart(db Utils.WrapperCart, id int) (*Utils.ResponseCartErrors, error) {
 	cost.SumCost = cost.DCost + cost.SumCost
 	result.Cost = cost
 
-	var castErr []Utils.CastErrs
-	castErr[0].CastDishesErrs = errorDishes
-	result.DishErr = castErr
+	var castErrs []Utils.CastErrs
+	var castErr Utils.CastErrs
+	castErr.CastDishesErrs = errorDishes
+	castErrs = append(castErrs, castErr)
+	result.DishErr = castErrs
 
 	return result, nil
 }
