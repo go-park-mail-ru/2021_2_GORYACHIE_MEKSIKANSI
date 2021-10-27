@@ -11,9 +11,9 @@ type Wrapper struct {
 	Conn Utils.ConnectionInterface
 }
 
-func (db *Wrapper) GetCart(id int) (*Utils.CartResponse, error) {
-	var cart *Utils.CartResponse
-	cart = &Utils.CartResponse{}
+func (db *Wrapper) GetCart(id int) (*Utils.ResponseCart, error) {
+	var cart *Utils.ResponseCart
+	cart = &Utils.ResponseCart{}
 	var dishes []Utils.DishesCartResponse
 	var radios []Utils.RadiosCartResponse
 	var ingredients []Utils.IngredientCartResponse
@@ -152,9 +152,9 @@ func (db *Wrapper) GetConn() Utils.ConnectionInterface {
 	return db.Conn
 }
 
-func (db *Wrapper) UpdateCart(newCart Utils.CartRequest, clientId int) (*Utils.CartResponse, []Utils.CastDishesErrs, error) {
+func (db *Wrapper) UpdateCart(newCart Utils.CartRequest, clientId int) (*Utils.ResponseCart, []Utils.CastDishesErrs, error) {
 	var dishesErrors []Utils.CastDishesErrs
-	var cart Utils.CartResponse
+	var cart Utils.ResponseCart
 	for i, dish := range newCart.Dishes {
 		var dishes Utils.DishesCartResponse
 		var dishesError Utils.CastDishesErrs
@@ -171,13 +171,13 @@ func (db *Wrapper) UpdateCart(newCart Utils.CartRequest, clientId int) (*Utils.C
 				}
 			}
 			dishesError.ItemNumber = dish.ItemNumber
-			dishesError.Explain = dishes.Name
+			dishesError.NameDish = dishes.Name
 			dishesErrors = append(dishesErrors, dishesError)
 			continue
 		}
 		if dish.Count > count && count != -1 {
 			dishesError.ItemNumber = dish.ItemNumber
-			dishesError.Explain = dishes.Name
+			dishesError.NameDish = dishes.Name
 			dishesErrors = append(dishesErrors, dishesError)
 			continue
 		}
@@ -200,7 +200,7 @@ func (db *Wrapper) UpdateCart(newCart Utils.CartRequest, clientId int) (*Utils.C
 				&ingredients.Id, &ingredients.Name, &ingredients.Cost)
 			if err != nil {
 				dishesError.ItemNumber = dish.ItemNumber
-				dishesError.Explain = cart.Dishes[i].IngredientCart[j].Name
+				dishesError.NameDish = cart.Dishes[i].IngredientCart[j].Name
 				dishesErrors = append(dishesErrors, dishesError)
 				continue
 			}
@@ -224,7 +224,7 @@ func (db *Wrapper) UpdateCart(newCart Utils.CartRequest, clientId int) (*Utils.C
 				&radios.Id, &radios.Name)
 			if err != nil {
 				dishesError.ItemNumber = dish.ItemNumber
-				dishesError.Explain = cart.Dishes[i].RadiosCart[j].Name
+				dishesError.NameDish = cart.Dishes[i].RadiosCart[j].Name
 				dishesErrors = append(dishesErrors, dishesError)
 				continue
 			}

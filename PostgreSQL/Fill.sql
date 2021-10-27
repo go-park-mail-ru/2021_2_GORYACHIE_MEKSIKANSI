@@ -148,7 +148,7 @@ SET
             'https://moscow-restaurants.ru/netcat_files/38/26/1391/IMG_9985.jpeg_800.jpg',
             'https://www.iphones.ru/wp-content/plugins/wonderm00ns-simple-facebook-open-graph-tags/fbimg.php?img=https%3A%2F%2Fwww.iphones.ru%2Fwp-content%2Fuploads%2F2018%2F08%2FBurgerN.jpg',
             'https://imageproxy.ru/img/crop/1380x920/https/xn--h1ame.xn--80adxhks/storage/app/uploads/public/5e2/700/f07/5e2700f079c4c587329799.jpg',
-            'https://worldofmeat.ru/wp-content/uploads/2020/09/64777fa0b34f8985bdbfbaa242baccdd.jpg'
+            'https://islam.ru/sites/default/files/img/2017/news/90-main-image-w1480.jpg'
             ]
             ) [floor(random() * 8 + 1)]
 ;

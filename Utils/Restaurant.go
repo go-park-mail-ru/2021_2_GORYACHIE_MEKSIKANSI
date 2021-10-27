@@ -22,7 +22,7 @@ type RestaurantId struct {
 	Id                  int         `json:"id"`
 	Img                 string      `json:"img"`
 	Name                string      `json:"name"`
-	CostForFreeDelivery int         `json:"costFFD"` // TODO(N): надо бы rename json
+	CostForFreeDelivery int         `json:"costFFD"`
 	MinDelivery         int         `json:"minDTime"`
 	MaxDelivery         int         `json:"maxDTime"`
 	Rating              float32     `json:"rating"`

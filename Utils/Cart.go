@@ -1,12 +1,12 @@
 package Utils
 
-type CartResponse struct {
+type ResponseCart struct {
 	Restaurant RestaurantIdCastResponse `json:"restaurant"`
 	Dishes     []DishesCartResponse     `json:"dishes"`
 	Cost       CostCartResponse         `json:"cost"`
 }
 
-type CartGetErrorsResponse struct {
+type ResponseCartErrors struct {
 	Restaurant RestaurantIdCastResponse `json:"restaurant"`
 	Dishes     []DishesCartResponse     `json:"dishes"`
 	Cost       CostCartResponse         `json:"cost"`
@@ -58,7 +58,7 @@ type CastErrs struct {
 
 type CastDishesErrs struct {
 	ItemNumber int    `json:"itNum"`
-	Explain    string `json:"explain"`
+	NameDish   string `json:"nameDish"`
 	CountAvail int    `json:"countAvail"`
 }
 
@@ -88,7 +88,7 @@ type IngredientsCartRequest struct {
 	Id int `json:"id"`
 }
 
-func (c *CartResponse) Cast(a CartRequest) {
+func (c *ResponseCart) Cast(a CartRequest) {
 	for i, dish := range a.Dishes {
 		c.Dishes[i].Id = dish.Id
 		c.Dishes[i].ItemNumber = dish.ItemNumber
