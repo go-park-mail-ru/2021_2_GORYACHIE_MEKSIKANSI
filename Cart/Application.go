@@ -9,9 +9,9 @@ func calculatePriceDelivery(db Utils.WrapperCart, id int) (int, error) {
 	return db.GetPriceDelivery(id)
 }
 
-func GetCart(db Utils.WrapperCart, id int) (*Utils.ResponseCartDefault, error) {
+func GetCart(db Utils.WrapperCart, id int) (*Utils.ResponseCartErrors, error) {
 	var cost Utils.CostCartResponse
-	result, err := db.GetCart(id)
+	result, errorDishes, err := db.GetCart(id)
 	if err != nil {
 		return nil, err
 	}
@@ -47,6 +47,13 @@ func GetCart(db Utils.WrapperCart, id int) (*Utils.ResponseCartDefault, error) {
 	}
 	cost.SumCost = cost.DCost + cost.SumCost
 	result.Cost = cost
+
+	var castErrs []Utils.CastErrs
+	var castErr Utils.CastErrs
+	castErr.CastDishesErrs = errorDishes
+	castErrs = append(castErrs, castErr)
+	result.DishErr = castErrs
+
 	return result, nil
 }
 
