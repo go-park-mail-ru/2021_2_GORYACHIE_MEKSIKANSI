@@ -45,7 +45,7 @@ type WrapperAuthorization interface {
 }
 
 type WrapperCart interface {
-	GetCart(id int) (*ResponseCartDefault, error)
+	GetCart(id int) (*ResponseCartErrors, []CastDishesErrs, error)
 	UpdateCart(dishes RequestCartDefault, clientId int) (*ResponseCartDefault, []CastDishesErrs, error)
 	DeleteCart(id int) error
 	GetConn() ConnectionInterface
