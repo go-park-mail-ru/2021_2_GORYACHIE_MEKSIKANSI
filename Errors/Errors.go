@@ -127,8 +127,8 @@ const (
 	UpdateCartRadiosNotInsert        = "ERROR: radios not insert"
 	GetPriceDeliveryNotFound         = "ERROR: delivery not found"
 	GetPriceDeliveryNotScan          = "ERROR: delivery not scan"
-	UpdateCartCartNotScan            = "ERROR: cart not scan"               // TODO: add handler
-	UpdateCartStructureNotSelect     = "ERROR: structure dishes not select" // TODO: add handler
-	UpdateCartStructRadiosNotSelect  = "ERROR: structure radios not select" // TODO: add handler
+	UpdateCartCartNotScan            = "ERROR: cart not scan"
+	UpdateCartStructureNotSelect     = "ERROR: structure dishes not select"
+	UpdateCartStructRadiosNotSelect  = "ERROR: structure radios not select"
 )
 // TODO: make TODO
