@@ -11,9 +11,9 @@ type Wrapper struct {
 	Conn Utils.ConnectionInterface
 }
 
-func (db *Wrapper) GetCart(id int) (*Utils.ResponseCart, error) {
-	var cart *Utils.ResponseCart
-	cart = &Utils.ResponseCart{}
+func (db *Wrapper) GetCart(id int) (*Utils.ResponseCartDefault, error) {
+	var cart *Utils.ResponseCartDefault
+	cart = &Utils.ResponseCartDefault{}
 	var dishes []Utils.DishesCartResponse
 	var radios []Utils.RadiosCartResponse
 	var ingredients []Utils.IngredientCartResponse
@@ -152,9 +152,9 @@ func (db *Wrapper) GetConn() Utils.ConnectionInterface {
 	return db.Conn
 }
 
-func (db *Wrapper) UpdateCart(newCart Utils.CartRequest, clientId int) (*Utils.ResponseCart, []Utils.CastDishesErrs, error) {
+func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*Utils.ResponseCartDefault, []Utils.CastDishesErrs, error) {
 	var dishesErrors []Utils.CastDishesErrs
-	var cart Utils.ResponseCart
+	var cart Utils.ResponseCartDefault
 	for i, dish := range newCart.Dishes {
 		var dishes Utils.DishesCartResponse
 		var dishesError Utils.CastDishesErrs

@@ -1,6 +1,10 @@
 package Utils
 
 type ResponseCart struct {
+	Cart interface{} `json:"cart"`
+}
+
+type ResponseCartDefault struct {
 	Restaurant RestaurantIdCastResponse `json:"restaurant"`
 	Dishes     []DishesCartResponse     `json:"dishes"`
 	Cost       CostCartResponse         `json:"cost"`
@@ -63,6 +67,10 @@ type CastDishesErrs struct {
 }
 
 type CartRequest struct {
+	Cart RequestCartDefault `json:"cart"`
+}
+
+type RequestCartDefault struct {
 	Restaurant RestaurantRequest `json:"restaurant"`
 	Dishes     []DishesRequest   `json:"dishes"`
 }
@@ -88,7 +96,7 @@ type IngredientsCartRequest struct {
 	Id int `json:"id"`
 }
 
-func (c *ResponseCart) Cast(a CartRequest) {
+func (c *ResponseCartDefault) Cast(a RequestCartDefault) {
 	for i, dish := range a.Dishes {
 		c.Dishes[i].Id = dish.Id
 		c.Dishes[i].ItemNumber = dish.ItemNumber

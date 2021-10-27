@@ -39,7 +39,7 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	cart, err := GetCart(&wrapper, id)
+	result, err := GetCart(&wrapper, id)
 	errOut, resultOutAccess, codeHTTP := errors.CheckErrorGetCart(err)
 	if errOut != nil {
 		switch errOut.Error() {
@@ -56,7 +56,9 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
-		Body:   cart,
+		Body: &utils.ResponseCart{
+			Cart: result,
+		},
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
@@ -70,8 +72,8 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	wrapper := Wrapper{Conn: c.ConnectionDB}
 
-	var cart utils.CartRequest
-	err := json.Unmarshal(ctx.Request.Body(), &cart)
+	var cartRequest utils.CartRequest
+	err := json.Unmarshal(ctx.Request.Body(), &cartRequest)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
@@ -114,7 +116,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	result, resultUpdateErrors, err := UpdateCart(&wrapper, cart, id)
+	result, resultUpdateErrors, err := UpdateCart(&wrapper, cartRequest.Cart, id)
 	errOut, resultOutAccess, codeHTTP := errors.CheckErrorUpdateCart(err)
 	if errOut != nil {
 		switch errOut.Error() {
@@ -133,7 +135,9 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	if resultUpdateErrors != nil {
 		err = json.NewEncoder(ctx).Encode(&utils.Result{
 			Status: http.StatusNotFound,
-			Body:   resultUpdateErrors,
+			Body: &utils.ResponseCart{
+				Cart: resultUpdateErrors,
+			},
 		})
 		if err != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
@@ -147,7 +151,9 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	if result != nil {
 		err = json.NewEncoder(ctx).Encode(&utils.Result{
 			Status: http.StatusOK,
-			Body:   result,
+			Body: &utils.ResponseCart{
+				Cart: result,
+			},
 		})
 		if err != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)

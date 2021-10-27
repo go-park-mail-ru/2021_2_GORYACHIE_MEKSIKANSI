@@ -9,7 +9,7 @@ func calculatePriceDelivery(db Utils.WrapperCart, id int) (int, error) {
 	return db.GetPriceDelivery(id)
 }
 
-func GetCart(db Utils.WrapperCart, id int) (*Utils.ResponseCart, error) {
+func GetCart(db Utils.WrapperCart, id int) (*Utils.ResponseCartDefault, error) {
 	var cost Utils.CostCartResponse
 	result, err := db.GetCart(id)
 	if err != nil {
@@ -50,7 +50,7 @@ func GetCart(db Utils.WrapperCart, id int) (*Utils.ResponseCart, error) {
 	return result, nil
 }
 
-func UpdateCart(db Utils.WrapperCart, dishes Utils.CartRequest, clientId int) (*Utils.ResponseCart, []Utils.CastDishesErrs, error) {
+func UpdateCart(db Utils.WrapperCart, dishes Utils.RequestCartDefault, clientId int) (*Utils.ResponseCartDefault, []Utils.CastDishesErrs, error) {
 	if dishes.Restaurant.Id == -1 {
 		return nil, nil, DeleteCart(db, clientId)
 	}
