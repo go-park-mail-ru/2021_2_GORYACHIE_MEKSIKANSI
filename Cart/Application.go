@@ -35,7 +35,7 @@ func GetCart(db Utils.WrapperCart, id int) (*Utils.ResponseCartErrors, error) {
 		for _, ingredient := range dish.IngredientCart {
 			ingredientCost = ingredientCost + ingredient.Cost
 		}
-		dishCost := dish.Cost * dish.Count + ingredientCost
+		dishCost := (dish.Cost + ingredientCost) * dish.Count
 		sumCost = sumCost + dishCost
 		result.Dishes[i].Cost = dishCost
 	}
@@ -81,7 +81,7 @@ func UpdateCart(db Utils.WrapperCart, dishes Utils.RequestCartDefault, clientId 
 	result.Restaurant.MaxDelivery = rest.MaxDelivery
 	result.Restaurant.MinDelivery = rest.MinDelivery
 
-	//result.Cast(dishes)
+	result.Cast(dishes)
 
 	sumCost := 0
 	for i, dish := range result.Dishes {
@@ -89,7 +89,7 @@ func UpdateCart(db Utils.WrapperCart, dishes Utils.RequestCartDefault, clientId 
 		for _, ingredient := range dish.IngredientCart {
 			ingredientCost = ingredientCost + ingredient.Cost
 		}
-		dishCost := dish.Cost * dish.Count + ingredientCost
+		dishCost := (dish.Cost + ingredientCost) * dish.Count
 		sumCost = sumCost + dishCost
 		result.Dishes[i].Cost = dishCost
 	}

@@ -185,6 +185,9 @@ func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*
 				Time: time.Now(),
 			}
 		}
+
+		dishes.Count = dish.Count
+
 		if dish.Count > count && count != -1 {
 			dishesError.ItemNumber = dish.ItemNumber
 			dishesError.NameDish = dishes.Name

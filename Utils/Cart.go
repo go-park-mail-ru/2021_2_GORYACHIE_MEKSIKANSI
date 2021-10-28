@@ -100,7 +100,6 @@ func (c *ResponseCartErrors) Cast(a RequestCartDefault) {
 	for i, dish := range a.Dishes {
 		c.Dishes[i].Id = dish.Id
 		c.Dishes[i].ItemNumber = dish.ItemNumber
-		c.Dishes[i].Count = dish.Count
 
 		for j, ingredient := range dish.Ingredients {
 			c.Dishes[i].IngredientCart[j].Id = ingredient.Id
