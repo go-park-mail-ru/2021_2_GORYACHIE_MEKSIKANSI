@@ -589,7 +589,7 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 	}
 
 	err = UpdateAddress(&wrapper, id, userAddress.Address)
-	errOut, resultOutAccess, codeHTTP := errors.CheckErrorProfileUpdateBirthday(err)
+	errOut, resultOutAccess, codeHTTP := errors.CheckErrorProfileUpdateAddress(err)
 	if errOut != nil {
 		switch errOut.Error() {
 		case errors.ErrMarshal:
