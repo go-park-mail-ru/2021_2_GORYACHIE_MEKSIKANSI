@@ -234,3 +234,30 @@ func CheckErrorProfileUpdateBirthday(err error) (error, []byte, int) {
 	}
 	return nil, nil, HttpNil
 }
+
+func CheckErrorProfileUpdateAddress(err error) (error, []byte, int) {
+	if err != nil {
+		switch err.Error() {
+		case ErrUpdateAddress:
+			result, errMarshal := json.Marshal(ResultError{
+				Status:  http.StatusInternalServerError,
+				Explain: ErrDB,
+			})
+			if errMarshal != nil {
+				fmt.Printf("Console: %s\n", ErrMarshal)
+				return &Errors{
+						Text: ErrMarshal,
+						Time: time.Now(),
+					},
+					nil, http.StatusInternalServerError
+			}
+			fmt.Printf("Console: %s\n", ErrUpdateAddress)
+			return &Errors{
+					Text: ErrCheck,
+					Time: time.Now(),
+				},
+				result, http.StatusInternalServerError
+		}
+	}
+	return nil, nil, HttpNil
+}
