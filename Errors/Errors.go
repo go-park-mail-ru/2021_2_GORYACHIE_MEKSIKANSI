@@ -44,6 +44,7 @@ const (
 	ErrGeneralInfoUnique        = "Телефон или Email уже зарегистрирован"
 	ErrPhoneFormat              = "Неверный формат телефона"
 	ErrUserNotFoundLogin        = "ERROR: user not found"
+	ErrDeleteCookieById         = "ERROR: delete cookie by id"
 )
 
 // Error of Middleware
@@ -122,7 +123,7 @@ const (
 	StructureFoodNotDelete           = "ERROR: food not delete"
 	CartRadiosFoodNotDelete          = "ERROR: radios not delete"
 	UpdateCartCartNotInsert          = "ERROR: cart not insert"
-	UpdateCartCartNotSelect          = "ERROR: cart not select"
+	UpdateCartCartNotFound           = "ERROR: dish not found"
 	UpdateCartStructureFoodNotInsert = "ERROR: structure food not insert"
 	UpdateCartRadiosNotInsert        = "ERROR: radios not insert"
 	GetPriceDeliveryNotFound         = "ERROR: delivery not found"

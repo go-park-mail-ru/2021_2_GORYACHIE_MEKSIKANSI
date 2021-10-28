@@ -116,7 +116,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	result, resultUpdateErrors, err := UpdateCart(&wrapper, cartRequest.Cart, id)
+	result, err := UpdateCart(&wrapper, cartRequest.Cart, id)
 	errOut, resultOutAccess, codeHTTP := errors.CheckErrorUpdateCart(err)
 	if errOut != nil {
 		switch errOut.Error() {
@@ -132,21 +132,6 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	}
 	ctx.Response.Header.Set("X-CSRF-Token", XCsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
-	if resultUpdateErrors != nil {
-		err = json.NewEncoder(ctx).Encode(&utils.Result{
-			Status: http.StatusNotFound,
-			Body: &utils.ResponseCart{
-				Cart: resultUpdateErrors,
-			},
-		})
-		if err != nil {
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrEncode))
-			fmt.Printf("Console: %s\n", errors.ErrEncode)
-			return
-		}
-		return
-	}
 
 	if result != nil {
 		err = json.NewEncoder(ctx).Encode(&utils.Result{
@@ -160,14 +145,16 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 			ctx.Response.SetBody([]byte(errors.ErrEncode))
 			fmt.Printf("Console: %s\n", errors.ErrEncode)
 			return
-
 		}
 
 		return
 	}
 
-	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
-		StatusHTTP: http.StatusOK,
+	err = json.NewEncoder(ctx).Encode(&utils.Result{
+		Status: http.StatusOK,
+		Body: &utils.ResponseCart{
+			Cart: cartRequest,
+		},
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)

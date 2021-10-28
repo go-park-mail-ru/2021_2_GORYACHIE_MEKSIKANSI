@@ -162,9 +162,9 @@ func (db *Wrapper) GetConn() Utils.ConnectionInterface {
 	return db.Conn
 }
 
-func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*Utils.ResponseCartDefault, []Utils.CastDishesErrs, error) {
+func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*Utils.ResponseCartErrors, []Utils.CastDishesErrs, error) {
 	var dishesErrors []Utils.CastDishesErrs
-	var cart Utils.ResponseCartDefault
+	var cart Utils.ResponseCartErrors
 	for i, dish := range newCart.Dishes {
 		var dishes Utils.DishesCartResponse
 		var dishesError Utils.CastDishesErrs
@@ -176,7 +176,7 @@ func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*
 		if err != nil {
 			if err.Error() == "no rows in result set" {
 				return nil, nil, &errorsConst.Errors{
-					Text: errorsConst.UpdateCartCartNotSelect,
+					Text: errorsConst.UpdateCartCartNotFound,
 					Time: time.Now(),
 				}
 			}
@@ -190,7 +190,9 @@ func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*
 			dishesError.NameDish = dishes.Name
 			dishesError.CountAvail = count
 			dishesErrors = append(dishesErrors, dishesError)
-			continue
+
+			dishes.Count = count
+			dish.Count = count
 		}
 		cart.Dishes = append(cart.Dishes, dishes)
 

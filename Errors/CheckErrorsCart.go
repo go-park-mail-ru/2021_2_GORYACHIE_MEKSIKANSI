@@ -60,7 +60,7 @@ func CheckErrorUpdateCart(err error) (error, []byte, int) {
 		switch err.Error() {
 		case CartNotDelete, StructureFoodNotDelete, CartRadiosFoodNotDelete, UpdateCartCartNotInsert,
 			UpdateCartStructureFoodNotInsert, UpdateCartRadiosNotInsert, GetPriceDeliveryNotFound, GetPriceDeliveryNotScan,
-			UpdateCartCartNotSelect, UpdateCartCartNotScan, UpdateCartStructureNotSelect, UpdateCartStructRadiosNotSelect:
+			UpdateCartCartNotFound, UpdateCartCartNotScan, UpdateCartStructureNotSelect, UpdateCartStructRadiosNotSelect:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,

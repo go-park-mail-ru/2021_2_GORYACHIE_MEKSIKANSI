@@ -53,9 +53,11 @@ func runServer(port string) {
 	restaurantGroup.GET("/{idRes}", restaurantInfo.RestaurantIdHandler)
 
 	cartGroup.GET("/", infoMiddleware.GetIdByCookieMiddl(cartInfo.GetCartHandler))
-	cartGroup.PUT("/", infoMiddleware.CheckAccessMiddl(cartInfo.UpdateCartHandler))
+	cartGroup.PUT("/", infoMiddleware.CheckAccessMiddl(infoMiddleware.GetIdByCookieMiddl(cartInfo.UpdateCartHandler)))
 
 	printURL := infoMiddleware.PrintURLMiddl(myRouter.Handler)
+
+	//logger := logur.NewNoopLogger()
 
 	withCors := cors.NewCorsHandler(cors.Options{
 		AllowedOrigins: []string{config.AllowedOriginsDomen + ":" + config.AllowedOriginsPort},
