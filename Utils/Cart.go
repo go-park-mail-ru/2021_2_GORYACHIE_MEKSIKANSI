@@ -4,12 +4,6 @@ type ResponseCart struct {
 	Cart interface{} `json:"cart"`
 }
 
-/*type ResponseCartDefault struct {
-	Restaurant RestaurantIdCastResponse `json:"restaurant"`
-	Dishes     []DishesCartResponse     `json:"dishes"`
-	Cost       CostCartResponse         `json:"cost"`
-}*/
-
 type ResponseCartErrors struct {
 	Restaurant RestaurantIdCastResponse `json:"restaurant"`
 	Dishes     []DishesCartResponse     `json:"dishes"`

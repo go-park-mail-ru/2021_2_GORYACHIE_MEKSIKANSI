@@ -37,3 +37,25 @@ type UpdateAvatar struct {
 type UpdateBirthday struct {
 	Birthday time.Time `json:"birthday"`
 }
+
+type UpdateAddress struct {
+	Address AddressCoordinates `json:"address"`
+}
+
+type AddressCoordinates struct {
+	Coordinates Coordinates `json:"coordinates"`
+	Alias       string      `json:"alias"`
+	City        string      `json:"city"`
+	Street      string      `json:"street,omitempty"`
+	House       string      `json:"house,omitempty"`
+	Flat        int         `json:"flat,omitempty"`
+	Porch       int         `json:"porch,omitempty"`
+	Floor       int         `json:"floor,omitempty"`
+	Intercom    string      `json:"intercom,omitempty"`
+	Comment     string      `json:"comment,omitempty"`
+}
+
+type Coordinates struct {
+	Latitude  float32 `json:"latitude"`
+	Longitude float32 `json:"longitude"`
+}
