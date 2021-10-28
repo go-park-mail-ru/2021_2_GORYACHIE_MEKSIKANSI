@@ -77,7 +77,7 @@ func UpdateBirthday(db profile.WrapperProfile, id int, newBirthday time.Time) er
 	return nil
 }
 
-func UpdateAddress(db profile.WrapperProfile, id int, newAddress profile.UpdateAddress) error {
+func UpdateAddress(db profile.WrapperProfile, id int, newAddress profile.AddressCoordinates) error {
 	err := db.UpdateAddress(id, newAddress)
 	if err != nil {
 		return err
