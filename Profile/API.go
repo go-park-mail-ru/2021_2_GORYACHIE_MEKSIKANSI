@@ -538,3 +538,79 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 		return
 	}
 }
+func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
+	wrapper := Wrapper{Conn: u.ConnectionDB}
+	userAddress := utils.UpdateAddress{}
+	err := json.Unmarshal(ctx.Request.Body(), &userAddress)
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
+		fmt.Printf("Console: %s\n", errors.ErrUnmarshal)
+		return
+	}
+
+	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
+	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
+
+	_, err = mid.CheckAccess(u.ConnectionDB, &cookieDB)
+	errAccess, resultOutAccess, codeHTTP := errors.CheckErrorAccess(err)
+	if errAccess != nil {
+		switch errAccess.Error() {
+		case errors.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			return
+		case errors.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOutAccess)
+			return
+		}
+	}
+
+	idUrl := ctx.UserValue("id")
+	var id int
+	var errorConvert error
+	switch idUrl.(type) {
+	case string:
+		id, errorConvert = strconv.Atoi(idUrl.(string))
+		if errorConvert != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrAtoi))
+			fmt.Printf("Console: %s\n", errors.ErrAtoi)
+			return
+		}
+	case int:
+		id = idUrl.(int)
+	default:
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
+		return
+	}
+
+	err = UpdateAddress(&wrapper, id, userAddress.Address)
+	errOut, resultOutAccess, codeHTTP := errors.CheckErrorProfileUpdateBirthday(err)
+	if errOut != nil {
+		switch errOut.Error() {
+		case errors.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			return
+		case errors.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOutAccess)
+			return
+		}
+	}
+
+	ctx.Response.SetStatusCode(http.StatusOK)
+	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
+		StatusHTTP: http.StatusOK,
+	})
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrEncode))
+		fmt.Printf("Console: %s\n", errors.ErrEncode)
+		return
+	}
+}
