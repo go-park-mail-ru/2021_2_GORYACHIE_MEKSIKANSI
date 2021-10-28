@@ -78,8 +78,8 @@ SET
 
 INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1', NOW(), '');
 
-INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, count)
-SELECT 'name', random() * (500 - 10) + 10, random() * (53 - 1) + 1, 'description', 1, 1, 1, 1, 'text', 'text', random() * (51 - 1) - 1 FROM generate_series(1, 1000);
+INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, count, weight)
+SELECT 'name', random() * (500 - 10) + 10, random() * (53 - 1) + 1, 'description', 1, 1, 1, 1, 'text', 'text', random() * (51 - 1) - 1, random() * (51 - 1) - 1 FROM generate_series(1, 1000);
 UPDATE dishes
 SET
     name = (
@@ -236,3 +236,6 @@ SET
 INSERT INTO cart (client_id, food, count_food, number_item, restaurant_id) VALUES (1, 1, 1, 1, 1);
 INSERT INTO cart_structure_food (client_id, checkbox) VALUES (1, 1);
 INSERT INTO cart_radios_food (client_id, radios_id, radios) VALUES (1, 1, 1);
+
+INSERT INTO address_user (client_id, alias, comment, city, street, house, floor, flat, porch, intercom, latitude, longitude)
+VALUES (1, 'alias', 'comment', 'city', 'street', 1, 1, 1, 1, 'intercom', 1, 1);

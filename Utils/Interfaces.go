@@ -31,6 +31,7 @@ type WrapperProfile interface {
 	UpdatePhone(id int, newPhone string) error
 	UpdateAvatar(id int, newAvatar string) error
 	UpdateBirthday(id int, newBirthday time.Time) error
+	UpdateAddress(id int, newAddress UpdateAddress) error
 }
 
 type WrapperAuthorization interface {

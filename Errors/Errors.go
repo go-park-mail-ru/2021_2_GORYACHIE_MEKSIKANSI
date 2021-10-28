@@ -82,6 +82,7 @@ const (
 	ErrUpdatePassword        = "ERROR: password not update"
 	ErrUpdateAvatar          = "ERROR: avatar not update"
 	ErrUpdateBirthday        = "ERROR: birthday not update"
+	ErrUpdateAddress         = "ERROR: address not update" // TODO: catch err else it will run away
 )
 
 // Error of restaurant
@@ -132,4 +133,4 @@ const (
 	UpdateCartStructureNotSelect     = "ERROR: structure dishes not select"
 	UpdateCartStructRadiosNotSelect  = "ERROR: structure radios not select"
 )
-// TODO: make TODO
+// TODO: make ALL TODO

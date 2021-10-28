@@ -217,3 +217,21 @@ func (db *Wrapper) UpdateBirthday(id int, newBirthday time.Time) error {
 
 	return nil
 }
+
+func (db *Wrapper) UpdateAddress(id int, newAddress Utils.UpdateAddress) error {
+	_, err := db.Conn.Exec(context.Background(),
+		"UPDATE address_user SET alias = $1, comment = $2, city = $3, street = $4, house = $5, floor = $6," +
+		" flat = $7, porch = $8, intercom = $9, latitude = $10, longitude = $11 WHERE client_id = $12",
+		newAddress.Address.Alias, newAddress.Address.Comment, newAddress.Address.City, newAddress.Address.Street,
+		newAddress.Address.House, newAddress.Address.Floor, newAddress.Address.Flat, newAddress.Address.Porch,
+		newAddress.Address.Intercom, newAddress.Address.Coordinates.Latitude, newAddress.Address.Coordinates.Longitude,
+		id)
+	if err != nil {
+		return &errorsConst.Errors{
+			Text: errorsConst.ErrUpdateAddress,
+			Time: time.Now(),
+		}
+	}
+
+	return nil
+}
