@@ -152,9 +152,8 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
-		Body: &utils.ResponseCart{
-			Cart: cartRequest,
-		},
+		Body: cartRequest,
+
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
