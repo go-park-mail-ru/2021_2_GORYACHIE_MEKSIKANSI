@@ -3,6 +3,7 @@ package Utils
 import (
 	"time"
 )
+
 type Defense struct {
 	DateLife  time.Time
 	SessionId string

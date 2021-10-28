@@ -7,29 +7,10 @@ import (
 	"time"
 )
 
-func CheckErrorRestaurant(err error) (error, []byte, int) {
+func CheckErrorCookie(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case ErrRestaurantsNotFound:
-			result, errMarshal := json.Marshal(ResultError{
-				Status:  http.StatusNotFound,
-				Explain: ErrRestaurantsNotFound,
-			})
-			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
-				return &Errors{
-						Text: ErrMarshal,
-						Time: time.Now(),
-					},
-					nil, http.StatusInternalServerError
-			}
-			fmt.Printf("Console: %s\n", ErrRestaurantsNotFound)
-			return &Errors{
-					Text: ErrCheck,
-					Time: time.Now(),
-				},
-				result, http.StatusOK
-		case ErrRestaurantsScan:
+		case ErrCookieScan:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -42,25 +23,16 @@ func CheckErrorRestaurant(err error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrRestaurantsScan)
+			fmt.Printf("Console: %s\n", ErrCookieScan)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
 				},
 				result, http.StatusInternalServerError
-		}
-	}
-	return nil, nil, HttpNil
-}
-
-func CheckErrorRestaurantId(err error) (error, []byte, int) {
-	if err != nil {
-		switch err.Error() {
-		case ErrRestaurantNotFound, ErrCategoryRestaurantScan, ErrRestaurantsDishesNotSelect,
-			ErrRestaurantDishesScan, ErrRestaurantDishesNotFound, ErrTagNotFound:
+		case ErrCookieExpired, ErrCookieNotFound:
 			result, errMarshal := json.Marshal(ResultError{
-				Status:  http.StatusInternalServerError,
-				Explain: ErrDB,
+				Status:  http.StatusUnauthorized,
+				Explain: err.Error(),
 			})
 			if errMarshal != nil {
 				fmt.Printf("Console: %s\n", ErrMarshal)
@@ -75,15 +47,54 @@ func CheckErrorRestaurantId(err error) (error, []byte, int) {
 					Text: ErrCheck,
 					Time: time.Now(),
 				},
-				result, http.StatusInternalServerError
+				result, http.StatusOK
 		}
 	}
 	return nil, nil, HttpNil
 }
 
-func CheckErrorRestaurantDishes(err error) (error, []byte, int) {
+func CheckErrorAccess(err error) (error, []byte, int) {
 	if err != nil {
-
+		switch err.Error() {
+		case ErrCookieNotScan:
+			result, errMarshal := json.Marshal(ResultError{
+				Status:  http.StatusInternalServerError,
+				Explain: ErrDB,
+			})
+			if errMarshal != nil {
+				fmt.Printf("Console: %s\n", ErrMarshal)
+				return &Errors{
+						Text: ErrMarshal,
+						Time: time.Now(),
+					},
+					nil, http.StatusInternalServerError
+			}
+			fmt.Printf("Console: %s\n", ErrCookieNotScan)
+			return &Errors{
+					Text: ErrCheck,
+					Time: time.Now(),
+				},
+				result, http.StatusInternalServerError
+		case ErrCheckAccessCookieNotFound:
+			result, errMarshal := json.Marshal(ResultError{
+				Status:  http.StatusUnauthorized,
+				Explain: ErrCheckAccessCookieNotFound,
+			})
+			if errMarshal != nil {
+				fmt.Printf("Console: %s\n", ErrMarshal)
+				return &Errors{
+						Text: ErrMarshal,
+						Time: time.Now(),
+					},
+					nil, http.StatusInternalServerError
+			}
+			fmt.Printf("Console: %s\n", ErrCheckAccessCookieNotFound)
+			return &Errors{
+					Text: ErrCheck,
+					Time: time.Now(),
+				},
+				result, http.StatusOK
+		}
 	}
 	return nil, nil, HttpNil
 }

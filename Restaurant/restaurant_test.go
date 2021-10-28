@@ -1,8 +1,7 @@
-package Test
+package Restaurant
 
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
-	res "2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
 	mocks "2021_2_GORYACHIE_MEKSIKANSI/Test/Mocks"
 	rest "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
@@ -17,7 +16,7 @@ import (
 
 type Rows struct {
 	testName string
-	count int
+	count    int
 }
 
 func (r *Rows) Close() {
@@ -67,38 +66,38 @@ func (r *Rows) Next() bool {
 
 var restaurantTests = []struct {
 	testName string
-	out []rest.Restaurant
-	err error
-	row Rows
-	outErr string
+	out      []rest.Restaurants
+	err      error
+	row      Rows
+	outErr   string
 }{
 	{
 		testName: "One",
-		out: nil,
-		err: errors.New("text"),
-		row: Rows{},
-		outErr: errorsConst.ErrRestaurantsNotSelect,
+		out:      nil,
+		err:      errors.New("text"),
+		row:      Rows{},
+		outErr:   errorsConst.ErrRestaurantsNotSelect,
 	},
 	{
 		testName: "Two",
-		out: nil,
-		err: nil,
-		row: Rows{testName: "Two"},
-		outErr: errorsConst.ErrRestaurantScan,
+		out:      nil,
+		err:      nil,
+		row:      Rows{testName: "Two"},
+		outErr:   errorsConst.ErrRestaurantsScan,
 	},
 	{
 		testName: "Three",
-		out: nil,
-		err: nil,
-		row: Rows{testName: "Three"},
-		outErr: errorsConst.ErrRestaurantsNotFound,
+		out:      nil,
+		err:      nil,
+		row:      Rows{testName: "Three"},
+		outErr:   errorsConst.ErrRestaurantsNotFound,
 	},
 	{
 		testName: "Four",
-		out: []rest.Restaurant{rest.Restaurant{}},
-		err: nil,
-		row: Rows{"Four", 0},
-		outErr: "",
+		out:      []rest.Restaurants{rest.Restaurants{}},
+		err:      nil,
+		row:      Rows{"Four", 0},
+		outErr:   "",
 	},
 }
 
@@ -114,38 +113,37 @@ func TestRestaurants(t *testing.T) {
 				"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant ORDER BY random() LIMIT 50",
 			).
 			Return(&tt.row, tt.err)
-		testUser := &res.Wrapper{Conn: m}
+		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetRestaurants()
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if err != nil {
+			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
-				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err.Error()))
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
 			}
 		})
 	}
 
 }
 
-
 var restaurantApplicationTests = []struct {
 	testName string
-	out []rest.Restaurant
-	outErr string
-	err error
+	out      []rest.Restaurants
+	outErr   string
+	err      error
 }{
 	{
 		testName: "One",
-		out: []rest.Restaurant{},
-		err: nil,
-		outErr: "",
+		out:      []rest.Restaurants{},
+		err:      nil,
+		outErr:   "",
 	},
 	{
 		testName: "Two",
-		out: nil,
-		err: errors.New("text"),
-		outErr: "text",
+		out:      nil,
+		err:      errors.New("text"),
+		outErr:   "text",
 	},
 }
 
@@ -158,14 +156,14 @@ func TestRestaurantApplication(t *testing.T) {
 		m.
 			EXPECT().
 			GetRestaurants().
-			Return([]rest.Restaurant{}, tt.err)
+			Return([]rest.Restaurants{}, tt.err)
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := res.AllRestaurants(m)
+			result, err := AllRestaurants(m)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
 			} else {
-				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err.Error()))
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
 			}
 		})
 	}

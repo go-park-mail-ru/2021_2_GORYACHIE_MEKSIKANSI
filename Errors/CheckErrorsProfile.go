@@ -11,8 +11,8 @@ func CheckErrorProfile(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrGetProfileClientScan, ErrGetBirthdayScan, ErrGetProfileCourierScan, ErrGetProfileHostScan,
-		ErrClientScan, ErrHostScan, ErrCourierScan:
-			result, errMarshal:= json.Marshal(ResultError{
+			ErrClientScan, ErrHostScan, ErrCourierScan:
+			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -35,12 +35,11 @@ func CheckErrorProfile(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-
-func CheckErrorProfileCookie(err error) (error, []byte, int) {
+func CheckErrorProfileUpdateName(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case ErrCookieScan:
-			result, errMarshal:= json.Marshal(ResultError{
+		case ErrUpdateName:
+			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -52,16 +51,43 @@ func CheckErrorProfileCookie(err error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrCookieScan)
+			fmt.Printf("Console: %s\n", ErrUpdateName)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
 				},
 				result, http.StatusInternalServerError
-		case ErrCookieExpired:
-			result, errMarshal:= json.Marshal(ResultError{
+		}
+	}
+	return nil, nil, HttpNil
+}
+
+func CheckErrorProfileUpdateEmail(err error) (error, []byte, int) {
+	if err != nil {
+		switch err.Error() {
+		case ErrUpdateEmail:
+			result, errMarshal := json.Marshal(ResultError{
+				Status:  http.StatusInternalServerError,
+				Explain: ErrDB,
+			})
+			if errMarshal != nil {
+				fmt.Printf("Console: %s\n", ErrMarshal)
+				return &Errors{
+						Text: ErrMarshal,
+						Time: time.Now(),
+					},
+					nil, http.StatusInternalServerError
+			}
+			fmt.Printf("Console: %s\n", ErrUpdateEmail)
+			return &Errors{
+					Text: ErrCheck,
+					Time: time.Now(),
+				},
+				result, http.StatusInternalServerError
+		case ErrUpdateEmailRepeat:
+			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
-				Explain: ErrCookieExpired,
+				Explain: ErrUpdateEmailRepeat,
 			})
 			if errMarshal != nil {
 				fmt.Printf("Console: %s\n", ErrMarshal)
@@ -71,16 +97,24 @@ func CheckErrorProfileCookie(err error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrCookieExpired)
+			fmt.Printf("Console: %s\n", ErrUpdateEmailRepeat)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
 				},
 				result, http.StatusOK
-		case ErrCookieNotFound:
-			result, errMarshal:= json.Marshal(ResultError{
-				Status:  http.StatusConflict,
-				Explain: ErrAuth,
+		}
+	}
+	return nil, nil, HttpNil
+}
+
+func CheckErrorProfileUpdatePassword(err error) (error, []byte, int) {
+	if err != nil {
+		switch err.Error() {
+		case ErrUpdatePassword, ErrSelectSaltInUpdate:
+			result, errMarshal := json.Marshal(ResultError{
+				Status:  http.StatusInternalServerError,
+				Explain: ErrDB,
 			})
 			if errMarshal != nil {
 				fmt.Printf("Console: %s\n", ErrMarshal)
@@ -90,12 +124,112 @@ func CheckErrorProfileCookie(err error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrCookieNotFound)
+			fmt.Printf("Console: %s\n", err.Error())
+			return &Errors{
+					Text: ErrCheck,
+					Time: time.Now(),
+				},
+				result, http.StatusInternalServerError
+		}
+	}
+	return nil, nil, HttpNil
+}
+
+func CheckErrorProfileUpdatePhone(err error) (error, []byte, int) {
+	if err != nil {
+		switch err.Error() {
+		case ErrUpdatePhone:
+			result, errMarshal := json.Marshal(ResultError{
+				Status:  http.StatusInternalServerError,
+				Explain: ErrDB,
+			})
+			if errMarshal != nil {
+				fmt.Printf("Console: %s\n", ErrMarshal)
+				return &Errors{
+						Text: ErrMarshal,
+						Time: time.Now(),
+					},
+					nil, http.StatusInternalServerError
+			}
+			fmt.Printf("Console: %s\n", ErrUpdatePhone)
+			return &Errors{
+					Text: ErrCheck,
+					Time: time.Now(),
+				},
+				result, http.StatusInternalServerError
+		case ErrUpdatePhoneRepeat:
+			result, errMarshal := json.Marshal(ResultError{
+				Status:  http.StatusUnauthorized,
+				Explain: ErrUpdatePhoneRepeat,
+			})
+			if errMarshal != nil {
+				fmt.Printf("Console: %s\n", ErrMarshal)
+				return &Errors{
+						Text: ErrMarshal,
+						Time: time.Now(),
+					},
+					nil, http.StatusInternalServerError
+			}
+			fmt.Printf("Console: %s\n", ErrUpdatePhoneRepeat)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
 				},
 				result, http.StatusOK
+		}
+	}
+	return nil, nil, HttpNil
+}
+
+func CheckErrorProfileUpdateAvatar(err error) (error, []byte, int) {
+	if err != nil {
+		switch err.Error() {
+		case ErrUpdateAvatar:
+			result, errMarshal := json.Marshal(ResultError{
+				Status:  http.StatusInternalServerError,
+				Explain: ErrDB,
+			})
+			if errMarshal != nil {
+				fmt.Printf("Console: %s\n", ErrMarshal)
+				return &Errors{
+						Text: ErrMarshal,
+						Time: time.Now(),
+					},
+					nil, http.StatusInternalServerError
+			}
+			fmt.Printf("Console: %s\n", ErrUpdateAvatar)
+			return &Errors{
+					Text: ErrCheck,
+					Time: time.Now(),
+				},
+				result, http.StatusInternalServerError
+		}
+	}
+	return nil, nil, HttpNil
+}
+
+func CheckErrorProfileUpdateBirthday(err error) (error, []byte, int) {
+	if err != nil {
+		switch err.Error() {
+		case ErrUpdateBirthday:
+			result, errMarshal := json.Marshal(ResultError{
+				Status:  http.StatusInternalServerError,
+				Explain: ErrDB,
+			})
+			if errMarshal != nil {
+				fmt.Printf("Console: %s\n", ErrMarshal)
+				return &Errors{
+						Text: ErrMarshal,
+						Time: time.Now(),
+					},
+					nil, http.StatusInternalServerError
+			}
+			fmt.Printf("Console: %s\n", ErrUpdateBirthday)
+			return &Errors{
+					Text: ErrCheck,
+					Time: time.Now(),
+				},
+				result, http.StatusInternalServerError
 		}
 	}
 	return nil, nil, HttpNil

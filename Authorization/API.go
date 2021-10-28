@@ -9,8 +9,8 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	"net/http"
+	"strconv"
 	"time"
-
 )
 
 type UserInfo struct {
@@ -18,10 +18,10 @@ type UserInfo struct {
 }
 
 type User struct {
-	TypeUser string		`json:"type"`
-	Name     string    	`json:"name"`
-	Email    string		`json:"email"`
-	Phone    string		`json:"phone"`
+	TypeUser string `json:"type"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
 }
 
 type Authorization struct {
@@ -68,8 +68,8 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.Set("X-Csrf-Token", cookieDB.CsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 
-	err = json.NewEncoder(ctx).Encode(&Result{
-		Status: http.StatusOK,
+	err = json.NewEncoder(ctx).Encode(&utils.Result{
+		Status: http.StatusCreated,
 		Body: &utils.RegistrationResponse{
 			User: &User{
 				TypeUser: signUpAll.TypeUser,
@@ -85,7 +85,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
-
+	//ctx.Response.Header.SetContentType("application/json")  // TODO(N): с фронтом обговорить
 }
 
 func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
@@ -120,7 +120,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.Set("X-CSRF-Token", cookieDB.CsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 
-	err = json.NewEncoder(ctx).Encode(&Result{
+	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 	})
 	if err != nil {
@@ -138,8 +138,8 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
 	_, err := mid.CheckAccess(u.ConnectionDB, &cookieDB)
-	errAccess, resultOutAccess, codeHTTP := errors.CheckErrorLogoutAccess(err)
-	if resultOutAccess != nil {
+	errAccess, resultOutAccess, codeHTTP := errors.CheckErrorAccess(err)
+	if errAccess != nil {
 		switch errAccess.Error() {
 		case errors.ErrMarshal:
 			ctx.Response.SetStatusCode(codeHTTP)
@@ -153,7 +153,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	err = Logout(&wrapper, &cookieDB)
-	errOut, resultOut, codeHTTP:= errors.CheckErrorLogout(err)
+	errOut, resultOut, codeHTTP := errors.CheckErrorLogout(err)
 	if errOut != nil {
 		switch errOut.Error() {
 		case errors.ErrMarshal:
@@ -172,7 +172,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.SetCookie(&cookieHTTP)
 	ctx.Response.SetStatusCode(http.StatusOK)
 
-	err = json.NewEncoder(ctx).Encode(&Result{
+	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 	})
 	if err != nil {
@@ -182,4 +182,32 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
+}
+
+func (u *UserInfo) PayHandler(ctx *fasthttp.RequestCtx) {
+	TokenContext := ctx.UserValue("X-Csrf-Token")
+	var XCsrfToken string
+	switch TokenContext.(type) {
+	case string:
+		XCsrfToken = TokenContext.(string)
+	case int:
+		XCsrfToken = strconv.Itoa(TokenContext.(int))
+	default:
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
+		return
+	}
+
+	ctx.Response.Header.Set("X-CSRF-Token", XCsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
+	err := json.NewEncoder(ctx).Encode(&utils.Result{
+		Status: http.StatusOK,
+	})
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrEncode))
+		fmt.Printf("Console: %s\n", errors.ErrEncode)
+		return
+	}
 }

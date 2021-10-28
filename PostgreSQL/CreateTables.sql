@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS  general_user_info
+CREATE TABLE IF NOT EXISTS general_user_info
 (
     id SERIAL PRIMARY KEY,
     name text NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS  general_user_info
 );
 
 
-CREATE TABLE IF NOT EXISTS  restaurant (
+CREATE TABLE IF NOT EXISTS restaurant (
     id serial PRIMARY KEY,
     owner int,
     FOREIGN KEY (owner) REFERENCES general_user_info (id) ON DELETE CASCADE,
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS  restaurant (
     location text
 );
 
-CREATE TABLE IF NOT EXISTS  cookie (
+CREATE TABLE IF NOT EXISTS cookie (
     id serial PRIMARY KEY,
     client_id int,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
@@ -42,38 +42,38 @@ CREATE TABLE IF NOT EXISTS  cookie (
     csrf_token varchar(92) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS  host (
+CREATE TABLE IF NOT EXISTS host (
     id serial PRIMARY KEY,
     client_id int UNIQUE,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS  client (
+CREATE TABLE IF NOT EXISTS client (
     id serial PRIMARY KEY,
     client_id int UNIQUE,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
     date_birthday timestamp DEFAULT NULL
 );
 
-CREATE TABLE IF NOT EXISTS  courier (
+CREATE TABLE IF NOT EXISTS courier (
     id serial PRIMARY KEY,
     client_id int UNIQUE,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS  worker (
+CREATE TABLE IF NOT EXISTS worker (
     id serial PRIMARY KEY,
     client_id int UNIQUE,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS  manager (
+CREATE TABLE IF NOT EXISTS manager (
     id serial PRIMARY KEY,
     client_id int UNIQUE,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS  card (
+CREATE TABLE IF NOT EXISTS card (
     id serial PRIMARY KEY,
     client_id int,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS  card (
     alias text
 );
 
-CREATE TABLE IF NOT EXISTS  feedback (
+CREATE TABLE IF NOT EXISTS feedback (
     id serial PRIMARY KEY,
     author int,
     restaurant int,
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS  feedback (
     deleted boolean DEFAULT false NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS  favorite_restaurant (
+CREATE TABLE IF NOT EXISTS favorite_restaurant (
     id serial PRIMARY KEY,
     author int,
     restaurant int,
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS  favorite_restaurant (
 );
 
 
-CREATE TABLE IF NOT EXISTS  event (
+CREATE TABLE IF NOT EXISTS event (
     id serial PRIMARY KEY,
     restaurant int,
     FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE,
@@ -115,58 +115,84 @@ CREATE TABLE IF NOT EXISTS  event (
     description text NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS  restaurant_category (
+CREATE TABLE IF NOT EXISTS restaurant_category (
     id serial PRIMARY KEY,
-    category int NOT NULL,
+    category text NOT NULL,
     restaurant int,
     FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS  dishes (
+CREATE TABLE IF NOT EXISTS dishes (
     id serial PRIMARY KEY,
     name text NOT NULL,
+    cost int,
+    count int,
     restaurant int,
     FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE,
     description text NOT NULL,
     protein double precision NOT NULL,
     falt double precision NOT NULL,
+    kilocalorie int NOT NULL,
     carbohydrates double precision NOT NULL,
-    category text NOT NULL,
+    weight double precision NOT NULL,
+    category_dishes text NOT NULL,
+    category_restaurant text NOT NULL,
     avatar text DEFAULT '/uploads/',
     deleted boolean DEFAULT false NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS  address_user (
+CREATE TABLE IF NOT EXISTS address_user (
     id serial PRIMARY KEY,
     client_id int,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
     city text NOT NULL,
     street text NOT NULL,
-    house int NOT NULL,
-    flat int,
-    porch int,
-    floor int,
-    intercom text,
+    house text NOT NULL,
+    flat int DEFAULT 0,
+    porch int DEFAULT 0,
+    floor int DEFAULT 0,
+    intercom text DEFAULT '',
     comment text DEFAULT '',
     alias text DEFAULT '',
-    location text,
+    latitude double precision NOT NULL,
+    longitude double precision NOT NULL,
     deleted boolean DEFAULT false NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS  structure_dishes (
+CREATE TABLE IF NOT EXISTS structure_dishes (
     id serial PRIMARY KEY,
-    element text DEFAULT '' NOT NULL,
+    name text DEFAULT '' NOT NULL,
+    cost int,
     food int,
     FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE,
     protein double precision NOT NULL,
     falt double precision NOT NULL,
     carbohydrates double precision NOT NULL,
-    count int NOT NULL,
+    kilocalorie int,
+    count_element int NOT NULL,
     changed boolean DEFAULT false NOT NULL,
     deleted boolean DEFAULT false NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS  promocode (
+CREATE TABLE IF NOT EXISTS radios (
+   id serial PRIMARY KEY,
+   name text DEFAULT '' NOT NULL,
+   food int,
+   FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS structure_radios (
+    id serial PRIMARY KEY,
+    name text DEFAULT '' NOT NULL,
+    radios int,
+    FOREIGN KEY (radios) REFERENCES radios (id) ON DELETE CASCADE,
+    protein double precision NOT NULL,
+    falt double precision NOT NULL,
+    carbohydrates double precision NOT NULL,
+    kilocalorie int NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS promocode (
     id serial PRIMARY KEY,
     restaurant int,
     FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE,
@@ -177,7 +203,7 @@ CREATE TABLE IF NOT EXISTS  promocode (
     start_date timestamp DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS  promocode_on_food (
+CREATE TABLE IF NOT EXISTS promocode_on_food (
     id serial PRIMARY KEY,
     sale int,
     promocode int,
@@ -203,18 +229,41 @@ CREATE TABLE IF NOT EXISTS order_user (
     method_pay int NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS  order_list (
+CREATE TABLE IF NOT EXISTS order_list (
     id serial PRIMARY KEY,
     order_id int,
     food int,
     FOREIGN KEY (order_id) REFERENCES order_user (id) ON DELETE CASCADE,
     FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE
-    );
+);
 
-CREATE TABLE IF NOT EXISTS  cart(
-    id serial,
+CREATE TABLE IF NOT EXISTS cart (
+    id serial PRIMARY KEY,
+    number_item int NOT NULL,
     client_id int,
-    restaurant int,
+    food int,
+    count_food int DEFAULT 1 NOT NULL,
+    restaurant_id int,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurant (id) ON DELETE CASCADE,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
-    FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE
+    FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS cart_structure_food (
+    id serial PRIMARY KEY,
+    checkbox int,
+    client_id int,
+    FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
+    FOREIGN KEY (checkbox) REFERENCES structure_dishes (id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS cart_radios_food (
+    id serial PRIMARY KEY,
+    radios_id int,
+    radios int,
+    client_id int,
+    FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
+    FOREIGN KEY (radios_id) REFERENCES radios (id) ON DELETE CASCADE,
+    FOREIGN KEY (radios) REFERENCES structure_radios (id) ON DELETE CASCADE
 );

@@ -1,7 +1,6 @@
-package Restaurant
+package Cart
 
 import (
-	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
 	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"encoding/json"
@@ -12,48 +11,14 @@ import (
 	"strconv"
 )
 
-type InfoRestaurant struct {
+type InfoCart struct {
 	ConnectionDB *pgxpool.Pool
 }
 
-func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
-	WrapperDB := Wrapper{Conn: r.ConnectionDB}
+func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
+	wrapper := Wrapper{Conn: c.ConnectionDB}
 
-	restaurant, err := AllRestaurants(&WrapperDB)
-	errOut, resultOutAccess, codeHTTP := errors.CheckErrorRestaurant(err)
-	if errOut != nil {
-		switch errOut.Error() {
-		case errors.ErrMarshal:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
-			return
-		case errors.ErrCheck:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody(resultOutAccess)
-			return
-		}
-	}
-
-	ctx.SetStatusCode(http.StatusOK)
-
-	err = json.NewEncoder(ctx).Encode(&auth.Result{
-		Status: http.StatusOK,
-		Body: &utils.RestaurantsResponse{
-			RestaurantsGet: restaurant,
-		},
-	})
-	if err != nil {
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		fmt.Printf("Console: %s\n", errors.ErrEncode)
-		return
-	}
-}
-
-func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
-	WrapperDB := Wrapper{Conn: r.ConnectionDB}
-
-	idUrl := ctx.UserValue("idRes")
+	idUrl := ctx.UserValue("id")
 	var id int
 	var errorConvert error
 	switch idUrl.(type) {
@@ -74,9 +39,8 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	restaurant, err := GetRestaurant(&WrapperDB, id)
-
-	errOut, resultOutAccess, codeHTTP := errors.CheckErrorRestaurantId(err) // должна появиться новая ошибка +1
+	result, err := GetCart(&wrapper, id)
+	errOut, resultOutAccess, codeHTTP := errors.CheckErrorGetCart(err)
 	if errOut != nil {
 		switch errOut.Error() {
 		case errors.ErrMarshal:
@@ -89,13 +53,11 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	}
-
-	ctx.SetStatusCode(http.StatusOK)
-
-	err = json.NewEncoder(ctx).Encode(&auth.Result{
+	ctx.Response.SetStatusCode(http.StatusOK)
+	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
-		Body: &utils.RestaurantIdResponse{
-			RestaurantsGet: restaurant,
+		Body: &utils.ResponseCart{
+			Cart: result,
 		},
 	})
 	if err != nil {
@@ -104,17 +66,41 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
+
 }
 
-func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
-	WrapperDB := Wrapper{Conn: r.ConnectionDB}
+func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
+	wrapper := Wrapper{Conn: c.ConnectionDB}
 
-	idResIn := ctx.UserValue("idRes")
-	var idRes int
+	var cartRequest utils.CartRequest
+	err := json.Unmarshal(ctx.Request.Body(), &cartRequest)
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
+		fmt.Printf("Console: %s\n", errors.ErrUnmarshal)
+		return
+	}
+
+	TokenContext := ctx.UserValue("X-Csrf-Token")
+	var XCsrfToken string
+	switch TokenContext.(type) {
+	case string:
+		XCsrfToken = TokenContext.(string)
+	case int:
+		XCsrfToken = strconv.Itoa(TokenContext.(int))
+	default:
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
+		return
+	}
+
+	idUrl := ctx.UserValue("id")
+	var id int
 	var errorConvert error
-	switch idResIn.(type) {
+	switch idUrl.(type) {
 	case string:
-		idRes, errorConvert = strconv.Atoi(idResIn.(string))
+		id, errorConvert = strconv.Atoi(idUrl.(string))
 		if errorConvert != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
@@ -122,7 +108,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	case int:
-		idRes = idResIn.(int)
+		id = idUrl.(int)
 	default:
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
@@ -130,28 +116,8 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	idDishIn := ctx.UserValue("idDish")
-	var idDish int
-	switch idDishIn.(type) {
-	case string:
-		idDish, errorConvert = strconv.Atoi(idDishIn.(string))
-		if errorConvert != nil {
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			fmt.Printf("Console: %s\n", errors.ErrAtoi)
-			return
-		}
-	case int:
-		idDish = idDishIn.(int)
-	default:
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
-		return
-	}
-
-	dishes, err := RestaurantDishes(&WrapperDB, idRes, idDish)
-	errOut, resultOutAccess, codeHTTP := errors.CheckErrorRestaurantDishes(err)
+	result, err := UpdateCart(&wrapper, cartRequest.Cart, id)
+	errOut, resultOutAccess, codeHTTP := errors.CheckErrorUpdateCart(err)
 	if errOut != nil {
 		switch errOut.Error() {
 		case errors.ErrMarshal:
@@ -164,19 +130,36 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	}
+	ctx.Response.Header.Set("X-CSRF-Token", XCsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
 
-	ctx.SetStatusCode(http.StatusOK)
+	if result != nil {
+		err = json.NewEncoder(ctx).Encode(&utils.Result{
+			Status: http.StatusOK,
+			Body: &utils.ResponseCart{
+				Cart: result,
+			},
+		})
+		if err != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrEncode))
+			fmt.Printf("Console: %s\n", errors.ErrEncode)
+			return
+		}
 
-	err = json.NewEncoder(ctx).Encode(&auth.Result{
+		return
+	}
+
+	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
-		Body: &utils.DishesResponse{
-			DishesGet: dishes,
-		},
+		Body: cartRequest,
+
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrEncode))
 		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
+
 	}
 }

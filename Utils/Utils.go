@@ -10,13 +10,15 @@ import (
 )
 
 const (
-	DayLiveCookie 		= 5
-	LenSessionId		= 92
-	LenCsrfToken		= 92
-	KeyCookieSessionId	= "session_id"
+	DayLiveCookie      = 5
+	LenSessionId       = 92
+	LenCsrfToken       = 92
+	KeyCookieSessionId = "session_id"
 )
 
-
+type ResponseStatus struct {
+	StatusHTTP int `json:"status"`
+}
 
 func SetCookieResponse(cookieHTTP *fasthttp.Cookie, cookieDB Defense, sessionId string) {
 	cookieHTTP.SetExpire(cookieDB.DateLife)
@@ -27,7 +29,7 @@ func SetCookieResponse(cookieHTTP *fasthttp.Cookie, cookieDB Defense, sessionId 
 }
 
 func RandomInteger(min int, max int) int {
-	nBig, err := rand.Int(rand.Reader, big.NewInt(int64(max - min)))
+	nBig, err := rand.Int(rand.Reader, big.NewInt(int64(max-min)))
 	if err != nil {
 		return max - min
 	}

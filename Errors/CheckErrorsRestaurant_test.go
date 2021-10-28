@@ -11,33 +11,32 @@ import (
 )
 
 func TestCheckErrorRestaurant(t *testing.T) {
-	testTable := []struct{
-		errorInput    Errors
-		errorExpected string
-		resultExpected string
+	testTable := []struct {
+		errorInput       Errors
+		errorExpected    string
+		resultExpected   string
 		codeHTTPExpected int
-	} {
+	}{
 		{
 			errorInput: Errors{
 				Text: ErrRestaurantsNotFound,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
-			resultExpected: "{\"status\":" +  strconv.Itoa(http.StatusNotFound) +
+			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusNotFound) +
 				",\"explain\":\"" + ErrRestaurantsNotFound + "\"}",
 			codeHTTPExpected: http.StatusOK,
 		},
 		{
 			errorInput: Errors{
-				Text: ErrRestaurantScan,
+				Text: ErrRestaurantsScan,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
-				",\"explain\":\"" + ErrDB +"\"}",
+				",\"explain\":\"" + ErrDB + "\"}",
 			codeHTTPExpected: http.StatusInternalServerError,
 		},
-
 	}
 
 	for _, testCase := range testTable {
