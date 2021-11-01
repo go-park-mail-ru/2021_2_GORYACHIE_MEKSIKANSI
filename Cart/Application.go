@@ -9,26 +9,8 @@ func calculatePriceDelivery(db Utils.WrapperCart, id int) (int, error) {
 	return db.GetPriceDelivery(id)
 }
 
-func GetCart(db Utils.WrapperCart, id int) (*Utils.ResponseCartErrors, error) {
+func calculateCost(db Utils.WrapperCart, result *Utils.ResponseCartErrors, rest *Utils.RestaurantId) (*Utils.CostCartResponse, error) {
 	var cost Utils.CostCartResponse
-	result, errorDishes, err := db.GetCart(id)
-	if err != nil {
-		return nil, err
-	}
-	wrapper := Restaurant.Wrapper{Conn: db.GetConn()}
-	rest, err := wrapper.GetGeneralInfoRestaurant(result.Restaurant.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	result.Restaurant.Id = rest.Id
-	result.Restaurant.Img = rest.Img
-	result.Restaurant.Rating = rest.Rating
-	result.Restaurant.CostForFreeDelivery = rest.CostForFreeDelivery
-	result.Restaurant.Name = rest.Name
-	result.Restaurant.MaxDelivery = rest.MaxDelivery
-	result.Restaurant.MinDelivery = rest.MinDelivery
-
 	sumCost := 0
 	for i, dish := range result.Dishes {
 		ingredientCost := 0
@@ -43,10 +25,34 @@ func GetCart(db Utils.WrapperCart, id int) (*Utils.ResponseCartErrors, error) {
 	if sumCost >= rest.CostForFreeDelivery {
 		cost.DCost = 0
 	} else {
-		cost.DCost, _ = calculatePriceDelivery(db, rest.Id)
+		var err error
+		cost.DCost, err = calculatePriceDelivery(db, rest.Id)
+		if err != nil {
+			return nil, err
+		}
 	}
 	cost.SumCost = cost.DCost + cost.SumCost
-	result.Cost = cost
+	return &cost, nil
+}
+
+func GetCart(db Utils.WrapperCart, id int) (*Utils.ResponseCartErrors, error) {
+	result, errorDishes, err := db.GetCart(id)
+	if err != nil {
+		return nil, err
+	}
+	wrapper := Restaurant.Wrapper{Conn: db.GetConn()}
+	rest, err := wrapper.GetGeneralInfoRestaurant(result.Restaurant.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	result.CastToRestaurantId(*rest)
+
+	cost, err := calculateCost(db, result, rest)
+	if err != nil {
+		return nil, err
+	}
+	result.Cost = *cost
 	result.DishErr = errorDishes
 
 	return result, nil
@@ -73,15 +79,9 @@ func UpdateCart(db Utils.WrapperCart, dishes Utils.RequestCartDefault, clientId 
 		return nil, err
 	}
 
-	result.Restaurant.Id = rest.Id
-	result.Restaurant.Img = rest.Img
-	result.Restaurant.Rating = rest.Rating
-	result.Restaurant.CostForFreeDelivery = rest.CostForFreeDelivery
-	result.Restaurant.Name = rest.Name
-	result.Restaurant.MaxDelivery = rest.MaxDelivery
-	result.Restaurant.MinDelivery = rest.MinDelivery
+	result.CastToRestaurantId(*rest)
 
-	result.Cast(dishes)
+	result.CastToRequestCartDefault(dishes)
 
 	sumCost := 0
 	for i, dish := range result.Dishes {
@@ -94,16 +94,11 @@ func UpdateCart(db Utils.WrapperCart, dishes Utils.RequestCartDefault, clientId 
 		result.Dishes[i].Cost = dishCost
 	}
 
-	var cost Utils.CostCartResponse
-	cost.SumCost = sumCost
-	if sumCost >= rest.CostForFreeDelivery {
-		cost.DCost = 0
-	} else {
-		cost.DCost, _ = calculatePriceDelivery(db, rest.Id)
+	cost, err := calculateCost(db, result, rest)
+	if err != nil {
+		return nil, err
 	}
-
-	cost.SumCost = cost.DCost + cost.SumCost
-	result.Cost = cost
+	result.Cost = *cost
 	result.DishErr = errorDishes
 	return result, nil
 }

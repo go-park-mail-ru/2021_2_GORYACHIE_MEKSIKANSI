@@ -134,7 +134,7 @@ CREATE TABLE IF NOT EXISTS dishes (
     falt double precision NOT NULL,
     kilocalorie int NOT NULL,
     carbohydrates double precision NOT NULL,
-    weight double precision NOT NULL,
+    weight int NOT NULL,
     category_dishes text NOT NULL,
     category_restaurant text NOT NULL,
     avatar text DEFAULT '/uploads/',

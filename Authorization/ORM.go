@@ -60,6 +60,12 @@ func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest) (*utils.Defense
 			return
 		}
 	}(tx, context.Background())
+	if err != nil {
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ErrGeneralInfoScan, //TODO: make new error
+			Time: time.Now(),
+		}
+	}
 
 	userId, err := db.GeneralSignUp(signup, tx)
 	if err != nil {

@@ -13,21 +13,41 @@ func AllRestaurants(db rest.WrapperRestaurant) ([]rest.Restaurants, error) {
 }
 
 func GetRestaurant(db rest.WrapperRestaurant, id int) (*rest.RestaurantId, error) {
-	restInfo, tags, dishes, err := db.GetRestaurant(id)
+	restInfo, err := db.GetGeneralInfoRestaurant(id)
 	if err != nil {
 		return nil, err
 	}
+
+	tags, err := db.GetTagsRestaurant(id)
+	if err != nil {
+		return nil, err
+	}
+
+	dishes, err := db.GetMenu(id)
+	if err != nil {
+		return nil, err
+	}
+
 	restInfo.Menu = dishes
 	restInfo.Tags = tags
 	return restInfo, nil
 }
 
-func RestaurantDishes(db rest.WrapperRestaurant, restId int, dishesId int) (*rest.Dishes, error) {
-	dishes, radios, ingredient, err := db.RestaurantDishes(restId, dishesId)
+func RestaurantDishes(db rest.WrapperRestaurant, restId int, dishId int) (*rest.Dishes, error) {
+	dishes, err := db.GetDishes(restId, dishId)
 	if err != nil {
 		return nil, err
 	}
-	dishes.Radios = radios
-	dishes.Ingredient = ingredient
+
+	dishes.Ingredient, err = db.GetStructureDishes(dishId)
+	if err != nil {
+		return nil, err
+	}
+
+	dishes.Radios, err = db.GetRadios(dishId)
+	if err != nil {
+		return nil, err
+	}
+
 	return dishes, nil
 }

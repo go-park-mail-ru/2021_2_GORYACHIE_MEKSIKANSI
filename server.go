@@ -12,7 +12,12 @@ import (
 	cors "github.com/AdhityaRamadhanus/fasthttpcors"
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
+	"go.uber.org/zap"
+	//"go.uber.org/zap/zapcore"
+	"math"
 	"os"
+	"strconv"
+	"time"
 )
 
 func runServer(port string) {
@@ -57,7 +62,27 @@ func runServer(port string) {
 
 	printURL := infoMiddleware.PrintURLMiddl(myRouter.Handler)
 
-	//logger := logur.NewNoopLogger()
+	logger, _ := zap.NewProduction()
+	defer func(logger *zap.Logger) {
+		errLog := logger.Sync()
+		if errLog != nil {
+
+		}
+	}(logger)
+	reqId := utils.RandomInteger(0, math.MaxInt64)
+	logger.Info("failed to fetch URL",
+		zap.String("request_id", strconv.Itoa(reqId)),
+		zap.String("url", "https"),
+		zap.Int("attempt", 3),
+		zap.Duration("backoff", time.Second),
+	)
+
+
+
+/*	confLoger := zap.Config{
+		Encoding: "console",
+	}
+	logger.WithOptions(confLoger)*/
 
 	withCors := cors.NewCorsHandler(cors.Options{
 		AllowedOrigins: []string{config.AllowedOriginsDomen + ":" + config.AllowedOriginsPort},
