@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func CheckErrorProfile(err error) (error, []byte, int) {
+func (c *CheckError)  CheckErrorProfile(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrGetProfileClientScan, ErrGetBirthdayScan, ErrGetProfileCourierScan, ErrGetProfileHostScan,
@@ -35,7 +35,7 @@ func CheckErrorProfile(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdateName(err error) (error, []byte, int) {
+func (c *CheckError)  CheckErrorProfileUpdateName(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrUpdateName:
@@ -62,7 +62,7 @@ func CheckErrorProfileUpdateName(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdateEmail(err error) (error, []byte, int) {
+func (c *CheckError)  CheckErrorProfileUpdateEmail(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrUpdateEmail:
@@ -108,7 +108,7 @@ func CheckErrorProfileUpdateEmail(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdatePassword(err error) (error, []byte, int) {
+func (c *CheckError)  CheckErrorProfileUpdatePassword(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrUpdatePassword, ErrSelectSaltInUpdate:
@@ -135,7 +135,7 @@ func CheckErrorProfileUpdatePassword(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdatePhone(err error) (error, []byte, int) {
+func (c *CheckError)  CheckErrorProfileUpdatePhone(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrUpdatePhone:
@@ -181,7 +181,7 @@ func CheckErrorProfileUpdatePhone(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdateAvatar(err error) (error, []byte, int) {
+func (c *CheckError)  CheckErrorProfileUpdateAvatar(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrUpdateAvatar:
@@ -208,7 +208,7 @@ func CheckErrorProfileUpdateAvatar(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdateBirthday(err error) (error, []byte, int) {
+func (c *CheckError)  CheckErrorProfileUpdateBirthday(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrUpdateBirthday:
@@ -235,7 +235,7 @@ func CheckErrorProfileUpdateBirthday(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdateAddress(err error) (error, []byte, int) {
+func (c *CheckError)  CheckErrorProfileUpdateAddress(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrUpdateAddress:

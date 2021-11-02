@@ -558,11 +558,13 @@ var OrmUpdateAddress = []struct {
 	{
 		testName:          "One",
 		inputQueryId:      1,
-		inputQueryAddress: Utils.AddressCoordinates{},
+		inputQueryAddress: Utils.AddressCoordinates{Alias: "1", Comment: "1", City: "1", Street: "1", House: "1",
+			Floor: 1, Flat: 1, Porch: 1, Intercom: "1", Coordinates: Utils.Coordinates{Latitude: 1.0, Longitude: 1.0}},
 		errQuery:          nil,
 		outErr:            "",
 		inputId:           1,
-		inputAddress:      Utils.AddressCoordinates{},
+		inputAddress:      Utils.AddressCoordinates{Alias: "1", Comment: "1", City: "1", Street: "1", House: "1",
+			Floor: 1, Flat: 1, Porch: 1, Intercom: "1", Coordinates: Utils.Coordinates{Latitude: 1.0, Longitude: 1.0}},
 	},
 }
 
@@ -575,8 +577,12 @@ func TestUpdateAddress(t *testing.T) {
 		m.
 			EXPECT().
 			Exec(context.Background(),
-				"UPDATE general_user_info SET name = $1 WHERE id = $2",
-				tt.inputQueryAddress, tt.inputQueryId,
+				"UPDATE address_user SET alias = $1, comment = $2, city = $3, street = $4, house = $5, floor = $6,"+
+					" flat = $7, porch = $8, intercom = $9, latitude = $10, longitude = $11 WHERE client_id = $12",
+				tt.inputQueryAddress.Alias, tt.inputQueryAddress.Comment, tt.inputQueryAddress.City,
+				tt.inputQueryAddress.Street, tt.inputQueryAddress.House, tt.inputQueryAddress.Floor,
+				tt.inputQueryAddress.Flat, tt.inputQueryAddress.Porch, tt.inputQueryAddress.Intercom,
+				tt.inputQueryAddress.Coordinates.Latitude, tt.inputQueryAddress.Coordinates.Longitude, tt.inputQueryId,
 			).
 			Return(nil, tt.errQuery)
 		testUser := &Wrapper{Conn: m}

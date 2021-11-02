@@ -11,6 +11,7 @@ import (
 	cors "github.com/AdhityaRamadhanus/fasthttpcors"
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
+	"go.uber.org/zap"
 	"os"
 )
 
@@ -19,13 +20,29 @@ func runServer(port string) {
 	loggerInfo := utils.NewLogger("./loggInfo.txt")
 	loggerTest := utils.NewLogger("./loggTest.txt")
 
-/*	defer func(sugarLogger *zap.SugaredLogger) {
-		errLogger := sugarLogger.Sync()
+	defer func(loggerErrWarn *zap.SugaredLogger) {
+		errLogger := loggerErrWarn.Sync()
 		if errLogger != nil {
-			zap.S().Errorf("Logger the buffer could not be cleared %v", errLogger)
+			zap.S().Errorf("LoggerErrWarn the buffer could not be cleared %v", errLogger)
 			os.Exit(1)
 		}
-	}(loggerErrWarn)*/
+	}(loggerErrWarn)
+
+	defer func(loggerInfo *zap.SugaredLogger) {
+		errLogger := loggerInfo.Sync()
+		if errLogger != nil {
+			zap.S().Errorf("LoggerInfo the buffer could not be cleared %v", errLogger)
+			os.Exit(1)
+		}
+	}(loggerInfo)
+
+	defer func(loggerTest *zap.SugaredLogger) {
+		errLogger := loggerTest.Sync()
+		if errLogger != nil {
+			zap.S().Errorf("LoggerTest the buffer could not be cleared %v", errLogger)
+			os.Exit(1)
+		}
+	}(loggerTest)
 
 	connectionPostgres, err := utils.CreateDb()
 	defer connectionPostgres.Close()

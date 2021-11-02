@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func CheckErrorRestaurant(err error) (error, []byte, int) {
+func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrRestaurantsNotFound:
@@ -53,7 +53,7 @@ func CheckErrorRestaurant(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorRestaurantId(err error) (error, []byte, int) {
+func (c *CheckError) CheckErrorRestaurantId(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrRestaurantNotFound, ErrCategoryRestaurantScan, ErrRestaurantsDishesNotSelect,
@@ -81,7 +81,7 @@ func CheckErrorRestaurantId(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorRestaurantDishes(err error) (error, []byte, int) {
+func (c *CheckError) CheckErrorRestaurantDishes(err error) (error, []byte, int) {
 	if err != nil {
 
 	}
