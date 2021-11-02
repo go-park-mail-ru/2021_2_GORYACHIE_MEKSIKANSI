@@ -21,10 +21,36 @@ type InfoRestaurant struct {
 }
 
 func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
+	reqIdCtx := ctx.UserValue("reqId")
+	var reqId int
+	var errorConvert error
+	switch reqIdCtx.(type) {
+	case string:
+		reqId, errorConvert = strconv.Atoi(reqIdCtx.(string))
+		if errorConvert != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrAtoi))
+			r.LoggerErrWarn.Errorf("RestaurantHandler: GetId: %s, %v", errors.ErrAtoi, errorConvert)
+			return
+		}
+	case int:
+		reqId = reqIdCtx.(int)
+	default:
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		return
+	}
+	checkError := &errors.CheckError{
+		LoggerErrWarn: r.LoggerErrWarn,
+		LoggerInfo:    r.LoggerInfo,
+		LoggerTest:    r.LoggerTest,
+		RequestId:     &reqId,
+	}
+
 	WrapperDB := Wrapper{Conn: r.ConnectionDB}
 
 	restaurant, err := AllRestaurants(&WrapperDB)
-	errOut, resultOutAccess, codeHTTP := errors.CheckErrorRestaurant(err)
+	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorRestaurant(err)
 	if errOut != nil {
 		switch errOut.Error() {
 		case errors.ErrMarshal:
@@ -55,11 +81,37 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 }
 
 func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
+	reqIdCtx := ctx.UserValue("reqId")
+	var reqId int
+	var errorConvert error
+	switch reqIdCtx.(type) {
+	case string:
+		reqId, errorConvert = strconv.Atoi(reqIdCtx.(string))
+		if errorConvert != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrAtoi))
+			r.LoggerErrWarn.Errorf("RestaurantIdHandler: GetId: %s, %v", errors.ErrAtoi, errorConvert)
+			return
+		}
+	case int:
+		reqId = reqIdCtx.(int)
+	default:
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		return
+	}
+	checkError := &errors.CheckError{
+		LoggerErrWarn: r.LoggerErrWarn,
+		LoggerInfo:    r.LoggerInfo,
+		LoggerTest:    r.LoggerTest,
+		RequestId:     &reqId,
+	}
+
+
 	WrapperDB := Wrapper{Conn: r.ConnectionDB}
 
 	idUrl := ctx.UserValue("idRes")
 	var id int
-	var errorConvert error
 	switch idUrl.(type) {
 	case string:
 		id, errorConvert = strconv.Atoi(idUrl.(string))
@@ -80,7 +132,7 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 
 	restaurant, err := GetRestaurant(&WrapperDB, id)
 
-	errOut, resultOutAccess, codeHTTP := errors.CheckErrorRestaurantId(err) // должна появиться новая ошибка +1
+	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorRestaurantId(err) // должна появиться новая ошибка +1
 	if errOut != nil {
 		switch errOut.Error() {
 		case errors.ErrMarshal:
@@ -111,11 +163,37 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 }
 
 func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
+	reqIdCtx := ctx.UserValue("reqId")
+	var reqId int
+	var errorConvert error
+	switch reqIdCtx.(type) {
+	case string:
+		reqId, errorConvert = strconv.Atoi(reqIdCtx.(string))
+		if errorConvert != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrAtoi))
+			r.LoggerErrWarn.Errorf("RestaurantDishesHandler: GetId: %s, %v", errors.ErrAtoi, errorConvert)
+			return
+		}
+	case int:
+		reqId = reqIdCtx.(int)
+	default:
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		return
+	}
+	checkError := &errors.CheckError{
+		LoggerErrWarn: r.LoggerErrWarn,
+		LoggerInfo:    r.LoggerInfo,
+		LoggerTest:    r.LoggerTest,
+		RequestId:     &reqId,
+	}
+
+
 	WrapperDB := Wrapper{Conn: r.ConnectionDB}
 
 	idResIn := ctx.UserValue("idRes")
 	var idRes int
-	var errorConvert error
 	switch idResIn.(type) {
 	case string:
 		idRes, errorConvert = strconv.Atoi(idResIn.(string))
@@ -155,7 +233,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	dishes, err := RestaurantDishes(&WrapperDB, idRes, idDish)
-	errOut, resultOutAccess, codeHTTP := errors.CheckErrorRestaurantDishes(err)
+	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorRestaurantDishes(err)
 	if errOut != nil {
 		switch errOut.Error() {
 		case errors.ErrMarshal:

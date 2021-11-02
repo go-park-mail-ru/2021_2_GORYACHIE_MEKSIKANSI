@@ -2,7 +2,6 @@ package Errors
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -16,14 +15,14 @@ func (c *CheckError) CheckErrorCookie(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrCookieScan)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrCookieScan, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -35,14 +34,14 @@ func (c *CheckError) CheckErrorCookie(err error) (error, []byte, int) {
 				Explain: err.Error(),
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", err.Error())
+			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -62,14 +61,14 @@ func (c *CheckError) CheckErrorAccess(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrCookieNotScan)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrGeneralInfoUnique, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -81,14 +80,14 @@ func (c *CheckError) CheckErrorAccess(err error) (error, []byte, int) {
 				Explain: ErrCheckAccessCookieNotFound,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrCheckAccessCookieNotFound)
+			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", ErrCheckAccessCookieNotFound, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),

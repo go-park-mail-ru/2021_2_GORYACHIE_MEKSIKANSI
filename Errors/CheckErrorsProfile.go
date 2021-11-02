@@ -2,12 +2,11 @@ package Errors
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 )
 
-func CheckErrorProfile(err error) (error, []byte, int) {
+func (c *CheckError)  CheckErrorProfile(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrGetProfileClientScan, ErrGetBirthdayScan, ErrGetProfileCourierScan, ErrGetProfileHostScan,
@@ -17,14 +16,14 @@ func CheckErrorProfile(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", err.Error())
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -35,7 +34,7 @@ func CheckErrorProfile(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdateName(err error) (error, []byte, int) {
+func (c *CheckError)  CheckErrorProfileUpdateName(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrUpdateName:
@@ -44,14 +43,14 @@ func CheckErrorProfileUpdateName(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrUpdateName)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdateName, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -62,7 +61,7 @@ func CheckErrorProfileUpdateName(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdateEmail(err error) (error, []byte, int) {
+func (c *CheckError)  CheckErrorProfileUpdateEmail(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrUpdateEmail:
@@ -71,14 +70,14 @@ func CheckErrorProfileUpdateEmail(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrUpdateEmail)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdateEmail, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -90,14 +89,14 @@ func CheckErrorProfileUpdateEmail(err error) (error, []byte, int) {
 				Explain: ErrUpdateEmailRepeat,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrUpdateEmailRepeat)
+			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", ErrUpdateEmailRepeat, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -108,7 +107,7 @@ func CheckErrorProfileUpdateEmail(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdatePassword(err error) (error, []byte, int) {
+func (c *CheckError)  CheckErrorProfileUpdatePassword(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrUpdatePassword, ErrSelectSaltInUpdate:
@@ -117,14 +116,14 @@ func CheckErrorProfileUpdatePassword(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", err.Error())
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -135,7 +134,7 @@ func CheckErrorProfileUpdatePassword(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdatePhone(err error) (error, []byte, int) {
+func (c *CheckError)  CheckErrorProfileUpdatePhone(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrUpdatePhone:
@@ -144,14 +143,14 @@ func CheckErrorProfileUpdatePhone(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrUpdatePhone)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdatePhone, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -163,14 +162,14 @@ func CheckErrorProfileUpdatePhone(err error) (error, []byte, int) {
 				Explain: ErrUpdatePhoneRepeat,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrUpdatePhoneRepeat)
+			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", ErrUpdatePhoneRepeat, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -181,7 +180,7 @@ func CheckErrorProfileUpdatePhone(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdateAvatar(err error) (error, []byte, int) {
+func (c *CheckError)  CheckErrorProfileUpdateAvatar(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrUpdateAvatar:
@@ -190,14 +189,14 @@ func CheckErrorProfileUpdateAvatar(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrUpdateAvatar)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdateAvatar, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -208,7 +207,7 @@ func CheckErrorProfileUpdateAvatar(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdateBirthday(err error) (error, []byte, int) {
+func (c *CheckError)  CheckErrorProfileUpdateBirthday(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrUpdateBirthday:
@@ -217,14 +216,14 @@ func CheckErrorProfileUpdateBirthday(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrUpdateBirthday)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdateBirthday, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -235,7 +234,7 @@ func CheckErrorProfileUpdateBirthday(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorProfileUpdateAddress(err error) (error, []byte, int) {
+func (c *CheckError)  CheckErrorProfileUpdateAddress(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrUpdateAddress:
@@ -244,14 +243,14 @@ func CheckErrorProfileUpdateAddress(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrUpdateAddress)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdateAddress, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
