@@ -57,6 +57,11 @@ const (
 	ErrSignupHostTransactionNotCreate    = "transaction not create in SignupHost"    // TODO: add handler
 	ErrSignupCourierTransactionNotCreate = "transaction not create in SignupCourier" // TODO: add handler
 	ErrSignupClientTransactionNotCreate  = "transaction not create in SignupClient"  // TODO: add handler
+	ErrSignUpUnknownType                 = "unknown type of user"                    // TODO: add handler
+	ErrLoginVoidLogin                    = "email and password is void"              // TODO: add handler
+	ErrSignUpHostNotCommit               = "signup host not commit"                  // TODO: add handler
+	ErrSignUpCourierNotCommit            = "signup courier not commit"               // TODO: add handler
+	ErrSignUpClientNotCommit             = "signup client not commit"                // TODO: add handler
 )
 
 // Error of Middleware
@@ -95,6 +100,7 @@ const (
 	ErrUpdateAvatar          = "avatar not update"
 	ErrUpdateBirthday        = "birthday not update"
 	ErrUpdateAddress         = "address not update"
+	ErrGetProfileUnknownRole = "unknown role of user" // TODO: add handler
 )
 
 // Error of restaurant
@@ -145,6 +151,7 @@ const (
 	UpdateCartStructureNotSelect      = "structure dishes not select"
 	UpdateCartStructRadiosNotSelect   = "structure radios not select"
 	ErrUpdateCartTransactionNotCreate = "transaction not create in UpdateCart" // TODO: add handler
+	ErrUpdateCartNotCommit            = "update cart not commit"               // TODO: add handler
 )
 
 // TODO: make TODO

@@ -1,7 +1,9 @@
 package Profile
 
 import (
+	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	profile "2021_2_GORYACHIE_MEKSIKANSI/Utils"
+
 	"time"
 )
 
@@ -20,7 +22,10 @@ func GetProfile(db profile.WrapperProfile, id int) (*profile.Profile, error) {
 	case "host":
 		result, err = db.GetProfileHost(id)
 	default:
-		return nil, err
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ErrGetProfileUnknownRole,
+			Time: time.Now(),
+		}
 	}
 	if err != nil {
 		return nil, err
@@ -62,6 +67,7 @@ func UpdatePhone(db profile.WrapperProfile, id int, newPhone string) error {
 }
 
 func UpdateAvatar(db profile.WrapperProfile, id int, newAvatar string) error {
+
 	err := db.UpdateAvatar(id, newAvatar)
 	if err != nil {
 		return err

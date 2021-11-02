@@ -39,9 +39,9 @@ type WrapperProfile interface {
 }
 
 type WrapperAuthorization interface {
-	SignupClient(signup *RegistrationRequest) (*Defense, error)
-	SignupCourier(signup *RegistrationRequest) (*Defense, error)
-	SignupHost(signup *RegistrationRequest) (*Defense, error)
+	SignupClient(signup *RegistrationRequest, cookie *Defense) (*Defense, error)
+	SignupCourier(signup *RegistrationRequest, cookie *Defense) (*Defense, error)
+	SignupHost(signup *RegistrationRequest, cookie *Defense) (*Defense, error)
 	LoginByEmail(email string, password string) (int, error)
 	LoginByPhone(phone string, password string) (int, error)
 	DeleteCookie(cookie *Defense) error

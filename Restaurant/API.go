@@ -107,7 +107,6 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-
 	WrapperDB := Wrapper{Conn: r.ConnectionDB}
 
 	idUrl := ctx.UserValue("idRes")
@@ -188,7 +187,6 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 		LoggerTest:    r.LoggerTest,
 		RequestId:     &reqId,
 	}
-
 
 	WrapperDB := Wrapper{Conn: r.ConnectionDB}
 

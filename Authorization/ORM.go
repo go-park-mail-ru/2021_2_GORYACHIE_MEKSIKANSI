@@ -19,7 +19,7 @@ func (db *Wrapper) GenerateNew() *utils.Defense {
 	return tmp.GenerateNew()
 }
 
-func (db *Wrapper) GeneralSignUp(signup *utils.RegistrationRequest, transaction pgx.Tx) (int, error) {
+func GeneralSignUp(signup *utils.RegistrationRequest, transaction pgx.Tx) (int, error) {
 	var userId int
 
 	salt := utils.RandString(LenSalt)
@@ -52,7 +52,7 @@ func (db *Wrapper) GeneralSignUp(signup *utils.RegistrationRequest, transaction 
 	return userId, nil
 }
 
-func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest) (*utils.Defense, error) {
+func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest, cookie *utils.Defense) (*utils.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
 	defer func(tx pgx.Tx, ctx context.Context) {
 		err := tx.Rollback(ctx)
@@ -67,14 +67,12 @@ func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest) (*utils.Defense
 		}
 	}
 
-	userId, err := db.GeneralSignUp(signup, tx)
+	userId, err := GeneralSignUp(signup, tx)
 	if err != nil {
 		return nil, err
 	}
 
-	var temp utils.Defense
-	cookie := temp.GenerateNew()
-	err = db.AddTransactionCookie(cookie, tx, userId)
+	err = AddTransactionCookie(cookie, tx, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -89,12 +87,15 @@ func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest) (*utils.Defense
 	}
 	err = tx.Commit(context.Background())
 	if err != nil {
-		return nil, err // TODO make new err
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ErrSignUpHostNotCommit,
+			Time: time.Now(),
+		}
 	}
 	return cookie, nil
 }
 
-func (db *Wrapper) SignupCourier(signup *utils.RegistrationRequest) (*utils.Defense, error) {
+func (db *Wrapper) SignupCourier(signup *utils.RegistrationRequest, cookie *utils.Defense) (*utils.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
 
 	defer func(tx pgx.Tx, ctx context.Context) {
@@ -110,14 +111,12 @@ func (db *Wrapper) SignupCourier(signup *utils.RegistrationRequest) (*utils.Defe
 		}
 	}
 
-	userId, err := db.GeneralSignUp(signup, tx)
+	userId, err := GeneralSignUp(signup, tx)
 	if err != nil {
 		return nil, err
 	}
 
-	var tmp utils.Defense
-	cookie := tmp.GenerateNew()
-	err = db.AddTransactionCookie(cookie, tx, userId)
+	err = AddTransactionCookie(cookie, tx, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -131,11 +130,17 @@ func (db *Wrapper) SignupCourier(signup *utils.RegistrationRequest) (*utils.Defe
 		}
 	}
 	err = tx.Commit(context.Background())
+	if err != nil {
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ErrSignUpCourierNotCommit,
+			Time: time.Now(),
+		}
+	}
 
 	return cookie, err
 }
 
-func (db *Wrapper) SignupClient(signup *utils.RegistrationRequest) (*utils.Defense, error) {
+func (db *Wrapper) SignupClient(signup *utils.RegistrationRequest, cookie *utils.Defense) (*utils.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
 
 	defer func(tx pgx.Tx, ctx context.Context) {
@@ -151,14 +156,12 @@ func (db *Wrapper) SignupClient(signup *utils.RegistrationRequest) (*utils.Defen
 		}
 	}
 
-	userId, err := db.GeneralSignUp(signup, tx)
+	userId, err := GeneralSignUp(signup, tx)
 	if err != nil {
 		return nil, err
 	}
 
-	var tmp utils.Defense
-	cookie := tmp.GenerateNew()
-	err = db.AddTransactionCookie(cookie, tx, userId)
+	err = AddTransactionCookie(cookie, tx, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -172,11 +175,17 @@ func (db *Wrapper) SignupClient(signup *utils.RegistrationRequest) (*utils.Defen
 		}
 	}
 	err = tx.Commit(context.Background())
+	if err != nil {
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ErrSignUpClientNotCommit,
+			Time: time.Now(),
+		}
+	}
 
 	return cookie, nil
 }
 
-func (db *Wrapper) AddTransactionCookie(cookie *utils.Defense, Transaction pgx.Tx, id int) error {
+func AddTransactionCookie(cookie *utils.Defense, Transaction pgx.Tx, id int) error {
 	_, err := Transaction.Exec(context.Background(),
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)

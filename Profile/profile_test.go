@@ -5,6 +5,7 @@ import (
 	mocks "2021_2_GORYACHIE_MEKSIKANSI/Test/Mocks"
 	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
@@ -218,7 +219,7 @@ var OrmGetProfileClient = []struct {
 	outErr                       string
 	rowsQueryBirthday            Row
 	inputQueryBirthday           int
-	countQueryBirthday int
+	countQueryBirthday           int
 }{
 	{
 		testName:           "One",
@@ -559,14 +560,14 @@ var OrmUpdateAddress = []struct {
 	outErr            string
 }{
 	{
-		testName:          "One",
-		inputQueryId:      1,
+		testName:     "One",
+		inputQueryId: 1,
 		inputQueryAddress: Utils.AddressCoordinates{Alias: "1", Comment: "1", City: "1", Street: "1", House: "1",
 			Floor: 1, Flat: 1, Porch: 1, Intercom: "1", Coordinates: Utils.Coordinates{Latitude: 1.0, Longitude: 1.0}},
-		errQuery:          nil,
-		outErr:            "",
-		inputId:           1,
-		inputAddress:      Utils.AddressCoordinates{Alias: "1", Comment: "1", City: "1", Street: "1", House: "1",
+		errQuery: nil,
+		outErr:   "",
+		inputId:  1,
+		inputAddress: Utils.AddressCoordinates{Alias: "1", Comment: "1", City: "1", Street: "1", House: "1",
 			Floor: 1, Flat: 1, Porch: 1, Intercom: "1", Coordinates: Utils.Coordinates{Latitude: 1.0, Longitude: 1.0}},
 	},
 }
@@ -608,7 +609,6 @@ var ApplicationGetProfile = []struct {
 	inputGetRoleById        int
 	resultGetRoleById       string
 	errGetRoleById          error
-	countGetRoleById        int
 	inputGetProfileClient   int
 	resultGetProfileClient  *Utils.Profile
 	errGetProfileClient     error
@@ -623,9 +623,67 @@ var ApplicationGetProfile = []struct {
 	countGetProfileHost     int
 }{
 	{
-		testName: "One",
-		out:      nil,
-		outErr:   "",
+		testName:                "One",
+		input:                   1,
+		out:                     &Utils.Profile{Name: "", Email: "", Phone: "", Avatar: "", Birthday: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)},
+		outErr:                  "",
+		inputGetRoleById:        1,
+		resultGetRoleById:       "client",
+		errGetRoleById:          nil,
+		inputGetProfileClient:   1,
+		resultGetProfileClient:  &Utils.Profile{},
+		errGetProfileClient:     nil,
+		countGetProfileClient:   1,
+		inputGetProfileCourier:  1,
+		resultGetProfileCourier: &Utils.Profile{},
+		errGetProfileCourier:    nil,
+		countGetProfileCourier:  0,
+		inputGetProfileHost:     0,
+		resultGetProfileHost:    &Utils.Profile{},
+		errGetProfileHost:       nil,
+		countGetProfileHost:     0,
+	},
+	{
+		testName:                "Two",
+		input:                   1,
+		out:                     nil,
+		outErr:                  "text",
+		inputGetRoleById:        1,
+		resultGetRoleById:       "client",
+		errGetRoleById:          nil,
+		inputGetProfileClient:   1,
+		resultGetProfileClient:  &Utils.Profile{},
+		errGetProfileClient:     errors.New("text"),
+		countGetProfileClient:   1,
+		inputGetProfileCourier:  1,
+		resultGetProfileCourier: &Utils.Profile{},
+		errGetProfileCourier:    nil,
+		countGetProfileCourier:  0,
+		inputGetProfileHost:     0,
+		resultGetProfileHost:    &Utils.Profile{},
+		errGetProfileHost:       nil,
+		countGetProfileHost:     0,
+	},
+	{
+		testName:                "Three",
+		input:                   1,
+		out:                     nil,
+		outErr:                  "text",
+		inputGetRoleById:        1,
+		resultGetRoleById:       "client",
+		errGetRoleById:          nil,
+		inputGetProfileClient:   1,
+		resultGetProfileClient:  &Utils.Profile{},
+		errGetProfileClient:     errors.New("text"),
+		countGetProfileClient:   1,
+		inputGetProfileCourier:  1,
+		resultGetProfileCourier: &Utils.Profile{},
+		errGetProfileCourier:    nil,
+		countGetProfileCourier:  0,
+		inputGetProfileHost:     0,
+		resultGetProfileHost:    &Utils.Profile{},
+		errGetProfileHost:       nil,
+		countGetProfileHost:     0,
 	},
 }
 
@@ -638,8 +696,7 @@ func TestApplicationGetProfile(t *testing.T) {
 		m.
 			EXPECT().
 			GetRoleById(tt.inputGetRoleById).
-			Return(tt.resultGetRoleById, tt.errGetRoleById).
-			Times(tt.countGetRoleById)
+			Return(tt.resultGetRoleById, tt.errGetRoleById)
 		m.
 			EXPECT().
 			GetProfileClient(tt.inputGetProfileClient).
@@ -675,11 +732,24 @@ var ApplicationUpdateName = []struct {
 	inputUpdateNameId      int
 	inputUpdateNameNewName string
 	errUpdateName          error
-	countUpdateName        int
 }{
 	{
-		testName: "One",
-		outErr:   "",
+		testName:               "One",
+		inputId:                1,
+		inputNewName:           "1",
+		outErr:                 "",
+		inputUpdateNameId:      1,
+		inputUpdateNameNewName: "1",
+		errUpdateName:          nil,
+	},
+	{
+		testName:               "Two",
+		inputId:                1,
+		inputNewName:           "1",
+		outErr:                 "text",
+		inputUpdateNameId:      1,
+		inputUpdateNameNewName: "1",
+		errUpdateName:          errors.New("text"),
 	},
 }
 
@@ -692,8 +762,7 @@ func TestApplicationUpdateName(t *testing.T) {
 		m.
 			EXPECT().
 			UpdateName(tt.inputUpdateNameId, tt.inputUpdateNameNewName).
-			Return(tt.errUpdateName).
-			Times(tt.countUpdateName)
+			Return(tt.errUpdateName)
 		t.Run(tt.testName, func(t *testing.T) {
 			err := UpdateName(m, tt.inputId, tt.inputNewName)
 			if tt.outErr != "" {
@@ -716,8 +785,22 @@ var ApplicationUpdateEmail = []struct {
 	countUpdateEmail         int
 }{
 	{
-		testName: "One",
-		outErr:   "",
+		testName:                 "One",
+		inputId:                  1,
+		inputNewEmail:            "1",
+		outErr:                   "",
+		inputUpdateEmailId:       1,
+		inputUpdateEmailNewEmail: "1",
+		errUpdateEmail:           nil,
+	},
+	{
+		testName:                 "Two",
+		inputId:                  1,
+		inputNewEmail:            "1",
+		outErr:                   "text",
+		inputUpdateEmailId:       1,
+		inputUpdateEmailNewEmail: "1",
+		errUpdateEmail:           errors.New("text"),
 	},
 }
 
@@ -730,8 +813,7 @@ func TestApplicationUpdateEmail(t *testing.T) {
 		m.
 			EXPECT().
 			UpdateEmail(tt.inputUpdateEmailId, tt.inputUpdateEmailNewEmail).
-			Return(tt.errUpdateEmail).
-			Times(tt.countUpdateEmail)
+			Return(tt.errUpdateEmail)
 		t.Run(tt.testName, func(t *testing.T) {
 			err := UpdateEmail(m, tt.inputId, tt.inputNewEmail)
 			if tt.outErr != "" {
@@ -751,11 +833,24 @@ var ApplicationUpdatePassword = []struct {
 	inputUpdatePasswordId          int
 	inputUpdatePasswordNewPassword string
 	errUpdatePassword              error
-	countUpdatePassword            int
 }{
 	{
-		testName: "One",
-		outErr:   "",
+		testName:                       "One",
+		inputId:                        1,
+		inputNewPassword:               "1",
+		outErr:                         "",
+		inputUpdatePasswordId:          1,
+		inputUpdatePasswordNewPassword: "1",
+		errUpdatePassword:              nil,
+	},
+	{
+		testName:                       "Two",
+		inputId:                        1,
+		inputNewPassword:               "1",
+		outErr:                         "text",
+		inputUpdatePasswordId:          1,
+		inputUpdatePasswordNewPassword: "1",
+		errUpdatePassword:              errors.New("text"),
 	},
 }
 
@@ -768,8 +863,7 @@ func TestApplicationUpdatePassword(t *testing.T) {
 		m.
 			EXPECT().
 			UpdatePassword(tt.inputUpdatePasswordId, tt.inputUpdatePasswordNewPassword).
-			Return(tt.errUpdatePassword).
-			Times(tt.countUpdatePassword)
+			Return(tt.errUpdatePassword)
 		t.Run(tt.testName, func(t *testing.T) {
 			err := UpdatePassword(m, tt.inputId, tt.inputNewPassword)
 			if tt.outErr != "" {
@@ -789,11 +883,24 @@ var ApplicationUpdatePhone = []struct {
 	inputUpdatePhoneId       int
 	inputUpdatePhoneNewPhone string
 	errUpdatePhone           error
-	countUpdatePhone         int
 }{
 	{
-		testName: "One",
-		outErr:   "",
+		testName:                 "One",
+		inputId:                  1,
+		inputNewPhone:            "1",
+		outErr:                   "",
+		inputUpdatePhoneId:       1,
+		inputUpdatePhoneNewPhone: "1",
+		errUpdatePhone:           nil,
+	},
+	{
+		testName:                 "Two",
+		inputId:                  1,
+		inputNewPhone:            "1",
+		outErr:                   "text",
+		inputUpdatePhoneId:       1,
+		inputUpdatePhoneNewPhone: "1",
+		errUpdatePhone:           errors.New("text"),
 	},
 }
 
@@ -806,8 +913,7 @@ func TestApplicationUpdatePhone(t *testing.T) {
 		m.
 			EXPECT().
 			UpdatePhone(tt.inputUpdatePhoneId, tt.inputUpdatePhoneNewPhone).
-			Return(tt.errUpdatePhone).
-			Times(tt.countUpdatePhone)
+			Return(tt.errUpdatePhone)
 		t.Run(tt.testName, func(t *testing.T) {
 			err := UpdatePhone(m, tt.inputId, tt.inputNewPhone)
 			if tt.outErr != "" {
@@ -827,11 +933,24 @@ var ApplicationUpdateAvatar = []struct {
 	inputUpdateAvatarId        int
 	inputUpdateAvatarNewAvatar string
 	errUpdateAvatar            error
-	countUpdateAvatar          int
 }{
 	{
-		testName: "One",
-		outErr:   "",
+		testName:                   "One",
+		inputId:                    1,
+		inputNewAvatar:             "1",
+		outErr:                     "",
+		inputUpdateAvatarId:        1,
+		inputUpdateAvatarNewAvatar: "1",
+		errUpdateAvatar:            nil,
+	},
+	{
+		testName:                   "Two",
+		inputId:                    1,
+		inputNewAvatar:             "1",
+		outErr:                     "text",
+		inputUpdateAvatarId:        1,
+		inputUpdateAvatarNewAvatar: "1",
+		errUpdateAvatar:            errors.New("text"),
 	},
 }
 
@@ -844,8 +963,7 @@ func TestApplicationUpdateAvatar(t *testing.T) {
 		m.
 			EXPECT().
 			UpdateAvatar(tt.inputUpdateAvatarId, tt.inputUpdateAvatarNewAvatar).
-			Return(tt.errUpdateAvatar).
-			Times(tt.countUpdateAvatar)
+			Return(tt.errUpdateAvatar)
 		t.Run(tt.testName, func(t *testing.T) {
 			err := UpdateAvatar(m, tt.inputId, tt.inputNewAvatar)
 			if tt.outErr != "" {
@@ -863,13 +981,26 @@ var ApplicationUpdateBirthday = []struct {
 	inputNewBirthday        time.Time
 	outErr                  string
 	inputUpdateBirthdayId   int
-	inputUpdateBirthdayName string
+	inputUpdateBirthdayDate time.Time
 	errUpdateBirthday       error
-	countUpdateBirthday     int
 }{
 	{
-		testName: "One",
-		outErr:   "",
+		testName:                "One",
+		inputId:                 1,
+		inputNewBirthday:        time.Time{},
+		outErr:                  "",
+		inputUpdateBirthdayId:   1,
+		inputUpdateBirthdayDate: time.Time{},
+		errUpdateBirthday:       nil,
+	},
+	{
+		testName:                "Two",
+		inputId:                 1,
+		inputNewBirthday:        time.Time{},
+		outErr:                  "text",
+		inputUpdateBirthdayId:   1,
+		inputUpdateBirthdayDate: time.Time{},
+		errUpdateBirthday:       errors.New("text"),
 	},
 }
 
@@ -881,9 +1012,8 @@ func TestApplicationUpdateBirthday(t *testing.T) {
 	for _, tt := range ApplicationUpdateBirthday {
 		m.
 			EXPECT().
-			UpdateBirthday(tt.inputUpdateBirthdayId, tt.inputNewBirthday).
-			Return(tt.errUpdateBirthday).
-			Times(tt.countUpdateBirthday)
+			UpdateBirthday(tt.inputUpdateBirthdayId, tt.inputUpdateBirthdayDate).
+			Return(tt.errUpdateBirthday)
 		t.Run(tt.testName, func(t *testing.T) {
 			err := UpdateBirthday(m, tt.inputId, tt.inputNewBirthday)
 			if tt.outErr != "" {
@@ -896,18 +1026,31 @@ func TestApplicationUpdateBirthday(t *testing.T) {
 }
 
 var ApplicationUpdateAddress = []struct {
-	testName                  string
-	inputId                   int
-	inputNewName              Utils.AddressCoordinates
-	outErr                    string
-	inputUpdateAddressId      int
-	inputUpdateAddressNewName string
-	errUpdateAddress          error
-	countUpdateAddress        int
+	testName                     string
+	inputId                      int
+	inputNewAddress              Utils.AddressCoordinates
+	outErr                       string
+	inputUpdateAddressId         int
+	inputUpdateAddressNewAddress Utils.AddressCoordinates
+	errUpdateAddress             error
 }{
 	{
-		testName: "One",
-		outErr:   "",
+		testName:                     "One",
+		outErr:                       "",
+		inputId:                      1,
+		inputNewAddress:              Utils.AddressCoordinates{},
+		inputUpdateAddressId:         1,
+		inputUpdateAddressNewAddress: Utils.AddressCoordinates{},
+		errUpdateAddress:             nil,
+	},
+	{
+		testName:                     "Two",
+		outErr:                       "text",
+		inputId:                      1,
+		inputNewAddress:              Utils.AddressCoordinates{},
+		inputUpdateAddressId:         1,
+		inputUpdateAddressNewAddress: Utils.AddressCoordinates{},
+		errUpdateAddress:             errors.New("text"),
 	},
 }
 
@@ -919,11 +1062,10 @@ func TestApplicationUpdateAddress(t *testing.T) {
 	for _, tt := range ApplicationUpdateAddress {
 		m.
 			EXPECT().
-			UpdateAddress(tt.inputUpdateAddressId, tt.inputUpdateAddressNewName).
-			Return(tt.errUpdateAddress).
-			Times(tt.countUpdateAddress)
+			UpdateAddress(tt.inputUpdateAddressId, tt.inputUpdateAddressNewAddress).
+			Return(tt.errUpdateAddress)
 		t.Run(tt.testName, func(t *testing.T) {
-			err := UpdateAddress(m, tt.inputId, tt.inputNewName)
+			err := UpdateAddress(m, tt.inputId, tt.inputNewAddress)
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
 			} else {
