@@ -15,14 +15,14 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 				Explain: ErrRestaurantsNotFound,
 			})
 			if errMarshal != nil {
-				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", ErrRestaurantNotFound, c.RequestId)
+			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", ErrRestaurantNotFound, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -34,14 +34,14 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrRestaurantsScan, c.RequestId)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrRestaurantsScan, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -62,14 +62,14 @@ func (c *CheckError) CheckErrorRestaurantId(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", err.Error(), *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),

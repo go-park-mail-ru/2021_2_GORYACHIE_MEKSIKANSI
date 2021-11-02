@@ -16,7 +16,7 @@ func (c *CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 				Explain: ErrGeneralInfoUnique,
 			})
 			if errMarshal != nil {
-				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
@@ -24,7 +24,7 @@ func (c *CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 					nil, http.StatusInternalServerError
 			}
 			fmt.Printf("Console: %s\n", ErrGeneralInfoUnique)
-			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", ErrGeneralInfoUnique, c.RequestId)
+			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", ErrGeneralInfoUnique, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -36,14 +36,14 @@ func (c *CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 				Explain: ErrPhoneFormat,
 			})
 			if errMarshal != nil {
-				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", ErrPhoneFormat, c.RequestId)
+			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", ErrPhoneFormat, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -55,14 +55,14 @@ func (c *CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", errIn.Error(), c.RequestId)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", errIn.Error(), *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -82,14 +82,14 @@ func (c *CheckError) CheckErrorLogin(err error) (error, []byte, int) {
 				Explain: ErrLoginOrPasswordIncorrect,
 			})
 			if errMarshal != nil {
-				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", err.Error(), c.RequestId)
+			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", err.Error(), *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -101,14 +101,14 @@ func (c *CheckError) CheckErrorLogin(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", err.Error(), *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -126,14 +126,14 @@ func (c *CheckError) CheckErrorLogout(err error) (error, []byte, int) {
 			Explain: ErrDB,
 		})
 		if errMarshal != nil {
-			c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
+			c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
 			return &Errors{
 					Text: ErrMarshal,
 					Time: time.Now(),
 				},
 				nil, http.StatusInternalServerError
 		}
-		c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrDeleteCookie, c.RequestId)
+		c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrDeleteCookie, *c.RequestId)
 		return &Errors{
 				Text: ErrCheck,
 				Time: time.Now(),
