@@ -42,109 +42,109 @@ const (
 
 // Error of Authorization
 const (
-	ErrSelectSaltInLogin                 = "ERROR: salt in login not scan"
+	ErrSelectSaltInLogin                 = "salt in login not scan"
 	ErrLoginOrPasswordIncorrect          = "Неправильный логин или пароль"
-	ErrGeneralInfoScan                   = "ERROR: general_user_info not scan"
-	ErrInsertHost                        = "ERROR: host not insert"
-	ErrInsertCourier                     = "ERROR: courier not insert"
-	ErrInsertClient                      = "ERROR: client not insert"
-	ErrInsertTransactionCookie           = "ERROR: cookie with transaction not insert"
-	ErrDeleteCookie                      = "ERROR: cookie not delete"
-	ErrInsertCookie                      = "ERROR: cookie not insert"
+	ErrGeneralInfoScan                   = "general_user_info not scan"
+	ErrInsertHost                        = "host not insert"
+	ErrInsertCourier                     = "courier not insert"
+	ErrInsertClient                      = "client not insert"
+	ErrInsertTransactionCookie           = "cookie with transaction not insert"
+	ErrDeleteCookie                      = "cookie not delete"
+	ErrInsertCookie                      = "cookie not insert"
 	ErrGeneralInfoUnique                 = "Телефон или Email уже зарегистрирован"
 	ErrPhoneFormat                       = "Неверный формат телефона"
-	ErrUserNotFoundLogin                 = "ERROR: user not found"
-	ErrSignupHostTransactionNotCreate    = "ERROR: transaction not create in SignupHost"    // TODO: add handler
-	ErrSignupCourierTransactionNotCreate = "ERROR: transaction not create in SignupCourier" // TODO: add handler
-	ErrSignupClientTransactionNotCreate  = "ERROR: transaction not create in SignupClient"  // TODO: add handler
+	ErrUserNotFoundLogin                 = "user not found"
+	ErrSignupHostTransactionNotCreate    = "transaction not create in SignupHost"    // TODO: add handler
+	ErrSignupCourierTransactionNotCreate = "transaction not create in SignupCourier" // TODO: add handler
+	ErrSignupClientTransactionNotCreate  = "transaction not create in SignupClient"  // TODO: add handler
 )
 
 // Error of Middleware
 const (
-	ErrNotConnect                = "ERROR: db not connect"
-	ErrCookieNotScan             = "ERROR: cookie not scan"
-	ErrCookieScan                = "ERROR: cookie not scan"
-	ErrCheckAccessCookieNotFound = "ERROR: cookie not found in CheckAccess"
-	ErrUpdateCSRF                = "ERROR: csrf not updated"
-	ErrCookieExpired             = "ERROR: cookie expired"
-	ErrCookieNotFound            = "ERROR: cookie not found"
-	ErrFileNotFound              = "ERROR: CreateTables.sql not found" // TODO: add handler
-	ErrDeleteFileNotFound        = "ERROR: DeleteTables.sql not found" // TODO: add handler
-	ErrFillFileNotFound          = "ERROR: Fill.sql not found"         // TODO: add handler
-	ErrNotCreateTables           = "ERROR: table not create"           // TODO: add handler
-	ErrNotDeleteTables           = "ERROR: table not delete"           // TODO: add handler
-	ErrNotFillTables             = "ERROR: table not fill"             // TODO: add handler
+	ErrNotConnect                = "db not connect"
+	ErrCookieNotScan             = "cookie not scan"
+	ErrCookieScan                = "cookie not scan"
+	ErrCheckAccessCookieNotFound = "cookie not found in CheckAccess"
+	ErrUpdateCSRF                = "csrf not updated"
+	ErrCookieExpired             = "cookie expired"
+	ErrCookieNotFound            = "cookie not found"
+	ErrFileNotFound              = "CreateTables.sql not found" // TODO: add handler
+	ErrDeleteFileNotFound        = "DeleteTables.sql not found" // TODO: add handler
+	ErrFillFileNotFound          = "Fill.sql not found"         // TODO: add handler
+	ErrNotCreateTables           = "table not create"           // TODO: add handler
+	ErrNotDeleteTables           = "table not delete"           // TODO: add handler
+	ErrNotFillTables             = "table not fill"             // TODO: add handler
 )
 
 // Error of profile
 const (
-	ErrClientScan            = "ERROR: check user on client not scan"
-	ErrHostScan              = "ERROR: check user on host not scan"
-	ErrCourierScan           = "ERROR: check user on courier not scan"
-	ErrGetProfileHostScan    = "ERROR: get profile host not scan"
-	ErrGetProfileClientScan  = "ERROR: get profile client not scan"
-	ErrGetProfileCourierScan = "ERROR: get profile courier not scan"
-	ErrGetBirthdayScan       = "ERROR: birthday not scan"
-	ErrUpdateName            = "ERROR: name not update"
-	ErrUpdateEmail           = "ERROR: email not update"
-	ErrUpdateEmailRepeat     = "ERROR: email already exist"
-	ErrUpdatePhone           = "ERROR: phone not update"
-	ErrUpdatePhoneRepeat     = "ERROR: phone already exist"
-	ErrSelectSaltInUpdate    = "ERROR: salt not found in update"
-	ErrUpdatePassword        = "ERROR: password not update"
-	ErrUpdateAvatar          = "ERROR: avatar not update"
-	ErrUpdateBirthday        = "ERROR: birthday not update"
-	ErrUpdateAddress         = "ERROR: address not update"
+	ErrClientScan            = "check user on client not scan"
+	ErrHostScan              = "check user on host not scan"
+	ErrCourierScan           = "check user on courier not scan"
+	ErrGetProfileHostScan    = "get profile host not scan"
+	ErrGetProfileClientScan  = "get profile client not scan"
+	ErrGetProfileCourierScan = "get profile courier not scan"
+	ErrGetBirthdayScan       = "birthday not scan"
+	ErrUpdateName            = "name not update"
+	ErrUpdateEmail           = "email not update"
+	ErrUpdateEmailRepeat     = "email already exist"
+	ErrUpdatePhone           = "phone not update"
+	ErrUpdatePhoneRepeat     = "phone already exist"
+	ErrSelectSaltInUpdate    = "salt not found in update"
+	ErrUpdatePassword        = "password not update"
+	ErrUpdateAvatar          = "avatar not update"
+	ErrUpdateBirthday        = "birthday not update"
+	ErrUpdateAddress         = "address not update"
 )
 
 // Error of restaurant
 const (
-	ErrRestaurantsNotFound        = "ERROR: restaurants not found"
-	ErrRestaurantsScan            = "ERROR: restaurants scan error"
-	ErrRestaurantsNotSelect       = "ERROR: restaurants not select"
-	ErrRestaurantNotFound         = "ERROR: restaurant not found"
-	ErrCategoryRestaurantScan     = "ERROR: category restaurants scan error"
-	ErrRestaurantsDishesNotSelect = "ERROR: dishes in restaurant not select"
-	ErrRestaurantDishesScan       = "ERROR: dishes in restaurant not scan"
-	ErrRestaurantDishesNotFound   = "ERROR: dishes in restaurant not found"
-	DishesDishesNotFound          = "ERROR: dishes not found"
-	DishesDishesNotScan           = "ERROR: dishes not scan"
-	DishesStructDishesNotSelect   = "ERROR: dishes not select"
-	DishesStructDishesNotScan     = "ERROR: dishes not scan"
-	DishesStructRadiosNotSelect   = "ERROR: radios not select"
-	DishesRadiosNotScan           = "ERROR: radios not scan"
-	DishesStructRadiosNotFound    = "ERROR: radios not found"
-	DishesStructRadiosNotScan     = "ERROR: radios not scan"
-	ErrTagNotFound                = "ERROR: tag not found"
+	ErrRestaurantsNotFound        = "restaurants not found"
+	ErrRestaurantsScan            = "restaurants scan error"
+	ErrRestaurantsNotSelect       = "restaurants not select"
+	ErrRestaurantNotFound         = "restaurant not found"
+	ErrCategoryRestaurantScan     = "category restaurants scan error"
+	ErrRestaurantsDishesNotSelect = "dishes in restaurant not select"
+	ErrRestaurantDishesScan       = "dishes in restaurant not scan"
+	ErrRestaurantDishesNotFound   = "dishes in restaurant not found"
+	DishesDishesNotFound          = "dishes not found"
+	DishesDishesNotScan           = "dishes not scan"
+	DishesStructDishesNotSelect   = "dishes not select"
+	DishesStructDishesNotScan     = "dishes not scan"
+	DishesStructRadiosNotSelect   = "radios not select"
+	DishesRadiosNotScan           = "radios not scan"
+	DishesStructRadiosNotFound    = "radios not found"
+	DishesStructRadiosNotScan     = "radios not scan"
+	ErrTagNotFound                = "tag not found"
 )
 
 // Error of Cart
 const (
-	GetCartRestaurantNotFound         = "ERROR: restaurant not found"
-	GetCartRestaurantNotScan          = "ERROR: restaurant not scan"
-	GetCartCartNotFound               = "ERROR: cart not found"
-	GetCartCartNotScan                = "ERROR: cart not scan"
-	GetCartDishesNotFound             = "ERROR: dishes not found"
-	GetCartDishesNotScan              = "ERROR: dishes not scan"
-	GetCartRestaurantNotSelect        = "ERROR: restaurant not select"
-	GetCartCheckboxNotScan            = "ERROR: checkbox not scan"
-	GetCartRadiosNotSelect            = "ERROR: radios not select"
-	GetCartRadiosNotScan              = "ERROR: radios not scan"
-	GetCartStructRadiosNotFound       = "ERROR: struct radios not found"
-	GetCartStructRadiosNowScan        = "ERROR: struct radios not scan"
-	CartNotDelete                     = "ERROR: cat not delete"
-	StructureFoodNotDelete            = "ERROR: food not delete"
-	CartRadiosFoodNotDelete           = "ERROR: radios not delete"
-	UpdateCartCartNotInsert           = "ERROR: cart not insert"
-	UpdateCartCartNotFound            = "ERROR: dish not found"
-	UpdateCartStructureFoodNotInsert  = "ERROR: structure food not insert"
-	UpdateCartRadiosNotInsert         = "ERROR: radios not insert"
-	GetPriceDeliveryNotFound          = "ERROR: delivery not found"
-	GetPriceDeliveryNotScan           = "ERROR: delivery not scan"
-	UpdateCartCartNotScan             = "ERROR: cart not scan"
-	UpdateCartStructureNotSelect      = "ERROR: structure dishes not select"
-	UpdateCartStructRadiosNotSelect   = "ERROR: structure radios not select"
-	ErrUpdateCartTransactionNotCreate = "ERROR: transaction not create in UpdateCart" // TODO: add handler
+	GetCartRestaurantNotFound         = "restaurant not found"
+	GetCartRestaurantNotScan          = "restaurant not scan"
+	GetCartCartNotFound               = "cart not found"
+	GetCartCartNotScan                = "cart not scan"
+	GetCartDishesNotFound             = "dishes not found"
+	GetCartDishesNotScan              = "dishes not scan"
+	GetCartRestaurantNotSelect        = "restaurant not select"
+	GetCartCheckboxNotScan            = "checkbox not scan"
+	GetCartRadiosNotSelect            = "radios not select"
+	GetCartRadiosNotScan              = "radios not scan"
+	GetCartStructRadiosNotFound       = "struct radios not found"
+	GetCartStructRadiosNowScan        = "struct radios not scan"
+	CartNotDelete                     = "cat not delete"
+	StructureFoodNotDelete            = "food not delete"
+	CartRadiosFoodNotDelete           = "radios not delete"
+	UpdateCartCartNotInsert           = "cart not insert"
+	UpdateCartCartNotFound            = "dish not found"
+	UpdateCartStructureFoodNotInsert  = "structure food not insert"
+	UpdateCartRadiosNotInsert         = "radios not insert"
+	GetPriceDeliveryNotFound          = "delivery not found"
+	GetPriceDeliveryNotScan           = "delivery not scan"
+	UpdateCartCartNotScan             = "cart not scan"
+	UpdateCartStructureNotSelect      = "structure dishes not select"
+	UpdateCartStructRadiosNotSelect   = "structure radios not select"
+	ErrUpdateCartTransactionNotCreate = "transaction not create in UpdateCart" // TODO: add handler
 )
 
 // TODO: make TODO
