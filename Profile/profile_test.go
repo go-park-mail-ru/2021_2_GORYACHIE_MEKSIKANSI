@@ -218,6 +218,7 @@ var OrmGetProfileClient = []struct {
 	outErr                       string
 	rowsQueryBirthday            Row
 	inputQueryBirthday           int
+	countQueryBirthday int
 }{
 	{
 		testName:           "One",
@@ -229,6 +230,7 @@ var OrmGetProfileClient = []struct {
 		outErr:             errorsConst.ErrRestaurantNotFound,
 		inputQueryBirthday: 1,
 		rowsQueryBirthday:  Row{row: []interface{}{time.Now()}},
+		countQueryBirthday: 0,
 	},
 }
 
@@ -251,7 +253,8 @@ func TestGetProfileClient(t *testing.T) {
 				"SELECT date_birthday FROM client WHERE client_id = $1",
 				tt.inputQueryBirthday,
 			).
-			Return(&tt.rowsQueryBirthday)
+			Return(&tt.rowsQueryBirthday).
+			Times(tt.countQueryBirthday)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetProfileClient(tt.input)

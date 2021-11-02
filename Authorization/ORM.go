@@ -88,6 +88,9 @@ func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest) (*utils.Defense
 		}
 	}
 	err = tx.Commit(context.Background())
+	if err != nil {
+		return nil, err // TODO make new err
+	}
 	return cookie, nil
 }
 
