@@ -1,6 +1,9 @@
 package Errors
 
-import "time"
+import (
+	"go.uber.org/zap"
+	"time"
+)
 
 type ResultError struct {
 	Status  int    `json:"status"`
@@ -14,6 +17,13 @@ type Errors struct {
 
 func (e *Errors) Error() string {
 	return e.Text
+}
+
+type CheckError struct {
+	RequestId     *int
+	LoggerErrWarn *zap.SugaredLogger
+	LoggerInfo    *zap.SugaredLogger
+	LoggerTest    *zap.SugaredLogger
 }
 
 // Error of server
@@ -32,19 +42,21 @@ const (
 
 // Error of Authorization
 const (
-	ErrSelectSaltInLogin        = "ERROR: salt in login not scan"
-	ErrLoginOrPasswordIncorrect = "Неправильный логин или пароль"
-	ErrGeneralInfoScan          = "ERROR: general_user_info not scan"
-	ErrInsertHost               = "ERROR: host not insert"
-	ErrInsertCourier            = "ERROR: courier not insert"
-	ErrInsertClient             = "ERROR: client not insert"
-	ErrInsertTransactionCookie  = "ERROR: cookie with transaction not insert"
-	ErrDeleteCookie             = "ERROR: cookie not delete"
-	ErrInsertCookie             = "ERROR: cookie not insert"
-	ErrGeneralInfoUnique        = "Телефон или Email уже зарегистрирован"
-	ErrPhoneFormat              = "Неверный формат телефона"
-	ErrUserNotFoundLogin        = "ERROR: user not found"
-	ErrDeleteCookieById         = "ERROR: delete cookie by id"
+	ErrSelectSaltInLogin                 = "ERROR: salt in login not scan"
+	ErrLoginOrPasswordIncorrect          = "Неправильный логин или пароль"
+	ErrGeneralInfoScan                   = "ERROR: general_user_info not scan"
+	ErrInsertHost                        = "ERROR: host not insert"
+	ErrInsertCourier                     = "ERROR: courier not insert"
+	ErrInsertClient                      = "ERROR: client not insert"
+	ErrInsertTransactionCookie           = "ERROR: cookie with transaction not insert"
+	ErrDeleteCookie                      = "ERROR: cookie not delete"
+	ErrInsertCookie                      = "ERROR: cookie not insert"
+	ErrGeneralInfoUnique                 = "Телефон или Email уже зарегистрирован"
+	ErrPhoneFormat                       = "Неверный формат телефона"
+	ErrUserNotFoundLogin                 = "ERROR: user not found"
+	ErrSignupHostTransactionNotCreate    = "ERROR: transaction not create in SignupHost"    // TODO: add handler
+	ErrSignupCourierTransactionNotCreate = "ERROR: transaction not create in SignupCourier" // TODO: add handler
+	ErrSignupClientTransactionNotCreate  = "ERROR: transaction not create in SignupClient"  // TODO: add handler
 )
 
 // Error of Middleware
@@ -108,29 +120,31 @@ const (
 
 // Error of Cart
 const (
-	GetCartRestaurantNotFound        = "ERROR: restaurant not found"
-	GetCartRestaurantNotScan         = "ERROR: restaurant not scan"
-	GetCartCartNotFound              = "ERROR: cart not found"
-	GetCartCartNotScan               = "ERROR: cart not scan"
-	GetCartDishesNotFound            = "ERROR: dishes not found"
-	GetCartDishesNotScan             = "ERROR: dishes not scan"
-	GetCartRestaurantNotSelect       = "ERROR: restaurant not select"
-	GetCartCheckboxNotScan           = "ERROR: checkbox not scan"
-	GetCartRadiosNotSelect           = "ERROR: radios not select"
-	GetCartRadiosNotScan             = "ERROR: radios not scan"
-	GetCartStructRadiosNotFound      = "ERROR: struct radios not found"
-	GetCartStructRadiosNowScan       = "ERROR: struct radios not scan"
-	CartNotDelete                    = "ERROR: cat not delete"
-	StructureFoodNotDelete           = "ERROR: food not delete"
-	CartRadiosFoodNotDelete          = "ERROR: radios not delete"
-	UpdateCartCartNotInsert          = "ERROR: cart not insert"
-	UpdateCartCartNotFound           = "ERROR: dish not found"
-	UpdateCartStructureFoodNotInsert = "ERROR: structure food not insert"
-	UpdateCartRadiosNotInsert        = "ERROR: radios not insert"
-	GetPriceDeliveryNotFound         = "ERROR: delivery not found"
-	GetPriceDeliveryNotScan          = "ERROR: delivery not scan"
-	UpdateCartCartNotScan            = "ERROR: cart not scan"
-	UpdateCartStructureNotSelect     = "ERROR: structure dishes not select"
-	UpdateCartStructRadiosNotSelect  = "ERROR: structure radios not select"
+	GetCartRestaurantNotFound         = "ERROR: restaurant not found"
+	GetCartRestaurantNotScan          = "ERROR: restaurant not scan"
+	GetCartCartNotFound               = "ERROR: cart not found"
+	GetCartCartNotScan                = "ERROR: cart not scan"
+	GetCartDishesNotFound             = "ERROR: dishes not found"
+	GetCartDishesNotScan              = "ERROR: dishes not scan"
+	GetCartRestaurantNotSelect        = "ERROR: restaurant not select"
+	GetCartCheckboxNotScan            = "ERROR: checkbox not scan"
+	GetCartRadiosNotSelect            = "ERROR: radios not select"
+	GetCartRadiosNotScan              = "ERROR: radios not scan"
+	GetCartStructRadiosNotFound       = "ERROR: struct radios not found"
+	GetCartStructRadiosNowScan        = "ERROR: struct radios not scan"
+	CartNotDelete                     = "ERROR: cat not delete"
+	StructureFoodNotDelete            = "ERROR: food not delete"
+	CartRadiosFoodNotDelete           = "ERROR: radios not delete"
+	UpdateCartCartNotInsert           = "ERROR: cart not insert"
+	UpdateCartCartNotFound            = "ERROR: dish not found"
+	UpdateCartStructureFoodNotInsert  = "ERROR: structure food not insert"
+	UpdateCartRadiosNotInsert         = "ERROR: radios not insert"
+	GetPriceDeliveryNotFound          = "ERROR: delivery not found"
+	GetPriceDeliveryNotScan           = "ERROR: delivery not scan"
+	UpdateCartCartNotScan             = "ERROR: cart not scan"
+	UpdateCartStructureNotSelect      = "ERROR: structure dishes not select"
+	UpdateCartStructRadiosNotSelect   = "ERROR: structure radios not select"
+	ErrUpdateCartTransactionNotCreate = "ERROR: transaction not create in UpdateCart" // TODO: add handler
 )
+
 // TODO: make TODO

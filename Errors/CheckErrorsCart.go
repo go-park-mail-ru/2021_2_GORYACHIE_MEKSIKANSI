@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func CheckErrorGetCart(err error) (error, []byte, int) {
+func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case GetCartRestaurantNotScan, GetCartCartNotFound, GetCartCartNotScan,
@@ -55,7 +55,7 @@ func CheckErrorGetCart(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorUpdateCart(err error) (error, []byte, int) {
+func (c *CheckError) CheckErrorUpdateCart(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case CartNotDelete, StructureFoodNotDelete, CartRadiosFoodNotDelete, UpdateCartCartNotInsert,

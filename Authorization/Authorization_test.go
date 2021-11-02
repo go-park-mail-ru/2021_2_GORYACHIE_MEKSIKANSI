@@ -3,156 +3,71 @@ package Authorization
 import (
 	mocks "2021_2_GORYACHIE_MEKSIKANSI/Test/Mocks"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
-	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
-func TestSignUpApplication(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	spaceDefense := utils.Defense{}
-
-	m := mocks.NewMockWrapperAuthorization(ctrl)
-	m.
-		EXPECT().
-		SignupClient(&utils.RegistrationRequest{TypeUser: "client"}).
-		Return(&spaceDefense, errors.New("text"))
-	m.
-		EXPECT().
-		SignupClient(&utils.RegistrationRequest{TypeUser: "client"}).
-		Return(&spaceDefense, nil)
-	m.
-		EXPECT().
-		SignupHost(&utils.RegistrationRequest{TypeUser: "host"}).
-		Return(&spaceDefense, nil)
-	m.
-		EXPECT().
-		SignupCourier(&utils.RegistrationRequest{TypeUser: "courier"}).
-		Return(&spaceDefense, nil)
-	// TODO: make beautiful
-	result, _ := SignUp(m, &utils.RegistrationRequest{TypeUser: "client"})
-	if gomock.Nil().Matches(result) != true {
-		//t.Errorf("Not equal\n")
-		fmt.Printf("Not equal\n")
-	} else {
-		fmt.Printf("equal\n")
-	}
-	result, _ = SignUp(m, &utils.RegistrationRequest{TypeUser: "client"})
-	if gomock.Nil().Matches(result) != true {
-		//t.Errorf("Not equal\n")
-		fmt.Printf("Not equal\n")
-	} else {
-		fmt.Printf("equal\n")
-	}
-	result, _ = SignUp(m, &utils.RegistrationRequest{TypeUser: "courier"})
-	if gomock.Nil().Matches(result) != true {
-		//t.Errorf("Not equal\n")
-		fmt.Printf("Not equal\n")
-	} else {
-		fmt.Printf("equal\n")
-	}
-	result, _ = SignUp(m, &utils.RegistrationRequest{TypeUser: "host"})
-	if gomock.Nil().Matches(result) != true {
-		//t.Errorf("Not equal\n")
-		fmt.Printf("Not equal\n")
-	} else {
-		fmt.Printf("equal\n")
-	}
-	result, _ = SignUp(m, &utils.RegistrationRequest{TypeUser: "default"})
-	if gomock.Nil().Matches(result) != true {
-		//t.Errorf("Not equal\n")
-		fmt.Printf("Not equal\n")
-	} else {
-		fmt.Printf("equal\n")
-	}
+var ApplicationSignUp = []struct {
+	testName                string
+	out                     *utils.Defense
+	outErr                  string
+	input                   *utils.RegistrationRequest
+	inputSignupClient       *utils.RegistrationRequest
+	resultSignupClient      *utils.Defense
+	errSignupClient         error
+	countSignupClient       int
+	inputSignupCourier  int
+	resultSignupCourier *utils.Defense
+	errSignupCourier    error
+	countSignupCourier  int
+	inputSignupHost         int
+	resultSignupHost        *utils.Defense
+	errSignupHost           error
+	countSignupHost         int
+}{
+	{
+		input:    &utils.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "client"},
+		testName: "One",
+		outErr:   "",
+		resultSignupClient: &utils.Defense{},
+		inputSignupClient:  &utils.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "client"},
+		out: &utils.Defense{},
+		errSignupClient: nil,
+		countSignupClient: 1,
+	},
 }
 
-func TestLoginApplication(t *testing.T) {
+func TestApplicationSignUp(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	spaceDefense := utils.Defense{}
-
 	m := mocks.NewMockWrapperAuthorization(ctrl)
-	m.
-		EXPECT().
-		LoginByEmail("1", "1").
-		Return(1, nil)
-	m.
-		EXPECT().
-		GenerateNew().
-		Return(&spaceDefense)
-	m.
-		EXPECT().
-		LoginByPhone("1", "1").
-		Return(1, nil)
-	m.
-		EXPECT().
-		GenerateNew().
-		Return(&spaceDefense)
-	m.
-		EXPECT().
-		LoginByPhone("1", "1").
-		Return(0, errors.New("text"))
-	m.
-		EXPECT().
-		AddCookie(&spaceDefense, 1).
-		Return(nil)
-	m.
-		EXPECT().
-		AddCookie(&spaceDefense, 1).
-		Return(errors.New("text"))
-	// TODO: make beautiful
-	result, _ := Login(m, &Authorization{Email: "1", Password: "1"})
-	if gomock.Nil().Matches(result) != true {
-		//t.Errorf("Not equal\n")
-		fmt.Printf("Not equal\n")
-	} else {
-		fmt.Printf("equal\n")
-	}
-	result, _ = Login(m, &Authorization{Phone: "1", Password: "1"})
-	if gomock.Nil().Matches(result) != true {
-		//t.Errorf("Not equal\n")
-		fmt.Printf("Not equal\n")
-	} else {
-		fmt.Printf("equal\n")
-	}
-	result, _ = Login(m, &Authorization{Phone: "1", Password: "1"})
-	if gomock.Nil().Matches(result) != true {
-		//t.Errorf("Not equal\n")
-		fmt.Printf("Not equal\n")
-	} else {
-		fmt.Printf("equal\n")
-	}
-	result, _ = Login(m, &Authorization{})
-	if gomock.Nil().Matches(result) != true {
-		//t.Errorf("Not equal\n")
-		fmt.Printf("Not equal\n")
-	} else {
-		fmt.Printf("equal\n")
-	}
-}
-
-func TestLogoutApplication(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	spaceDefense := utils.Defense{}
-
-	m := mocks.NewMockWrapperAuthorization(ctrl)
-	m.
-		EXPECT().
-		DeleteCookie(&spaceDefense).
-		Return(nil)
-	// TODO: make beautiful
-	result := Logout(m, &spaceDefense)
-	if gomock.Nil().Matches(result) != true {
-		//t.Errorf("Not equal\n")
-		fmt.Printf("Not equal\n")
-	} else {
-		fmt.Printf("equal\n")
+	for _, tt := range ApplicationSignUp {
+		m.
+			EXPECT().
+			SignupClient(tt.inputSignupClient).
+			Return(tt.resultSignupClient, tt.errSignupClient).
+			Times(tt.countSignupClient)
+		m.
+			EXPECT().
+			SignupCourier(tt.inputSignupCourier).
+			Return(tt.resultSignupCourier, tt.errSignupCourier).
+			Times(tt.countSignupCourier)
+		m.
+			EXPECT().
+			SignupHost(tt.inputSignupHost).
+			Return(tt.resultSignupHost, tt.errSignupHost).
+			Times(tt.countSignupHost)
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := SignUp(m, tt.input)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
 	}
 }

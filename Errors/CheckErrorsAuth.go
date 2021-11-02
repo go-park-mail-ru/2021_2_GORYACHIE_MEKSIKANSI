@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func CheckErrorSignUp(errIn error) (error, []byte, int) {
+func (c *CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 	if errIn != nil {
 		switch errIn.Error() {
 		case ErrGeneralInfoUnique:
@@ -72,7 +72,7 @@ func CheckErrorSignUp(errIn error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorLogin(err error) (error, []byte, int) {
+func (c *CheckError) CheckErrorLogin(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrLoginOrPasswordIncorrect, ErrUserNotFoundLogin:
@@ -118,7 +118,7 @@ func CheckErrorLogin(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorLogout(err error) (error, []byte, int) {
+func (c *CheckError) CheckErrorLogout(err error) (error, []byte, int) {
 	if err != nil && err.Error() == ErrDeleteCookie {
 		result, errMarshal := json.Marshal(ResultError{
 			Status:  http.StatusInternalServerError,

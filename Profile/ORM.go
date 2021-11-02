@@ -83,7 +83,7 @@ func (db *Wrapper) GetProfileClient(id int) (*prof.Profile, error) {
 
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT date_birthday FROM client WHERE client_id = $1", id).Scan(&profile.Birthday)
-	if err != nil && err.Error() != "can't scan into dest[0]: cannot assign NULL to *time.Time" {
+	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ErrGetBirthdayScan,
 			Time: time.Now(),
@@ -220,8 +220,8 @@ func (db *Wrapper) UpdateBirthday(id int, newBirthday time.Time) error {
 
 func (db *Wrapper) UpdateAddress(id int, newAddress Utils.AddressCoordinates) error {
 	_, err := db.Conn.Exec(context.Background(),
-		"UPDATE address_user SET alias = $1, comment = $2, city = $3, street = $4, house = $5, floor = $6," +
-		" flat = $7, porch = $8, intercom = $9, latitude = $10, longitude = $11 WHERE client_id = $12",
+		"UPDATE address_user SET alias = $1, comment = $2, city = $3, street = $4, house = $5, floor = $6,"+
+			" flat = $7, porch = $8, intercom = $9, latitude = $10, longitude = $11 WHERE client_id = $12",
 		newAddress.Alias, newAddress.Comment, newAddress.City, newAddress.Street,
 		newAddress.House, newAddress.Floor, newAddress.Flat, newAddress.Porch,
 		newAddress.Intercom, newAddress.Coordinates.Latitude, newAddress.Coordinates.Longitude,

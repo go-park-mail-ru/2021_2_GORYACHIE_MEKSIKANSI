@@ -23,6 +23,8 @@ type DishesCartResponse struct {
 	Name           string                   `json:"name"`
 	Count          int                      `json:"count"`
 	Cost           int                      `json:"cost"`
+	Kilocalorie    int                      `json:"ccal"`
+	Weight         int                      `json:"weight"`
 	Description    string                   `json:"desc"`
 	RadiosCart     []RadiosCartResponse     `json:"radios,omitempty"`
 	IngredientCart []IngredientCartResponse `json:"ingredients,omitempty"`
@@ -90,7 +92,7 @@ type IngredientsCartRequest struct {
 	Id int `json:"id"`
 }
 
-func (c *ResponseCartErrors) Cast(a RequestCartDefault) {
+func (c *ResponseCartErrors) CastToRequestCartDefault(a RequestCartDefault) {
 	for i, dish := range a.Dishes {
 		c.Dishes[i].Id = dish.Id
 		c.Dishes[i].ItemNumber = dish.ItemNumber
@@ -104,4 +106,14 @@ func (c *ResponseCartErrors) Cast(a RequestCartDefault) {
 			c.Dishes[i].RadiosCart[j].RadiosId = radios.RadiosId
 		}
 	}
+}
+
+func (c *ResponseCartErrors) CastToRestaurantId(a RestaurantId) {
+	c.Restaurant.Id = a.Id
+	c.Restaurant.Img = a.Img
+	c.Restaurant.Rating = a.Rating
+	c.Restaurant.CostForFreeDelivery = a.CostForFreeDelivery
+	c.Restaurant.Name = a.Name
+	c.Restaurant.MaxDelivery = a.MaxDelivery
+	c.Restaurant.MinDelivery = a.MinDelivery
 }

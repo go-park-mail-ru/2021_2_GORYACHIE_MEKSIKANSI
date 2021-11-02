@@ -4,11 +4,10 @@ import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"time"
 )
 
-func CheckAccess(conn *pgxpool.Pool, cookie *utils.Defense) (bool, error) {
+func CheckAccess(conn utils.ConnectionInterface, cookie *utils.Defense) (bool, error) {
 	var timeLiveCookie time.Time
 	var id int
 	err := conn.QueryRow(context.Background(),
@@ -34,7 +33,7 @@ func CheckAccess(conn *pgxpool.Pool, cookie *utils.Defense) (bool, error) {
 	return false, nil
 }
 
-func NewCsrf(conn *pgxpool.Pool, cookie *utils.Defense) (string, error) {
+func NewCsrf(conn utils.ConnectionInterface, cookie *utils.Defense) (string, error) {
 	csrfToken := utils.RandString(5)
 	_, err := conn.Exec(context.Background(),
 		"UPDATE cookie SET csrf_token = $1 WHERE session_id = $2",
@@ -49,7 +48,7 @@ func NewCsrf(conn *pgxpool.Pool, cookie *utils.Defense) (string, error) {
 	return csrfToken, nil
 }
 
-func GetIdByCookie(conn *pgxpool.Pool, cookie *utils.Defense) (int, error) {
+func GetIdByCookie(conn utils.ConnectionInterface, cookie *utils.Defense) (int, error) {
 	var timeLiveCookie time.Time
 	var id int
 	err := conn.QueryRow(context.Background(),

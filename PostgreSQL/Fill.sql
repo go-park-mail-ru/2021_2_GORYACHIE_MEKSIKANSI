@@ -79,7 +79,7 @@ SET
 INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1', NOW(), '');
 
 INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, count, weight)
-SELECT 'name', random() * (500 - 10) + 10, random() * (53 - 1) + 1, 'description', 1, 1, 1, 1, 'text', 'text', random() * (51 - 1) - 1, random() * (51 - 1) - 1 FROM generate_series(1, 1000);
+SELECT 'name', random() * (500 - 10) + 10, random() * (53 - 1) + 1, 'description', 1, 1, random() * (1000 - 1) + 1, 1, 'text', 'text', random() * (51 - 1) - 1, random() * (51 - 1) - 1 FROM generate_series(1, 1000);
 UPDATE dishes
 SET
     name = (
@@ -133,7 +133,7 @@ SET
                 'Суши',
                 'Десерт',
                 'Закуски',
-                'Особые ингридиенты'
+                'Особые ингредиенты'
                 ]
            ) [floor(random() * 8 + 1)],
     description = (
