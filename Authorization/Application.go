@@ -1,7 +1,9 @@
 package Authorization
 
 import (
+	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
+	"time"
 )
 
 const LenSalt = 5
@@ -9,15 +11,19 @@ const LenSalt = 5
 func SignUp(db utils.WrapperAuthorization, signup *utils.RegistrationRequest) (*utils.Defense, error) {
 	var cookie *utils.Defense
 	var err error
+	newCookie := db.GenerateNew()
 	switch signup.TypeUser {
 	case "client":
-		cookie, err = db.SignupClient(signup)
+		cookie, err = db.SignupClient(signup, newCookie)
 	case "courier":
-		cookie, err = db.SignupCourier(signup)
+		cookie, err = db.SignupCourier(signup, newCookie)
 	case "host":
-		cookie, err = db.SignupHost(signup)
+		cookie, err = db.SignupHost(signup, newCookie)
 	default:
-		return nil, err
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ErrSignUpUnknownType,
+			Time: time.Now(),
+		}
 	}
 
 	if err != nil {
@@ -37,7 +43,10 @@ func Login(db utils.WrapperAuthorization, login *Authorization) (*utils.Defense,
 	case login.Phone != "":
 		userId, err = db.LoginByPhone(login.Phone, login.Password)
 	default:
-		return nil, err
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ErrLoginVoidLogin,
+			Time: time.Now(),
+		}
 	}
 
 	if err != nil {

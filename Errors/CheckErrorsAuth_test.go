@@ -2,15 +2,48 @@ package Errors
 
 import (
 	test "2021_2_GORYACHIE_MEKSIKANSI/Test"
+	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
+	"math"
 	"net/http"
+	"os"
 	"strconv"
 	"testing"
 	"time"
 )
 
 func TestCheckErrorSignUp(t *testing.T) {
+	reqId := utils.RandomInteger(0, math.MaxInt64)
+	loggerErrWarn := utils.NewLogger("./loggErrWarn.txt")
+	loggerInfo := utils.NewLogger("./loggInfo.txt")
+	loggerTest := utils.NewLogger("./loggTest.txt")
+
+	defer func(loggerErrWarn *zap.SugaredLogger) {
+		errLogger := loggerErrWarn.Sync()
+		if errLogger != nil {
+			zap.S().Errorf("LoggerErrWarn the buffer could not be cleared %v", errLogger)
+			os.Exit(1)
+		}
+	}(loggerErrWarn)
+
+	defer func(loggerInfo *zap.SugaredLogger) {
+		errLogger := loggerInfo.Sync()
+		if errLogger != nil {
+			zap.S().Errorf("LoggerInfo the buffer could not be cleared %v", errLogger)
+			os.Exit(1)
+		}
+	}(loggerInfo)
+
+	defer func(loggerTest *zap.SugaredLogger) {
+		errLogger := loggerTest.Sync()
+		if errLogger != nil {
+			zap.S().Errorf("LoggerTest the buffer could not be cleared %v", errLogger)
+			os.Exit(1)
+		}
+	}(loggerTest)
+
 	testTable := []struct {
 		errorInput       Errors
 		errorExpected    string
@@ -87,8 +120,15 @@ func TestCheckErrorSignUp(t *testing.T) {
 		},
 	}
 
+	checkError := &CheckError{
+		LoggerErrWarn: loggerErrWarn,
+		LoggerInfo:    loggerInfo,
+		LoggerTest:    loggerTest,
+		RequestId:     &reqId,
+	}
+
 	for _, testCase := range testTable {
-		errOut, resultOut, codeHTTP := CheckErrorSignUp(&testCase.errorInput)
+		errOut, resultOut, codeHTTP := checkError.CheckErrorSignUp(&testCase.errorInput)
 		assert.Equal(t, testCase.errorExpected, errOut.Error(),
 			fmt.Sprintf("Expected %s, %s, %d", testCase.errorExpected, testCase.resultExpected, testCase.codeHTTPExpected),
 		)
@@ -101,7 +141,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 	}
 
 	var err error
-	errOut, resultOut, codeHTTP := CheckErrorSignUp(err)
+	errOut, resultOut, codeHTTP := checkError.CheckErrorSignUp(err)
 	assert.Equal(t, nil, errOut,
 		fmt.Sprintf("Expected %s, %s, %d", test.NilStr, test.NilStr, HttpNil),
 	)

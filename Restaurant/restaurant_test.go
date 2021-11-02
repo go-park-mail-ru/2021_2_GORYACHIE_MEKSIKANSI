@@ -612,9 +612,76 @@ var ApplicationGetRestaurant = []struct {
 	countGetMenu                   int
 }{
 	{
-		testName: "One",
-		out:      &rest.RestaurantId{},
-		outErr:   "",
+		testName:                       "One",
+		out:                            &rest.RestaurantId{Id: 0, Img: "", Name: "", CostForFreeDelivery: 0, MinDelivery: 0, MaxDelivery: 0, Rating: 0, Tags: []rest.Tag{}, Menu: []rest.Menu{}},
+		outErr:                         "",
+		input:                          1,
+		inputGetGeneralInfoRestaurant:  1,
+		resultGetGeneralInfoRestaurant: &rest.RestaurantId{},
+		errGetGeneralInfoRestaurant:    nil,
+		countGetGeneralInfoRestaurant:  1,
+		inputGetTagsRestaurant:         1,
+		resultGetTagsRestaurant:        []rest.Tag{},
+		errGetTagsRestaurant:           nil,
+		countGetTagsRestaurant:         1,
+		inputGetMenu:                   1,
+		resultGetMenu:                  []rest.Menu{},
+		errGetMenu:                     nil,
+		countGetMenu:                   1,
+	},
+	{
+		testName:                       "Two",
+		out:                            nil,
+		outErr:                         "text",
+		input:                          1,
+		inputGetGeneralInfoRestaurant:  1,
+		resultGetGeneralInfoRestaurant: &rest.RestaurantId{},
+		errGetGeneralInfoRestaurant:    errors.New("text"),
+		countGetGeneralInfoRestaurant:  1,
+		inputGetTagsRestaurant:         1,
+		resultGetTagsRestaurant:        []rest.Tag{},
+		errGetTagsRestaurant:           nil,
+		countGetTagsRestaurant:         0,
+		inputGetMenu:                   1,
+		resultGetMenu:                  []rest.Menu{},
+		errGetMenu:                     nil,
+		countGetMenu:                   0,
+	},
+	{
+		testName:                       "Three",
+		out:                            nil,
+		outErr:                         "text",
+		input:                          1,
+		inputGetGeneralInfoRestaurant:  1,
+		resultGetGeneralInfoRestaurant: &rest.RestaurantId{},
+		errGetGeneralInfoRestaurant:    nil,
+		countGetGeneralInfoRestaurant:  1,
+		inputGetTagsRestaurant:         1,
+		resultGetTagsRestaurant:        []rest.Tag{},
+		errGetTagsRestaurant:           errors.New("text"),
+		countGetTagsRestaurant:         1,
+		inputGetMenu:                   1,
+		resultGetMenu:                  []rest.Menu{},
+		errGetMenu:                     nil,
+		countGetMenu:                   0,
+	},
+	{
+		testName:                       "Four",
+		out:                            nil,
+		outErr:                         "text",
+		input:                          1,
+		inputGetGeneralInfoRestaurant:  1,
+		resultGetGeneralInfoRestaurant: &rest.RestaurantId{},
+		errGetGeneralInfoRestaurant:    nil,
+		countGetGeneralInfoRestaurant:  1,
+		inputGetTagsRestaurant:         1,
+		resultGetTagsRestaurant:        []rest.Tag{},
+		errGetTagsRestaurant:           nil,
+		countGetTagsRestaurant:         1,
+		inputGetMenu:                   1,
+		resultGetMenu:                  []rest.Menu{},
+		errGetMenu:                     errors.New("text"),
+		countGetMenu:                   1,
 	},
 }
 
@@ -659,22 +726,97 @@ var ApplicationRestaurantDishes = []struct {
 	outErr                   string
 	inputGetDishesRestId     int
 	inputGetDishesDishId     int
-	resultGetDishes          *rest.RestaurantId
+	resultGetDishes          *rest.Dishes
 	errGetDishes             error
 	countGetDishes           int
 	inputGetStructureDishes  int
-	resultGetStructureDishes []rest.Tag
+	resultGetStructureDishes []rest.Ingredients
 	errGetStructureDishes    error
 	countGetStructureDishes  int
 	inputGetRadios           int
-	resultGetRadios          []rest.Menu
+	resultGetRadios          []rest.Radios
 	errGetRadios             error
 	countGetRadios           int
 }{
 	{
-		testName: "One",
-		out:      &rest.Dishes{},
-		outErr:   "",
+		testName:                 "One",
+		out:                      nil,
+		outErr:                   "text",
+		inputGetDishesRestId:     1,
+		inputGetDishesDishId:     1,
+		resultGetDishes:          &rest.Dishes{},
+		errGetDishes:             errors.New("text"),
+		countGetDishes:           1,
+		inputGetStructureDishes:  1,
+		resultGetStructureDishes: []rest.Ingredients{},
+		errGetStructureDishes:    nil,
+		countGetStructureDishes:  0,
+		inputGetRadios:           1,
+		resultGetRadios:          []rest.Radios{},
+		errGetRadios:             nil,
+		countGetRadios:           0,
+		inputRestId:              1,
+		inputDishId:              1,
+	},
+	{
+		testName:                 "Two",
+		out:                      nil,
+		outErr:                   "text",
+		inputGetDishesRestId:     1,
+		inputGetDishesDishId:     1,
+		resultGetDishes:          &rest.Dishes{},
+		errGetDishes:             nil,
+		countGetDishes:           1,
+		inputGetStructureDishes:  1,
+		resultGetStructureDishes: []rest.Ingredients{},
+		errGetStructureDishes:    errors.New("text"),
+		countGetStructureDishes:  1,
+		inputGetRadios:           1,
+		resultGetRadios:          []rest.Radios{},
+		errGetRadios:             nil,
+		countGetRadios:           0,
+		inputRestId:              1,
+		inputDishId:              1,
+	},
+	{
+		testName:                 "Three",
+		out:                      nil,
+		outErr:                   "text",
+		inputGetDishesRestId:     1,
+		inputGetDishesDishId:     1,
+		resultGetDishes:          &rest.Dishes{},
+		errGetDishes:             nil,
+		countGetDishes:           1,
+		inputGetStructureDishes:  1,
+		resultGetStructureDishes: []rest.Ingredients{},
+		errGetStructureDishes:    nil,
+		countGetStructureDishes:  1,
+		inputGetRadios:           1,
+		resultGetRadios:          []rest.Radios{},
+		errGetRadios:             errors.New("text"),
+		countGetRadios:           1,
+		inputRestId:              1,
+		inputDishId:              1,
+	},
+	{
+		testName:                 "Four",
+		out:                      &rest.Dishes{Id: 0, Img: "", Title: "", Cost: 0, Ccal: 0, Description: "", Radios: []rest.Radios{}, Ingredient: []rest.Ingredients{}},
+		outErr:                   "",
+		inputGetDishesRestId:     1,
+		inputGetDishesDishId:     1,
+		resultGetDishes:          &rest.Dishes{},
+		errGetDishes:             nil,
+		countGetDishes:           1,
+		inputGetStructureDishes:  1,
+		resultGetStructureDishes: []rest.Ingredients{},
+		errGetStructureDishes:    nil,
+		countGetStructureDishes:  1,
+		inputGetRadios:           1,
+		resultGetRadios:          []rest.Radios{},
+		errGetRadios:             nil,
+		countGetRadios:           1,
+		inputRestId:              1,
+		inputDishId:              1,
 	},
 }
 
@@ -691,12 +833,12 @@ func TestApplicationRestaurantDishes(t *testing.T) {
 			Times(tt.countGetDishes)
 		m.
 			EXPECT().
-			GetTagsRestaurant(tt.inputGetStructureDishes).
+			GetStructureDishes(tt.inputGetStructureDishes).
 			Return(tt.resultGetStructureDishes, tt.errGetStructureDishes).
 			Times(tt.countGetStructureDishes)
 		m.
 			EXPECT().
-			GetMenu(tt.inputGetRadios).
+			GetRadios(tt.inputGetRadios).
 			Return(tt.resultGetRadios, tt.errGetRadios).
 			Times(tt.countGetRadios)
 		t.Run(tt.testName, func(t *testing.T) {

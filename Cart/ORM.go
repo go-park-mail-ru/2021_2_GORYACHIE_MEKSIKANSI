@@ -310,7 +310,10 @@ func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*
 	}
 	err = tx.Commit(context.Background())
 	if err != nil {
-		return nil, nil, err // TODO make new err
+		return nil, nil, &errorsConst.Errors{
+			Text: errorsConst.ErrUpdateCartNotCommit,
+			Time: time.Now(),
+		}
 	}
 	return &cart, dishesErrors, nil
 }

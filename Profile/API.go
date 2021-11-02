@@ -333,7 +333,6 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-
 	wrapper := Wrapper{Conn: u.ConnectionDB}
 	userPassword := utils.UpdatePassword{}
 	err := json.Unmarshal(ctx.Request.Body(), &userPassword)
