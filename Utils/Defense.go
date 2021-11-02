@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	DayLiveCookie      = 5
-	LenSessionId       = 92
-	LenCsrfToken       = 92
+	DayLiveCookie = 5
+	LenSessionId  = 92
+	LenCsrfToken  = 92
 )
 
 type Defense struct {

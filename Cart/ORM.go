@@ -127,7 +127,6 @@ func (db *Wrapper) GetCart(id int) (*Utils.ResponseCartErrors, []Utils.CastDishe
 		}
 		dish.IngredientCart = ingredients
 
-
 		radios, err = db.GetStructureRadios(id)
 		dish.RadiosCart = radios
 		if err != nil {
@@ -246,7 +245,7 @@ func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*
 	}(tx, context.Background())
 	if err != nil {
 		return nil, nil, &errorsConst.Errors{
-			Text: errorsConst.ErrGeneralInfoScan, //TODO: make new error
+			Text: errorsConst.ErrUpdateCartTransactionNotCreate,
 			Time: time.Now(),
 		}
 	}

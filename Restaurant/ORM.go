@@ -90,11 +90,12 @@ func (db *Wrapper) GetTagsRestaurant(id int) ([]Utils.Tag, error) {
 	return tags, nil
 }
 
-func (db *Wrapper) GetDishesRestaurant(name string, id int) ([]Utils.DishesMenu, error) {
+func GetDishesRestaurant(db *Wrapper, name string, id int) ([]Utils.DishesMenu, error) {
 	var dishes []Utils.DishesMenu
 	dish := Utils.DishesMenu{}
 	rowDishes, err := db.Conn.Query(context.Background(),
-		"SELECT id, avatar, name, cost, kilocalorie FROM dishes WHERE category_restaurant = $1 AND restaurant = $2", name, id)
+		"SELECT id, avatar, name, cost, kilocalorie FROM dishes WHERE category_restaurant = $1 AND restaurant = $2",
+		name, id)
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ErrRestaurantsDishesNotSelect,
@@ -129,12 +130,12 @@ func (db *Wrapper) GetMenu(id int) ([]Utils.Menu, error) {
 	for rowDishes.Next() {
 		var menu Utils.Menu
 		err := rowDishes.Scan(&menu.Name)
-		if err != nil{
+		if err != nil {
 			return nil, err
 		}
 
-		dishes, err := db.GetDishesRestaurant(menu.Name, id)
-		if err != nil{
+		dishes, err := GetDishesRestaurant(db, menu.Name, id)
+		if err != nil {
 			return nil, err
 		}
 
@@ -177,7 +178,7 @@ func (db *Wrapper) GetStructureDishes(dishesId int) ([]Utils.Ingredients, error)
 	return ingredients, nil
 }
 
-func (db *Wrapper) GetStructureRadios(radId int) ([]Utils.CheckboxesRows, error) {
+func GetStructureRadios(db *Wrapper, radId int) ([]Utils.CheckboxesRows, error) {
 	rowDishes, err := db.Conn.Query(context.Background(),
 		"SELECT id, name FROM structure_radios WHERE radios = $1", radId)
 	if err != nil {
@@ -251,7 +252,7 @@ func (db *Wrapper) GetRadios(dishesId int) ([]Utils.Radios, error) {
 			}
 		}
 
-		rows, err := db.GetStructureRadios(rad.Id)
+		rows, err := GetStructureRadios(db, rad.Id)
 		if err != nil {
 			return nil, err
 		}

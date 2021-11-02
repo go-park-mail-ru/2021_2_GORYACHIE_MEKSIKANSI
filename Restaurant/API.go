@@ -8,12 +8,16 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
+	"go.uber.org/zap"
 	"net/http"
 	"strconv"
 )
 
 type InfoRestaurant struct {
-	ConnectionDB *pgxpool.Pool
+	ConnectionDB  *pgxpool.Pool
+	LoggerErrWarn *zap.SugaredLogger
+	LoggerInfo    *zap.SugaredLogger
+	LoggerTest    *zap.SugaredLogger
 }
 
 func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {

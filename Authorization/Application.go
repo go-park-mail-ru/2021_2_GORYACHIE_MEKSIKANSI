@@ -54,6 +54,5 @@ func Login(db utils.WrapperAuthorization, login *Authorization) (*utils.Defense,
 }
 
 func Logout(db utils.WrapperAuthorization, cookie *utils.Defense) error {
-	err := db.DeleteCookie(cookie)
-	return err
+	return db.DeleteCookie(cookie)
 }

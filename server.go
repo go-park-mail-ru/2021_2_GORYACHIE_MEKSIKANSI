@@ -8,30 +8,65 @@ import (
 	profile "2021_2_GORYACHIE_MEKSIKANSI/Profile"
 	restaurant "2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
-	"fmt"
 	cors "github.com/AdhityaRamadhanus/fasthttpcors"
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
-	"go.uber.org/zap"
-	//"go.uber.org/zap/zapcore"
-	"math"
 	"os"
-	"strconv"
-	"time"
 )
 
 func runServer(port string) {
+	loggerErrWarn := utils.NewLogger("./loggErrWarn.txt")
+	loggerInfo := utils.NewLogger("./loggInfo.txt")
+	loggerTest := utils.NewLogger("./loggTest.txt")
+
+/*	defer func(sugarLogger *zap.SugaredLogger) {
+		errLogger := sugarLogger.Sync()
+		if errLogger != nil {
+			zap.S().Errorf("Logger the buffer could not be cleared %v", errLogger)
+			os.Exit(1)
+		}
+	}(loggerErrWarn)*/
+
 	connectionPostgres, err := utils.CreateDb()
 	defer connectionPostgres.Close()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		if config.TEST {
+			loggerTest.Errorf("Unable to connect to database: %v", err)
+			os.Exit(1)
+		}
+		loggerErrWarn.Errorf("Unable to connect to database: %v", err)
 		os.Exit(1)
 	}
-	userInfo := auth.UserInfo{ConnectionDB: connectionPostgres}
-	restaurantInfo := restaurant.InfoRestaurant{ConnectionDB: connectionPostgres}
-	profileInfo := profile.InfoProfile{ConnectionDB: connectionPostgres}
-	infoMiddleware := mid.InfoMiddleware{ConnectionDB: connectionPostgres}
-	cartInfo := cart.InfoCart{ConnectionDB: connectionPostgres}
+	userInfo := auth.UserInfo{
+		ConnectionDB:  connectionPostgres,
+		LoggerErrWarn: loggerErrWarn,
+		LoggerInfo:    loggerInfo,
+		LoggerTest:    loggerTest,
+	}
+	restaurantInfo := restaurant.InfoRestaurant{
+		ConnectionDB:  connectionPostgres,
+		LoggerErrWarn: loggerErrWarn,
+		LoggerInfo:    loggerInfo,
+		LoggerTest:    loggerTest,
+	}
+	profileInfo := profile.InfoProfile{
+		ConnectionDB:  connectionPostgres,
+		LoggerErrWarn: loggerErrWarn,
+		LoggerInfo:    loggerInfo,
+		LoggerTest:    loggerTest,
+	}
+	infoMiddleware := mid.InfoMiddleware{
+		ConnectionDB:  connectionPostgres,
+		LoggerErrWarn: loggerErrWarn,
+		LoggerInfo:    loggerInfo,
+		LoggerTest:    loggerTest,
+	}
+	cartInfo := cart.InfoCart{
+		ConnectionDB:  connectionPostgres,
+		LoggerErrWarn: loggerErrWarn,
+		LoggerInfo:    loggerInfo,
+		LoggerTest:    loggerTest,
+	}
 
 	myRouter := router.New()
 	apiGroup := myRouter.Group("/api")
@@ -43,49 +78,32 @@ func runServer(port string) {
 	userGroup.POST("/login", userInfo.LoginHandler)
 	userGroup.POST("/signup", userInfo.SignUpHandler)
 	userGroup.POST("/logout", userInfo.LogoutHandler)
-	userGroup.GET("/", infoMiddleware.GetIdByCookieMiddl(profileInfo.ProfileHandler))
-	userGroup.PUT("/name", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserName))
-	userGroup.PUT("/email", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserEmail))
-	userGroup.PUT("/password", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserPassword))
-	userGroup.PUT("/phone", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserPhone))
-	userGroup.PUT("/avatar", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserAvatar))
-	userGroup.PUT("/birthday", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserBirthday))
-	userGroup.PUT("/address", infoMiddleware.GetIdByCookieMiddl(profileInfo.UpdateUserAddress))
-	userGroup.POST("/pay", infoMiddleware.CheckAccessMiddl(userInfo.PayHandler))
+	userGroup.GET("/", infoMiddleware.GetId(profileInfo.ProfileHandler))
+	userGroup.PUT("/name", infoMiddleware.GetId(profileInfo.UpdateUserName))
+	userGroup.PUT("/email", infoMiddleware.GetId(profileInfo.UpdateUserEmail))
+	userGroup.PUT("/password", infoMiddleware.GetId(profileInfo.UpdateUserPassword))
+	userGroup.PUT("/phone", infoMiddleware.GetId(profileInfo.UpdateUserPhone))
+	userGroup.PUT("/avatar", infoMiddleware.GetId(profileInfo.UpdateUserAvatar))
+	userGroup.PUT("/birthday", infoMiddleware.GetId(profileInfo.UpdateUserBirthday))
+	userGroup.PUT("/address", infoMiddleware.GetId(profileInfo.UpdateUserAddress))
+	userGroup.POST("/pay", infoMiddleware.Check(userInfo.PayHandler))
 
 	restaurantGroup.GET("/", restaurantInfo.RestaurantHandler)
 	restaurantGroup.GET("/{idRes}/dish/{idDish}", restaurantInfo.RestaurantDishesHandler)
 	restaurantGroup.GET("/{idRes}", restaurantInfo.RestaurantIdHandler)
 
-	cartGroup.GET("/", infoMiddleware.GetIdByCookieMiddl(cartInfo.GetCartHandler))
-	cartGroup.PUT("/", infoMiddleware.CheckAccessMiddl(infoMiddleware.GetIdByCookieMiddl(cartInfo.UpdateCartHandler)))
+	cartGroup.GET("/", infoMiddleware.GetId(cartInfo.GetCartHandler))
+	cartGroup.PUT("/", infoMiddleware.Check(infoMiddleware.GetId(cartInfo.UpdateCartHandler)))
 
-	printURL := infoMiddleware.PrintURLMiddl(myRouter.Handler)
+	printURL := infoMiddleware.PrintURL(myRouter.Handler)
 
-	logger, _ := zap.NewProduction()
-	defer func(logger *zap.Logger) {
-		errLog := logger.Sync()
-		if errLog != nil {
-
-		}
-	}(logger)
-	reqId := utils.RandomInteger(0, math.MaxInt64)
-	logger.Info("failed to fetch URL",
-		zap.String("request_id", strconv.Itoa(reqId)),
-		zap.String("url", "https"),
-		zap.Int("attempt", 3),
-		zap.Duration("backoff", time.Second),
-	)
-
-
-
-/*	confLoger := zap.Config{
-		Encoding: "console",
-	}
-	logger.WithOptions(confLoger)*/
+	/*	for i := 0; i < 1000; i++ {
+		reqId := utils.RandomInteger(0, math.MaxInt64)
+		loggerErrWarn.Infof("URL = %s, request_id = %d", "https://github.com/uber-go/zap:", reqId)
+	}*/
 
 	withCors := cors.NewCorsHandler(cors.Options{
-		AllowedOrigins: []string{config.AllowedOriginsDomen + ":" + config.AllowedOriginsPort},
+		AllowedOrigins: []string{config.AllowedOriginsDomain + ":" + config.AllowedOriginsPort},
 		AllowedHeaders: []string{"access-control-allow-origin", "content-type",
 			"x-csrf-token", "access-control-expose-headers"},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS", "PUT"},
@@ -97,8 +115,12 @@ func runServer(port string) {
 
 	err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(printURL))
 	if err != nil {
-		fmt.Printf("Console: ERROR: fatal ListenAndServe")
-		return
+		if config.TEST {
+			loggerTest.Errorf("Unable to connect to database: %v", err)
+			os.Exit(1)
+		}
+		loggerErrWarn.Errorf("Listen and server error: %v", err)
+		os.Exit(1)
 	}
 }
 

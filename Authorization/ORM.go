@@ -62,7 +62,7 @@ func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest) (*utils.Defense
 	}(tx, context.Background())
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrGeneralInfoScan, //TODO: make new error
+			Text: errorsConst.ErrSignupHostTransactionNotCreate,
 			Time: time.Now(),
 		}
 	}
@@ -100,6 +100,12 @@ func (db *Wrapper) SignupCourier(signup *utils.RegistrationRequest) (*utils.Defe
 			return
 		}
 	}(tx, context.Background())
+	if err != nil {
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ErrSignupCourierTransactionNotCreate,
+			Time: time.Now(),
+		}
+	}
 
 	userId, err := db.GeneralSignUp(signup, tx)
 	if err != nil {
@@ -135,6 +141,12 @@ func (db *Wrapper) SignupClient(signup *utils.RegistrationRequest) (*utils.Defen
 			return
 		}
 	}(tx, context.Background())
+	if err != nil {
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.ErrSignupClientTransactionNotCreate,
+			Time: time.Now(),
+		}
+	}
 
 	userId, err := db.GeneralSignUp(signup, tx)
 	if err != nil {

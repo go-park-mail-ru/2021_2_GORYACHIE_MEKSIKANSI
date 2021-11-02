@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func CheckErrorCookie(err error) (error, []byte, int) {
+func (c *CheckError) CheckErrorCookie(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrCookieScan:
@@ -53,7 +53,7 @@ func CheckErrorCookie(err error) (error, []byte, int) {
 	return nil, nil, HttpNil
 }
 
-func CheckErrorAccess(err error) (error, []byte, int) {
+func (c *CheckError) CheckErrorAccess(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ErrCookieNotScan:
