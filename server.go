@@ -114,11 +114,6 @@ func runServer(port string) {
 
 	printURL := infoMiddleware.PrintURL(myRouter.Handler)
 
-	/*	for i := 0; i < 1000; i++ {
-		reqId := utils.RandomInteger(0, math.MaxInt64)
-		loggerErrWarn.Infof("URL = %s, request_id = %d", "https://github.com/uber-go/zap:", reqId)
-	}*/
-
 	withCors := cors.NewCorsHandler(cors.Options{
 		AllowedOrigins: []string{config.AllowedOriginsDomain + ":" + config.AllowedOriginsPort},
 		AllowedHeaders: []string{"access-control-allow-origin", "content-type",

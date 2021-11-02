@@ -2,7 +2,6 @@ package Errors
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -16,14 +15,14 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 				Explain: ErrRestaurantsNotFound,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrRestaurantsNotFound)
+			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", ErrRestaurantNotFound, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -35,14 +34,14 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrRestaurantsScan)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrRestaurantsScan, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -63,14 +62,14 @@ func (c *CheckError) CheckErrorRestaurantId(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", err.Error())
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),

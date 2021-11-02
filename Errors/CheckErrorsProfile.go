@@ -2,7 +2,6 @@ package Errors
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -17,14 +16,14 @@ func (c *CheckError)  CheckErrorProfile(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", err.Error())
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -44,14 +43,14 @@ func (c *CheckError)  CheckErrorProfileUpdateName(err error) (error, []byte, int
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrUpdateName)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdateName, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -71,14 +70,14 @@ func (c *CheckError)  CheckErrorProfileUpdateEmail(err error) (error, []byte, in
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrUpdateEmail)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdateEmail, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -90,14 +89,14 @@ func (c *CheckError)  CheckErrorProfileUpdateEmail(err error) (error, []byte, in
 				Explain: ErrUpdateEmailRepeat,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrUpdateEmailRepeat)
+			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", ErrUpdateEmailRepeat, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -117,14 +116,14 @@ func (c *CheckError)  CheckErrorProfileUpdatePassword(err error) (error, []byte,
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", err.Error())
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -144,14 +143,14 @@ func (c *CheckError)  CheckErrorProfileUpdatePhone(err error) (error, []byte, in
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrUpdatePhone)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdatePhone, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -163,14 +162,14 @@ func (c *CheckError)  CheckErrorProfileUpdatePhone(err error) (error, []byte, in
 				Explain: ErrUpdatePhoneRepeat,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrUpdatePhoneRepeat)
+			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", ErrUpdatePhoneRepeat, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -190,14 +189,14 @@ func (c *CheckError)  CheckErrorProfileUpdateAvatar(err error) (error, []byte, i
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrUpdateAvatar)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdateAvatar, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -217,14 +216,14 @@ func (c *CheckError)  CheckErrorProfileUpdateBirthday(err error) (error, []byte,
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrUpdateBirthday)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdateBirthday, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -244,14 +243,14 @@ func (c *CheckError)  CheckErrorProfileUpdateAddress(err error) (error, []byte, 
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				fmt.Printf("Console: %s\n", ErrMarshal)
+				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", ErrUpdateAddress)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdateAddress, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
