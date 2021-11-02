@@ -80,13 +80,15 @@ func (db *Wrapper) GetProfileClient(id int) (*prof.Profile, error) {
 			Time: time.Now(),
 		}
 	}
-
-	err = db.Conn.QueryRow(context.Background(),
-		"SELECT date_birthday FROM client WHERE client_id = $1", id).Scan(&profile.Birthday)
-	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrGetBirthdayScan,
-			Time: time.Now(),
+	timeVoid := time.Time{}
+	if timeVoid != profile.Birthday {
+		err = db.Conn.QueryRow(context.Background(),
+			"SELECT date_birthday FROM client WHERE client_id = $1", id).Scan(&profile.Birthday)
+		if err != nil {
+			return nil, &errorsConst.Errors{
+				Text: errorsConst.ErrGetBirthdayScan,
+				Time: time.Now(),
+			}
 		}
 	}
 
