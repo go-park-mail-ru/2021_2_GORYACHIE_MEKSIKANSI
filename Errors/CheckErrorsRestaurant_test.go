@@ -19,17 +19,17 @@ func TestCheckErrorRestaurant(t *testing.T) {
 	}{
 		{
 			errorInput: Errors{
-				Text: ErrRestaurantsNotFound,
+				Text: RGetRestaurantsRestaurantsNotFound,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusNotFound) +
-				",\"explain\":\"" + ErrRestaurantsNotFound + "\"}",
+				",\"explain\":\"" + RGetRestaurantsRestaurantsNotFound + "\"}",
 			codeHTTPExpected: http.StatusOK,
 		},
 		{
 			errorInput: Errors{
-				Text: ErrRestaurantsScan,
+				Text: RGetRestaurantsRestaurantsNotScan,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,

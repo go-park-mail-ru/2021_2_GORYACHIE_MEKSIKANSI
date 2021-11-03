@@ -9,7 +9,7 @@ import (
 func (c *CheckError) CheckErrorCookie(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case ErrCookieScan:
+		case MGetIdByCookieCookieNotScan:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -22,13 +22,13 @@ func (c *CheckError) CheckErrorCookie(err error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrCookieScan, *c.RequestId)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", MGetIdByCookieCookieNotScan, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
 				},
 				result, http.StatusInternalServerError
-		case ErrCookieExpired, ErrCookieNotFound:
+		case MGetIdByCookieCookieExpired, MGetIdByCookieCookieNotFound:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: err.Error(),
@@ -55,7 +55,7 @@ func (c *CheckError) CheckErrorCookie(err error) (error, []byte, int) {
 func (c *CheckError) CheckErrorAccess(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case ErrCookieNotScan:
+		case MCheckAccessCookieNotScan:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -68,16 +68,16 @@ func (c *CheckError) CheckErrorAccess(err error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrGeneralInfoUnique, *c.RequestId)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", AGeneralSignUpLoginNotUnique, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
 				},
 				result, http.StatusInternalServerError
-		case ErrCheckAccessCookieNotFound:
+		case MCheckAccessCookieNotFound:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
-				Explain: ErrCheckAccessCookieNotFound,
+				Explain: MCheckAccessCookieNotFound,
 			})
 			if errMarshal != nil {
 				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
@@ -87,7 +87,7 @@ func (c *CheckError) CheckErrorAccess(err error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", ErrCheckAccessCookieNotFound, *c.RequestId)
+			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", MCheckAccessCookieNotFound, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),

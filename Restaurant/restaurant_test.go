@@ -100,7 +100,7 @@ var OrmAllRestaurants = []struct {
 		out:      []rest.Restaurants{{Id: 1, Img: "1", Name: "1", CostForFreeDelivery: 1, MinDelivery: 1, MaxDelivery: 1, Rating: 1.0}},
 		errQuery: nil,
 		row:      Rows{rows: 1, row: []interface{}{1, "1", "1", 1, 1, 1, 1.0}, errRow: nil},
-		outErr:   errorsConst.ErrRestaurantsNotSelect,
+		outErr:   errorsConst.RGetRestaurantsRestaurantsNotSelect,
 	},
 }
 
@@ -143,15 +143,15 @@ var OrmGetGeneralInfoRestaurant = []struct {
 		inputQuery: 1,
 		out:        &rest.RestaurantId{Id: 1, Img: "1", Name: "1", CostForFreeDelivery: 1, MinDelivery: 1, MaxDelivery: 1, Rating: 1, Tags: interface{}(nil), Menu: interface{}(nil)},
 		row:        Row{row: []interface{}{1, "1", "1", 1, 1, 1, 1.0}, errRow: nil},
-		outErr:     errorsConst.ErrRestaurantNotFound,
+		outErr:     errorsConst.RGetGeneralInfoRestaurantNotFound,
 	},
 	{
 		testName:   "Two",
 		input:      1,
 		inputQuery: 1,
 		out:        nil,
-		row:        Row{row: []interface{}{}, errRow: errors.New(errorsConst.ErrRestaurantNotFound)},
-		outErr:     errorsConst.ErrRestaurantNotFound,
+		row:        Row{row: []interface{}{}, errRow: errors.New(errorsConst.RGetGeneralInfoRestaurantNotFound)},
+		outErr:     errorsConst.RGetGeneralInfoRestaurantNotFound,
 	},
 }
 
@@ -197,7 +197,7 @@ var OrmGetTagsRestaurant = []struct {
 		errQuery:   nil,
 		out:        []rest.Tag{{Id: 1, Name: "1"}},
 		rowsQuery:  Rows{row: []interface{}{1, "1"}, errRow: nil, rows: 1},
-		outErr:     errorsConst.ErrRestaurantNotFound,
+		outErr:     errorsConst.RGetGeneralInfoRestaurantNotFound,
 	},
 }
 
@@ -247,7 +247,7 @@ var OrmGetDishesRestaurant = []struct {
 		errQuery:       nil,
 		out:            []rest.DishesMenu{{Id: 1, Name: "1", Cost: 1, Kilocalorie: 1, Img: "1"}},
 		rowsQuery:      Rows{row: []interface{}{1, "1", "1", 1, 1}, errRow: nil, rows: 1},
-		outErr:         errorsConst.ErrRestaurantNotFound,
+		outErr:         errorsConst.RGetGeneralInfoRestaurantNotFound,
 	},
 }
 
@@ -303,7 +303,7 @@ var OrmGetMenu = []struct {
 		outGetDishesRestaurant: []rest.Menu{{}},
 		errGetDishesRestaurant: nil,
 		rowsQuery:              Rows{row: []interface{}{"1"}, errRow: nil, rows: 1},
-		outErr:                 errorsConst.ErrRestaurantNotFound,
+		outErr:                 errorsConst.RGetGeneralInfoRestaurantNotFound,
 		inputQueryDishesName:   "1",
 		inputQueryDishesId:     1,
 		rowsQueryDishes:        Rows{row: []interface{}{1, "1", "1", 1, 1}, errRow: nil, rows: 1},
@@ -344,7 +344,7 @@ func TestOrmGetMenu(t *testing.T) {
 	}
 }
 
-var OrmGetStructureDishes = []struct {
+var OrmGetStructDishes = []struct {
 	testName                     string
 	input                        int
 	rowsQuery                    Rows
@@ -362,16 +362,16 @@ var OrmGetStructureDishes = []struct {
 		errQuery:     nil,
 		out:          []rest.Ingredients{{Id: 1, Title: "1", Cost: 1}},
 		rowsQuery:    Rows{rows: 1, row: []interface{}{1, "1", 1}},
-		outErr:       errorsConst.ErrRestaurantNotFound,
+		outErr:       errorsConst.RGetGeneralInfoRestaurantNotFound,
 	},
 }
 
-func TestGetStructureDishes(t *testing.T) {
+func TestGetStructDishes(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmGetStructureDishes {
+	for _, tt := range OrmGetStructDishes {
 		m.
 			EXPECT().
 			Query(context.Background(),
@@ -381,7 +381,7 @@ func TestGetStructureDishes(t *testing.T) {
 			Return(&tt.rowsQuery, tt.errQuery)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := testUser.GetStructureDishes(tt.input)
+			result, err := testUser.GetStructDishes(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
@@ -392,7 +392,7 @@ func TestGetStructureDishes(t *testing.T) {
 	}
 }
 
-var OrmGetStructureRadios = []struct {
+var OrmGetStructRadios = []struct {
 	testName                     string
 	input                        int
 	rowsQuery                    Rows
@@ -410,16 +410,16 @@ var OrmGetStructureRadios = []struct {
 		errQuery:     nil,
 		out:          []rest.CheckboxesRows{{Id: 1, Name: "1"}},
 		rowsQuery:    Rows{rows: 1, row: []interface{}{1, "1"}},
-		outErr:       errorsConst.ErrRestaurantNotFound,
+		outErr:       errorsConst.RGetGeneralInfoRestaurantNotFound,
 	},
 }
 
-func TestGetStructureRadios(t *testing.T) {
+func TestGetStructRadios(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmGetStructureRadios {
+	for _, tt := range OrmGetStructRadios {
 		m.
 			EXPECT().
 			Query(context.Background(),
@@ -429,7 +429,7 @@ func TestGetStructureRadios(t *testing.T) {
 			Return(&tt.rowsQuery, tt.errQuery)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := GetStructureRadios(testUser, tt.input)
+			result, err := GetStructRadios(testUser, tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
@@ -460,7 +460,7 @@ var OrmGetDishes = []struct {
 		errQuery:      nil,
 		out:           &rest.Dishes{Id: 1, Img: "1", Title: "1", Cost: 1, Ccal: 1, Description: "1", Radios: interface{}(nil), Ingredient: interface{}(nil)},
 		rowsQuery:     Rows{rows: 1, row: []interface{}{1, "1", "1", 1, 1, "1"}},
-		outErr:        errorsConst.ErrRestaurantNotFound,
+		outErr:        errorsConst.RGetGeneralInfoRestaurantNotFound,
 	},
 }
 
@@ -500,9 +500,9 @@ var OrmGetRadios = []struct {
 	inputGetDishesRestaurantName string
 	inputGetDishesRestaurantId   int
 	outErr                       string
-	inputQueryIdStructureRadios  int
-	errQueryStructureRadios      error
-	rowsQueryStructureRadios     Rows
+	inputQueryIdStructRadios  int
+	errQueryStructRadios      error
+	rowsQueryStructRadios     Rows
 }{
 	{
 		testName:                    "One",
@@ -511,10 +511,10 @@ var OrmGetRadios = []struct {
 		errQuery:                    nil,
 		out:                         []rest.Radios{{Title: "1", Id: 1, Rows: []rest.CheckboxesRows{{Id: 1, Name: "1"}}}},
 		rowsQuery:                   Rows{rows: 1, row: []interface{}{1, "1", "1", 1, 1, "1"}},
-		outErr:                      errorsConst.ErrRestaurantNotFound,
-		inputQueryIdStructureRadios: 1,
-		errQueryStructureRadios:     nil,
-		rowsQueryStructureRadios:    Rows{rows: 1, row: []interface{}{1, "1"}},
+		outErr:                      errorsConst.RGetGeneralInfoRestaurantNotFound,
+		inputQueryIdStructRadios: 1,
+		errQueryStructRadios:     nil,
+		rowsQueryStructRadios:    Rows{rows: 1, row: []interface{}{1, "1"}},
 	},
 }
 
@@ -535,9 +535,9 @@ func TestGetRadios(t *testing.T) {
 			EXPECT().
 			Query(context.Background(),
 				"SELECT id, name FROM structure_radios WHERE radios = $1",
-				tt.inputQueryIdStructureRadios,
+				tt.inputQueryIdStructRadios,
 			).
-			Return(&tt.rowsQueryStructureRadios, tt.errQueryStructureRadios)
+			Return(&tt.rowsQueryStructRadios, tt.errQueryStructRadios)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetRadios(tt.input)
@@ -729,10 +729,10 @@ var ApplicationRestaurantDishes = []struct {
 	resultGetDishes          *rest.Dishes
 	errGetDishes             error
 	countGetDishes           int
-	inputGetStructureDishes  int
-	resultGetStructureDishes []rest.Ingredients
-	errGetStructureDishes    error
-	countGetStructureDishes  int
+	inputGetStructDishes  int
+	resultGetStructDishes []rest.Ingredients
+	errGetStructDishes    error
+	countGetStructDishes  int
 	inputGetRadios           int
 	resultGetRadios          []rest.Radios
 	errGetRadios             error
@@ -747,10 +747,10 @@ var ApplicationRestaurantDishes = []struct {
 		resultGetDishes:          &rest.Dishes{},
 		errGetDishes:             errors.New("text"),
 		countGetDishes:           1,
-		inputGetStructureDishes:  1,
-		resultGetStructureDishes: []rest.Ingredients{},
-		errGetStructureDishes:    nil,
-		countGetStructureDishes:  0,
+		inputGetStructDishes:  1,
+		resultGetStructDishes: []rest.Ingredients{},
+		errGetStructDishes:    nil,
+		countGetStructDishes:  0,
 		inputGetRadios:           1,
 		resultGetRadios:          []rest.Radios{},
 		errGetRadios:             nil,
@@ -767,10 +767,10 @@ var ApplicationRestaurantDishes = []struct {
 		resultGetDishes:          &rest.Dishes{},
 		errGetDishes:             nil,
 		countGetDishes:           1,
-		inputGetStructureDishes:  1,
-		resultGetStructureDishes: []rest.Ingredients{},
-		errGetStructureDishes:    errors.New("text"),
-		countGetStructureDishes:  1,
+		inputGetStructDishes:  1,
+		resultGetStructDishes: []rest.Ingredients{},
+		errGetStructDishes:    errors.New("text"),
+		countGetStructDishes:  1,
 		inputGetRadios:           1,
 		resultGetRadios:          []rest.Radios{},
 		errGetRadios:             nil,
@@ -787,10 +787,10 @@ var ApplicationRestaurantDishes = []struct {
 		resultGetDishes:          &rest.Dishes{},
 		errGetDishes:             nil,
 		countGetDishes:           1,
-		inputGetStructureDishes:  1,
-		resultGetStructureDishes: []rest.Ingredients{},
-		errGetStructureDishes:    nil,
-		countGetStructureDishes:  1,
+		inputGetStructDishes:  1,
+		resultGetStructDishes: []rest.Ingredients{},
+		errGetStructDishes:    nil,
+		countGetStructDishes:  1,
 		inputGetRadios:           1,
 		resultGetRadios:          []rest.Radios{},
 		errGetRadios:             errors.New("text"),
@@ -807,10 +807,10 @@ var ApplicationRestaurantDishes = []struct {
 		resultGetDishes:          &rest.Dishes{},
 		errGetDishes:             nil,
 		countGetDishes:           1,
-		inputGetStructureDishes:  1,
-		resultGetStructureDishes: []rest.Ingredients{},
-		errGetStructureDishes:    nil,
-		countGetStructureDishes:  1,
+		inputGetStructDishes:  1,
+		resultGetStructDishes: []rest.Ingredients{},
+		errGetStructDishes:    nil,
+		countGetStructDishes:  1,
 		inputGetRadios:           1,
 		resultGetRadios:          []rest.Radios{},
 		errGetRadios:             nil,
@@ -833,9 +833,9 @@ func TestApplicationRestaurantDishes(t *testing.T) {
 			Times(tt.countGetDishes)
 		m.
 			EXPECT().
-			GetStructureDishes(tt.inputGetStructureDishes).
-			Return(tt.resultGetStructureDishes, tt.errGetStructureDishes).
-			Times(tt.countGetStructureDishes)
+			GetStructDishes(tt.inputGetStructDishes).
+			Return(tt.resultGetStructDishes, tt.errGetStructDishes).
+			Times(tt.countGetStructDishes)
 		m.
 			EXPECT().
 			GetRadios(tt.inputGetRadios).

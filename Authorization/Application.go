@@ -21,7 +21,7 @@ func SignUp(db utils.WrapperAuthorization, signup *utils.RegistrationRequest) (*
 		cookie, err = db.SignupHost(signup, newCookie)
 	default:
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrSignUpUnknownType,
+			Text: errorsConst.ASignUpUnknownType,
 			Time: time.Now(),
 		}
 	}
@@ -44,7 +44,7 @@ func Login(db utils.WrapperAuthorization, login *Authorization) (*utils.Defense,
 		userId, err = db.LoginByPhone(login.Phone, login.Password)
 	default:
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrLoginVoidLogin,
+			Text: errorsConst.ALoginVoidLogin,
 			Time: time.Now(),
 		}
 	}

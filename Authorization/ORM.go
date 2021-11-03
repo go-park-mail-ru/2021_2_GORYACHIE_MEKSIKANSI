@@ -26,7 +26,7 @@ func GeneralSignUp(signup *utils.RegistrationRequest, transaction pgx.Tx) (int, 
 
 	if _, err := strconv.Atoi(signup.Phone); err != nil {
 		return 0, &errorsConst.Errors{
-			Text: errorsConst.ErrPhoneFormat,
+			Text: errorsConst.AGeneralSignUpIncorrectPhoneFormat,
 			Time: time.Now(),
 		}
 	}
@@ -40,12 +40,12 @@ func GeneralSignUp(signup *utils.RegistrationRequest, transaction pgx.Tx) (int, 
 		if errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_phone_key\" (SQLSTATE 23505)" ||
 			errorText == "0ERROR: duplicate key value violates unique constraint \"general_user_info_email_key\" (SQLSTATE 2355)" {
 			return 0, &errorsConst.Errors{
-				Text: errorsConst.ErrGeneralInfoUnique,
+				Text: errorsConst.AGeneralSignUpLoginNotUnique,
 				Time: time.Now(),
 			}
 		}
 		return 0, &errorsConst.Errors{
-			Text: errorsConst.ErrGeneralInfoScan,
+			Text: errorsConst.AGeneralSignUpNotInsert,
 			Time: time.Now(),
 		}
 	}
@@ -62,7 +62,7 @@ func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest, cookie *utils.D
 	}(tx, context.Background())
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrSignupHostTransactionNotCreate,
+			Text: errorsConst.ASignupHostTransactionNotCreate,
 			Time: time.Now(),
 		}
 	}
@@ -81,14 +81,14 @@ func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest, cookie *utils.D
 		"INSERT INTO host (client_id) VALUES ($1)", userId)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrInsertHost,
+			Text: errorsConst.ASignUpHostHostNotInsert,
 			Time: time.Now(),
 		}
 	}
 	err = tx.Commit(context.Background())
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrSignUpHostNotCommit,
+			Text: errorsConst.ASignUpHostNotCommit,
 			Time: time.Now(),
 		}
 	}
@@ -106,7 +106,7 @@ func (db *Wrapper) SignupCourier(signup *utils.RegistrationRequest, cookie *util
 	}(tx, context.Background())
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrSignupCourierTransactionNotCreate,
+			Text: errorsConst.ASignupCourierTransactionNotCreate,
 			Time: time.Now(),
 		}
 	}
@@ -125,14 +125,14 @@ func (db *Wrapper) SignupCourier(signup *utils.RegistrationRequest, cookie *util
 		"INSERT INTO courier (client_id) VALUES ($1)", userId)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrInsertCourier,
+			Text: errorsConst.ASignUpCourierCourierNotInsert,
 			Time: time.Now(),
 		}
 	}
 	err = tx.Commit(context.Background())
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrSignUpCourierNotCommit,
+			Text: errorsConst.ASignUpCourierNotCommit,
 			Time: time.Now(),
 		}
 	}
@@ -151,7 +151,7 @@ func (db *Wrapper) SignupClient(signup *utils.RegistrationRequest, cookie *utils
 	}(tx, context.Background())
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrSignupClientTransactionNotCreate,
+			Text: errorsConst.ASignupClientTransactionNotCreate,
 			Time: time.Now(),
 		}
 	}
@@ -170,14 +170,14 @@ func (db *Wrapper) SignupClient(signup *utils.RegistrationRequest, cookie *utils
 		"INSERT INTO client (client_id) VALUES ($1)", userId)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrInsertClient,
+			Text: errorsConst.ASignUpClientClientNotInsert,
 			Time: time.Now(),
 		}
 	}
 	err = tx.Commit(context.Background())
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrSignUpClientNotCommit,
+			Text: errorsConst.ASignUpClientNotCommit,
 			Time: time.Now(),
 		}
 	}
@@ -191,7 +191,7 @@ func AddTransactionCookie(cookie *utils.Defense, Transaction pgx.Tx, id int) err
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
 	if err != nil {
 		return &errorsConst.Errors{
-			Text: errorsConst.ErrInsertTransactionCookie,
+			Text: errorsConst.AAddTransactionCookieNotInsert,
 			Time: time.Now(),
 		}
 	}
@@ -209,12 +209,12 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return 0, &errorsConst.Errors{
-				Text: errorsConst.ErrUserNotFoundLogin,
+				Text: errorsConst.ALoginNotFound,
 				Time: time.Now(),
 			}
 		}
 		return 0, &errorsConst.Errors{
-			Text: errorsConst.ErrSelectSaltInLogin,
+			Text: errorsConst.ASaltNotSelect,
 			Time: time.Now(),
 		}
 	}
@@ -224,7 +224,7 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 		email, utils.HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
 		return 0, &errorsConst.Errors{
-			Text: errorsConst.ErrLoginOrPasswordIncorrect,
+			Text: errorsConst.ALoginOrPasswordIncorrect,
 			Time: time.Now(),
 		}
 	}
@@ -242,12 +242,12 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return 0, &errorsConst.Errors{
-				Text: errorsConst.ErrUserNotFoundLogin,
+				Text: errorsConst.ALoginNotFound,
 				Time: time.Now(),
 			}
 		}
 		return 0, &errorsConst.Errors{
-			Text: errorsConst.ErrSelectSaltInLogin,
+			Text: errorsConst.ASaltNotSelect,
 			Time: time.Now(),
 		}
 	}
@@ -257,7 +257,7 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 		phone, utils.HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
 		return 0, &errorsConst.Errors{
-			Text: errorsConst.ErrLoginOrPasswordIncorrect,
+			Text: errorsConst.ALoginOrPasswordIncorrect,
 			Time: time.Now(),
 		}
 	}
@@ -270,7 +270,7 @@ func (db *Wrapper) DeleteCookie(cookie *utils.Defense) error {
 		cookie.SessionId, cookie.CsrfToken)
 	if err != nil {
 		return &errorsConst.Errors{
-			Text: errorsConst.ErrDeleteCookie,
+			Text: errorsConst.ADeleteCookieCookieNotDelete,
 			Time: time.Now(),
 		}
 	}
@@ -283,7 +283,7 @@ func (db *Wrapper) AddCookie(cookie *utils.Defense, id int) error {
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
 	if err != nil {
 		return &errorsConst.Errors{
-			Text: errorsConst.ErrInsertCookie,
+			Text: errorsConst.AAddCookieCookieNotInsert,
 			Time: time.Now(),
 		}
 	}

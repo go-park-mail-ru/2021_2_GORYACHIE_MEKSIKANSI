@@ -9,8 +9,8 @@ import (
 func (c *CheckError) CheckErrorProfile(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case ErrGetProfileClientScan, ErrGetBirthdayScan, ErrGetProfileCourierScan, ErrGetProfileHostScan,
-			ErrClientScan, ErrHostScan, ErrCourierScan:
+		case PGetProfileClientClientNotScan, PGetProfileClientBirthdayNotScan, PGetProfileCourierCourierNotScan, PGetProfileHostHostNotScan,
+			PGetRoleByIdClientNotScan, PGetRoleByIdHostNotScan, PGetRoleByIdCourierNotScan:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -37,7 +37,7 @@ func (c *CheckError) CheckErrorProfile(err error) (error, []byte, int) {
 func (c *CheckError) CheckErrorProfileUpdateName(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case ErrUpdateName:
+		case PUpdateNameNameNotUpdate:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -50,7 +50,7 @@ func (c *CheckError) CheckErrorProfileUpdateName(err error) (error, []byte, int)
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdateName, *c.RequestId)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", PUpdateNameNameNotUpdate, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -64,7 +64,7 @@ func (c *CheckError) CheckErrorProfileUpdateName(err error) (error, []byte, int)
 func (c *CheckError) CheckErrorProfileUpdateEmail(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case ErrUpdateEmail:
+		case PUpdateEmailEmailNotUpdate:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -77,16 +77,16 @@ func (c *CheckError) CheckErrorProfileUpdateEmail(err error) (error, []byte, int
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdateEmail, *c.RequestId)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", PUpdateEmailEmailNotUpdate, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
 				},
 				result, http.StatusInternalServerError
-		case ErrUpdateEmailRepeat:
+		case PUpdateEmailEmailRepeat:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
-				Explain: ErrUpdateEmailRepeat,
+				Explain: PUpdateEmailEmailRepeat,
 			})
 			if errMarshal != nil {
 				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
@@ -96,7 +96,7 @@ func (c *CheckError) CheckErrorProfileUpdateEmail(err error) (error, []byte, int
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", ErrUpdateEmailRepeat, *c.RequestId)
+			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", PUpdateEmailEmailRepeat, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -110,7 +110,7 @@ func (c *CheckError) CheckErrorProfileUpdateEmail(err error) (error, []byte, int
 func (c *CheckError) CheckErrorProfileUpdatePassword(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case ErrUpdatePassword, ErrSelectSaltInUpdate:
+		case PUpdatePasswordPasswordNotUpdate, PUpdatePasswordSaltNotSelect:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -137,7 +137,7 @@ func (c *CheckError) CheckErrorProfileUpdatePassword(err error) (error, []byte, 
 func (c *CheckError) CheckErrorProfileUpdatePhone(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case ErrUpdatePhone:
+		case PUpdatePhonePhoneNotUpdate:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -150,16 +150,16 @@ func (c *CheckError) CheckErrorProfileUpdatePhone(err error) (error, []byte, int
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdatePhone, *c.RequestId)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", PUpdatePhonePhoneNotUpdate, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
 				},
 				result, http.StatusInternalServerError
-		case ErrUpdatePhoneRepeat:
+		case PUpdatePhonePhoneRepeat:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
-				Explain: ErrUpdatePhoneRepeat,
+				Explain: PUpdatePhonePhoneRepeat,
 			})
 			if errMarshal != nil {
 				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
@@ -169,7 +169,7 @@ func (c *CheckError) CheckErrorProfileUpdatePhone(err error) (error, []byte, int
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", ErrUpdatePhoneRepeat, *c.RequestId)
+			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", PUpdatePhonePhoneRepeat, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -183,7 +183,7 @@ func (c *CheckError) CheckErrorProfileUpdatePhone(err error) (error, []byte, int
 func (c *CheckError) CheckErrorProfileUpdateAvatar(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case ErrUpdateAvatar:
+		case PUpdateAvatarAvatarNotUpdate:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -196,7 +196,7 @@ func (c *CheckError) CheckErrorProfileUpdateAvatar(err error) (error, []byte, in
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdateAvatar, *c.RequestId)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", PUpdateAvatarAvatarNotUpdate, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -210,7 +210,7 @@ func (c *CheckError) CheckErrorProfileUpdateAvatar(err error) (error, []byte, in
 func (c *CheckError) CheckErrorProfileUpdateBirthday(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case ErrUpdateBirthday:
+		case PUpdateBirthdayBirthdayNotUpdate:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -223,7 +223,7 @@ func (c *CheckError) CheckErrorProfileUpdateBirthday(err error) (error, []byte, 
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdateBirthday, *c.RequestId)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", PUpdateBirthdayBirthdayNotUpdate, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -237,7 +237,7 @@ func (c *CheckError) CheckErrorProfileUpdateBirthday(err error) (error, []byte, 
 func (c *CheckError) CheckErrorProfileUpdateAddress(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case ErrUpdateAddress:
+		case PUpdateAddressAddressNotUpdate:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -250,7 +250,7 @@ func (c *CheckError) CheckErrorProfileUpdateAddress(err error) (error, []byte, i
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrUpdateAddress, *c.RequestId)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", PUpdateAddressAddressNotUpdate, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),

@@ -9,10 +9,10 @@ import (
 func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case ErrRestaurantsNotFound:
+		case RGetRestaurantsRestaurantsNotFound:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusNotFound,
-				Explain: ErrRestaurantsNotFound,
+				Explain: RGetRestaurantsRestaurantsNotFound,
 			})
 			if errMarshal != nil {
 				c.LoggerErrWarn.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
@@ -22,13 +22,13 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", ErrRestaurantNotFound, *c.RequestId)
+			c.LoggerErrWarn.Warnf("error: %s, requestId: %d", RGetGeneralInfoRestaurantNotFound, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
 				},
 				result, http.StatusOK
-		case ErrRestaurantsScan:
+		case RGetRestaurantsRestaurantsNotScan:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -41,7 +41,7 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", ErrRestaurantsScan, *c.RequestId)
+			c.LoggerErrWarn.Errorf("error: %s, requestId: %d", RGetRestaurantsRestaurantsNotScan, *c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -55,8 +55,8 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 func (c *CheckError) CheckErrorRestaurantId(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case ErrRestaurantNotFound, ErrCategoryRestaurantScan, ErrRestaurantsDishesNotSelect,
-			ErrRestaurantDishesScan, ErrRestaurantDishesNotFound, ErrTagNotFound:
+		case RGetGeneralInfoRestaurantNotFound, RGetTagsCategoryRestaurantNotScan, RGetMenuDishesNotSelect,
+			RGetDishesRestaurantDishesNotScan, RGetMenuDishesNotFound, RGetTagsTagsNotFound:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,

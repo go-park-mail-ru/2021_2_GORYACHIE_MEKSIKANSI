@@ -19,7 +19,7 @@ func TestCheckErrorProfile(t *testing.T) {
 	}{
 		{
 			errorInput: Errors{
-				Text: ErrGetProfileClientScan,
+				Text: PGetProfileClientClientNotScan,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
@@ -29,7 +29,7 @@ func TestCheckErrorProfile(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: ErrGetBirthdayScan,
+				Text: PGetProfileClientBirthdayNotScan,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
@@ -39,7 +39,7 @@ func TestCheckErrorProfile(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: ErrGetProfileCourierScan,
+				Text: PGetProfileCourierCourierNotScan,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
@@ -49,7 +49,7 @@ func TestCheckErrorProfile(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: ErrGetProfileHostScan,
+				Text: PGetProfileHostHostNotScan,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
@@ -59,7 +59,7 @@ func TestCheckErrorProfile(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: ErrClientScan,
+				Text: PGetRoleByIdClientNotScan,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
@@ -69,7 +69,7 @@ func TestCheckErrorProfile(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: ErrHostScan,
+				Text: PGetRoleByIdHostNotScan,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
@@ -79,7 +79,7 @@ func TestCheckErrorProfile(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: ErrCourierScan,
+				Text: PGetRoleByIdCourierNotScan,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
@@ -124,7 +124,7 @@ func TestCheckErrorProfileCookie(t *testing.T) {
 	}{
 		{
 			errorInput: Errors{
-				Text: ErrCookieNotFound,
+				Text: MGetIdByCookieCookieNotFound,
 				Time: time.Now(),
 			},
 			errorExpected:    ErrCheck,
@@ -133,16 +133,16 @@ func TestCheckErrorProfileCookie(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: ErrCookieExpired,
+				Text: MGetIdByCookieCookieExpired,
 				Time: time.Now(),
 			},
 			errorExpected:    ErrCheck,
-			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) + ",\"explain\":\"" + ErrCookieExpired + "\"}",
+			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) + ",\"explain\":\"" + MGetIdByCookieCookieExpired + "\"}",
 			codeHTTPExpected: http.StatusOK,
 		},
 		{
 			errorInput: Errors{
-				Text: ErrCookieScan,
+				Text: MGetIdByCookieCookieNotScan,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,

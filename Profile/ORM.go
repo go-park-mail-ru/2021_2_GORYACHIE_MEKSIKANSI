@@ -19,7 +19,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 		"SELECT id FROM host WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err.Error() != "no rows in result set" {
 		return "", &errorsConst.Errors{
-			Text: errorsConst.ErrHostScan,
+			Text: errorsConst.PGetRoleByIdHostNotScan,
 			Time: time.Now(),
 		}
 	}
@@ -31,7 +31,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 		"SELECT id FROM client WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err.Error() != "no rows in result set" {
 		return "", &errorsConst.Errors{
-			Text: errorsConst.ErrClientScan,
+			Text: errorsConst.PGetRoleByIdClientNotScan,
 			Time: time.Now(),
 		}
 	}
@@ -43,7 +43,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 		"SELECT id FROM courier WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err.Error() != "no rows in result set" {
 		return "", &errorsConst.Errors{
-			Text: errorsConst.ErrCourierScan,
+			Text: errorsConst.PGetRoleByIdCourierNotScan,
 			Time: time.Now(),
 		}
 	}
@@ -61,7 +61,7 @@ func (db *Wrapper) GetProfileHost(id int) (*prof.Profile, error) {
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrGetProfileHostScan,
+			Text: errorsConst.PGetProfileHostHostNotScan,
 			Time: time.Now(),
 		}
 	}
@@ -76,7 +76,7 @@ func (db *Wrapper) GetProfileClient(id int) (*prof.Profile, error) {
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrGetProfileClientScan,
+			Text: errorsConst.PGetProfileClientClientNotScan,
 			Time: time.Now(),
 		}
 	}
@@ -86,7 +86,7 @@ func (db *Wrapper) GetProfileClient(id int) (*prof.Profile, error) {
 			"SELECT date_birthday FROM client WHERE client_id = $1", id).Scan(&profile.Birthday)
 		if err != nil {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.ErrGetBirthdayScan,
+				Text: errorsConst.PGetProfileClientBirthdayNotScan,
 				Time: time.Now(),
 			}
 		}
@@ -102,7 +102,7 @@ func (db *Wrapper) GetProfileCourier(id int) (*prof.Profile, error) {
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrGetProfileCourierScan,
+			Text: errorsConst.PGetProfileCourierCourierNotScan,
 			Time: time.Now(),
 		}
 	}
@@ -115,7 +115,7 @@ func (db *Wrapper) UpdateName(id int, newName string) error {
 		newName, id)
 	if err != nil {
 		return &errorsConst.Errors{
-			Text: errorsConst.ErrUpdateName,
+			Text: errorsConst.PUpdateNameNameNotUpdate,
 			Time: time.Now(),
 		}
 	}
@@ -133,12 +133,12 @@ func (db *Wrapper) UpdateEmail(id int, newEmail string) error {
 		if textError == "ERROR: duplicate key value violates unique constraint "+
 			"\"general_user_info_email_key\" (SQLSTATE 23505)" {
 			return &errorsConst.Errors{
-				Text: errorsConst.ErrUpdateEmailRepeat,
+				Text: errorsConst.PUpdateEmailEmailRepeat,
 				Time: time.Now(),
 			}
 		}
 		return &errorsConst.Errors{
-			Text: errorsConst.ErrUpdateEmail,
+			Text: errorsConst.PUpdateEmailEmailNotUpdate,
 			Time: time.Now(),
 		}
 	}
@@ -153,7 +153,7 @@ func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
 		id).Scan(&salt)
 	if err != nil {
 		return &errorsConst.Errors{
-			Text: errorsConst.ErrSelectSaltInUpdate,
+			Text: errorsConst.PUpdatePasswordSaltNotSelect,
 			Time: time.Now(),
 		}
 	}
@@ -163,7 +163,7 @@ func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
 		prof.HashPassword(newPassword, salt), id)
 	if err != nil {
 		return &errorsConst.Errors{
-			Text: errorsConst.ErrUpdatePassword,
+			Text: errorsConst.PUpdatePasswordPasswordNotUpdate,
 			Time: time.Now(),
 		}
 	}
@@ -179,12 +179,12 @@ func (db *Wrapper) UpdatePhone(id int, newPhone string) error {
 		if err.Error() == "ERROR: duplicate key value violates unique constraint "+
 			"\"general_user_info_phone_key\" (SQLSTATE 23505)" {
 			return &errorsConst.Errors{
-				Text: errorsConst.ErrUpdatePhoneRepeat,
+				Text: errorsConst.PUpdatePhonePhoneRepeat,
 				Time: time.Now(),
 			}
 		}
 		return &errorsConst.Errors{
-			Text: errorsConst.ErrUpdatePhone,
+			Text: errorsConst.PUpdatePhonePhoneNotUpdate,
 			Time: time.Now(),
 		}
 	}
@@ -198,7 +198,7 @@ func (db *Wrapper) UpdateAvatar(id int, newAvatar string) error {
 		newAvatar, id)
 	if err != nil {
 		return &errorsConst.Errors{
-			Text: errorsConst.ErrUpdateAvatar,
+			Text: errorsConst.PUpdateAvatarAvatarNotUpdate,
 			Time: time.Now(),
 		}
 	}
@@ -212,7 +212,7 @@ func (db *Wrapper) UpdateBirthday(id int, newBirthday time.Time) error {
 		newBirthday, id)
 	if err != nil {
 		return &errorsConst.Errors{
-			Text: errorsConst.ErrUpdateBirthday,
+			Text: errorsConst.PUpdateBirthdayBirthdayNotUpdate,
 			Time: time.Now(),
 		}
 	}
@@ -230,7 +230,7 @@ func (db *Wrapper) UpdateAddress(id int, newAddress Utils.AddressCoordinates) er
 		id)
 	if err != nil {
 		return &errorsConst.Errors{
-			Text: errorsConst.ErrUpdateAddress,
+			Text: errorsConst.PUpdateAddressAddressNotUpdate,
 			Time: time.Now(),
 		}
 	}

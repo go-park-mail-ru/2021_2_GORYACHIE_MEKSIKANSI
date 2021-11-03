@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS restaurant (
     house text NOT NULL,
     floor int,
     rating double precision,
-    location text
+    latitude double precision NOT NULL,
+    longitude double precision NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS cookie (

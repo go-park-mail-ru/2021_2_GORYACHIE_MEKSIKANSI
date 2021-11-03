@@ -39,7 +39,7 @@ func RestaurantDishes(db rest.WrapperRestaurant, restId int, dishId int) (*rest.
 		return nil, err
 	}
 
-	dishes.Ingredient, err = db.GetStructureDishes(dishId)
+	dishes.Ingredient, err = db.GetStructDishes(dishId)
 	if err != nil {
 		return nil, err
 	}

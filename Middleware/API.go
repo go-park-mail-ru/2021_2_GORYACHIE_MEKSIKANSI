@@ -29,7 +29,6 @@ func (m *InfoMiddleware) PrintURL(h fasthttp.RequestHandler) fasthttp.RequestHan
 
 func (m *InfoMiddleware) GetId(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
-
 		reqIdCtx := ctx.UserValue("reqId")
 		var reqId int
 		var errorConvert error

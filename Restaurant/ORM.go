@@ -16,7 +16,7 @@ func (db *Wrapper) GetRestaurants() ([]Utils.Restaurants, error) {
 		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant ORDER BY random() LIMIT 50")
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrRestaurantsNotSelect,
+			Text: errorsConst.RGetRestaurantsRestaurantsNotSelect,
 			Time: time.Now(),
 		}
 	}
@@ -28,7 +28,7 @@ func (db *Wrapper) GetRestaurants() ([]Utils.Restaurants, error) {
 			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating)
 		if err != nil {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.ErrRestaurantsScan,
+				Text: errorsConst.RGetRestaurantsRestaurantsNotScan,
 				Time: time.Now(),
 			}
 		}
@@ -37,7 +37,7 @@ func (db *Wrapper) GetRestaurants() ([]Utils.Restaurants, error) {
 
 	if result == nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrRestaurantsNotFound,
+			Text: errorsConst.RGetRestaurantsRestaurantsNotFound,
 			Time: time.Now(),
 		}
 	}
@@ -53,7 +53,7 @@ func (db *Wrapper) GetGeneralInfoRestaurant(id int) (*Utils.RestaurantId, error)
 		&restaurant.MaxDelivery, &restaurant.Rating)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrRestaurantNotFound,
+			Text: errorsConst.RGetGeneralInfoRestaurantNotFound,
 			Time: time.Now(),
 		}
 	}
@@ -65,7 +65,7 @@ func (db *Wrapper) GetTagsRestaurant(id int) ([]Utils.Tag, error) {
 		"SELECT id, category FROM restaurant_category WHERE restaurant = $1", id)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrRestaurantsNotSelect,
+			Text: errorsConst.RGetTagsCategoryNotSelect,
 			Time: time.Now(),
 		}
 	}
@@ -75,7 +75,7 @@ func (db *Wrapper) GetTagsRestaurant(id int) ([]Utils.Tag, error) {
 		err := rowCategory.Scan(&tag.Id, &tag.Name)
 		if err != nil {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.ErrCategoryRestaurantScan,
+				Text: errorsConst.RGetTagsCategoryRestaurantNotScan,
 				Time: time.Now(),
 			}
 		}
@@ -83,7 +83,7 @@ func (db *Wrapper) GetTagsRestaurant(id int) ([]Utils.Tag, error) {
 	}
 	if tags == nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrTagNotFound,
+			Text: errorsConst.RGetTagsTagsNotFound,
 			Time: time.Now(),
 		}
 	}
@@ -98,7 +98,7 @@ func GetDishesRestaurant(db *Wrapper, name string, id int) ([]Utils.DishesMenu, 
 		name, id)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrRestaurantsDishesNotSelect,
+			Text: errorsConst.RGetMenuDishesNotSelect,
 			Time: time.Now(),
 		}
 	}
@@ -107,7 +107,7 @@ func GetDishesRestaurant(db *Wrapper, name string, id int) ([]Utils.DishesMenu, 
 		err := rowDishes.Scan(&dish.Id, &dish.Img, &dish.Name, &dish.Cost, &dish.Kilocalorie)
 		if err != nil {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.ErrRestaurantDishesScan,
+				Text: errorsConst.RGetDishesRestaurantDishesNotScan,
 				Time: time.Now(),
 			}
 		}
@@ -122,7 +122,7 @@ func (db *Wrapper) GetMenu(id int) ([]Utils.Menu, error) {
 		"SELECT DISTINCT category_restaurant FROM dishes WHERE restaurant = $1", id)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrRestaurantsDishesNotSelect,
+			Text: errorsConst.RGetMenuDishesNotSelect,
 			Time: time.Now(),
 		}
 	}
@@ -145,7 +145,7 @@ func (db *Wrapper) GetMenu(id int) ([]Utils.Menu, error) {
 
 	if result == nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrRestaurantDishesNotFound,
+			Text: errorsConst.RGetMenuDishesNotFound,
 			Time: time.Now(),
 		}
 	}
@@ -153,13 +153,13 @@ func (db *Wrapper) GetMenu(id int) ([]Utils.Menu, error) {
 	return result, nil
 }
 
-func (db *Wrapper) GetStructureDishes(dishesId int) ([]Utils.Ingredients, error) {
+func (db *Wrapper) GetStructDishes(dishesId int) ([]Utils.Ingredients, error) {
 	var ingredients []Utils.Ingredients
 	rowDishes, err := db.Conn.Query(context.Background(),
 		"SELECT id, name, cost FROM structure_dishes WHERE food = $1", dishesId)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.DishesStructDishesNotSelect,
+			Text: errorsConst.RGetStructDishesStructDishesNotSelect,
 			Time: time.Now(),
 		}
 	}
@@ -169,7 +169,7 @@ func (db *Wrapper) GetStructureDishes(dishesId int) ([]Utils.Ingredients, error)
 		err := rowDishes.Scan(&ingredient.Id, &ingredient.Title, &ingredient.Cost)
 		if err != nil {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.DishesStructDishesNotScan,
+				Text: errorsConst.RGetStructDishesStructDishesNotScan,
 				Time: time.Now(),
 			}
 		}
@@ -178,12 +178,12 @@ func (db *Wrapper) GetStructureDishes(dishesId int) ([]Utils.Ingredients, error)
 	return ingredients, nil
 }
 
-func GetStructureRadios(db *Wrapper, radId int) ([]Utils.CheckboxesRows, error) {
+func GetStructRadios(db *Wrapper, radId int) ([]Utils.CheckboxesRows, error) {
 	rowDishes, err := db.Conn.Query(context.Background(),
 		"SELECT id, name FROM structure_radios WHERE radios = $1", radId)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.DishesStructRadiosNotSelect,
+			Text: errorsConst.RGetStructRadiosStructRadiosNotSelect,
 			Time: time.Now(),
 		}
 	}
@@ -195,12 +195,12 @@ func GetStructureRadios(db *Wrapper, radId int) ([]Utils.CheckboxesRows, error) 
 		if err != nil {
 			if err.Error() == "no rows in result set" {
 				return nil, &errorsConst.Errors{
-					Text: errorsConst.DishesStructRadiosNotFound,
+					Text: errorsConst.RGetStructRadiosStructRadiosNotFound,
 					Time: time.Now(),
 				}
 			}
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.DishesStructRadiosNotScan,
+				Text: errorsConst.RGetStructRadiosStructRadiosNotScan,
 				Time: time.Now(),
 			}
 		}
@@ -218,12 +218,12 @@ func (db *Wrapper) GetDishes(restId int, dishesId int) (*Utils.Dishes, error) {
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.DishesDishesNotFound,
+				Text: errorsConst.RGetDishesDishesNotFound,
 				Time: time.Now(),
 			}
 		}
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.DishesDishesNotScan,
+			Text: errorsConst.RGetDishesDishesNotScan,
 			Time: time.Now(),
 		}
 	}
@@ -237,7 +237,7 @@ func (db *Wrapper) GetRadios(dishesId int) ([]Utils.Radios, error) {
 		"SELECT id, name FROM radios WHERE food = $1", dishesId)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.DishesStructRadiosNotSelect,
+			Text: errorsConst.RGetRadiosRadiosNotSelect,
 			Time: time.Now(),
 		}
 	}
@@ -247,12 +247,12 @@ func (db *Wrapper) GetRadios(dishesId int) ([]Utils.Radios, error) {
 		err := rowDishes.Scan(&rad.Id, &rad.Title)
 		if err != nil {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.DishesRadiosNotScan,
+				Text: errorsConst.RGetRadiosRadiosNotScan,
 				Time: time.Now(),
 			}
 		}
 
-		rows, err := GetStructureRadios(db, rad.Id)
+		rows, err := GetStructRadios(db, rad.Id)
 		if err != nil {
 			return nil, err
 		}

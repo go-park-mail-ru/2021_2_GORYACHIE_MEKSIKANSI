@@ -210,19 +210,19 @@ func (mr *MockWrapperRestaurantMockRecorder) GetRestaurants() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRestaurants", reflect.TypeOf((*MockWrapperRestaurant)(nil).GetRestaurants))
 }
 
-// GetStructureDishes mocks base method.
-func (m *MockWrapperRestaurant) GetStructureDishes(arg0 int) ([]Utils.Ingredients, error) {
+// GetStructDishes mocks base method.
+func (m *MockWrapperRestaurant) GetStructDishes(arg0 int) ([]Utils.Ingredients, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetStructureDishes", arg0)
+	ret := m.ctrl.Call(m, "GetStructDishes", arg0)
 	ret0, _ := ret[0].([]Utils.Ingredients)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetStructureDishes indicates an expected call of GetStructureDishes.
-func (mr *MockWrapperRestaurantMockRecorder) GetStructureDishes(arg0 interface{}) *gomock.Call {
+// GetStructDishes indicates an expected call of GetStructDishes.
+func (mr *MockWrapperRestaurantMockRecorder) GetStructDishes(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStructureDishes", reflect.TypeOf((*MockWrapperRestaurant)(nil).GetStructureDishes), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStructDishes", reflect.TypeOf((*MockWrapperRestaurant)(nil).GetStructDishes), arg0)
 }
 
 // GetTagsRestaurant mocks base method.
@@ -614,21 +614,6 @@ func (mr *MockWrapperCartMockRecorder) GetCart(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCart", reflect.TypeOf((*MockWrapperCart)(nil).GetCart), arg0)
 }
 
-// GetCartStructureFood mocks base method.
-func (m *MockWrapperCart) GetCartStructureFood(arg0 int) ([]Utils.IngredientCartResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCartStructureFood", arg0)
-	ret0, _ := ret[0].([]Utils.IngredientCartResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetCartStructureFood indicates an expected call of GetCartStructureFood.
-func (mr *MockWrapperCartMockRecorder) GetCartStructureFood(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCartStructureFood", reflect.TypeOf((*MockWrapperCart)(nil).GetCartStructureFood), arg0)
-}
-
 // GetConn mocks base method.
 func (m *MockWrapperCart) GetConn() Utils.ConnectionInterface {
 	m.ctrl.T.Helper()
@@ -658,19 +643,34 @@ func (mr *MockWrapperCartMockRecorder) GetPriceDelivery(arg0 interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPriceDelivery", reflect.TypeOf((*MockWrapperCart)(nil).GetPriceDelivery), arg0)
 }
 
-// GetStructureRadios mocks base method.
-func (m *MockWrapperCart) GetStructureRadios(arg0 int) ([]Utils.RadiosCartResponse, error) {
+// GetStructFood mocks base method.
+func (m *MockWrapperCart) GetStructFood(arg0 int) ([]Utils.IngredientCartResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetStructureRadios", arg0)
+	ret := m.ctrl.Call(m, "GetStructFood", arg0)
+	ret0, _ := ret[0].([]Utils.IngredientCartResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetStructFood indicates an expected call of GetStructFood.
+func (mr *MockWrapperCartMockRecorder) GetStructFood(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStructFood", reflect.TypeOf((*MockWrapperCart)(nil).GetStructFood), arg0)
+}
+
+// GetStructRadios mocks base method.
+func (m *MockWrapperCart) GetStructRadios(arg0 int) ([]Utils.RadiosCartResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetStructRadios", arg0)
 	ret0, _ := ret[0].([]Utils.RadiosCartResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetStructureRadios indicates an expected call of GetStructureRadios.
-func (mr *MockWrapperCartMockRecorder) GetStructureRadios(arg0 interface{}) *gomock.Call {
+// GetStructRadios indicates an expected call of GetStructRadios.
+func (mr *MockWrapperCartMockRecorder) GetStructRadios(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStructureRadios", reflect.TypeOf((*MockWrapperCart)(nil).GetStructureRadios), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStructRadios", reflect.TypeOf((*MockWrapperCart)(nil).GetStructRadios), arg0)
 }
 
 // UpdateCart mocks base method.

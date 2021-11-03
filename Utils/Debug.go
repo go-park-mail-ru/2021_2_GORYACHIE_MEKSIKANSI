@@ -18,7 +18,7 @@ func CreateDb() (*pgxpool.Pool, error) {
 			"@"+config.DBHost+":"+config.DBPort+"/"+config.DBName)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrNotConnect,
+			Text: errorsConst.UCreateDBNotConnect,
 			Time: time.Now(),
 		}
 	}
@@ -27,7 +27,7 @@ func CreateDb() (*pgxpool.Pool, error) {
 		file, err := ioutil.ReadFile("PostgreSQL/DeleteTables.sql")
 		if err != nil {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.ErrDeleteFileNotFound,
+				Text: errorsConst.UCreateDBDeleteFileNotFound,
 				Time: time.Now(),
 			}
 		}
@@ -37,7 +37,7 @@ func CreateDb() (*pgxpool.Pool, error) {
 			_, err = conn.Exec(context.Background(), request)
 			if err != nil {
 				return nil, &errorsConst.Errors{
-					Text: errorsConst.ErrNotDeleteTables,
+					Text: errorsConst.UCreateDBNotDeleteTables,
 					Time: time.Now(),
 				}
 			}
@@ -47,7 +47,7 @@ func CreateDb() (*pgxpool.Pool, error) {
 	file, err := ioutil.ReadFile("PostgreSQL/CreateTables.sql")
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrFileNotFound,
+			Text: errorsConst.UCreateDBCreateFileNotFound,
 			Time: time.Now(),
 		}
 	}
@@ -57,7 +57,7 @@ func CreateDb() (*pgxpool.Pool, error) {
 		_, err = conn.Exec(context.Background(), request)
 		if err != nil {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.ErrNotCreateTables,
+				Text: errorsConst.UCreateDBNotCreateTables,
 				Time: time.Now(),
 			}
 		}
@@ -67,7 +67,7 @@ func CreateDb() (*pgxpool.Pool, error) {
 		file, err := ioutil.ReadFile("PostgreSQL/Fill.sql")
 		if err != nil {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.ErrFillFileNotFound,
+				Text: errorsConst.UCreateDBFillFileNotFound,
 				Time: time.Now(),
 			}
 		}
@@ -77,7 +77,7 @@ func CreateDb() (*pgxpool.Pool, error) {
 			_, err = conn.Exec(context.Background(), request)
 			if err != nil {
 				return nil, &errorsConst.Errors{
-					Text: errorsConst.ErrNotFillTables,
+					Text: errorsConst.UCreateDBNotFillTables,
 					Time: time.Now(),
 				}
 			}

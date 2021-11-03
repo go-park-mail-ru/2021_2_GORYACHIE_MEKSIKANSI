@@ -12,13 +12,13 @@ type Wrapper struct {
 	Conn Utils.ConnectionInterface
 }
 
-func (db *Wrapper) GetCartStructureFood(id int) ([]Utils.IngredientCartResponse, error) {
+func (db *Wrapper) GetStructFood(id int) ([]Utils.IngredientCartResponse, error) {
 	var ingredients []Utils.IngredientCartResponse
 	rows, err := db.Conn.Query(context.Background(),
 		"SELECT checkbox FROM cart_structure_food WHERE client_id = $1", id)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.GetCartRestaurantNotSelect,
+			Text: errorsConst.CGetStructFoodRestaurantNotSelect,
 			Time: time.Now(),
 		}
 	}
@@ -27,7 +27,7 @@ func (db *Wrapper) GetCartStructureFood(id int) ([]Utils.IngredientCartResponse,
 		err = rows.Scan(&ingredient.Id)
 		if err != nil {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.GetCartCheckboxNotScan,
+				Text: errorsConst.CGetStructFoodCheckboxNotScan,
 				Time: time.Now(),
 			}
 		}
@@ -40,13 +40,13 @@ func (db *Wrapper) GetCartStructureFood(id int) ([]Utils.IngredientCartResponse,
 	return ingredients, nil
 }
 
-func (db *Wrapper) GetStructureRadios(id int) ([]Utils.RadiosCartResponse, error) {
+func (db *Wrapper) GetStructRadios(id int) ([]Utils.RadiosCartResponse, error) {
 	var radios []Utils.RadiosCartResponse
 	rows, err := db.Conn.Query(context.Background(),
 		"SELECT radios_id, radios FROM cart_radios_food WHERE client_id = $1", id)
 	if err != nil {
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.GetCartRadiosNotSelect,
+			Text: errorsConst.CGetStructRadiosRadiosNotSelect,
 			Time: time.Now(),
 		}
 	}
@@ -55,7 +55,7 @@ func (db *Wrapper) GetStructureRadios(id int) ([]Utils.RadiosCartResponse, error
 		err = rows.Scan(&radio.RadiosId, &radio.Id)
 		if err != nil {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.GetCartRadiosNotScan,
+				Text: errorsConst.CGetStructRadiosRadiosNotScan,
 				Time: time.Now(),
 			}
 		}
@@ -65,12 +65,12 @@ func (db *Wrapper) GetStructureRadios(id int) ([]Utils.RadiosCartResponse, error
 		if err != nil {
 			if err.Error() == "no rows in result set" {
 				return nil, &errorsConst.Errors{
-					Text: errorsConst.GetCartStructRadiosNotFound,
+					Text: errorsConst.CGetStructRadiosStructRadiosNotFound,
 					Time: time.Now(),
 				}
 			}
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.GetCartStructRadiosNowScan,
+				Text: errorsConst.CGetStructRadiosStructRadiosNotScan,
 				Time: time.Now(),
 			}
 		}
@@ -100,14 +100,8 @@ func (db *Wrapper) GetCart(id int) (*Utils.ResponseCartErrors, []Utils.CastDishe
 	for rows.Next() {
 		err = rows.Scan(&dish.Id, &dish.Count, &dish.ItemNumber, &dish.Name, &dish.Cost, &dish.Description, &dish.Img, &restaurant.Id, &count, &dish.Weight, &dish.Kilocalorie)
 		if err != nil {
-			if err.Error() == "no rows in result set" {
-				return nil, nil, &errorsConst.Errors{
-					Text: errorsConst.GetCartDishesNotFound,
-					Time: time.Now(),
-				}
-			}
 			return nil, nil, &errorsConst.Errors{
-				Text: errorsConst.GetCartDishesNotScan,
+				Text: errorsConst.CGetCartDishesNotScan,
 				Time: time.Now(),
 			}
 		}
@@ -121,13 +115,13 @@ func (db *Wrapper) GetCart(id int) (*Utils.ResponseCartErrors, []Utils.CastDishe
 		dish.Weight = dish.Weight * dish.Count
 		dish.Kilocalorie = dish.Kilocalorie * dish.Count
 
-		ingredients, err = db.GetCartStructureFood(id)
+		ingredients, err = db.GetStructFood(id)
 		if err != nil {
 			return nil, nil, err
 		}
 		dish.IngredientCart = ingredients
 
-		radios, err = db.GetStructureRadios(id)
+		radios, err = db.GetStructRadios(id)
 		dish.RadiosCart = radios
 		if err != nil {
 			return nil, nil, err
@@ -136,11 +130,9 @@ func (db *Wrapper) GetCart(id int) (*Utils.ResponseCartErrors, []Utils.CastDishe
 		dishes = append(dishes, *dish)
 	}
 	if cart == nil {
-		if err.Error() == "no rows in result set" {
-			return nil, nil, &errorsConst.Errors{
-				Text: errorsConst.GetCartDishesNotFound,
-				Time: time.Now(),
-			}
+		return nil, nil, &errorsConst.Errors{
+			Text: errorsConst.CGetCartDishesNotFound,
+			Time: time.Now(),
 		}
 	}
 	cart.Restaurant = restaurant
@@ -153,7 +145,7 @@ func (db *Wrapper) DeleteCart(id int) error {
 		"DELETE FROM cart WHERE client_id = $1", id)
 	if err != nil {
 		return &errorsConst.Errors{
-			Text: errorsConst.CartNotDelete,
+			Text: errorsConst.CDeleteCartCartNotDelete,
 			Time: time.Now(),
 		}
 	}
@@ -161,7 +153,7 @@ func (db *Wrapper) DeleteCart(id int) error {
 		"DELETE FROM cart_structure_food WHERE client_id = $1", id)
 	if err != nil {
 		return &errorsConst.Errors{
-			Text: errorsConst.StructureFoodNotDelete,
+			Text: errorsConst.CDeleteCartStructureFoodNotDelete,
 			Time: time.Now(),
 		}
 	}
@@ -169,7 +161,7 @@ func (db *Wrapper) DeleteCart(id int) error {
 		"DELETE FROM cart_radios_food WHERE client_id = $1", id)
 	if err != nil {
 		return &errorsConst.Errors{
-			Text: errorsConst.CartRadiosFoodNotDelete,
+			Text: errorsConst.CDeleteCartRadiosFoodNotDelete,
 			Time: time.Now(),
 		}
 	}
@@ -189,7 +181,7 @@ func (db *Wrapper) UpdateCartStructureFood(ingredients []Utils.IngredientsCartRe
 			&checkedIngredient.Id, &checkedIngredient.Name, &checkedIngredient.Cost)
 		if err != nil {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.UpdateCartStructureNotSelect,
+				Text: errorsConst.CUpdateCartStructureFoodStructureFoodNotSelect,
 				Time: time.Now(),
 			}
 		}
@@ -200,7 +192,7 @@ func (db *Wrapper) UpdateCartStructureFood(ingredients []Utils.IngredientsCartRe
 			ingredient.Id, clientId)
 		if err != nil {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.UpdateCartStructureFoodNotInsert,
+				Text: errorsConst.CUpdateCartStructFoodStructureFoodNotInsert,
 				Time: time.Now(),
 			}
 		}
@@ -216,7 +208,7 @@ func (db *Wrapper) UpdateCartRadios(radios []Utils.RadiosCartRequest, clientId i
 			&checkedRadios.Id, &checkedRadios.Name)
 		if err != nil {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.UpdateCartStructRadiosNotSelect,
+				Text: errorsConst.CUpdateCartStructRadiosStructRadiosNotSelect,
 				Time: time.Now(),
 			}
 		}
@@ -227,7 +219,7 @@ func (db *Wrapper) UpdateCartRadios(radios []Utils.RadiosCartRequest, clientId i
 			radio.RadiosId, radio.Id, clientId)
 		if err != nil {
 			return nil, &errorsConst.Errors{
-				Text: errorsConst.UpdateCartRadiosNotInsert,
+				Text: errorsConst.CUpdateCartRadiosRadiosNotInsert,
 				Time: time.Now(),
 			}
 		}
@@ -245,7 +237,7 @@ func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*
 	}(tx, context.Background())
 	if err != nil {
 		return nil, nil, &errorsConst.Errors{
-			Text: errorsConst.ErrUpdateCartTransactionNotCreate,
+			Text: errorsConst.CUpdateCartTransactionNotCreate,
 			Time: time.Now(),
 		}
 	}
@@ -263,12 +255,12 @@ func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*
 		if err != nil {
 			if err.Error() == "no rows in result set" {
 				return nil, nil, &errorsConst.Errors{
-					Text: errorsConst.UpdateCartCartNotFound,
+					Text: errorsConst.CUpdateCartCartNotFound,
 					Time: time.Now(),
 				}
 			}
 			return nil, nil, &errorsConst.Errors{
-				Text: errorsConst.UpdateCartCartNotScan,
+				Text: errorsConst.CUpdateCartCartNotScan,
 				Time: time.Now(),
 			}
 		}
@@ -294,7 +286,7 @@ func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*
 			clientId, dish.Id, dish.Count, newCart.Restaurant.Id, newCart.Dishes[i].ItemNumber)
 		if err != nil {
 			return nil, nil, &errorsConst.Errors{
-				Text: errorsConst.UpdateCartCartNotInsert,
+				Text: errorsConst.CUpdateCartCartNotInsert,
 				Time: time.Now(),
 			}
 		}
@@ -311,7 +303,7 @@ func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*
 	err = tx.Commit(context.Background())
 	if err != nil {
 		return nil, nil, &errorsConst.Errors{
-			Text: errorsConst.ErrUpdateCartNotCommit,
+			Text: errorsConst.CUpdateCartNotCommit,
 			Time: time.Now(),
 		}
 	}
@@ -325,12 +317,12 @@ func (db *Wrapper) GetPriceDelivery(id int) (int, error) {
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return 0, &errorsConst.Errors{
-				Text: errorsConst.GetPriceDeliveryNotFound,
+				Text: errorsConst.CGetPriceDeliveryPriceNotFound,
 				Time: time.Now(),
 			}
 		}
 		return 0, &errorsConst.Errors{
-			Text: errorsConst.GetPriceDeliveryNotScan,
+			Text: errorsConst.CGetPriceDeliveryPriceNotScan,
 			Time: time.Now(),
 		}
 	}

@@ -16,7 +16,7 @@ type ConnectionInterface interface {
 
 type WrapperRestaurant interface {
 	GetRestaurants() ([]Restaurants, error)
-	GetStructureDishes(dishesId int) ([]Ingredients, error)
+	GetStructDishes(dishesId int) ([]Ingredients, error)
 	GetRadios(dishesId int) ([]Radios, error)
 	GetDishes(restId int, dishesId int) (*Dishes, error)
 	GetGeneralInfoRestaurant(id int) (*RestaurantId, error)
@@ -56,7 +56,7 @@ type WrapperCart interface {
 	GetConn() ConnectionInterface
 	GetPriceDelivery(id int) (int, error)
 	UpdateCartRadios(radios []RadiosCartRequest, clientId int, tx pgx.Tx) ([]RadiosCartResponse, error)
-	GetStructureRadios(id int) ([]RadiosCartResponse, error)
-	GetCartStructureFood(id int) ([]IngredientCartResponse, error)
+	GetStructRadios(id int) ([]RadiosCartResponse, error)
+	GetStructFood(id int) ([]IngredientCartResponse, error)
 	UpdateCartStructureFood(ingredients []IngredientsCartRequest, clientId int, tx pgx.Tx) ([]IngredientCartResponse, error)
 }

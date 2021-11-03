@@ -9,9 +9,8 @@ import (
 func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case GetCartRestaurantNotScan, GetCartCartNotFound, GetCartCartNotScan,
-			GetCartDishesNotFound, GetCartDishesNotScan, GetCartRestaurantNotSelect,
-			GetCartCheckboxNotScan, GetCartRadiosNotSelect, GetCartRadiosNotScan, GetCartStructRadiosNowScan:
+		case CGetCartDishesNotFound, CGetCartDishesNotScan, CGetStructFoodRestaurantNotSelect,
+			CGetStructFoodCheckboxNotScan, CGetStructRadiosRadiosNotSelect, CGetStructRadiosRadiosNotScan, CGetStructRadiosStructRadiosNotScan:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -30,7 +29,7 @@ func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 					Time: time.Now(),
 				},
 				result, http.StatusInternalServerError
-		case GetCartRestaurantNotFound:
+		case RGetGeneralInfoRestaurantNotFound:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusNotFound,
 				Explain: ErrCartNull,
@@ -57,9 +56,9 @@ func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 func (c *CheckError) CheckErrorUpdateCart(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case CartNotDelete, StructureFoodNotDelete, CartRadiosFoodNotDelete, UpdateCartCartNotInsert,
-			UpdateCartStructureFoodNotInsert, UpdateCartRadiosNotInsert, GetPriceDeliveryNotFound, GetPriceDeliveryNotScan,
-			UpdateCartCartNotFound, UpdateCartCartNotScan, UpdateCartStructureNotSelect, UpdateCartStructRadiosNotSelect:
+		case CDeleteCartCartNotDelete, CDeleteCartStructureFoodNotDelete, CDeleteCartRadiosFoodNotDelete, CUpdateCartCartNotInsert,
+			CUpdateCartStructFoodStructureFoodNotInsert, CUpdateCartRadiosRadiosNotInsert, CGetPriceDeliveryPriceNotFound, CGetPriceDeliveryPriceNotScan,
+			CUpdateCartCartNotFound, CUpdateCartCartNotScan, CUpdateCartStructureFoodStructureFoodNotSelect, CUpdateCartStructRadiosStructRadiosNotSelect:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,

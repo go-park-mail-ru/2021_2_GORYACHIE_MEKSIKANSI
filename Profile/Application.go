@@ -23,7 +23,7 @@ func GetProfile(db profile.WrapperProfile, id int) (*profile.Profile, error) {
 		result, err = db.GetProfileHost(id)
 	default:
 		return nil, &errorsConst.Errors{
-			Text: errorsConst.ErrGetProfileUnknownRole,
+			Text: errorsConst.PGetProfileUnknownRole,
 			Time: time.Now(),
 		}
 	}

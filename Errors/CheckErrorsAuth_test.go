@@ -52,25 +52,25 @@ func TestCheckErrorSignUp(t *testing.T) {
 	}{
 		{
 			errorInput: Errors{
-				Text: ErrGeneralInfoUnique,
+				Text: AGeneralSignUpLoginNotUnique,
 				Time: time.Now(),
 			},
 			errorExpected:    ErrCheck,
-			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusConflict) + ",\"explain\":\"" + ErrGeneralInfoUnique + "\"}",
+			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusConflict) + ",\"explain\":\"" + AGeneralSignUpLoginNotUnique + "\"}",
 			codeHTTPExpected: http.StatusOK,
 		},
 		{
 			errorInput: Errors{
-				Text: ErrPhoneFormat,
+				Text: AGeneralSignUpIncorrectPhoneFormat,
 				Time: time.Now(),
 			},
 			errorExpected:    ErrCheck,
-			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) + ",\"explain\":\"" + ErrPhoneFormat + "\"}",
+			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) + ",\"explain\":\"" + AGeneralSignUpIncorrectPhoneFormat + "\"}",
 			codeHTTPExpected: http.StatusOK,
 		},
 		{
 			errorInput: Errors{
-				Text: ErrGeneralInfoScan,
+				Text: AGeneralSignUpNotInsert,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
@@ -80,7 +80,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: ErrInsertHost,
+				Text: ASignUpHostHostNotInsert,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
@@ -90,7 +90,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: ErrInsertTransactionCookie,
+				Text: AAddTransactionCookieNotInsert,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
@@ -100,7 +100,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: ErrInsertCourier,
+				Text: ASignUpCourierCourierNotInsert,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
@@ -110,7 +110,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: ErrInsertClient,
+				Text: ASignUpClientClientNotInsert,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
@@ -162,27 +162,27 @@ func TestCheckErrorLogin(t *testing.T) {
 	}{
 		{
 			errorInput: Errors{
-				Text: ErrLoginOrPasswordIncorrect,
+				Text: ALoginOrPasswordIncorrect,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) +
-				",\"explain\":\"" + ErrLoginOrPasswordIncorrect + "\"}",
+				",\"explain\":\"" + ALoginOrPasswordIncorrect + "\"}",
 			codeHTTPExpected: http.StatusOK,
 		},
 		{
 			errorInput: Errors{
-				Text: ErrUserNotFoundLogin,
+				Text: ALoginNotFound,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) +
-				",\"explain\":\"" + ErrLoginOrPasswordIncorrect + "\"}",
+				",\"explain\":\"" + ALoginOrPasswordIncorrect + "\"}",
 			codeHTTPExpected: http.StatusOK,
 		},
 		{
 			errorInput: Errors{
-				Text: ErrInsertCookie,
+				Text: AAddCookieCookieNotInsert,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
@@ -192,7 +192,7 @@ func TestCheckErrorLogin(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: ErrSelectSaltInLogin,
+				Text: ASaltNotSelect,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
@@ -238,7 +238,7 @@ func TestCheckErrorLogout(t *testing.T) {
 	}{
 		{
 			errorInput: Errors{
-				Text: ErrDeleteCookie,
+				Text: ADeleteCookieCookieNotDelete,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
@@ -284,17 +284,17 @@ func TestCheckErrorLogoutAccess(t *testing.T) {
 	}{
 		{
 			errorInput: Errors{
-				Text: ErrCheckAccessCookieNotFound,
+				Text: MCheckAccessCookieNotFound,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) +
-				",\"explain\":\"" + ErrCheckAccessCookieNotFound + "\"}",
+				",\"explain\":\"" + MCheckAccessCookieNotFound + "\"}",
 			codeHTTPExpected: http.StatusOK,
 		},
 		{
 			errorInput: Errors{
-				Text: ErrCookieNotScan,
+				Text: MCheckAccessCookieNotScan,
 				Time: time.Now(),
 			},
 			errorExpected: ErrCheck,

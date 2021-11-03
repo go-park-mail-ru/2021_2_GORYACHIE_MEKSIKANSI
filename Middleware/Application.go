@@ -16,12 +16,12 @@ func CheckAccess(conn utils.ConnectionInterface, cookie *utils.Defense) (bool, e
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return false, &errorsConst.Errors{
-				Text: errorsConst.ErrCheckAccessCookieNotFound,
+				Text: errorsConst.MCheckAccessCookieNotFound,
 				Time: time.Now(),
 			}
 		}
 		return false, &errorsConst.Errors{
-			Text: errorsConst.ErrCookieNotScan,
+			Text: errorsConst.MCheckAccessCookieNotScan,
 			Time: time.Now(),
 		}
 	}
@@ -33,14 +33,14 @@ func CheckAccess(conn utils.ConnectionInterface, cookie *utils.Defense) (bool, e
 	return false, nil
 }
 
-func NewCsrf(conn utils.ConnectionInterface, cookie *utils.Defense) (string, error) {
+func NewCSRF(conn utils.ConnectionInterface, cookie *utils.Defense) (string, error) {
 	csrfToken := utils.RandString(5)
 	_, err := conn.Exec(context.Background(),
 		"UPDATE cookie SET csrf_token = $1 WHERE session_id = $2",
 		csrfToken, cookie.SessionId)
 	if err != nil {
 		return "", &errorsConst.Errors{
-			Text: errorsConst.ErrUpdateCSRF,
+			Text: errorsConst.MNewCSRFCSRFNotUpdate,
 			Time: time.Now(),
 		}
 	}
@@ -57,12 +57,12 @@ func GetIdByCookie(conn utils.ConnectionInterface, cookie *utils.Defense) (int, 
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return 0, &errorsConst.Errors{
-				Text: errorsConst.ErrCookieNotFound,
+				Text: errorsConst.MGetIdByCookieCookieNotFound,
 				Time: time.Now(),
 			}
 		}
 		return 0, &errorsConst.Errors{
-			Text: errorsConst.ErrCookieScan,
+			Text: errorsConst.MGetIdByCookieCookieNotScan,
 			Time: time.Now(),
 		}
 	}
@@ -74,7 +74,7 @@ func GetIdByCookie(conn utils.ConnectionInterface, cookie *utils.Defense) (int, 
 	}
 
 	return 0, &errorsConst.Errors{
-		Text: errorsConst.ErrCookieExpired,
+		Text: errorsConst.MGetIdByCookieCookieExpired,
 		Time: time.Now(),
 	}
 }
