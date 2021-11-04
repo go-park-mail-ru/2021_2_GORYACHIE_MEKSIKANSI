@@ -1,6 +1,7 @@
 package Utils
 
 import (
+	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
@@ -9,6 +10,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"math/big"
+	"strconv"
 	"strings"
 )
 
@@ -77,4 +79,27 @@ func NewLogger(filePath string) *zap.SugaredLogger {
 	logger := zap.New(core, zap.AddCaller())
 	sugarLogger := logger.Sugar()
 	return sugarLogger
+}
+
+func interfaceConvertInt(value interface{}) (int, error) {
+	var reqId int
+	var errorConvert error
+	switch value.(type) {
+	case string:
+		reqId, errorConvert = strconv.Atoi(value.(string))
+		if errorConvert != nil {
+			return errors.IntNil, &errors.Errors{
+				Text: errors.ErrAtoi,
+			}
+		}
+		return reqId, nil
+	case int:
+		reqId = value.(int)
+		return reqId, nil
+	default:
+		return errors.IntNil, &errors.Errors{
+			Text: errors.ErrNotStringAndInt,
+		}
+	}
+
 }

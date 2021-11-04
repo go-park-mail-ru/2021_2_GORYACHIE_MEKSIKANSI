@@ -70,7 +70,7 @@ func (c *CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 				result, http.StatusInternalServerError
 		}
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }
 
 func (c *CheckError) CheckErrorLogin(err error) (error, []byte, int) {
@@ -116,7 +116,7 @@ func (c *CheckError) CheckErrorLogin(err error) (error, []byte, int) {
 				result, http.StatusInternalServerError
 		}
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }
 
 func (c *CheckError) CheckErrorLogout(err error) (error, []byte, int) {
@@ -140,5 +140,5 @@ func (c *CheckError) CheckErrorLogout(err error) (error, []byte, int) {
 			},
 			result, http.StatusInternalServerError
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }

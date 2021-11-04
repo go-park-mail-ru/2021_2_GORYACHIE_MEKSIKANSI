@@ -50,7 +50,7 @@ func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 				result, http.StatusOK
 		}
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }
 
 func (c *CheckError) CheckErrorUpdateCart(err error) (error, []byte, int) {
@@ -79,5 +79,5 @@ func (c *CheckError) CheckErrorUpdateCart(err error) (error, []byte, int) {
 				result, http.StatusInternalServerError
 		}
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }

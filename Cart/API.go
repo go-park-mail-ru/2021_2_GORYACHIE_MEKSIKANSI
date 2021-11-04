@@ -2,9 +2,9 @@ package Cart
 
 import (
 	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	interfaces "2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"encoding/json"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 	"net/http"
@@ -12,7 +12,7 @@ import (
 )
 
 type InfoCart struct {
-	ConnectionDB  *pgxpool.Pool
+	Application   interfaces.CartApplication
 	LoggerErrWarn *zap.SugaredLogger
 	LoggerInfo    *zap.SugaredLogger
 	LoggerTest    *zap.SugaredLogger
@@ -46,8 +46,6 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	wrapper := Wrapper{Conn: c.ConnectionDB}
-
 	idUrl := ctx.UserValue("id")
 	var id int
 	switch idUrl.(type) {
@@ -68,7 +66,7 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	result, err := GetCart(&wrapper, id)
+	result, err := c.Application.GetCart(id)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorGetCart(err)
 	if errOut != nil {
 		switch errOut.Error() {
@@ -126,8 +124,6 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	wrapper := Wrapper{Conn: c.ConnectionDB}
-
 	var cartRequest utils.CartRequest
 	err := json.Unmarshal(ctx.Request.Body(), &cartRequest)
 	if err != nil {
@@ -171,7 +167,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	result, err := UpdateCart(&wrapper, cartRequest.Cart, id)
+	result, err := c.Application.UpdateCart(cartRequest.Cart, id)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorUpdateCart(err)
 	if errOut != nil {
 		switch errOut.Error() {

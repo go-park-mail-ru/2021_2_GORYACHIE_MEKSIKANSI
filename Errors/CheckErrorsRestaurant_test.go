@@ -56,12 +56,12 @@ func TestCheckErrorRestaurant(t *testing.T) {
 	var err error
 	errOut, resultOut, codeHTTP := CheckErrorRestaurant(err)
 	assert.Equal(t, nil, errOut,
-		fmt.Sprintf("Expected %s, %s, %d", test.NilStr, test.NilStr, HttpNil),
+		fmt.Sprintf("Expected %s, %s, %d", test.NilStr, test.NilStr, IntNil),
 	)
 	assert.Equal(t, []byte(nil), resultOut,
-		fmt.Sprintf("Expected %s, %s, %d", test.NilStr, test.NilStr, HttpNil),
+		fmt.Sprintf("Expected %s, %s, %d", test.NilStr, test.NilStr, IntNil),
 	)
-	assert.Equal(t, HttpNil, codeHTTP,
-		fmt.Sprintf("Expected %s, %s, %d", test.NilStr, test.NilStr, HttpNil),
+	assert.Equal(t, IntNil, codeHTTP,
+		fmt.Sprintf("Expected %s, %s, %d", test.NilStr, test.NilStr, IntNil),
 	)
 }

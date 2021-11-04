@@ -49,7 +49,7 @@ func (c *CheckError) CheckErrorCookie(err error) (error, []byte, int) {
 				result, http.StatusOK
 		}
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }
 
 func (c *CheckError) CheckErrorAccess(err error) (error, []byte, int) {
@@ -95,5 +95,5 @@ func (c *CheckError) CheckErrorAccess(err error) (error, []byte, int) {
 				result, http.StatusOK
 		}
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }

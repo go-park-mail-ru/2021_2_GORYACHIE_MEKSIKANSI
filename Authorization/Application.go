@@ -2,23 +2,28 @@ package Authorization
 
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"time"
 )
 
 const LenSalt = 5
 
-func SignUp(db utils.WrapperAuthorization, signup *utils.RegistrationRequest) (*utils.Defense, error) {
+type Authorization struct {
+	DB Interfaces.WrapperAuthorization
+}
+
+func (a *Authorization) SignUp(signup *utils.RegistrationRequest) (*utils.Defense, error) {
 	var cookie *utils.Defense
 	var err error
-	newCookie := db.GenerateNew()
+	newCookie := a.DB.GenerateNew()
 	switch signup.TypeUser {
 	case "client":
-		cookie, err = db.SignupClient(signup, newCookie)
+		cookie, err = a.DB.SignupClient(signup, newCookie)
 	case "courier":
-		cookie, err = db.SignupCourier(signup, newCookie)
+		cookie, err = a.DB.SignupCourier(signup, newCookie)
 	case "host":
-		cookie, err = db.SignupHost(signup, newCookie)
+		cookie, err = a.DB.SignupHost(signup, newCookie)
 	default:
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ASignUpUnknownType,
@@ -33,15 +38,15 @@ func SignUp(db utils.WrapperAuthorization, signup *utils.RegistrationRequest) (*
 	return cookie, nil
 }
 
-func Login(db utils.WrapperAuthorization, login *Authorization) (*utils.Defense, error) {
+func (a *Authorization) Login(login *utils.Authorization) (*utils.Defense, error) {
 	var userId int
 	var err error
 	switch {
 	case login.Email != "":
-		userId, err = db.LoginByEmail(login.Email, login.Password)
+		userId, err = a.DB.LoginByEmail(login.Email, login.Password)
 
 	case login.Phone != "":
-		userId, err = db.LoginByPhone(login.Phone, login.Password)
+		userId, err = a.DB.LoginByPhone(login.Phone, login.Password)
 	default:
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ALoginVoidLogin,
@@ -53,8 +58,8 @@ func Login(db utils.WrapperAuthorization, login *Authorization) (*utils.Defense,
 		return nil, err
 	}
 
-	cookie := db.GenerateNew()
-	err = db.AddCookie(cookie, userId)
+	cookie := a.DB.GenerateNew()
+	err = a.DB.AddCookie(cookie, userId)
 
 	if err != nil {
 		return nil, err
@@ -62,6 +67,6 @@ func Login(db utils.WrapperAuthorization, login *Authorization) (*utils.Defense,
 	return cookie, nil
 }
 
-func Logout(db utils.WrapperAuthorization, cookie *utils.Defense) error {
-	return db.DeleteCookie(cookie)
+func (a *Authorization) Logout(cookie *utils.Defense) error {
+	return a.DB.DeleteCookie(cookie)
 }

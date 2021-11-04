@@ -2,10 +2,10 @@ package Profile
 
 import (
 	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
-	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
+	interfaces "2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
+	_ "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"encoding/json"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 	"net/http"
@@ -13,7 +13,7 @@ import (
 )
 
 type InfoProfile struct {
-	ConnectionDB  *pgxpool.Pool
+	Application   interfaces.ProfileApplication
 	LoggerErrWarn *zap.SugaredLogger
 	LoggerInfo    *zap.SugaredLogger
 	LoggerTest    *zap.SugaredLogger
@@ -46,8 +46,6 @@ func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	wrapper := Wrapper{Conn: u.ConnectionDB}
-
 	idUrl := ctx.UserValue("id")
 	var id int
 	switch idUrl.(type) {
@@ -69,7 +67,7 @@ func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	profile, err := GetProfile(&wrapper, id)
+	profile, err := u.Application.GetProfile(id)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorProfile(err)
 	if errOut != nil {
 		switch errOut.Error() {
@@ -127,7 +125,6 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	wrapper := Wrapper{Conn: u.ConnectionDB}
 	userName := utils.UpdateName{}
 	err := json.Unmarshal(ctx.Request.Body(), &userName)
 	if err != nil {
@@ -137,23 +134,23 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
-	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
+	/*	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
+		cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
 
-	_, err = mid.CheckAccess(u.ConnectionDB, &cookieDB)
-	errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
-	if errAccess != nil {
-		switch errAccess.Error() {
-		case errors.ErrMarshal:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
-			return
-		case errors.ErrCheck:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody(resultOutAccess)
-			return
-		}
-	}
+		_, err = mid.CheckAccess(u.Application, &cookieDB)
+		errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
+		if errAccess != nil {
+			switch errAccess.Error() {
+			case errors.ErrMarshal:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody([]byte(errors.ErrMarshal))
+				return
+			case errors.ErrCheck:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody(resultOutAccess)
+				return
+			}
+		}*/
 
 	idUrl := ctx.UserValue("id")
 	var id int
@@ -175,7 +172,7 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	err = UpdateName(&wrapper, id, userName.Name)
+	err = u.Application.UpdateName(id, userName.Name)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorProfileUpdateName(err)
 	if errOut != nil {
 		switch errOut.Error() {
@@ -230,7 +227,6 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	wrapper := Wrapper{Conn: u.ConnectionDB}
 	userEmail := utils.UpdateEmail{}
 	err := json.Unmarshal(ctx.Request.Body(), &userEmail)
 	if err != nil {
@@ -243,20 +239,20 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
 
-	_, err = mid.CheckAccess(u.ConnectionDB, &cookieDB)
-	errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
-	if errAccess != nil {
-		switch errAccess.Error() {
-		case errors.ErrMarshal:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
-			return
-		case errors.ErrCheck:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody(resultOutAccess)
-			return
-		}
-	}
+	/*	_, err = mid.CheckAccess(u.Application, &cookieDB)
+		errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
+		if errAccess != nil {
+			switch errAccess.Error() {
+			case errors.ErrMarshal:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody([]byte(errors.ErrMarshal))
+				return
+			case errors.ErrCheck:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody(resultOutAccess)
+				return
+			}
+		}*/
 
 	idUrl := ctx.UserValue("id")
 	var id int
@@ -278,7 +274,7 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	err = UpdateEmail(&wrapper, id, userEmail.Email)
+	err = u.Application.UpdateEmail(id, userEmail.Email)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorProfileUpdateEmail(err)
 	if errOut != nil {
 		switch errOut.Error() {
@@ -333,7 +329,6 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	wrapper := Wrapper{Conn: u.ConnectionDB}
 	userPassword := utils.UpdatePassword{}
 	err := json.Unmarshal(ctx.Request.Body(), &userPassword)
 	if err != nil {
@@ -346,20 +341,20 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
 
-	_, err = mid.CheckAccess(u.ConnectionDB, &cookieDB)
-	errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
-	if errAccess != nil {
-		switch errAccess.Error() {
-		case errors.ErrMarshal:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
-			return
-		case errors.ErrCheck:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody(resultOutAccess)
-			return
-		}
-	}
+	/*	_, err = mid.CheckAccess(u.Application, &cookieDB)
+		errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
+		if errAccess != nil {
+			switch errAccess.Error() {
+			case errors.ErrMarshal:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody([]byte(errors.ErrMarshal))
+				return
+			case errors.ErrCheck:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody(resultOutAccess)
+				return
+			}
+		}*/
 
 	idUrl := ctx.UserValue("id")
 	var id int
@@ -381,7 +376,7 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	err = UpdatePassword(&wrapper, id, userPassword.Password)
+	err = u.Application.UpdatePassword(id, userPassword.Password)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorProfileUpdatePassword(err)
 	if errOut != nil {
 		switch errOut.Error() {
@@ -436,7 +431,6 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	wrapper := Wrapper{Conn: u.ConnectionDB}
 	userPhone := utils.UpdatePhone{}
 	err := json.Unmarshal(ctx.Request.Body(), &userPhone)
 	if err != nil {
@@ -449,20 +443,20 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
 
-	_, err = mid.CheckAccess(u.ConnectionDB, &cookieDB)
-	errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
-	if errAccess != nil {
-		switch errAccess.Error() {
-		case errors.ErrMarshal:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
-			return
-		case errors.ErrCheck:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody(resultOutAccess)
-			return
-		}
-	}
+	/*	_, err = mid.CheckAccess(u.Application, &cookieDB)
+		errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
+		if errAccess != nil {
+			switch errAccess.Error() {
+			case errors.ErrMarshal:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody([]byte(errors.ErrMarshal))
+				return
+			case errors.ErrCheck:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody(resultOutAccess)
+				return
+			}
+		}*/
 
 	idUrl := ctx.UserValue("id")
 	var id int
@@ -484,7 +478,7 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	err = UpdatePhone(&wrapper, id, userPhone.Phone)
+	err = u.Application.UpdatePhone(id, userPhone.Phone)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorProfileUpdatePhone(err)
 	if errOut != nil {
 		switch errOut.Error() {
@@ -539,7 +533,6 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	wrapper := Wrapper{Conn: u.ConnectionDB}
 	userAvatar := utils.UpdateAvatar{}
 	err := json.Unmarshal(ctx.Request.Body(), &userAvatar)
 	if err != nil {
@@ -552,20 +545,20 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
 
-	_, err = mid.CheckAccess(u.ConnectionDB, &cookieDB)
-	errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
-	if errAccess != nil {
-		switch errAccess.Error() {
-		case errors.ErrMarshal:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
-			return
-		case errors.ErrCheck:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody(resultOutAccess)
-			return
-		}
-	}
+	/*	_, err = mid.CheckAccess(u.Application, &cookieDB)
+		errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
+		if errAccess != nil {
+			switch errAccess.Error() {
+			case errors.ErrMarshal:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody([]byte(errors.ErrMarshal))
+				return
+			case errors.ErrCheck:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody(resultOutAccess)
+				return
+			}
+		}*/
 
 	idUrl := ctx.UserValue("id")
 	var id int
@@ -587,7 +580,7 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	err = UpdateAvatar(&wrapper, id, userAvatar.Avatar)
+	err = u.Application.UpdateAvatar(id, userAvatar.Avatar)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorProfileUpdateAvatar(err)
 	if errOut != nil {
 		switch errOut.Error() {
@@ -642,7 +635,6 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	wrapper := Wrapper{Conn: u.ConnectionDB}
 	userBirthday := utils.UpdateBirthday{}
 	err := json.Unmarshal(ctx.Request.Body(), &userBirthday)
 	if err != nil {
@@ -655,20 +647,20 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
 
-	_, err = mid.CheckAccess(u.ConnectionDB, &cookieDB)
-	errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
-	if errAccess != nil {
-		switch errAccess.Error() {
-		case errors.ErrMarshal:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
-			return
-		case errors.ErrCheck:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody(resultOutAccess)
-			return
-		}
-	}
+	/*	_, err = mid.CheckAccess(u.Application, &cookieDB)
+		errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
+		if errAccess != nil {
+			switch errAccess.Error() {
+			case errors.ErrMarshal:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody([]byte(errors.ErrMarshal))
+				return
+			case errors.ErrCheck:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody(resultOutAccess)
+				return
+			}
+		}*/
 
 	idUrl := ctx.UserValue("id")
 	var id int
@@ -690,7 +682,7 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	err = UpdateBirthday(&wrapper, id, userBirthday.Birthday)
+	err = u.Application.UpdateBirthday(id, userBirthday.Birthday)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorProfileUpdateBirthday(err)
 	if errOut != nil {
 		switch errOut.Error() {
@@ -743,7 +735,6 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	wrapper := Wrapper{Conn: u.ConnectionDB}
 	userAddress := utils.UpdateAddress{}
 	err := json.Unmarshal(ctx.Request.Body(), &userAddress)
 	if err != nil {
@@ -756,20 +747,20 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
 
-	_, err = mid.CheckAccess(u.ConnectionDB, &cookieDB)
-	errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
-	if errAccess != nil {
-		switch errAccess.Error() {
-		case errors.ErrMarshal:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
-			return
-		case errors.ErrCheck:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody(resultOutAccess)
-			return
-		}
-	}
+	/*	_, err = mid.CheckAccess(u.Application, &cookieDB)
+		errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
+		if errAccess != nil {
+			switch errAccess.Error() {
+			case errors.ErrMarshal:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody([]byte(errors.ErrMarshal))
+				return
+			case errors.ErrCheck:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody(resultOutAccess)
+				return
+			}
+		}*/
 
 	idUrl := ctx.UserValue("id")
 	var id int
@@ -791,7 +782,7 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	err = UpdateAddress(&wrapper, id, userAddress.Address)
+	err = u.Application.UpdateAddress(id, userAddress.Address)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorProfileUpdateAddress(err)
 	if errOut != nil {
 		switch errOut.Error() {

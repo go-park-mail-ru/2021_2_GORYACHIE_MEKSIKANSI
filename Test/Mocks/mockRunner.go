@@ -5,6 +5,7 @@
 package mocks
 
 import (
+	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	Utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	context "context"
 	reflect "reflect"
@@ -615,10 +616,10 @@ func (mr *MockWrapperCartMockRecorder) GetCart(arg0 interface{}) *gomock.Call {
 }
 
 // GetConn mocks base method.
-func (m *MockWrapperCart) GetConn() Utils.ConnectionInterface {
+func (m *MockWrapperCart) GetConn() Interfaces.ConnectionInterface {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetConn")
-	ret0, _ := ret[0].(Utils.ConnectionInterface)
+	ret0, _ := ret[0].(Interfaces.ConnectionInterface)
 	return ret0
 }
 

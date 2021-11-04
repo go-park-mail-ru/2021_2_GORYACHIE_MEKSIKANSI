@@ -49,7 +49,7 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 				result, http.StatusInternalServerError
 		}
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }
 
 func (c *CheckError) CheckErrorRestaurantId(err error) (error, []byte, int) {
@@ -77,12 +77,12 @@ func (c *CheckError) CheckErrorRestaurantId(err error) (error, []byte, int) {
 				result, http.StatusInternalServerError
 		}
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }
 
 func (c *CheckError) CheckErrorRestaurantDishes(err error) (error, []byte, int) {
 	if err != nil {
 
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }

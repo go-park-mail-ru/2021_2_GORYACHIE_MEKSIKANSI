@@ -4,6 +4,7 @@ import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
 	cart "2021_2_GORYACHIE_MEKSIKANSI/Cart"
 	config "2021_2_GORYACHIE_MEKSIKANSI/Configs"
+	interfaces "2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	profile "2021_2_GORYACHIE_MEKSIKANSI/Profile"
 	restaurant "2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
@@ -47,43 +48,17 @@ func runServer(port string) {
 	connectionPostgres, err := utils.CreateDb()
 	defer connectionPostgres.Close()
 	if err != nil {
-		if config.TEST {
-			loggerTest.Errorf("Unable to connect to database: %v", err)
-			os.Exit(1)
-		}
 		loggerErrWarn.Errorf("Unable to connect to database: %v", err)
 		os.Exit(1)
 	}
-	userInfo := auth.UserInfo{
-		ConnectionDB:  connectionPostgres,
-		LoggerErrWarn: loggerErrWarn,
-		LoggerInfo:    loggerInfo,
-		LoggerTest:    loggerTest,
-	}
-	restaurantInfo := restaurant.InfoRestaurant{
-		ConnectionDB:  connectionPostgres,
-		LoggerErrWarn: loggerErrWarn,
-		LoggerInfo:    loggerInfo,
-		LoggerTest:    loggerTest,
-	}
-	profileInfo := profile.InfoProfile{
-		ConnectionDB:  connectionPostgres,
-		LoggerErrWarn: loggerErrWarn,
-		LoggerInfo:    loggerInfo,
-		LoggerTest:    loggerTest,
-	}
-	infoMiddleware := mid.InfoMiddleware{
-		ConnectionDB:  connectionPostgres,
-		LoggerErrWarn: loggerErrWarn,
-		LoggerInfo:    loggerInfo,
-		LoggerTest:    loggerTest,
-	}
-	cartInfo := cart.InfoCart{
-		ConnectionDB:  connectionPostgres,
-		LoggerErrWarn: loggerErrWarn,
-		LoggerInfo:    loggerInfo,
-		LoggerTest:    loggerTest,
-	}
+
+	startStructure := setUp(connectionPostgres, loggerErrWarn, loggerInfo, loggerTest)
+
+	userInfo := startStructure[0].(auth.UserInfo)
+	cartInfo := startStructure[1].(cart.InfoCart)
+	profileInfo := startStructure[2].(profile.InfoProfile)
+	infoMiddleware := startStructure[3].(mid.InfoMiddleware)
+	restaurantInfo := startStructure[4].(restaurant.InfoRestaurant)
 
 	myRouter := router.New()
 	apiGroup := myRouter.Group("/api")
@@ -134,6 +109,64 @@ func runServer(port string) {
 		loggerErrWarn.Errorf("Listen and server error: %v", err)
 		os.Exit(1)
 	}
+}
+
+func setUp(connectionDB interfaces.ConnectionInterface, loggerErrWarn *zap.SugaredLogger, loggerInfo *zap.SugaredLogger,
+	loggerTest *zap.SugaredLogger) []interface{} {
+
+	authWrapper := auth.Wrapper{Conn: connectionDB}
+	authApp := auth.Authorization{DB: &authWrapper}
+	userInfo := auth.UserInfo{
+		Application:   &authApp,
+		LoggerErrWarn: loggerErrWarn,
+		LoggerInfo:    loggerInfo,
+		LoggerTest:    loggerTest,
+	}
+
+	cartWrapper := cart.Wrapper{Conn: connectionDB}
+	cartApp := cart.Cart{DB: &cartWrapper}
+	cartInfo := cart.InfoCart{
+		Application:   &cartApp,
+		LoggerErrWarn: loggerErrWarn,
+		LoggerInfo:    loggerInfo,
+		LoggerTest:    loggerTest,
+	}
+
+	profileWrapper := profile.Wrapper{Conn: connectionDB}
+	profileApp := profile.Profile{DB: &profileWrapper}
+	profileInfo := profile.InfoProfile{
+		Application:   &profileApp,
+		LoggerErrWarn: loggerErrWarn,
+		LoggerInfo:    loggerInfo,
+		LoggerTest:    loggerTest,
+	}
+
+	midWrapper := mid.Wrapper{Conn: connectionDB}
+	midApp := mid.Middleware{DB: &midWrapper}
+	infoMiddleware := mid.InfoMiddleware{
+		Application:   &midApp,
+		LoggerErrWarn: loggerErrWarn,
+		LoggerInfo:    loggerInfo,
+		LoggerTest:    loggerTest,
+	}
+
+	restWrapper := restaurant.Wrapper{Conn: connectionDB}
+	restApp := restaurant.Restaurant{DB: &restWrapper}
+	restaurantInfo := restaurant.InfoRestaurant{
+		Application:   &restApp,
+		LoggerErrWarn: loggerErrWarn,
+		LoggerInfo:    loggerInfo,
+		LoggerTest:    loggerTest,
+	}
+
+	var result []interface{}
+	result = append(result, userInfo)
+	result = append(result, cartInfo)
+	result = append(result, profileInfo)
+	result = append(result, infoMiddleware)
+	result = append(result, restaurantInfo)
+
+	return result
 }
 
 func main() {

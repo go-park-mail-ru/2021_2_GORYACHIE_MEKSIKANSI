@@ -500,18 +500,18 @@ var OrmGetRadios = []struct {
 	inputGetDishesRestaurantName string
 	inputGetDishesRestaurantId   int
 	outErr                       string
-	inputQueryIdStructRadios  int
-	errQueryStructRadios      error
-	rowsQueryStructRadios     Rows
+	inputQueryIdStructRadios     int
+	errQueryStructRadios         error
+	rowsQueryStructRadios        Rows
 }{
 	{
-		testName:                    "One",
-		input:                       1,
-		inputQueryId:                1,
-		errQuery:                    nil,
-		out:                         []rest.Radios{{Title: "1", Id: 1, Rows: []rest.CheckboxesRows{{Id: 1, Name: "1"}}}},
-		rowsQuery:                   Rows{rows: 1, row: []interface{}{1, "1", "1", 1, 1, "1"}},
-		outErr:                      errorsConst.RGetGeneralInfoRestaurantNotFound,
+		testName:                 "One",
+		input:                    1,
+		inputQueryId:             1,
+		errQuery:                 nil,
+		out:                      []rest.Radios{{Title: "1", Id: 1, Rows: []rest.CheckboxesRows{{Id: 1, Name: "1"}}}},
+		rowsQuery:                Rows{rows: 1, row: []interface{}{1, "1", "1", 1, 1, "1"}},
+		outErr:                   errorsConst.RGetGeneralInfoRestaurantNotFound,
 		inputQueryIdStructRadios: 1,
 		errQueryStructRadios:     nil,
 		rowsQueryStructRadios:    Rows{rows: 1, row: []interface{}{1, "1"}},
@@ -719,104 +719,104 @@ func TestApplicationGetRestaurant(t *testing.T) {
 }
 
 var ApplicationRestaurantDishes = []struct {
-	testName                 string
-	inputRestId              int
-	inputDishId              int
-	out                      *rest.Dishes
-	outErr                   string
-	inputGetDishesRestId     int
-	inputGetDishesDishId     int
-	resultGetDishes          *rest.Dishes
-	errGetDishes             error
-	countGetDishes           int
+	testName              string
+	inputRestId           int
+	inputDishId           int
+	out                   *rest.Dishes
+	outErr                string
+	inputGetDishesRestId  int
+	inputGetDishesDishId  int
+	resultGetDishes       *rest.Dishes
+	errGetDishes          error
+	countGetDishes        int
 	inputGetStructDishes  int
 	resultGetStructDishes []rest.Ingredients
 	errGetStructDishes    error
 	countGetStructDishes  int
-	inputGetRadios           int
-	resultGetRadios          []rest.Radios
-	errGetRadios             error
-	countGetRadios           int
+	inputGetRadios        int
+	resultGetRadios       []rest.Radios
+	errGetRadios          error
+	countGetRadios        int
 }{
 	{
-		testName:                 "One",
-		out:                      nil,
-		outErr:                   "text",
-		inputGetDishesRestId:     1,
-		inputGetDishesDishId:     1,
-		resultGetDishes:          &rest.Dishes{},
-		errGetDishes:             errors.New("text"),
-		countGetDishes:           1,
+		testName:              "One",
+		out:                   nil,
+		outErr:                "text",
+		inputGetDishesRestId:  1,
+		inputGetDishesDishId:  1,
+		resultGetDishes:       &rest.Dishes{},
+		errGetDishes:          errors.New("text"),
+		countGetDishes:        1,
 		inputGetStructDishes:  1,
 		resultGetStructDishes: []rest.Ingredients{},
 		errGetStructDishes:    nil,
 		countGetStructDishes:  0,
-		inputGetRadios:           1,
-		resultGetRadios:          []rest.Radios{},
-		errGetRadios:             nil,
-		countGetRadios:           0,
-		inputRestId:              1,
-		inputDishId:              1,
+		inputGetRadios:        1,
+		resultGetRadios:       []rest.Radios{},
+		errGetRadios:          nil,
+		countGetRadios:        0,
+		inputRestId:           1,
+		inputDishId:           1,
 	},
 	{
-		testName:                 "Two",
-		out:                      nil,
-		outErr:                   "text",
-		inputGetDishesRestId:     1,
-		inputGetDishesDishId:     1,
-		resultGetDishes:          &rest.Dishes{},
-		errGetDishes:             nil,
-		countGetDishes:           1,
+		testName:              "Two",
+		out:                   nil,
+		outErr:                "text",
+		inputGetDishesRestId:  1,
+		inputGetDishesDishId:  1,
+		resultGetDishes:       &rest.Dishes{},
+		errGetDishes:          nil,
+		countGetDishes:        1,
 		inputGetStructDishes:  1,
 		resultGetStructDishes: []rest.Ingredients{},
 		errGetStructDishes:    errors.New("text"),
 		countGetStructDishes:  1,
-		inputGetRadios:           1,
-		resultGetRadios:          []rest.Radios{},
-		errGetRadios:             nil,
-		countGetRadios:           0,
-		inputRestId:              1,
-		inputDishId:              1,
+		inputGetRadios:        1,
+		resultGetRadios:       []rest.Radios{},
+		errGetRadios:          nil,
+		countGetRadios:        0,
+		inputRestId:           1,
+		inputDishId:           1,
 	},
 	{
-		testName:                 "Three",
-		out:                      nil,
-		outErr:                   "text",
-		inputGetDishesRestId:     1,
-		inputGetDishesDishId:     1,
-		resultGetDishes:          &rest.Dishes{},
-		errGetDishes:             nil,
-		countGetDishes:           1,
+		testName:              "Three",
+		out:                   nil,
+		outErr:                "text",
+		inputGetDishesRestId:  1,
+		inputGetDishesDishId:  1,
+		resultGetDishes:       &rest.Dishes{},
+		errGetDishes:          nil,
+		countGetDishes:        1,
 		inputGetStructDishes:  1,
 		resultGetStructDishes: []rest.Ingredients{},
 		errGetStructDishes:    nil,
 		countGetStructDishes:  1,
-		inputGetRadios:           1,
-		resultGetRadios:          []rest.Radios{},
-		errGetRadios:             errors.New("text"),
-		countGetRadios:           1,
-		inputRestId:              1,
-		inputDishId:              1,
+		inputGetRadios:        1,
+		resultGetRadios:       []rest.Radios{},
+		errGetRadios:          errors.New("text"),
+		countGetRadios:        1,
+		inputRestId:           1,
+		inputDishId:           1,
 	},
 	{
-		testName:                 "Four",
-		out:                      &rest.Dishes{Id: 0, Img: "", Title: "", Cost: 0, Ccal: 0, Description: "", Radios: []rest.Radios{}, Ingredient: []rest.Ingredients{}},
-		outErr:                   "",
-		inputGetDishesRestId:     1,
-		inputGetDishesDishId:     1,
-		resultGetDishes:          &rest.Dishes{},
-		errGetDishes:             nil,
-		countGetDishes:           1,
+		testName:              "Four",
+		out:                   &rest.Dishes{Id: 0, Img: "", Title: "", Cost: 0, Ccal: 0, Description: "", Radios: []rest.Radios{}, Ingredient: []rest.Ingredients{}},
+		outErr:                "",
+		inputGetDishesRestId:  1,
+		inputGetDishesDishId:  1,
+		resultGetDishes:       &rest.Dishes{},
+		errGetDishes:          nil,
+		countGetDishes:        1,
 		inputGetStructDishes:  1,
 		resultGetStructDishes: []rest.Ingredients{},
 		errGetStructDishes:    nil,
 		countGetStructDishes:  1,
-		inputGetRadios:           1,
-		resultGetRadios:          []rest.Radios{},
-		errGetRadios:             nil,
-		countGetRadios:           1,
-		inputRestId:              1,
-		inputDishId:              1,
+		inputGetRadios:        1,
+		resultGetRadios:       []rest.Radios{},
+		errGetRadios:          nil,
+		countGetRadios:        1,
+		inputRestId:           1,
+		inputDishId:           1,
 	},
 }
 

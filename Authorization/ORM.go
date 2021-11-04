@@ -2,7 +2,7 @@ package Authorization
 
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
-	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
+	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
 	"github.com/jackc/pgx/v4"
@@ -11,7 +11,7 @@ import (
 )
 
 type Wrapper struct {
-	Conn Utils.ConnectionInterface
+	Conn Interfaces.ConnectionInterface
 }
 
 func (db *Wrapper) GenerateNew() *utils.Defense {

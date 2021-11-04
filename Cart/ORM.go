@@ -2,6 +2,7 @@ package Cart
 
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
 	"github.com/jackc/pgx/v4"
@@ -9,7 +10,7 @@ import (
 )
 
 type Wrapper struct {
-	Conn Utils.ConnectionInterface
+	Conn Interfaces.ConnectionInterface
 }
 
 func (db *Wrapper) GetStructFood(id int) ([]Utils.IngredientCartResponse, error) {
@@ -168,7 +169,7 @@ func (db *Wrapper) DeleteCart(id int) error {
 	return nil
 }
 
-func (db *Wrapper) GetConn() Utils.ConnectionInterface {
+func (db *Wrapper) GetConn() Interfaces.ConnectionInterface {
 	return db.Conn
 }
 

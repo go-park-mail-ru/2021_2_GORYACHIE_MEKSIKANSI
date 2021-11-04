@@ -1,12 +1,11 @@
 package Restaurant
 
 import (
-	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
 	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	interfaces "2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"encoding/json"
 	"fmt"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 	"net/http"
@@ -14,7 +13,7 @@ import (
 )
 
 type InfoRestaurant struct {
-	ConnectionDB  *pgxpool.Pool
+	Application   interfaces.RestaurantApplication
 	LoggerErrWarn *zap.SugaredLogger
 	LoggerInfo    *zap.SugaredLogger
 	LoggerTest    *zap.SugaredLogger
@@ -47,9 +46,7 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	WrapperDB := Wrapper{Conn: r.ConnectionDB}
-
-	restaurant, err := AllRestaurants(&WrapperDB)
+	restaurant, err := r.Application.AllRestaurants()
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorRestaurant(err)
 	if errOut != nil {
 		switch errOut.Error() {
@@ -66,7 +63,7 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 
 	ctx.SetStatusCode(http.StatusOK)
 
-	err = json.NewEncoder(ctx).Encode(&auth.Result{
+	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 		Body: &utils.RestaurantsResponse{
 			RestaurantsGet: restaurant,
@@ -107,8 +104,6 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	WrapperDB := Wrapper{Conn: r.ConnectionDB}
-
 	idUrl := ctx.UserValue("idRes")
 	var id int
 	switch idUrl.(type) {
@@ -129,7 +124,7 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	restaurant, err := GetRestaurant(&WrapperDB, id)
+	restaurant, err := r.Application.GetRestaurant(id)
 
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorRestaurantId(err) // должна появиться новая ошибка +1
 	if errOut != nil {
@@ -147,7 +142,7 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 
 	ctx.SetStatusCode(http.StatusOK)
 
-	err = json.NewEncoder(ctx).Encode(&auth.Result{
+	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 		Body: &utils.RestaurantIdResponse{
 			RestaurantsGet: restaurant,
@@ -187,8 +182,6 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 		LoggerTest:    r.LoggerTest,
 		RequestId:     &reqId,
 	}
-
-	WrapperDB := Wrapper{Conn: r.ConnectionDB}
 
 	idResIn := ctx.UserValue("idRes")
 	var idRes int
@@ -230,7 +223,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	dishes, err := RestaurantDishes(&WrapperDB, idRes, idDish)
+	dishes, err := r.Application.RestaurantDishes(idRes, idDish)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorRestaurantDishes(err)
 	if errOut != nil {
 		switch errOut.Error() {
@@ -247,7 +240,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 
 	ctx.SetStatusCode(http.StatusOK)
 
-	err = json.NewEncoder(ctx).Encode(&auth.Result{
+	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 		Body: &utils.DishesResponse{
 			DishesGet: dishes,

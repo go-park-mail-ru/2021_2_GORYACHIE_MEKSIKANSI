@@ -2,8 +2,8 @@ package Middleware
 
 import (
 	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	interfaces "2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 	"math"
@@ -12,7 +12,7 @@ import (
 )
 
 type InfoMiddleware struct {
-	ConnectionDB  *pgxpool.Pool
+	Application   interfaces.MiddlewareApplication
 	LoggerErrWarn *zap.SugaredLogger
 	LoggerInfo    *zap.SugaredLogger
 	LoggerTest    *zap.SugaredLogger
@@ -58,7 +58,7 @@ func (m *InfoMiddleware) GetId(h fasthttp.RequestHandler) fasthttp.RequestHandle
 		}
 
 		cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
-		id, err := GetIdByCookie(m.ConnectionDB, &cookieDB)
+		id, err := m.Application.GetIdByCookie(&cookieDB)
 		errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorCookie(err)
 		if resultOutAccess != nil {
 			switch errAccess.Error() {
@@ -113,7 +113,7 @@ func (m *InfoMiddleware) Check(h fasthttp.RequestHandler) fasthttp.RequestHandle
 		cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 		cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
 
-		_, err := CheckAccess(m.ConnectionDB, &cookieDB)
+		_, err := m.Application.CheckAccess(&cookieDB)
 		errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
 		if errAccess != nil {
 			switch errAccess.Error() {

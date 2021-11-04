@@ -2,6 +2,7 @@ package Profile
 
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	prof "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
@@ -9,7 +10,7 @@ import (
 )
 
 type Wrapper struct {
-	Conn Utils.ConnectionInterface
+	Conn Interfaces.ConnectionInterface
 }
 
 func (db *Wrapper) GetRoleById(id int) (string, error) {

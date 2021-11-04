@@ -2,13 +2,14 @@ package Restaurant
 
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
 	"time"
 )
 
 type Wrapper struct {
-	Conn Utils.ConnectionInterface
+	Conn Interfaces.ConnectionInterface
 }
 
 func (db *Wrapper) GetRestaurants() ([]Utils.Restaurants, error) {

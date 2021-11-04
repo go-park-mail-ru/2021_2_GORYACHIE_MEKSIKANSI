@@ -163,7 +163,7 @@ SET
 ;
 
 INSERT INTO restaurant_category (restaurant, category)
-SELECT random() * (53 - 1) + 1, 'name' FROM generate_series(1, 250);
+SELECT random() * (53 - 1) + 1, 'name' FROM generate_series(1, 350);
 UPDATE restaurant_category
 SET
     category = (
@@ -181,9 +181,13 @@ SET
                 'Бар',
                 'Хенкальная',
                 'Общепит',
-                'Тестовый'
+                'Тестовый',
+                'Кафе',
+                'Буфеты',
+                'Поп-ап',
+                'Виртуальный'
                 ]
-        ) [floor(random() * 14 + 1)]
+        ) [floor(random() * 18 + 1)]
 ;
 
 INSERT INTO radios (name, food)

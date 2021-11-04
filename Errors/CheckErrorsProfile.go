@@ -31,7 +31,7 @@ func (c *CheckError) CheckErrorProfile(err error) (error, []byte, int) {
 				result, http.StatusInternalServerError
 		}
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }
 
 func (c *CheckError) CheckErrorProfileUpdateName(err error) (error, []byte, int) {
@@ -58,7 +58,7 @@ func (c *CheckError) CheckErrorProfileUpdateName(err error) (error, []byte, int)
 				result, http.StatusInternalServerError
 		}
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }
 
 func (c *CheckError) CheckErrorProfileUpdateEmail(err error) (error, []byte, int) {
@@ -104,7 +104,7 @@ func (c *CheckError) CheckErrorProfileUpdateEmail(err error) (error, []byte, int
 				result, http.StatusOK
 		}
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }
 
 func (c *CheckError) CheckErrorProfileUpdatePassword(err error) (error, []byte, int) {
@@ -131,7 +131,7 @@ func (c *CheckError) CheckErrorProfileUpdatePassword(err error) (error, []byte, 
 				result, http.StatusInternalServerError
 		}
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }
 
 func (c *CheckError) CheckErrorProfileUpdatePhone(err error) (error, []byte, int) {
@@ -177,7 +177,7 @@ func (c *CheckError) CheckErrorProfileUpdatePhone(err error) (error, []byte, int
 				result, http.StatusOK
 		}
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }
 
 func (c *CheckError) CheckErrorProfileUpdateAvatar(err error) (error, []byte, int) {
@@ -204,7 +204,7 @@ func (c *CheckError) CheckErrorProfileUpdateAvatar(err error) (error, []byte, in
 				result, http.StatusInternalServerError
 		}
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }
 
 func (c *CheckError) CheckErrorProfileUpdateBirthday(err error) (error, []byte, int) {
@@ -231,7 +231,7 @@ func (c *CheckError) CheckErrorProfileUpdateBirthday(err error) (error, []byte, 
 				result, http.StatusInternalServerError
 		}
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }
 
 func (c *CheckError) CheckErrorProfileUpdateAddress(err error) (error, []byte, int) {
@@ -258,5 +258,5 @@ func (c *CheckError) CheckErrorProfileUpdateAddress(err error) (error, []byte, i
 				result, http.StatusInternalServerError
 		}
 	}
-	return nil, nil, HttpNil
+	return nil, nil, IntNil
 }

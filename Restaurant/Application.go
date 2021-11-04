@@ -1,29 +1,34 @@
 package Restaurant
 
 import (
-	rest "2021_2_GORYACHIE_MEKSIKANSI/Utils"
+	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
+	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 )
 
-func AllRestaurants(db rest.WrapperRestaurant) ([]rest.Restaurants, error) {
-	result, err := db.GetRestaurants()
+type Restaurant struct {
+	DB Interfaces.WrapperRestaurant
+}
+
+func (r *Restaurant) AllRestaurants() ([]utils.Restaurants, error) {
+	result, err := r.DB.GetRestaurants()
 	if err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func GetRestaurant(db rest.WrapperRestaurant, id int) (*rest.RestaurantId, error) {
-	restInfo, err := db.GetGeneralInfoRestaurant(id)
+func (r *Restaurant) GetRestaurant(id int) (*utils.RestaurantId, error) {
+	restInfo, err := r.DB.GetGeneralInfoRestaurant(id)
 	if err != nil {
 		return nil, err
 	}
 
-	tags, err := db.GetTagsRestaurant(id)
+	tags, err := r.DB.GetTagsRestaurant(id)
 	if err != nil {
 		return nil, err
 	}
 
-	dishes, err := db.GetMenu(id)
+	dishes, err := r.DB.GetMenu(id)
 	if err != nil {
 		return nil, err
 	}
@@ -33,18 +38,18 @@ func GetRestaurant(db rest.WrapperRestaurant, id int) (*rest.RestaurantId, error
 	return restInfo, nil
 }
 
-func RestaurantDishes(db rest.WrapperRestaurant, restId int, dishId int) (*rest.Dishes, error) {
-	dishes, err := db.GetDishes(restId, dishId)
+func (r *Restaurant) RestaurantDishes(restId int, dishId int) (*utils.Dishes, error) {
+	dishes, err := r.DB.GetDishes(restId, dishId)
 	if err != nil {
 		return nil, err
 	}
 
-	dishes.Ingredient, err = db.GetStructDishes(dishId)
+	dishes.Ingredient, err = r.DB.GetStructDishes(dishId)
 	if err != nil {
 		return nil, err
 	}
 
-	dishes.Radios, err = db.GetRadios(dishId)
+	dishes.Radios, err = r.DB.GetRadios(dishId)
 	if err != nil {
 		return nil, err
 	}

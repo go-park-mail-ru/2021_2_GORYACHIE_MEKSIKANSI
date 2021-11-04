@@ -1,15 +1,20 @@
 package Cart
 
 import (
+	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	"2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
 	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
 )
 
-func calculatePriceDelivery(db Utils.WrapperCart, id int) (int, error) {
-	return db.GetPriceDelivery(id)
+type Cart struct {
+	DB Interfaces.WrapperCart
 }
 
-func calculateCost(db Utils.WrapperCart, result *Utils.ResponseCartErrors, rest *Utils.RestaurantId) (*Utils.CostCartResponse, error) {
+func (c *Cart) CalculatePriceDelivery(id int) (int, error) {
+	return c.DB.GetPriceDelivery(id)
+}
+
+func (c *Cart) CalculateCost(result *Utils.ResponseCartErrors, rest *Utils.RestaurantId) (*Utils.CostCartResponse, error) {
 	var cost Utils.CostCartResponse
 	sumCost := 0
 	for i, dish := range result.Dishes {
@@ -26,7 +31,7 @@ func calculateCost(db Utils.WrapperCart, result *Utils.ResponseCartErrors, rest 
 		cost.DCost = 0
 	} else {
 		var err error
-		cost.DCost, err = calculatePriceDelivery(db, rest.Id)
+		cost.DCost, err = c.CalculatePriceDelivery(rest.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -35,12 +40,12 @@ func calculateCost(db Utils.WrapperCart, result *Utils.ResponseCartErrors, rest 
 	return &cost, nil
 }
 
-func GetCart(db Utils.WrapperCart, id int) (*Utils.ResponseCartErrors, error) {
-	result, errorDishes, err := db.GetCart(id)
+func (c *Cart) GetCart(id int) (*Utils.ResponseCartErrors, error) {
+	result, errorDishes, err := c.DB.GetCart(id)
 	if err != nil {
 		return nil, err
 	}
-	wrapper := Restaurant.Wrapper{Conn: db.GetConn()}
+	wrapper := Restaurant.Wrapper{Conn: c.DB.GetConn()}
 	rest, err := wrapper.GetGeneralInfoRestaurant(result.Restaurant.Id)
 	if err != nil {
 		return nil, err
@@ -48,7 +53,7 @@ func GetCart(db Utils.WrapperCart, id int) (*Utils.ResponseCartErrors, error) {
 
 	result.CastToRestaurantId(*rest)
 
-	cost, err := calculateCost(db, result, rest)
+	cost, err := c.CalculateCost(result, rest)
 	if err != nil {
 		return nil, err
 	}
@@ -58,22 +63,22 @@ func GetCart(db Utils.WrapperCart, id int) (*Utils.ResponseCartErrors, error) {
 	return result, nil
 }
 
-func UpdateCart(db Utils.WrapperCart, dishes Utils.RequestCartDefault, clientId int) (*Utils.ResponseCartErrors, error) {
+func (c *Cart) UpdateCart(dishes Utils.RequestCartDefault, clientId int) (*Utils.ResponseCartErrors, error) {
 	if dishes.Restaurant.Id == -1 {
-		return nil, DeleteCart(db, clientId)
+		return nil, c.DeleteCart(clientId)
 	}
 
-	err := DeleteCart(db, clientId)
+	err := c.DeleteCart(clientId)
 	if err != nil {
 		return nil, err
 	}
 
-	result, errorDishes, err := db.UpdateCart(dishes, clientId)
+	result, errorDishes, err := c.DB.UpdateCart(dishes, clientId)
 	if err != nil {
 		return nil, err
 	}
 
-	wrapper := Restaurant.Wrapper{Conn: db.GetConn()}
+	wrapper := Restaurant.Wrapper{Conn: c.DB.GetConn()}
 	rest, err := wrapper.GetGeneralInfoRestaurant(dishes.Restaurant.Id)
 	if err != nil {
 		return nil, err
@@ -94,7 +99,7 @@ func UpdateCart(db Utils.WrapperCart, dishes Utils.RequestCartDefault, clientId 
 		result.Dishes[i].Cost = dishCost
 	}
 
-	cost, err := calculateCost(db, result, rest)
+	cost, err := c.CalculateCost(result, rest)
 	if err != nil {
 		return nil, err
 	}
@@ -103,6 +108,6 @@ func UpdateCart(db Utils.WrapperCart, dishes Utils.RequestCartDefault, clientId 
 	return result, nil
 }
 
-func DeleteCart(db Utils.WrapperCart, id int) error {
-	return db.DeleteCart(id)
+func (c *Cart) DeleteCart(id int) error {
+	return c.DB.DeleteCart(id)
 }

@@ -3,10 +3,9 @@ package Authorization
 import (
 	config "2021_2_GORYACHIE_MEKSIKANSI/Configs"
 	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
-	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
+	interfaces "2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"encoding/json"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 	"net/http"
@@ -15,28 +14,10 @@ import (
 )
 
 type UserInfo struct {
-	ConnectionDB  *pgxpool.Pool
+	Application   interfaces.AuthorizationApplication
 	LoggerErrWarn *zap.SugaredLogger
 	LoggerInfo    *zap.SugaredLogger
 	LoggerTest    *zap.SugaredLogger
-}
-
-type User struct {
-	TypeUser string `json:"type"`
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Phone    string `json:"phone"`
-}
-
-type Authorization struct {
-	Email    string `json:"email"`
-	Phone    string `json:"phone"`
-	Password string `json:"password"`
-}
-
-type Result struct {
-	Status int         `json:"status"`
-	Body   interface{} `json:"body,omitempty"`
 }
 
 func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
@@ -67,7 +48,6 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	wrapper := Wrapper{Conn: u.ConnectionDB}
 	signUpAll := utils.RegistrationRequest{}
 	err := json.Unmarshal(ctx.Request.Body(), &signUpAll)
 	if err != nil {
@@ -82,7 +62,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	cookieHTTP := fasthttp.Cookie{}
-	cookieDB, errIn := SignUp(&wrapper, &signUpAll)
+	cookieDB, errIn := u.Application.SignUp(&signUpAll)
 
 	errOut, resultOut, codeHTTP := checkError.CheckErrorSignUp(errIn)
 	if errOut != nil {
@@ -106,7 +86,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusCreated,
 		Body: &utils.RegistrationResponse{
-			User: &User{
+			User: &utils.User{
 				TypeUser: signUpAll.TypeUser,
 				Name:     signUpAll.Name,
 				Email:    signUpAll.Email,
@@ -151,8 +131,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	wrapper := Wrapper{Conn: u.ConnectionDB}
-	userLogin := Authorization{}
+	userLogin := utils.Authorization{}
 	err := json.Unmarshal(ctx.Request.Body(), &userLogin)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
@@ -161,7 +140,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 	cookieHTTP := fasthttp.Cookie{}
-	cookieDB, err := Login(&wrapper, &userLogin)
+	cookieDB, err := u.Application.Login(&userLogin)
 
 	errOut, resultOut, codeHTTP := checkError.CheckErrorLogin(err)
 	if errOut != nil {
@@ -222,27 +201,26 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	wrapper := Wrapper{Conn: u.ConnectionDB}
 	cookieHTTP := fasthttp.Cookie{}
 	cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 	cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
-	_, err := mid.CheckAccess(u.ConnectionDB, &cookieDB)
-	errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
-	if errAccess != nil {
-		switch errAccess.Error() {
-		case errors.ErrMarshal:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+	/*	_, err := mid.CheckAccess(u.Application, &cookieDB)
+		errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
+		if errAccess != nil {
+			switch errAccess.Error() {
+			case errors.ErrMarshal:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody([]byte(errors.ErrMarshal))
 
-			return
-		case errors.ErrCheck:
-			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody(resultOutAccess)
-			return
-		}
-	}
+				return
+			case errors.ErrCheck:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody(resultOutAccess)
+				return
+			}
+		}*/
 
-	err = Logout(&wrapper, &cookieDB)
+	err := u.Application.Logout(&cookieDB)
 	errOut, resultOut, codeHTTP := checkError.CheckErrorLogout(err)
 	if errOut != nil {
 		switch errOut.Error() {

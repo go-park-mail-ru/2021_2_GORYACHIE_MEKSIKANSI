@@ -36,7 +36,7 @@ const (
 	ErrCheck           = "ERROR: err check"
 	ErrUnmarshal       = "ERROR: unmarshal json"
 	ErrAuth            = "Вы не авторизированы"
-	HttpNil            = 0
+	IntNil             = 0
 	ErrCartNull        = "Ваша корзина пустая"
 )
 
