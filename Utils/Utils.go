@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/natefinch/lumberjack"
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
@@ -12,7 +13,6 @@ import (
 	"math/big"
 	"strconv"
 	"strings"
-	"github.com/microcosm-cc/bluemonday"
 )
 
 const (
@@ -82,23 +82,40 @@ func NewLogger(filePath string) *zap.SugaredLogger {
 	return sugarLogger
 }
 
-func interfaceConvertInt(value interface{}) (int, error) {
-	var reqId int
+func InterfaceConvertInt(value interface{}) (int, error) {
+	var intConvert int
 	var errorConvert error
 	switch value.(type) {
 	case string:
-		reqId, errorConvert = strconv.Atoi(value.(string))
+		intConvert, errorConvert = strconv.Atoi(value.(string))
 		if errorConvert != nil {
 			return errors.IntNil, &errors.Errors{
 				Text: errors.ErrAtoi,
 			}
 		}
-		return reqId, nil
+		return intConvert, nil
 	case int:
-		reqId = value.(int)
-		return reqId, nil
+		intConvert = value.(int)
+		return intConvert, nil
 	default:
 		return errors.IntNil, &errors.Errors{
+			Text: errors.ErrNotStringAndInt,
+		}
+	}
+
+}
+
+func InterfaceConvertString(value interface{}) (string, error) {
+	var StringConvert string
+	switch value.(type) {
+	case string:
+		StringConvert = value.(string)
+		return StringConvert, nil
+	case int:
+		StringConvert = strconv.Itoa(value.(int))
+		return StringConvert, nil
+	default:
+		return "", &errors.Errors{
 			Text: errors.ErrNotStringAndInt,
 		}
 	}

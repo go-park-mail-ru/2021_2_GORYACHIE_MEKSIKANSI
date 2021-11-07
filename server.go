@@ -57,7 +57,7 @@ func runServer(port string) {
 	userInfo := startStructure[0].(auth.UserInfo)
 	cartInfo := startStructure[1].(cart.InfoCart)
 	profileInfo := startStructure[2].(profile.InfoProfile)
-	infoMiddleware := startStructure[3].(mid.InfoMiddleware)
+	infoMid := startStructure[3].(mid.InfoMiddleware)
 	restaurantInfo := startStructure[4].(restaurant.InfoRestaurant)
 
 	myRouter := router.New()
@@ -69,25 +69,25 @@ func runServer(port string) {
 
 	userGroup.POST("/login", userInfo.LoginHandler)
 	userGroup.POST("/signup", userInfo.SignUpHandler)
-	userGroup.POST("/logout", userInfo.LogoutHandler)
-	userGroup.GET("/", infoMiddleware.GetId(profileInfo.ProfileHandler))
-	userGroup.PUT("/name", infoMiddleware.GetId(profileInfo.UpdateUserName))
-	userGroup.PUT("/email", infoMiddleware.GetId(profileInfo.UpdateUserEmail))
-	userGroup.PUT("/password", infoMiddleware.GetId(profileInfo.UpdateUserPassword))
-	userGroup.PUT("/phone", infoMiddleware.GetId(profileInfo.UpdateUserPhone))
-	userGroup.PUT("/avatar", infoMiddleware.GetId(profileInfo.UpdateUserAvatar))
-	userGroup.PUT("/birthday", infoMiddleware.GetId(profileInfo.UpdateUserBirthday))
-	userGroup.PUT("/address", infoMiddleware.GetId(profileInfo.UpdateUserAddress))
-	userGroup.POST("/pay", infoMiddleware.Check(userInfo.PayHandler))
+	userGroup.POST("/logout", infoMid.Check(infoMid.GetId(userInfo.LogoutHandler)))
+	userGroup.GET("/",  infoMid.GetId(profileInfo.ProfileHandler))
+	userGroup.PUT("/name",  infoMid.Check(infoMid.GetId(profileInfo.UpdateUserName)))
+	userGroup.PUT("/email",  infoMid.Check(infoMid.GetId(profileInfo.UpdateUserEmail)))
+	userGroup.PUT("/password", infoMid.Check(infoMid.GetId(profileInfo.UpdateUserPassword)))
+	userGroup.PUT("/phone",  infoMid.Check(infoMid.GetId(profileInfo.UpdateUserPhone)))
+	userGroup.PUT("/avatar",  infoMid.Check(infoMid.GetId(profileInfo.UpdateUserAvatar)))
+	userGroup.PUT("/birthday",  infoMid.Check(infoMid.GetId(profileInfo.UpdateUserBirthday)))
+	userGroup.PUT("/address",  infoMid.Check(infoMid.GetId(profileInfo.UpdateUserAddress)))
+	userGroup.POST("/pay",  infoMid.Check(infoMid.Check(userInfo.PayHandler)))
 
 	restaurantGroup.GET("/", restaurantInfo.RestaurantHandler)
 	restaurantGroup.GET("/{idRes}/dish/{idDish}", restaurantInfo.RestaurantDishesHandler)
 	restaurantGroup.GET("/{idRes}", restaurantInfo.RestaurantIdHandler)
 
-	cartGroup.GET("/", infoMiddleware.GetId(cartInfo.GetCartHandler))
-	cartGroup.PUT("/", infoMiddleware.Check(infoMiddleware.GetId(cartInfo.UpdateCartHandler)))
+	cartGroup.GET("/", infoMid.GetId(cartInfo.GetCartHandler))
+	cartGroup.PUT("/", infoMid.Check(infoMid.GetId(cartInfo.UpdateCartHandler)))
 
-	printURL := infoMiddleware.PrintURL(myRouter.Handler)
+	printURL := infoMid.PrintURL(myRouter.Handler)
 
 	withCors := cors.NewCorsHandler(cors.Options{
 		AllowedOrigins: []string{config.AllowedOriginsDomain + ":" + config.AllowedOriginsPort},

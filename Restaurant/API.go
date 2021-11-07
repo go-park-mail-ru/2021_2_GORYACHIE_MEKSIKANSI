@@ -9,7 +9,6 @@ import (
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 	"net/http"
-	"strconv"
 )
 
 type InfoRestaurant struct {
@@ -21,24 +20,22 @@ type InfoRestaurant struct {
 
 func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
-	var reqId int
-	var errorConvert error
-	switch reqIdCtx.(type) {
-	case string:
-		reqId, errorConvert = strconv.Atoi(reqIdCtx.(string))
-		if errorConvert != nil {
+	reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
+	if errConvert != nil {
+		switch errConvert.Error() {
+		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			r.LoggerErrWarn.Errorf("RestaurantHandler: GetId: %s, %v", errors.ErrAtoi, errorConvert)
+			r.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			return
+
+		case errors.ErrNotStringAndInt:
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
 			return
 		}
-	case int:
-		reqId = reqIdCtx.(int)
-	default:
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-		return
 	}
+
 	checkError := &errors.CheckError{
 		LoggerErrWarn: r.LoggerErrWarn,
 		LoggerInfo:    r.LoggerInfo,
@@ -79,24 +76,22 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 
 func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
-	var reqId int
-	var errorConvert error
-	switch reqIdCtx.(type) {
-	case string:
-		reqId, errorConvert = strconv.Atoi(reqIdCtx.(string))
-		if errorConvert != nil {
+	reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
+	if errConvert != nil {
+		switch errConvert.Error() {
+		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			r.LoggerErrWarn.Errorf("RestaurantIdHandler: GetId: %s, %v", errors.ErrAtoi, errorConvert)
+			r.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			return
+
+		case errors.ErrNotStringAndInt:
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
 			return
 		}
-	case int:
-		reqId = reqIdCtx.(int)
-	default:
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-		return
 	}
+
 	checkError := &errors.CheckError{
 		LoggerErrWarn: r.LoggerErrWarn,
 		LoggerInfo:    r.LoggerInfo,
@@ -104,24 +99,21 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	idUrl := ctx.UserValue("idRes")
-	var id int
-	switch idUrl.(type) {
-	case string:
-		id, errorConvert = strconv.Atoi(idUrl.(string))
-		if errorConvert != nil {
+	idCtx := ctx.UserValue("idRes")
+	id, errConvert := utils.InterfaceConvertInt(idCtx)
+	if errConvert != nil {
+		switch errConvert.Error() {
+		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			fmt.Printf("Console: %s\n", errors.ErrAtoi)
+			r.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			return
+
+		case errors.ErrNotStringAndInt:
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
 			return
 		}
-	case int:
-		id = idUrl.(int)
-	default:
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
-		return
 	}
 
 	restaurant, err := r.Application.GetRestaurant(id)
@@ -158,24 +150,22 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 
 func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
-	var reqId int
-	var errorConvert error
-	switch reqIdCtx.(type) {
-	case string:
-		reqId, errorConvert = strconv.Atoi(reqIdCtx.(string))
-		if errorConvert != nil {
+	reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
+	if errConvert != nil {
+		switch errConvert.Error() {
+		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			r.LoggerErrWarn.Errorf("RestaurantDishesHandler: GetId: %s, %v", errors.ErrAtoi, errorConvert)
+			r.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			return
+
+		case errors.ErrNotStringAndInt:
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
 			return
 		}
-	case int:
-		reqId = reqIdCtx.(int)
-	default:
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-		return
 	}
+
 	checkError := &errors.CheckError{
 		LoggerErrWarn: r.LoggerErrWarn,
 		LoggerInfo:    r.LoggerInfo,
@@ -183,44 +173,38 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	idResIn := ctx.UserValue("idRes")
-	var idRes int
-	switch idResIn.(type) {
-	case string:
-		idRes, errorConvert = strconv.Atoi(idResIn.(string))
-		if errorConvert != nil {
+	idCtx := ctx.UserValue("idRes")
+	idRes, errConvert := utils.InterfaceConvertInt(idCtx)
+	if errConvert != nil {
+		switch errConvert.Error() {
+		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			fmt.Printf("Console: %s\n", errors.ErrAtoi)
+			r.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			return
+
+		case errors.ErrNotStringAndInt:
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
 			return
 		}
-	case int:
-		idRes = idResIn.(int)
-	default:
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
-		return
 	}
 
-	idDishIn := ctx.UserValue("idDish")
-	var idDish int
-	switch idDishIn.(type) {
-	case string:
-		idDish, errorConvert = strconv.Atoi(idDishIn.(string))
-		if errorConvert != nil {
+	idDishCtx := ctx.UserValue("idDish")
+	idDish, errConvert := utils.InterfaceConvertInt(idDishCtx)
+	if errConvert != nil {
+		switch errConvert.Error() {
+		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			fmt.Printf("Console: %s\n", errors.ErrAtoi)
+			r.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			return
+
+		case errors.ErrNotStringAndInt:
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
 			return
 		}
-	case int:
-		idDish = idDishIn.(int)
-	default:
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-		fmt.Printf("Console: %s\n", errors.ErrNotStringAndInt)
-		return
 	}
 
 	dishes, err := r.Application.RestaurantDishes(idRes, idDish)

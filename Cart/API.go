@@ -8,7 +8,6 @@ import (
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 	"net/http"
-	"strconv"
 )
 
 type InfoCart struct {
@@ -20,23 +19,20 @@ type InfoCart struct {
 
 func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
-	var reqId int
-	var errorConvert error
-	switch reqIdCtx.(type) {
-	case string:
-		reqId, errorConvert = strconv.Atoi(reqIdCtx.(string))
-		if errorConvert != nil {
+	reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
+	if errConvert != nil {
+		switch errConvert.Error() {
+		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			c.LoggerErrWarn.Errorf("GetCartHandler: GetId: %s, %v", errors.ErrAtoi, errorConvert)
+			c.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			return
+
+		case errors.ErrNotStringAndInt:
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
 			return
 		}
-	case int:
-		reqId = reqIdCtx.(int)
-	default:
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-		return
 	}
 
 	checkError := &errors.CheckError{
@@ -46,24 +42,21 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 		RequestId:     &reqId,
 	}
 
-	idUrl := ctx.UserValue("id")
-	var id int
-	switch idUrl.(type) {
-	case string:
-		id, errorConvert = strconv.Atoi(idUrl.(string))
-		if errorConvert != nil {
+	idCtx := ctx.UserValue("id")
+	id, errConvert := utils.InterfaceConvertInt(idCtx)
+	if errConvert != nil {
+		switch errConvert.Error() {
+		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			c.LoggerErrWarn.Errorf("GetCartHandler: error: %s, requestId: %d", errors.ErrAtoi, reqId)
+			c.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			return
+
+		case errors.ErrNotStringAndInt:
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
 			return
 		}
-	case int:
-		id = idUrl.(int)
-	default:
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-		c.LoggerErrWarn.Errorf("GetCartHandler: error: %s, requestId: %d", errors.ErrNotStringAndInt, reqId)
-		return
 	}
 
 	result, err := c.Application.GetCart(id)
@@ -98,23 +91,20 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 
 func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
-	var reqId int
-	var errorConvert error
-	switch reqIdCtx.(type) {
-	case string:
-		reqId, errorConvert = strconv.Atoi(reqIdCtx.(string))
-		if errorConvert != nil {
+	reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
+	if errConvert != nil {
+		switch errConvert.Error() {
+		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			c.LoggerErrWarn.Errorf("UpdateCartHandler: GetId: %s, %v", errors.ErrAtoi, errorConvert)
+			c.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			return
+
+		case errors.ErrNotStringAndInt:
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
 			return
 		}
-	case int:
-		reqId = reqIdCtx.(int)
-	default:
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-		return
 	}
 
 	checkError := &errors.CheckError{
@@ -134,37 +124,27 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	TokenContext := ctx.UserValue("X-Csrf-Token")
-	var XCsrfToken string
-	switch TokenContext.(type) {
-	case string:
-		XCsrfToken = TokenContext.(string)
-	case int:
-		XCsrfToken = strconv.Itoa(TokenContext.(int))
-	default:
+	XCsrfToken, errConvert := utils.InterfaceConvertString(TokenContext)
+	if (errConvert != nil) && (errConvert.Error() == errors.ErrNotStringAndInt) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-		c.LoggerErrWarn.Errorf("UpdateCartHandler: error: %s, requestId: %d", errors.ErrNotStringAndInt, reqId)
 		return
 	}
-
-	idUrl := ctx.UserValue("id")
-	var id int
-	switch idUrl.(type) {
-	case string:
-		id, errorConvert = strconv.Atoi(idUrl.(string))
-		if errorConvert != nil {
+	idCtx := ctx.UserValue("id")
+	id, errConvert := utils.InterfaceConvertInt(idCtx)
+	if errConvert != nil {
+		switch errConvert.Error() {
+		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			c.LoggerErrWarn.Errorf("UpdateCartHandler: error: %s, requestId: %d", errors.ErrAtoi, reqId)
+			c.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			return
+
+		case errors.ErrNotStringAndInt:
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
 			return
 		}
-	case int:
-		id = idUrl.(int)
-	default:
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-		c.LoggerErrWarn.Errorf("UpdateCartHandler: error: %s, requestId: %d", errors.ErrNotStringAndInt, reqId)
-		return
 	}
 
 	result, err := c.Application.UpdateCart(cartRequest.Cart, id)
