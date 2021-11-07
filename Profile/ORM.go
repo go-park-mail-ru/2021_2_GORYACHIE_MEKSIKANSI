@@ -6,6 +6,7 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	prof "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
+	"strconv"
 	"time"
 )
 
@@ -113,7 +114,7 @@ func (db *Wrapper) GetProfileCourier(id int) (*prof.Profile, error) {
 func (db *Wrapper) UpdateName(id int, newName string) error {
 	_, err := db.Conn.Exec(context.Background(),
 		"UPDATE general_user_info SET name = $1 WHERE id = $2",
-		newName, id)
+		Utils.Sanitize(newName), id)
 	if err != nil {
 		return &errorsConst.Errors{
 			Text: errorsConst.PUpdateNameNameNotUpdate,
@@ -127,7 +128,7 @@ func (db *Wrapper) UpdateName(id int, newName string) error {
 func (db *Wrapper) UpdateEmail(id int, newEmail string) error {
 	_, err := db.Conn.Exec(context.Background(),
 		"UPDATE general_user_info SET email = $1 WHERE id = $2",
-		newEmail, id)
+		Utils.Sanitize(newEmail), id)
 	if err != nil {
 		textError := err.Error()
 		println(textError)
@@ -173,6 +174,13 @@ func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
 }
 
 func (db *Wrapper) UpdatePhone(id int, newPhone string) error {
+	if _, err := strconv.Atoi(newPhone); err != nil {
+		return &errorsConst.Errors{
+			Text: errorsConst.PUpdatePhoneIncorrectPhoneFormat,
+			Time: time.Now(),
+		}
+	}
+
 	_, err := db.Conn.Exec(context.Background(),
 		"UPDATE general_user_info SET phone = $1 WHERE id = $2",
 		newPhone, id)
@@ -225,10 +233,10 @@ func (db *Wrapper) UpdateAddress(id int, newAddress Utils.AddressCoordinates) er
 	_, err := db.Conn.Exec(context.Background(),
 		"UPDATE address_user SET alias = $1, comment = $2, city = $3, street = $4, house = $5, floor = $6,"+
 			" flat = $7, porch = $8, intercom = $9, latitude = $10, longitude = $11 WHERE client_id = $12",
-		newAddress.Alias, newAddress.Comment, newAddress.City, newAddress.Street,
-		newAddress.House, newAddress.Floor, newAddress.Flat, newAddress.Porch,
-		newAddress.Intercom, newAddress.Coordinates.Latitude, newAddress.Coordinates.Longitude,
-		id)
+		Utils.Sanitize(newAddress.Alias), Utils.Sanitize(newAddress.Comment), Utils.Sanitize(newAddress.City),
+		Utils.Sanitize(newAddress.Street), Utils.Sanitize(newAddress.House), newAddress.Floor, newAddress.Flat,
+		newAddress.Porch, Utils.Sanitize(newAddress.Intercom), newAddress.Coordinates.Latitude,
+		newAddress.Coordinates.Longitude, id)
 	if err != nil {
 		return &errorsConst.Errors{
 			Text: errorsConst.PUpdateAddressAddressNotUpdate,

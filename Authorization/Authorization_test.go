@@ -7,17 +7,76 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
+	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v4"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 )
+
+type Tx struct {
+	allGood bool
+}
+
+func (tx *Tx) Begin(ctx context.Context) (pgx.Tx, error) {
+	return nil, nil
+}
+
+func (tx *Tx) BeginFunc(ctx context.Context, f func(pgx.Tx) error) error {
+	return nil
+}
+
+func (tx *Tx) Commit(ctx context.Context) error {
+	return nil
+}
+
+func (tx *Tx) Rollback(ctx context.Context) error {
+	return nil
+}
+
+func (tx *Tx) CopyFrom(ctx context.Context, tableName pgx.Identifier, columnNames []string, rowSrc pgx.CopyFromSource) (int64, error) {
+	return 0, nil
+}
+
+func (tx *Tx) SendBatch(ctx context.Context, b *pgx.Batch) pgx.BatchResults {
+	return nil
+}
+
+func (tx *Tx) LargeObjects() pgx.LargeObjects {
+	return pgx.LargeObjects{}
+}
+
+func (tx *Tx) Prepare(ctx context.Context, name, sql string) (*pgconn.StatementDescription, error) {
+	return nil, nil
+}
+
+func (tx *Tx) Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error) {
+	return nil, nil
+}
+
+func (tx *Tx) Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error) {
+	return nil, nil
+}
+
+func (tx *Tx) QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row {
+	return Row{}
+}
+
+func (tx *Tx) QueryFunc(ctx context.Context, sql string, args []interface{}, scans []interface{}, f func(pgx.QueryFuncRow) error) (pgconn.CommandTag, error) {
+	return nil, nil
+}
+
+func (tx *Tx) Conn() *pgx.Conn {
+	return nil
+}
+
 
 type Row struct {
 	row    []interface{}
 	errRow error
 }
 
-func (r *Row) Scan(dest ...interface{}) error {
+func (r Row) Scan(dest ...interface{}) error {
 	if r.errRow != nil {
 		return r.errRow
 	}
@@ -239,6 +298,52 @@ func TestOrmAddCookie(t *testing.T) {
 	}
 }
 
+var OrmSignupClient = []struct {
+	testName            string
+	inputCookie         *utils.Defense
+	inputSignUp         *utils.RegistrationRequest
+	out                 *utils.Defense
+	outErr              string
+	errQuerySalt        error
+	inputQuerySessionId string
+	inputQueryCSRFToken string
+	inputQueryClientId  int
+	inputQueryDateLife  time.Time
+}{
+	{
+		testName:            "One",
+		inputQuerySessionId: "1",
+		inputQueryCSRFToken: "1",
+		inputCookie:         &utils.Defense{SessionId: "1", CsrfToken: "1"},
+		inputSignUp:         &utils.RegistrationRequest{},
+		errQuerySalt:        nil,
+		inputQueryClientId:  1,
+	},
+}
+
+func TestOrmSignupClient(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	for _, tt := range OrmSignupClient {
+		m.
+			EXPECT().
+			Begin(context.Background()).
+			Return(&Tx{}, nil)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.SignupClient(tt.inputSignUp, tt.inputCookie)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
 var ApplicationSignUp = []struct {
 	testName                 string
 	out                      *utils.Defense
@@ -336,8 +441,9 @@ func TestApplicationSignUp(t *testing.T) {
 			EXPECT().
 			GenerateNew().
 			Return(tt.resultGenerateNew)
+		test := Authorization{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := SignUp(m, tt.input)
+			result, err := test.SignUp(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
@@ -352,7 +458,7 @@ var ApplicationLogin = []struct {
 	testName             string
 	out                  *utils.Defense
 	outErr               string
-	input                *Authorization
+	input                *utils.Authorization
 	inputLoginEmail      string
 	inputLoginPassword   string
 	resultLogin          int
@@ -368,7 +474,7 @@ var ApplicationLogin = []struct {
 	countAddCookie       int
 }{
 	{
-		input:                &Authorization{Email: "1", Phone: "", Password: "1"},
+		input:                &utils.Authorization{Email: "1", Phone: "", Password: "1"},
 		testName:             "One",
 		outErr:               "",
 		out:                  &utils.Defense{},
@@ -387,7 +493,7 @@ var ApplicationLogin = []struct {
 		countAddCookie:       1,
 	},
 	{
-		input:                &Authorization{Email: "", Phone: "1", Password: "1"},
+		input:                &utils.Authorization{Email: "", Phone: "1", Password: "1"},
 		testName:             "Two",
 		outErr:               "",
 		out:                  &utils.Defense{},
@@ -406,7 +512,7 @@ var ApplicationLogin = []struct {
 		countAddCookie:       1,
 	},
 	{
-		input:                &Authorization{Email: "", Phone: "1", Password: "1"},
+		input:                &utils.Authorization{Email: "", Phone: "1", Password: "1"},
 		testName:             "Three",
 		outErr:               "text",
 		out:                  nil,
@@ -452,8 +558,9 @@ func TestApplicationLogin(t *testing.T) {
 			AddCookie(tt.inputAddCookieCookie, tt.inputAddCookieId).
 			Return(tt.errAddCookie).
 			Times(tt.countAddCookie)
+		test := Authorization{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := Login(m, tt.input)
+			result, err := test.Login(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
@@ -492,8 +599,9 @@ func TestApplicationLogout(t *testing.T) {
 			EXPECT().
 			DeleteCookie(tt.inputDelete).
 			Return(tt.errDelete)
+		test := Authorization{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			err := Logout(m, tt.input)
+			err := test.Logout(tt.input)
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
 			} else {

@@ -581,8 +581,9 @@ func TestApplicationAllRestaurants(t *testing.T) {
 			EXPECT().
 			GetRestaurants().
 			Return([]rest.Restaurants{}, tt.err)
+		test := Restaurant{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := AllRestaurants(m)
+			result, err := test.AllRestaurants()
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
@@ -706,8 +707,9 @@ func TestApplicationGetRestaurant(t *testing.T) {
 			GetMenu(tt.inputGetMenu).
 			Return(tt.resultGetMenu, tt.errGetMenu).
 			Times(tt.countGetMenu)
+		test := Restaurant{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := GetRestaurant(m, tt.input)
+			result, err := test.GetRestaurant(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
@@ -841,8 +843,9 @@ func TestApplicationRestaurantDishes(t *testing.T) {
 			GetRadios(tt.inputGetRadios).
 			Return(tt.resultGetRadios, tt.errGetRadios).
 			Times(tt.countGetRadios)
+		test := Restaurant{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := RestaurantDishes(m, tt.inputRestId, tt.inputDishId)
+			result, err := test.RestaurantDishes(tt.inputRestId, tt.inputDishId)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))

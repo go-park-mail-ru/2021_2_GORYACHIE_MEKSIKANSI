@@ -2,12 +2,12 @@ package Cart
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
-	"2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
 	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
 )
 
 type Cart struct {
 	DB Interfaces.WrapperCart
+	DBRestaurant Interfaces.WrapperRestaurant
 }
 
 func (c *Cart) CalculatePriceDelivery(id int) (int, error) {
@@ -45,8 +45,7 @@ func (c *Cart) GetCart(id int) (*Utils.ResponseCartErrors, error) {
 	if err != nil {
 		return nil, err
 	}
-	wrapper := Restaurant.Wrapper{Conn: c.DB.GetConn()}
-	rest, err := wrapper.GetGeneralInfoRestaurant(result.Restaurant.Id)
+	rest, err := c.DBRestaurant.GetGeneralInfoRestaurant(result.Restaurant.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -78,8 +77,7 @@ func (c *Cart) UpdateCart(dishes Utils.RequestCartDefault, clientId int) (*Utils
 		return nil, err
 	}
 
-	wrapper := Restaurant.Wrapper{Conn: c.DB.GetConn()}
-	rest, err := wrapper.GetGeneralInfoRestaurant(dishes.Restaurant.Id)
+	rest, err := c.DBRestaurant.GetGeneralInfoRestaurant(dishes.Restaurant.Id)
 	if err != nil {
 		return nil, err
 	}

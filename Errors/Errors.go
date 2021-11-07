@@ -104,7 +104,8 @@ const (
 	PUpdateAvatarAvatarNotUpdate     = "avatar not update"
 	PUpdateBirthdayBirthdayNotUpdate = "birthday not update"
 	PUpdateAddressAddressNotUpdate   = "address not update"
-	PGetProfileUnknownRole           = "unknown role of user" // TODO: add handler
+	PGetProfileUnknownRole           = "unknown role of user"     // TODO: add handler
+	PUpdatePhoneIncorrectPhoneFormat = "Неверный формат телефона" // TODO: add handler
 )
 
 // Error of restaurant

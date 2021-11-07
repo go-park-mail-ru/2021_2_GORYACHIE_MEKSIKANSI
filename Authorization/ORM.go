@@ -19,7 +19,7 @@ func (db *Wrapper) GenerateNew() *utils.Defense {
 	return tmp.GenerateNew()
 }
 
-func GeneralSignUp(signup *utils.RegistrationRequest, transaction pgx.Tx) (int, error) {
+func (db *Wrapper) GeneralSignUp(signup *utils.RegistrationRequest, transaction pgx.Tx) (int, error) {
 	var userId int
 
 	salt := utils.RandString(LenSalt)
@@ -33,7 +33,8 @@ func GeneralSignUp(signup *utils.RegistrationRequest, transaction pgx.Tx) (int, 
 
 	err := transaction.QueryRow(context.Background(),
 		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-		signup.Name, signup.Email, signup.Phone, utils.HashPassword(signup.Password, salt), salt).Scan(&userId)
+		utils.Sanitize(signup.Name), utils.Sanitize(signup.Email),
+		signup.Phone, utils.HashPassword(signup.Password, salt), salt).Scan(&userId)
 
 	if err != nil {
 		errorText := err.Error()
@@ -54,12 +55,17 @@ func GeneralSignUp(signup *utils.RegistrationRequest, transaction pgx.Tx) (int, 
 
 func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest, cookie *utils.Defense) (*utils.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
-	defer func(tx pgx.Tx, ctx context.Context) {
-		err := tx.Rollback(ctx)
-		if err != nil {
-			return
+	defer func(tx pgx.Tx) {
+		switch err {
+		case nil:
+
+		default:
+			err := tx.Rollback(context.Background())
+			if err != nil {
+				return
+			}
 		}
-	}(tx, context.Background())
+	}(tx)
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ASignupHostTransactionNotCreate,
@@ -67,12 +73,12 @@ func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest, cookie *utils.D
 		}
 	}
 
-	userId, err := GeneralSignUp(signup, tx)
+	userId, err := db.GeneralSignUp(signup, tx)
 	if err != nil {
 		return nil, err
 	}
 
-	err = AddTransactionCookie(cookie, tx, userId)
+	err = db.AddTransactionCookie(cookie, tx, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -97,13 +103,17 @@ func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest, cookie *utils.D
 
 func (db *Wrapper) SignupCourier(signup *utils.RegistrationRequest, cookie *utils.Defense) (*utils.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
+	defer func(tx pgx.Tx) {
+		switch err {
+		case nil:
 
-	defer func(tx pgx.Tx, ctx context.Context) {
-		err := tx.Rollback(ctx)
-		if err != nil {
-			return
+		default:
+			err := tx.Rollback(context.Background())
+			if err != nil {
+				return
+			}
 		}
-	}(tx, context.Background())
+	}(tx)
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ASignupCourierTransactionNotCreate,
@@ -111,12 +121,12 @@ func (db *Wrapper) SignupCourier(signup *utils.RegistrationRequest, cookie *util
 		}
 	}
 
-	userId, err := GeneralSignUp(signup, tx)
+	userId, err := db.GeneralSignUp(signup, tx)
 	if err != nil {
 		return nil, err
 	}
 
-	err = AddTransactionCookie(cookie, tx, userId)
+	err = db.AddTransactionCookie(cookie, tx, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -142,13 +152,17 @@ func (db *Wrapper) SignupCourier(signup *utils.RegistrationRequest, cookie *util
 
 func (db *Wrapper) SignupClient(signup *utils.RegistrationRequest, cookie *utils.Defense) (*utils.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
+	defer func(tx pgx.Tx) {
+		switch err {
+		case nil:
 
-	defer func(tx pgx.Tx, ctx context.Context) {
-		err := tx.Rollback(ctx)
-		if err != nil {
-			return
+		default:
+			err := tx.Rollback(context.Background())
+			if err != nil {
+				return
+			}
 		}
-	}(tx, context.Background())
+	}(tx)
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ASignupClientTransactionNotCreate,
@@ -156,12 +170,12 @@ func (db *Wrapper) SignupClient(signup *utils.RegistrationRequest, cookie *utils
 		}
 	}
 
-	userId, err := GeneralSignUp(signup, tx)
+	userId, err := db.GeneralSignUp(signup, tx)
 	if err != nil {
 		return nil, err
 	}
 
-	err = AddTransactionCookie(cookie, tx, userId)
+	err = db.AddTransactionCookie(cookie, tx, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +199,7 @@ func (db *Wrapper) SignupClient(signup *utils.RegistrationRequest, cookie *utils
 	return cookie, nil
 }
 
-func AddTransactionCookie(cookie *utils.Defense, Transaction pgx.Tx, id int) error {
+func (db *Wrapper) AddTransactionCookie(cookie *utils.Defense, Transaction pgx.Tx, id int) error {
 	_, err := Transaction.Exec(context.Background(),
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)

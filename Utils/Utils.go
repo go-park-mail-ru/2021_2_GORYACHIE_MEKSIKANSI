@@ -12,6 +12,7 @@ import (
 	"math/big"
 	"strconv"
 	"strings"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 const (
@@ -102,4 +103,9 @@ func interfaceConvertInt(value interface{}) (int, error) {
 		}
 	}
 
+}
+
+func Sanitize(str string) string {
+	p := bluemonday.StrictPolicy()
+	return p.Sanitize(str)
 }

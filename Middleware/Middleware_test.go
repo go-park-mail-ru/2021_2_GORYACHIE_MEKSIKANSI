@@ -35,7 +35,7 @@ func (r *Row) Scan(dest ...interface{}) error {
 	return nil
 }
 
-var ApplicationCheckAccess = []struct {
+var OrmCheckAccess = []struct {
 	testName            string
 	input               *Utils.Defense
 	out                 bool
@@ -54,20 +54,21 @@ var ApplicationCheckAccess = []struct {
 	},
 }
 
-func TestApplicationCheckAccess(t *testing.T) {
+func TestOrmCheckAccess(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range ApplicationCheckAccess {
+	for _, tt := range OrmCheckAccess {
 		m.
 			EXPECT().
 			QueryRow(context.Background(),
 				"SELECT client_id, date_life FROM cookie WHERE session_id = $1 AND csrf_token = $2",
 				tt.inputQuerySessionId, tt.inputQueryCSRFToken).
 			Return(&tt.outQuery)
+		test := Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := CheckAccess(m, tt.input)
+			result, err := test.CheckAccess(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))

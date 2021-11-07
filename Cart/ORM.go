@@ -169,10 +169,6 @@ func (db *Wrapper) DeleteCart(id int) error {
 	return nil
 }
 
-func (db *Wrapper) GetConn() Interfaces.ConnectionInterface {
-	return db.Conn
-}
-
 func (db *Wrapper) UpdateCartStructureFood(ingredients []Utils.IngredientsCartRequest, clientId int, tx pgx.Tx) ([]Utils.IngredientCartResponse, error) {
 	var result []Utils.IngredientCartResponse
 	for _, ingredient := range ingredients {
@@ -230,12 +226,17 @@ func (db *Wrapper) UpdateCartRadios(radios []Utils.RadiosCartRequest, clientId i
 
 func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*Utils.ResponseCartErrors, []Utils.CastDishesErrs, error) {
 	tx, err := db.Conn.Begin(context.Background())
-	defer func(tx pgx.Tx, ctx context.Context) {
-		err := tx.Rollback(ctx)
-		if err != nil {
-			return
+	defer func(tx pgx.Tx) {
+		switch err {
+		case nil:
+
+		default:
+			err := tx.Rollback(context.Background())
+			if err != nil {
+				return
+			}
 		}
-	}(tx, context.Background())
+	}(tx)
 	if err != nil {
 		return nil, nil, &errorsConst.Errors{
 			Text: errorsConst.CUpdateCartTransactionNotCreate,

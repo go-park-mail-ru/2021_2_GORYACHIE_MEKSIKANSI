@@ -123,15 +123,6 @@ func setUp(connectionDB interfaces.ConnectionInterface, loggerErrWarn *zap.Sugar
 		LoggerTest:    loggerTest,
 	}
 
-	cartWrapper := cart.Wrapper{Conn: connectionDB}
-	cartApp := cart.Cart{DB: &cartWrapper}
-	cartInfo := cart.InfoCart{
-		Application:   &cartApp,
-		LoggerErrWarn: loggerErrWarn,
-		LoggerInfo:    loggerInfo,
-		LoggerTest:    loggerTest,
-	}
-
 	profileWrapper := profile.Wrapper{Conn: connectionDB}
 	profileApp := profile.Profile{DB: &profileWrapper}
 	profileInfo := profile.InfoProfile{
@@ -154,6 +145,15 @@ func setUp(connectionDB interfaces.ConnectionInterface, loggerErrWarn *zap.Sugar
 	restApp := restaurant.Restaurant{DB: &restWrapper}
 	restaurantInfo := restaurant.InfoRestaurant{
 		Application:   &restApp,
+		LoggerErrWarn: loggerErrWarn,
+		LoggerInfo:    loggerInfo,
+		LoggerTest:    loggerTest,
+	}
+
+	cartWrapper := cart.Wrapper{Conn: connectionDB}
+	cartApp := cart.Cart{DB: &cartWrapper, DBRestaurant: &restWrapper}
+	cartInfo := cart.InfoCart{
+		Application:   &cartApp,
 		LoggerErrWarn: loggerErrWarn,
 		LoggerInfo:    loggerInfo,
 		LoggerTest:    loggerTest,

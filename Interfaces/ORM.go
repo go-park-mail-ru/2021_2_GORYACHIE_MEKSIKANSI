@@ -40,6 +40,7 @@ type WrapperProfile interface {
 }
 
 type WrapperAuthorization interface {
+	GeneralSignUp(signup *Utils.RegistrationRequest, transaction pgx.Tx) (int, error)
 	SignupClient(signup *Utils.RegistrationRequest, cookie *Utils.Defense) (*Utils.Defense, error)
 	SignupCourier(signup *Utils.RegistrationRequest, cookie *Utils.Defense) (*Utils.Defense, error)
 	SignupHost(signup *Utils.RegistrationRequest, cookie *Utils.Defense) (*Utils.Defense, error)
@@ -48,13 +49,13 @@ type WrapperAuthorization interface {
 	DeleteCookie(cookie *Utils.Defense) error
 	GenerateNew() *Utils.Defense
 	AddCookie(cookie *Utils.Defense, id int) error
+	AddTransactionCookie(cookie *Utils.Defense, Transaction pgx.Tx, id int) error
 }
 
 type WrapperCart interface {
 	GetCart(id int) (*Utils.ResponseCartErrors, []Utils.CastDishesErrs, error)
 	UpdateCart(dishes Utils.RequestCartDefault, clientId int) (*Utils.ResponseCartErrors, []Utils.CastDishesErrs, error)
 	DeleteCart(id int) error
-	GetConn() ConnectionInterface
 	GetPriceDelivery(id int) (int, error)
 	UpdateCartRadios(radios []Utils.RadiosCartRequest, clientId int, tx pgx.Tx) ([]Utils.RadiosCartResponse, error)
 	GetStructRadios(id int) ([]Utils.RadiosCartResponse, error)

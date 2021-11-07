@@ -712,8 +712,9 @@ func TestApplicationGetProfile(t *testing.T) {
 			GetProfileHost(tt.inputGetProfileHost).
 			Return(tt.resultGetProfileHost, tt.errGetProfileHost).
 			Times(tt.countGetProfileHost)
+		test := Profile{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := GetProfile(m, tt.input)
+			result, err := test.GetProfile(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
@@ -763,8 +764,9 @@ func TestApplicationUpdateName(t *testing.T) {
 			EXPECT().
 			UpdateName(tt.inputUpdateNameId, tt.inputUpdateNameNewName).
 			Return(tt.errUpdateName)
+		test := Profile{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			err := UpdateName(m, tt.inputId, tt.inputNewName)
+			err := test.UpdateName(tt.inputId, tt.inputNewName)
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
 			} else {
@@ -814,8 +816,9 @@ func TestApplicationUpdateEmail(t *testing.T) {
 			EXPECT().
 			UpdateEmail(tt.inputUpdateEmailId, tt.inputUpdateEmailNewEmail).
 			Return(tt.errUpdateEmail)
+		test := Profile{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			err := UpdateEmail(m, tt.inputId, tt.inputNewEmail)
+			err := test.UpdateEmail(tt.inputId, tt.inputNewEmail)
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
 			} else {
@@ -864,8 +867,9 @@ func TestApplicationUpdatePassword(t *testing.T) {
 			EXPECT().
 			UpdatePassword(tt.inputUpdatePasswordId, tt.inputUpdatePasswordNewPassword).
 			Return(tt.errUpdatePassword)
+		test := Profile{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			err := UpdatePassword(m, tt.inputId, tt.inputNewPassword)
+			err := test.UpdatePassword(tt.inputId, tt.inputNewPassword)
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
 			} else {
@@ -914,8 +918,9 @@ func TestApplicationUpdatePhone(t *testing.T) {
 			EXPECT().
 			UpdatePhone(tt.inputUpdatePhoneId, tt.inputUpdatePhoneNewPhone).
 			Return(tt.errUpdatePhone)
+		test := Profile{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			err := UpdatePhone(m, tt.inputId, tt.inputNewPhone)
+			err := test.UpdatePhone(tt.inputId, tt.inputNewPhone)
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
 			} else {
@@ -964,8 +969,9 @@ func TestApplicationUpdateAvatar(t *testing.T) {
 			EXPECT().
 			UpdateAvatar(tt.inputUpdateAvatarId, tt.inputUpdateAvatarNewAvatar).
 			Return(tt.errUpdateAvatar)
+		test := Profile{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			err := UpdateAvatar(m, tt.inputId, tt.inputNewAvatar)
+			err := test.UpdateAvatar(tt.inputId, tt.inputNewAvatar)
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
 			} else {
@@ -1014,8 +1020,9 @@ func TestApplicationUpdateBirthday(t *testing.T) {
 			EXPECT().
 			UpdateBirthday(tt.inputUpdateBirthdayId, tt.inputUpdateBirthdayDate).
 			Return(tt.errUpdateBirthday)
+		test := Profile{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			err := UpdateBirthday(m, tt.inputId, tt.inputNewBirthday)
+			err := test.UpdateBirthday(tt.inputId, tt.inputNewBirthday)
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
 			} else {
@@ -1064,8 +1071,9 @@ func TestApplicationUpdateAddress(t *testing.T) {
 			EXPECT().
 			UpdateAddress(tt.inputUpdateAddressId, tt.inputUpdateAddressNewAddress).
 			Return(tt.errUpdateAddress)
+		test := Profile{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			err := UpdateAddress(m, tt.inputId, tt.inputNewAddress)
+			err := test.UpdateAddress(tt.inputId, tt.inputNewAddress)
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
 			} else {
