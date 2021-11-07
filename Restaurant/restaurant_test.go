@@ -113,7 +113,8 @@ func TestOrmGetRestaurants(t *testing.T) {
 		m.
 			EXPECT().
 			Query(context.Background(),
-				"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant ORDER BY random() LIMIT 50",
+				"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating" +
+				" FROM restaurant ORDER BY random() LIMIT 50",
 			).
 			Return(&tt.row, tt.errQuery)
 		testUser := &Wrapper{Conn: m}
@@ -141,7 +142,8 @@ var OrmGetGeneralInfoRestaurant = []struct {
 		testName:   "One",
 		input:      1,
 		inputQuery: 1,
-		out:        &rest.RestaurantId{Id: 1, Img: "1", Name: "1", CostForFreeDelivery: 1, MinDelivery: 1, MaxDelivery: 1, Rating: 1, Tags: interface{}(nil), Menu: interface{}(nil)},
+		out:        &rest.RestaurantId{Id: 1, Img: "1", Name: "1",
+			CostForFreeDelivery: 1, MinDelivery: 1, MaxDelivery: 1, Rating: 1, Tags: interface{}(nil), Menu: interface{}(nil)},
 		row:        Row{row: []interface{}{1, "1", "1", 1, 1, 1, 1.0}, errRow: nil},
 		outErr:     errorsConst.RGetGeneralInfoRestaurantNotFound,
 	},
@@ -458,7 +460,8 @@ var OrmGetDishes = []struct {
 		inputDishesId: 1,
 		inputQueryId:  1,
 		errQuery:      nil,
-		out:           &rest.Dishes{Id: 1, Img: "1", Title: "1", Cost: 1, Ccal: 1, Description: "1", Radios: interface{}(nil), Ingredient: interface{}(nil)},
+		out:           &rest.Dishes{Id: 1, Img: "1", Title: "1", Cost: 1, Ccal: 1, Description: "1",
+			Radios: interface{}(nil), Ingredient: interface{}(nil)},
 		rowsQuery:     Rows{rows: 1, row: []interface{}{1, "1", "1", 1, 1, "1"}},
 		outErr:        errorsConst.RGetGeneralInfoRestaurantNotFound,
 	},
@@ -614,7 +617,8 @@ var ApplicationGetRestaurant = []struct {
 }{
 	{
 		testName:                       "One",
-		out:                            &rest.RestaurantId{Id: 0, Img: "", Name: "", CostForFreeDelivery: 0, MinDelivery: 0, MaxDelivery: 0, Rating: 0, Tags: []rest.Tag{}, Menu: []rest.Menu{}},
+		out:                            &rest.RestaurantId{Id: 0, Img: "", Name: "", CostForFreeDelivery: 0,
+			MinDelivery: 0, MaxDelivery: 0, Rating: 0, Tags: []rest.Tag{}, Menu: []rest.Menu{}},
 		outErr:                         "",
 		input:                          1,
 		inputGetGeneralInfoRestaurant:  1,
@@ -802,7 +806,8 @@ var ApplicationRestaurantDishes = []struct {
 	},
 	{
 		testName:              "Four",
-		out:                   &rest.Dishes{Id: 0, Img: "", Title: "", Cost: 0, Ccal: 0, Description: "", Radios: []rest.Radios{}, Ingredient: []rest.Ingredients{}},
+		out:                   &rest.Dishes{Id: 0, Img: "", Title: "", Cost: 0, Ccal: 0, Description: "",
+			Radios: []rest.Radios{}, Ingredient: []rest.Ingredients{}},
 		outErr:                "",
 		inputGetDishesRestId:  1,
 		inputGetDishesDishId:  1,

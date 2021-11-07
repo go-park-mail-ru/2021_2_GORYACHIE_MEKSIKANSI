@@ -210,27 +210,27 @@ func TestOrmLoginByPhone(t *testing.T) {
 }
 
 var OrmDeleteCookie = []struct {
-	testName            string
-	input               string
-	out string
-	outErr string
+	testName    string
+	input       string
+	out         string
+	outErr      string
 	inputDelete string
-	errDelete error
+	errDelete   error
 	countDelete int
-	inputQuery string
-	errQuery error
+	inputQuery  string
+	errQuery    error
 	resultQuery Row
 }{
 	{
-		testName:            "One",
-		input:               "1",
-		out: "1",
-		outErr: "",
+		testName:    "One",
+		input:       "1",
+		out:         "1",
+		outErr:      "",
 		inputDelete: "1",
-		errDelete: nil,
+		errDelete:   nil,
 		countDelete: 1,
-		inputQuery: "1",
-		errQuery: nil,
+		inputQuery:  "1",
+		errQuery:    nil,
 		resultQuery: Row{row: []interface{}{"1"}},
 	},
 }
@@ -912,22 +912,22 @@ func TestApplicationLogin(t *testing.T) {
 }
 
 var ApplicationLogout = []struct {
-	testName    string
-	outErr      string
-	out         string
-	input       string
-	inputDelete string
+	testName     string
+	outErr       string
+	out          string
+	input        string
+	inputDelete  string
 	resultDelete string
-	errDelete   error
+	errDelete    error
 }{
 	{
-		testName:    "One",
-		out:         "1",
-		outErr:      "",
-		input:       "1",
-		inputDelete: "1",
+		testName:     "One",
+		out:          "1",
+		outErr:       "",
+		input:        "1",
+		inputDelete:  "1",
 		resultDelete: "1",
-		errDelete:   nil,
+		errDelete:    nil,
 	},
 }
 

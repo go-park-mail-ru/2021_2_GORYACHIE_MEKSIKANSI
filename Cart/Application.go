@@ -6,7 +6,7 @@ import (
 )
 
 type Cart struct {
-	DB Interfaces.WrapperCart
+	DB           Interfaces.WrapperCart
 	DBRestaurant Interfaces.WrapperRestaurant
 }
 
@@ -86,17 +86,6 @@ func (c *Cart) UpdateCart(dishes Utils.RequestCartDefault, clientId int) (*Utils
 	result.CastToRestaurantId(*rest)
 
 	result.CastToRequestCartDefault(dishes)
-
-	sumCost := 0
-	for i, dish := range result.Dishes {
-		ingredientCost := 0
-		for _, ingredient := range dish.IngredientCart {
-			ingredientCost = ingredientCost + ingredient.Cost
-		}
-		dishCost := (dish.Cost + ingredientCost) * dish.Count
-		sumCost = sumCost + dishCost
-		result.Dishes[i].Cost = dishCost
-	}
 
 	cost, err := c.CalculateCost(result, rest)
 	if err != nil {
