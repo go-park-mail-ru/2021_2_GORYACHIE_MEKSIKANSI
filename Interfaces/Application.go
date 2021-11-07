@@ -8,7 +8,7 @@ import (
 type AuthorizationApplication interface {
 	SignUp(signup *utils.RegistrationRequest) (*utils.Defense, error)
 	Login(login *utils.Authorization) (*utils.Defense, error)
-	Logout(cookie *utils.Defense) error
+	Logout(CSRF string) (string, error)
 }
 
 type CartApplication interface {

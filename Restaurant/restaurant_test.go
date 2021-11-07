@@ -88,7 +88,7 @@ func (r *Rows) Next() bool {
 	return true
 }
 
-var OrmAllRestaurants = []struct {
+var OrmGetRestaurants = []struct {
 	testName string
 	row      Rows
 	errQuery error
@@ -104,12 +104,12 @@ var OrmAllRestaurants = []struct {
 	},
 }
 
-func TestOrmAllRestaurants(t *testing.T) {
+func TestOrmGetRestaurants(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmAllRestaurants {
+	for _, tt := range OrmGetRestaurants {
 		m.
 			EXPECT().
 			Query(context.Background(),

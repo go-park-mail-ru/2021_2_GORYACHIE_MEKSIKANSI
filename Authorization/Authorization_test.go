@@ -7,69 +7,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
-	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 )
-
-type Tx struct {
-	allGood bool
-}
-
-func (tx *Tx) Begin(ctx context.Context) (pgx.Tx, error) {
-	return nil, nil
-}
-
-func (tx *Tx) BeginFunc(ctx context.Context, f func(pgx.Tx) error) error {
-	return nil
-}
-
-func (tx *Tx) Commit(ctx context.Context) error {
-	return nil
-}
-
-func (tx *Tx) Rollback(ctx context.Context) error {
-	return nil
-}
-
-func (tx *Tx) CopyFrom(ctx context.Context, tableName pgx.Identifier, columnNames []string, rowSrc pgx.CopyFromSource) (int64, error) {
-	return 0, nil
-}
-
-func (tx *Tx) SendBatch(ctx context.Context, b *pgx.Batch) pgx.BatchResults {
-	return nil
-}
-
-func (tx *Tx) LargeObjects() pgx.LargeObjects {
-	return pgx.LargeObjects{}
-}
-
-func (tx *Tx) Prepare(ctx context.Context, name, sql string) (*pgconn.StatementDescription, error) {
-	return nil, nil
-}
-
-func (tx *Tx) Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error) {
-	return nil, nil
-}
-
-func (tx *Tx) Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error) {
-	return nil, nil
-}
-
-func (tx *Tx) QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row {
-	return Row{}
-}
-
-func (tx *Tx) QueryFunc(ctx context.Context, sql string, args []interface{}, scans []interface{}, f func(pgx.QueryFuncRow) error) (pgconn.CommandTag, error) {
-	return nil, nil
-}
-
-func (tx *Tx) Conn() *pgx.Conn {
-	return nil
-}
-
 
 type Row struct {
 	row    []interface{}
@@ -91,6 +33,68 @@ func (r Row) Scan(dest ...interface{}) error {
 		}
 	}
 	return nil
+}
+
+func TestOrmGenerateNew(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	testUser := &Wrapper{Conn: m}
+	t.Run("One", func(t *testing.T) {
+		result := testUser.GenerateNew()
+		require.NotEqual(t, time.Time{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", time.Time{}, result.DateLife))
+		require.NotEqual(t, "", result, fmt.Sprintf("Expected: %v\nbut got: %v", "", result.SessionId))
+		require.NotEqual(t, "", result, fmt.Sprintf("Expected: %v\nbut got: %v", "", result.CsrfToken))
+	})
+}
+
+var OrmGeneralSignUp = []struct {
+	testName         string
+	inputSignup      *utils.RegistrationRequest
+	inputTransaction pgx.Tx
+	inputQueryPhone  string
+	inputQueryEmail  string
+	inputQueryName   string
+	resultQuery      Row
+	out              int
+	outErr           string
+}{
+	{
+		testName:        "One",
+		out:             1,
+		inputSignup:     &utils.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
+		resultQuery:     Row{row: []interface{}{1}, errRow: nil},
+		inputQueryPhone: "1",
+		inputQueryEmail: "1",
+		inputQueryName:  "1",
+	},
+}
+
+func TestOrmGeneralSignUp(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range OrmGeneralSignUp {
+		m.
+			EXPECT().
+			QueryRow(context.Background(),
+				"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+				tt.inputQueryName, tt.inputQueryEmail, tt.inputQueryPhone, gomock.Any(), gomock.Any(),
+			).
+			Return(&tt.resultQuery)
+		testUser := &Wrapper{}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.GeneralSignUp(tt.inputSignup, m)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
 }
 
 var OrmLoginByEmail = []struct {
@@ -207,22 +211,27 @@ func TestOrmLoginByPhone(t *testing.T) {
 
 var OrmDeleteCookie = []struct {
 	testName            string
-	input               *utils.Defense
-	resultQuerySalt     Row
-	resultQueryId       Row
-	outErr              string
-	errQuerySalt        error
-	inputQuerySessionId string
-	inputQueryCSRFToken string
+	input               string
+	out string
+	outErr string
+	inputDelete string
+	errDelete error
+	countDelete int
+	inputQuery string
+	errQuery error
+	resultQuery Row
 }{
 	{
 		testName:            "One",
-		resultQuerySalt:     Row{row: []interface{}{"1"}, errRow: nil},
-		resultQueryId:       Row{row: []interface{}{1}, errRow: nil},
-		inputQuerySessionId: "1",
-		inputQueryCSRFToken: "1",
-		input:               &utils.Defense{SessionId: "1", CsrfToken: "1"},
-		errQuerySalt:        nil,
+		input:               "1",
+		out: "1",
+		outErr: "",
+		inputDelete: "1",
+		errDelete: nil,
+		countDelete: 1,
+		inputQuery: "1",
+		errQuery: nil,
+		resultQuery: Row{row: []interface{}{"1"}},
 	},
 }
 
@@ -235,13 +244,22 @@ func TestOrmDeleteCookie(t *testing.T) {
 		m.
 			EXPECT().
 			Exec(context.Background(),
-				"DELETE FROM cookie WHERE session_id = $1 AND csrf_token = $2",
-				tt.inputQuerySessionId, tt.inputQueryCSRFToken,
+				"DELETE FROM cookie WHERE csrf_token = $1",
+				tt.inputDelete,
 			).
-			Return(nil, tt.errQuerySalt)
+			Return(nil, tt.errDelete).
+			Times(tt.countDelete)
+		m.
+			EXPECT().
+			QueryRow(context.Background(),
+				"SELECT session_id FROM cookie WHERE csrf_token = $1",
+				tt.inputQuery,
+			).
+			Return(tt.resultQuery)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			err := testUser.DeleteCookie(tt.input)
+			result, err := testUser.DeleteCookie(tt.input)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
@@ -256,7 +274,7 @@ var OrmAddCookie = []struct {
 	inputCookie         *utils.Defense
 	inputId             int
 	outErr              string
-	errQuerySalt        error
+	errQuery            error
 	inputQuerySessionId string
 	inputQueryCSRFToken string
 	inputQueryClientId  int
@@ -268,7 +286,7 @@ var OrmAddCookie = []struct {
 		inputQueryCSRFToken: "1",
 		inputCookie:         &utils.Defense{SessionId: "1", CsrfToken: "1"},
 		inputId:             1,
-		errQuerySalt:        nil,
+		errQuery:            nil,
 		inputQueryClientId:  1,
 	},
 }
@@ -285,7 +303,7 @@ func TestOrmAddCookie(t *testing.T) {
 				"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 				tt.inputQueryClientId, tt.inputQuerySessionId, tt.inputQueryDateLife, tt.inputQueryCSRFToken,
 			).
-			Return(nil, tt.errQuerySalt)
+			Return(nil, tt.errQuery)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := testUser.AddCookie(tt.inputCookie, tt.inputId)
@@ -298,13 +316,12 @@ func TestOrmAddCookie(t *testing.T) {
 	}
 }
 
-var OrmSignupClient = []struct {
+var OrmAddTransactionCookie = []struct {
 	testName            string
 	inputCookie         *utils.Defense
-	inputSignUp         *utils.RegistrationRequest
-	out                 *utils.Defense
+	inputId             int
 	outErr              string
-	errQuerySalt        error
+	errQuery            error
 	inputQuerySessionId string
 	inputQueryCSRFToken string
 	inputQueryClientId  int
@@ -315,9 +332,84 @@ var OrmSignupClient = []struct {
 		inputQuerySessionId: "1",
 		inputQueryCSRFToken: "1",
 		inputCookie:         &utils.Defense{SessionId: "1", CsrfToken: "1"},
-		inputSignUp:         &utils.RegistrationRequest{},
-		errQuerySalt:        nil,
+		inputId:             1,
+		errQuery:            nil,
 		inputQueryClientId:  1,
+	},
+}
+
+func TestOrmAddTransactionCookie(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range OrmAddTransactionCookie {
+		m.
+			EXPECT().
+			Exec(context.Background(),
+				"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
+				tt.inputQueryClientId, tt.inputQuerySessionId, tt.inputQueryDateLife, tt.inputQueryCSRFToken,
+			).
+			Return(nil, tt.errQuery)
+		testUser := &Wrapper{}
+		t.Run(tt.testName, func(t *testing.T) {
+			err := testUser.AddTransactionCookie(tt.inputCookie, m, tt.inputId)
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var OrmSignupClient = []struct {
+	testName                  string
+	inputCookie               *utils.Defense
+	inputSignUp               *utils.RegistrationRequest
+	outErr                    string
+	errQueryCookie            error
+	inputQueryCookieSessionId string
+	inputQueryCookieCSRFToken string
+	inputQueryCookieClientId  int
+	inputQueryCookieDateLife  time.Time
+	inputQueryInfoPhone       string
+	inputQueryInfoEmail       string
+	inputQueryInfoName        string
+	resultQueryInfo           Row
+	inputInsert               int
+	ErrInsert                 error
+	countInsert               int
+	countQueryCookie          int
+	countQueryInfo            int
+	countRollback             int
+	countCommit               int
+	errRollback               error
+	errCommit                 error
+}{
+	{
+		testName:                  "One",
+		inputQueryCookieSessionId: "1",
+		inputQueryCookieCSRFToken: "1",
+		inputQueryCookieDateLife:  time.Time{},
+		inputCookie:               &utils.Defense{SessionId: "1", CsrfToken: "1"},
+		inputSignUp:               &utils.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
+		errQueryCookie:            nil,
+		inputQueryCookieClientId:  1,
+		resultQueryInfo:           Row{row: []interface{}{1}, errRow: nil},
+		inputQueryInfoPhone:       "1",
+		inputQueryInfoEmail:       "1",
+		inputQueryInfoName:        "1",
+		inputInsert:               1,
+		ErrInsert:                 nil,
+		countInsert:               1,
+		countQueryCookie:          1,
+		countQueryInfo:            1,
+		countRollback:             0,
+		countCommit:               1,
+		errRollback:               nil,
+		errCommit:                 nil,
+		outErr:                    "",
 	},
 }
 
@@ -326,15 +418,263 @@ func TestOrmSignupClient(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
 	for _, tt := range OrmSignupClient {
+		mTx.
+			EXPECT().
+			Exec(context.Background(),
+				"INSERT INTO client (client_id) VALUES ($1)",
+				tt.inputInsert).
+			Return(nil, tt.ErrInsert).
+			Times(tt.countInsert)
+		mTx.
+			EXPECT().
+			Exec(context.Background(),
+				"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
+				tt.inputQueryCookieClientId, tt.inputQueryCookieSessionId, tt.inputQueryCookieDateLife, tt.inputQueryCookieCSRFToken,
+			).
+			Return(nil, tt.errQueryCookie).
+			Times(tt.countQueryCookie)
+		mTx.
+			EXPECT().
+			QueryRow(context.Background(),
+				"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+				tt.inputQueryInfoName, tt.inputQueryInfoEmail, tt.inputQueryInfoPhone, gomock.Any(), gomock.Any(),
+			).
+			Return(&tt.resultQueryInfo).
+			Times(tt.countQueryInfo)
+		mTx.
+			EXPECT().
+			Rollback(context.Background()).
+			Return(tt.errRollback).
+			Times(tt.countRollback)
+		mTx.
+			EXPECT().
+			Commit(context.Background()).
+			Return(tt.errCommit).
+			Times(tt.countCommit)
 		m.
 			EXPECT().
 			Begin(context.Background()).
-			Return(&Tx{}, nil)
+			Return(mTx, nil)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.SignupClient(tt.inputSignUp, tt.inputCookie)
-			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			require.NotEqual(t, &utils.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &utils.Defense{}, result))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var OrmSignupCourier = []struct {
+	testName                  string
+	inputCookie               *utils.Defense
+	inputSignUp               *utils.RegistrationRequest
+	outErr                    string
+	errQueryCookie            error
+	inputQueryCookieSessionId string
+	inputQueryCookieCSRFToken string
+	inputQueryCookieClientId  int
+	inputQueryCookieDateLife  time.Time
+	inputQueryInfoPhone       string
+	inputQueryInfoEmail       string
+	inputQueryInfoName        string
+	resultQueryInfo           Row
+	inputInsert               int
+	ErrInsert                 error
+	countInsert               int
+	countQueryCookie          int
+	countQueryInfo            int
+	countRollback             int
+	countCommit               int
+	errRollback               error
+	errCommit                 error
+}{
+	{
+		testName:                  "One",
+		inputQueryCookieSessionId: "1",
+		inputQueryCookieCSRFToken: "1",
+		inputQueryCookieDateLife:  time.Time{},
+		inputCookie:               &utils.Defense{SessionId: "1", CsrfToken: "1"},
+		inputSignUp:               &utils.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
+		errQueryCookie:            nil,
+		inputQueryCookieClientId:  1,
+		resultQueryInfo:           Row{row: []interface{}{1}, errRow: nil},
+		inputQueryInfoPhone:       "1",
+		inputQueryInfoEmail:       "1",
+		inputQueryInfoName:        "1",
+		inputInsert:               1,
+		ErrInsert:                 nil,
+		countInsert:               1,
+		countQueryCookie:          1,
+		countQueryInfo:            1,
+		countRollback:             0,
+		countCommit:               1,
+		errRollback:               nil,
+		errCommit:                 nil,
+		outErr:                    "",
+	},
+}
+
+func TestOrmSignupCourier(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range OrmSignupCourier {
+		mTx.
+			EXPECT().
+			Exec(context.Background(),
+				"INSERT INTO courier (client_id) VALUES ($1)",
+				tt.inputInsert).
+			Return(nil, tt.ErrInsert).
+			Times(tt.countInsert)
+		mTx.
+			EXPECT().
+			Exec(context.Background(),
+				"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
+				tt.inputQueryCookieClientId, tt.inputQueryCookieSessionId, tt.inputQueryCookieDateLife, tt.inputQueryCookieCSRFToken,
+			).
+			Return(nil, tt.errQueryCookie).
+			Times(tt.countQueryCookie)
+		mTx.
+			EXPECT().
+			QueryRow(context.Background(),
+				"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+				tt.inputQueryInfoName, tt.inputQueryInfoEmail, tt.inputQueryInfoPhone, gomock.Any(), gomock.Any(),
+			).
+			Return(&tt.resultQueryInfo).
+			Times(tt.countQueryInfo)
+		mTx.
+			EXPECT().
+			Rollback(context.Background()).
+			Return(tt.errRollback).
+			Times(tt.countRollback)
+		mTx.
+			EXPECT().
+			Commit(context.Background()).
+			Return(tt.errCommit).
+			Times(tt.countCommit)
+		m.
+			EXPECT().
+			Begin(context.Background()).
+			Return(mTx, nil)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.SignupCourier(tt.inputSignUp, tt.inputCookie)
+			require.NotEqual(t, &utils.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &utils.Defense{}, result))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var OrmSignupHost = []struct {
+	testName                  string
+	inputCookie               *utils.Defense
+	inputSignUp               *utils.RegistrationRequest
+	outErr                    string
+	errQueryCookie            error
+	inputQueryCookieSessionId string
+	inputQueryCookieCSRFToken string
+	inputQueryCookieClientId  int
+	inputQueryCookieDateLife  time.Time
+	inputQueryInfoPhone       string
+	inputQueryInfoEmail       string
+	inputQueryInfoName        string
+	resultQueryInfo           Row
+	inputInsert               int
+	ErrInsert                 error
+	countInsert               int
+	countQueryCookie          int
+	countQueryInfo            int
+	countRollback             int
+	countCommit               int
+	errRollback               error
+	errCommit                 error
+}{
+	{
+		testName:                  "One",
+		inputQueryCookieSessionId: "1",
+		inputQueryCookieCSRFToken: "1",
+		inputQueryCookieDateLife:  time.Time{},
+		inputCookie:               &utils.Defense{SessionId: "1", CsrfToken: "1"},
+		inputSignUp:               &utils.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
+		errQueryCookie:            nil,
+		inputQueryCookieClientId:  1,
+		resultQueryInfo:           Row{row: []interface{}{1}, errRow: nil},
+		inputQueryInfoPhone:       "1",
+		inputQueryInfoEmail:       "1",
+		inputQueryInfoName:        "1",
+		inputInsert:               1,
+		ErrInsert:                 nil,
+		countInsert:               1,
+		countQueryCookie:          1,
+		countQueryInfo:            1,
+		countRollback:             0,
+		countCommit:               1,
+		errRollback:               nil,
+		errCommit:                 nil,
+		outErr:                    "",
+	},
+}
+
+func TestOrmSignupHost(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range OrmSignupHost {
+		mTx.
+			EXPECT().
+			Exec(context.Background(),
+				"INSERT INTO host (client_id) VALUES ($1)",
+				tt.inputInsert).
+			Return(nil, tt.ErrInsert).
+			Times(tt.countInsert)
+		mTx.
+			EXPECT().
+			Exec(context.Background(),
+				"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
+				tt.inputQueryCookieClientId, tt.inputQueryCookieSessionId, tt.inputQueryCookieDateLife, tt.inputQueryCookieCSRFToken,
+			).
+			Return(nil, tt.errQueryCookie).
+			Times(tt.countQueryCookie)
+		mTx.
+			EXPECT().
+			QueryRow(context.Background(),
+				"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+				tt.inputQueryInfoName, tt.inputQueryInfoEmail, tt.inputQueryInfoPhone, gomock.Any(), gomock.Any(),
+			).
+			Return(&tt.resultQueryInfo).
+			Times(tt.countQueryInfo)
+		mTx.
+			EXPECT().
+			Rollback(context.Background()).
+			Return(tt.errRollback).
+			Times(tt.countRollback)
+		mTx.
+			EXPECT().
+			Commit(context.Background()).
+			Return(tt.errCommit).
+			Times(tt.countCommit)
+		m.
+			EXPECT().
+			Begin(context.Background()).
+			Return(mTx, nil)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.SignupHost(tt.inputSignUp, tt.inputCookie)
+			require.NotEqual(t, &utils.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &utils.Defense{}, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
@@ -573,18 +913,20 @@ func TestApplicationLogin(t *testing.T) {
 
 var ApplicationLogout = []struct {
 	testName    string
-	out         *utils.Defense
 	outErr      string
-	input       *utils.Defense
-	inputDelete *utils.Defense
+	out         string
+	input       string
+	inputDelete string
+	resultDelete string
 	errDelete   error
 }{
 	{
-		input:       &utils.Defense{SessionId: "1", CsrfToken: "1"},
-		inputDelete: &utils.Defense{SessionId: "1", CsrfToken: "1"},
 		testName:    "One",
+		out:         "1",
 		outErr:      "",
-		out:         &utils.Defense{},
+		input:       "1",
+		inputDelete: "1",
+		resultDelete: "1",
 		errDelete:   nil,
 	},
 }
@@ -598,10 +940,11 @@ func TestApplicationLogout(t *testing.T) {
 		m.
 			EXPECT().
 			DeleteCookie(tt.inputDelete).
-			Return(tt.errDelete)
+			Return(tt.resultDelete, tt.errDelete)
 		test := Authorization{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			err := test.Logout(tt.input)
+			result, err := test.Logout(tt.input)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
 			} else {

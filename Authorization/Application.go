@@ -67,6 +67,6 @@ func (a *Authorization) Login(login *utils.Authorization) (*utils.Defense, error
 	return cookie, nil
 }
 
-func (a *Authorization) Logout(cookie *utils.Defense) error {
-	return a.DB.DeleteCookie(cookie)
+func (a *Authorization) Logout(CSRF string) (string, error) {
+	return a.DB.DeleteCookie(CSRF)
 }

@@ -278,17 +278,25 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 	return userId, nil
 }
 
-func (db *Wrapper) DeleteCookie(cookie *utils.Defense) error {
-	_, err := db.Conn.Exec(context.Background(),
-		"DELETE FROM cookie WHERE session_id = $1 AND csrf_token = $2",
-		cookie.SessionId, cookie.CsrfToken)
+func (db *Wrapper) DeleteCookie(CSRF string) (string, error) {
+	var sessionId string
+	err := db.Conn.QueryRow(context.Background(),
+		"SELECT session_id FROM cookie WHERE csrf_token = $1",
+		CSRF).Scan(&sessionId)
 	if err != nil {
-		return &errorsConst.Errors{
+		return "", &errorsConst.Errors{
 			Text: errorsConst.ADeleteCookieCookieNotDelete,
 			Time: time.Now(),
 		}
 	}
-	return nil
+	_, err = db.Conn.Exec(context.Background(), "DELETE FROM cookie WHERE csrf_token = $1", CSRF)
+	if err != nil {
+		return "", &errorsConst.Errors{
+			Text: errorsConst.ADeleteCookieCookieNotDelete,
+			Time: time.Now(),
+		}
+	}
+	return sessionId, nil
 }
 
 func (db *Wrapper) AddCookie(cookie *utils.Defense, id int) error {

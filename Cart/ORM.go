@@ -169,12 +169,12 @@ func (db *Wrapper) DeleteCart(id int) error {
 	return nil
 }
 
-func (db *Wrapper) UpdateCartStructureFood(ingredients []Utils.IngredientsCartRequest, clientId int, tx pgx.Tx) ([]Utils.IngredientCartResponse, error) {
+func (db *Wrapper) UpdateCartStructFood(ingredients []Utils.IngredientsCartRequest, clientId int, tx pgx.Tx) ([]Utils.IngredientCartResponse, error) {
 	var result []Utils.IngredientCartResponse
 	for _, ingredient := range ingredients {
 		var checkedIngredient Utils.IngredientCartResponse
 		err := db.Conn.QueryRow(context.Background(),
-			"SELECT id, name, cost FROM structure_dishes WHERE id = $1 ", ingredient.Id).Scan(
+			"SELECT id, name, cost FROM structure_dishes WHERE id = $1", ingredient.Id).Scan(
 			&checkedIngredient.Id, &checkedIngredient.Name, &checkedIngredient.Cost)
 		if err != nil {
 			return nil, &errorsConst.Errors{
@@ -292,7 +292,7 @@ func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*
 				Time: time.Now(),
 			}
 		}
-		cart.Dishes[i].IngredientCart, err = db.UpdateCartStructureFood(dish.Ingredients, clientId, tx)
+		cart.Dishes[i].IngredientCart, err = db.UpdateCartStructFood(dish.Ingredients, clientId, tx)
 		if err != nil {
 			return nil, nil, err
 		}

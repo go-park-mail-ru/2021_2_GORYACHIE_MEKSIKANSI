@@ -197,7 +197,8 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	cookieDB, err := u.Application.Logout(XCsrfToken)
+	var err error
+	cookieDB.SessionId, err = u.Application.Logout(XCsrfToken)
 	errOut, resultOut, codeHTTP := checkError.CheckErrorLogout(err)
 	if errOut != nil {
 		switch errOut.Error() {

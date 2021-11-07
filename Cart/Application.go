@@ -45,6 +45,7 @@ func (c *Cart) GetCart(id int) (*Utils.ResponseCartErrors, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	rest, err := c.DBRestaurant.GetGeneralInfoRestaurant(result.Restaurant.Id)
 	if err != nil {
 		return nil, err
