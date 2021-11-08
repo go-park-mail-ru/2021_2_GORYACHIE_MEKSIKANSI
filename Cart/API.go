@@ -6,15 +6,12 @@ import (
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"encoding/json"
 	"github.com/valyala/fasthttp"
-	"go.uber.org/zap"
 	"net/http"
 )
 
 type InfoCart struct {
-	Application   interfaces.CartApplication
-	LoggerErrWarn *zap.SugaredLogger
-	LoggerInfo    *zap.SugaredLogger
-	LoggerTest    *zap.SugaredLogger
+	Application interfaces.CartApplication
+	Logger      errors.MultiLogger
 }
 
 func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
@@ -25,7 +22,7 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			c.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -36,10 +33,8 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	checkError := &errors.CheckError{
-		LoggerErrWarn: c.LoggerErrWarn,
-		LoggerInfo:    c.LoggerInfo,
-		LoggerTest:    c.LoggerTest,
-		RequestId:     &reqId,
+		Logger:    c.Logger,
+		RequestId: &reqId,
 	}
 
 	idCtx := ctx.UserValue("id")
@@ -49,7 +44,7 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			c.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -83,7 +78,7 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		c.LoggerErrWarn.Errorf("GetCartHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		c.Logger.Errorf("GetCartHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
 		return
 	}
 
@@ -97,7 +92,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			c.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -108,10 +103,8 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	checkError := &errors.CheckError{
-		LoggerErrWarn: c.LoggerErrWarn,
-		LoggerInfo:    c.LoggerInfo,
-		LoggerTest:    c.LoggerTest,
-		RequestId:     &reqId,
+		Logger:    c.Logger,
+		RequestId: &reqId,
 	}
 
 	var cartRequest utils.CartRequest
@@ -119,7 +112,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
-		c.LoggerErrWarn.Errorf("UpdateCartHandler: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
+		c.Logger.Errorf("UpdateCartHandler: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
 		return
 	}
 
@@ -137,7 +130,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			c.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -174,7 +167,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 		if err != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrEncode))
-			c.LoggerErrWarn.Errorf("UpdateCartHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+			c.Logger.Errorf("UpdateCartHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
 			return
 		}
 		return
@@ -187,7 +180,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		c.LoggerErrWarn.Errorf("UpdateCartHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		c.Logger.Errorf("UpdateCartHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
 		return
 	}
 }

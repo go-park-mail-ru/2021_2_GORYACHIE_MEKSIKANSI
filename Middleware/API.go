@@ -5,23 +5,20 @@ import (
 	interfaces "2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"github.com/valyala/fasthttp"
-	"go.uber.org/zap"
 	"math"
 	"net/http"
 	"strconv"
 )
 
 type InfoMiddleware struct {
-	Application   interfaces.MiddlewareApplication
-	LoggerErrWarn *zap.SugaredLogger
-	LoggerInfo    *zap.SugaredLogger
-	LoggerTest    *zap.SugaredLogger
+	Application interfaces.MiddlewareApplication
+	Logger      errors.MultiLogger
 }
 
 func (m *InfoMiddleware) PrintURL(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
 		reqId := utils.RandomInteger(0, math.MaxInt64)
-		m.LoggerInfo.Infof("Method: %s, URL: %s, requestId: %d", string(ctx.Method()), ctx.URI(), reqId)
+		m.Logger.Infof("Method: %s, URL: %s, requestId: %d", string(ctx.Method()), ctx.URI(), reqId)
 		ctx.SetUserValue("reqId", reqId)
 		h(ctx)
 	})
@@ -38,7 +35,7 @@ func (m *InfoMiddleware) GetId(h fasthttp.RequestHandler) fasthttp.RequestHandle
 			if errorConvert != nil {
 				ctx.Response.SetStatusCode(http.StatusInternalServerError)
 				ctx.Response.SetBody([]byte(errors.ErrAtoi))
-				m.LoggerErrWarn.Errorf("Middleware GetId: %s, %v", errors.ErrAtoi, errorConvert)
+				m.Logger.Errorf("Middleware GetId: %s, %v", errors.ErrAtoi, errorConvert)
 				return
 			}
 		case int:
@@ -51,10 +48,8 @@ func (m *InfoMiddleware) GetId(h fasthttp.RequestHandler) fasthttp.RequestHandle
 		ctx.SetUserValue("reqId", reqId)
 
 		checkError := &errors.CheckError{
-			LoggerErrWarn: m.LoggerErrWarn,
-			LoggerInfo:    m.LoggerInfo,
-			LoggerTest:    m.LoggerTest,
-			RequestId:     &reqId,
+			Logger:    m.Logger,
+			RequestId: &reqId,
 		}
 
 		cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
@@ -91,7 +86,7 @@ func (m *InfoMiddleware) Check(h fasthttp.RequestHandler) fasthttp.RequestHandle
 			if errorConvert != nil {
 				ctx.Response.SetStatusCode(http.StatusInternalServerError)
 				ctx.Response.SetBody([]byte(errors.ErrAtoi))
-				m.LoggerErrWarn.Errorf("Middleware Check: %s, %v", errors.ErrAtoi, errorConvert)
+				m.Logger.Errorf("Middleware Check: %s, %v", errors.ErrAtoi, errorConvert)
 				return
 			}
 		case int:
@@ -104,10 +99,8 @@ func (m *InfoMiddleware) Check(h fasthttp.RequestHandler) fasthttp.RequestHandle
 		ctx.SetUserValue("reqId", reqId)
 
 		checkError := &errors.CheckError{
-			LoggerErrWarn: m.LoggerErrWarn,
-			LoggerInfo:    m.LoggerInfo,
-			LoggerTest:    m.LoggerTest,
-			RequestId:     &reqId,
+			Logger:    m.Logger,
+			RequestId: &reqId,
 		}
 
 		cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}

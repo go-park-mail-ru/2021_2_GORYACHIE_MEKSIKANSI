@@ -7,15 +7,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/valyala/fasthttp"
-	"go.uber.org/zap"
 	"net/http"
 )
 
 type InfoRestaurant struct {
-	Application   interfaces.RestaurantApplication
-	LoggerErrWarn *zap.SugaredLogger
-	LoggerInfo    *zap.SugaredLogger
-	LoggerTest    *zap.SugaredLogger
+	Application interfaces.RestaurantApplication
+	Logger      errors.MultiLogger
 }
 
 func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
@@ -26,7 +23,7 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			r.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			r.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -37,10 +34,8 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	checkError := &errors.CheckError{
-		LoggerErrWarn: r.LoggerErrWarn,
-		LoggerInfo:    r.LoggerInfo,
-		LoggerTest:    r.LoggerTest,
-		RequestId:     &reqId,
+		Logger:    r.Logger,
+		RequestId: &reqId,
 	}
 
 	restaurant, err := r.Application.AllRestaurants()
@@ -82,7 +77,7 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			r.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			r.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -93,10 +88,8 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	checkError := &errors.CheckError{
-		LoggerErrWarn: r.LoggerErrWarn,
-		LoggerInfo:    r.LoggerInfo,
-		LoggerTest:    r.LoggerTest,
-		RequestId:     &reqId,
+		Logger:    r.Logger,
+		RequestId: &reqId,
 	}
 
 	idCtx := ctx.UserValue("idRes")
@@ -106,7 +99,7 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			r.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			r.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -156,7 +149,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			r.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			r.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -167,10 +160,8 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	checkError := &errors.CheckError{
-		LoggerErrWarn: r.LoggerErrWarn,
-		LoggerInfo:    r.LoggerInfo,
-		LoggerTest:    r.LoggerTest,
-		RequestId:     &reqId,
+		Logger:    r.Logger,
+		RequestId: &reqId,
 	}
 
 	idCtx := ctx.UserValue("idRes")
@@ -180,7 +171,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			r.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			r.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -197,7 +188,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			r.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			r.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:

@@ -4,7 +4,7 @@ import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
 	cart "2021_2_GORYACHIE_MEKSIKANSI/Cart"
 	config "2021_2_GORYACHIE_MEKSIKANSI/Configs"
-	interfaces "2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
+	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	profile "2021_2_GORYACHIE_MEKSIKANSI/Profile"
 	restaurant "2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
@@ -17,47 +17,26 @@ import (
 )
 
 func runServer(port string) {
-	loggerErrWarn := utils.NewLogger("./loggErrWarn.txt")
-	loggerInfo := utils.NewLogger("./loggInfo.txt")
-	loggerTest := utils.NewLogger("./loggTest.txt")
+	var logger utils.Logger
+	logger.Log = utils.NewLogger("./logs.txt")
 
-	defer func(loggerErrWarn *zap.SugaredLogger) {
+	defer func(loggerErrWarn errors.MultiLogger) {
 		errLogger := loggerErrWarn.Sync()
 		if errLogger != nil {
 			zap.S().Errorf("LoggerErrWarn the buffer could not be cleared %v", errLogger)
 			os.Exit(1)
 		}
-	}(loggerErrWarn)
+	}(logger.Log)
 
-	defer func(loggerInfo *zap.SugaredLogger) {
-		errLogger := loggerInfo.Sync()
-		if errLogger != nil {
-			zap.S().Errorf("LoggerInfo the buffer could not be cleared %v", errLogger)
-			os.Exit(1)
-		}
-	}(loggerInfo)
-
-	defer func(loggerTest *zap.SugaredLogger) {
-		errLogger := loggerTest.Sync()
-		if errLogger != nil {
-			zap.S().Errorf("LoggerTest the buffer could not be cleared %v", errLogger)
-			os.Exit(1)
-		}
-	}(loggerTest)
-
-	connectionPostgres, err := utils.CreateDb()
+	connectionPostgres, err := CreateDb()
 	defer connectionPostgres.Close()
 	if err != nil {
-		loggerErrWarn.Errorf("Unable to connect to database: %v", err)
+		logger.Log.Errorf("Unable to connect to database: %v", err)
 		os.Exit(1)
 	}
-	//var userInfo interfaces.AuthorizationAPI
-	//var cartInfo interfaces.CartApi
-	//var profileInfo interfaces.ProfileAPI
-	//var infoMid interfaces.MiddlewareAPI
-	//var restaurantInfo interfaces.RestaurantAPI
 
-	startStructure := setUp(connectionPostgres, loggerErrWarn, loggerInfo, loggerTest)
+	startStructure := setUp(connectionPostgres, logger.Log)
+
 	userInfo := startStructure[0].(auth.UserInfo)
 	cartInfo := startStructure[1].(cart.InfoCart)
 	profileInfo := startStructure[2].(profile.InfoProfile)
@@ -106,76 +85,9 @@ func runServer(port string) {
 
 	err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(printURL))
 	if err != nil {
-		if config.TEST {
-			loggerTest.Errorf("Unable to connect to database: %v", err)
-			os.Exit(1)
-		}
-		loggerErrWarn.Errorf("Listen and server error: %v", err)
+		logger.Log.Errorf("Listen and server error: %v", err)
 		os.Exit(1)
 	}
-}
-
-func setUp(connectionDB interfaces.ConnectionInterface, loggerErrWarn *zap.SugaredLogger, loggerInfo *zap.SugaredLogger,
-	loggerTest *zap.SugaredLogger) []interface{} {
-
-	authWrapper := auth.Wrapper{Conn: connectionDB}
-	authApp := auth.Authorization{DB: &authWrapper}
-	userInfo := auth.UserInfo{
-		Application:   &authApp,
-		LoggerErrWarn: loggerErrWarn,
-		LoggerInfo:    loggerInfo,
-		LoggerTest:    loggerTest,
-	}
-	var _ interfaces.AuthorizationAPI = &userInfo
-
-	profileWrapper := profile.Wrapper{Conn: connectionDB}
-	profileApp := profile.Profile{DB: &profileWrapper}
-	profileInfo := profile.InfoProfile{
-		Application:   &profileApp,
-		LoggerErrWarn: loggerErrWarn,
-		LoggerInfo:    loggerInfo,
-		LoggerTest:    loggerTest,
-	}
-	var _ interfaces.ProfileAPI = &profileInfo
-
-	midWrapper := mid.Wrapper{Conn: connectionDB}
-	midApp := mid.Middleware{DB: &midWrapper}
-	infoMiddleware := mid.InfoMiddleware{
-		Application:   &midApp,
-		LoggerErrWarn: loggerErrWarn,
-		LoggerInfo:    loggerInfo,
-		LoggerTest:    loggerTest,
-	}
-	var _ interfaces.MiddlewareAPI = &infoMiddleware
-
-	restWrapper := restaurant.Wrapper{Conn: connectionDB}
-	restApp := restaurant.Restaurant{DB: &restWrapper}
-	restaurantInfo := restaurant.InfoRestaurant{
-		Application:   &restApp,
-		LoggerErrWarn: loggerErrWarn,
-		LoggerInfo:    loggerInfo,
-		LoggerTest:    loggerTest,
-	}
-	var _ interfaces.RestaurantAPI = &restaurantInfo
-
-	cartWrapper := cart.Wrapper{Conn: connectionDB}
-	cartApp := cart.Cart{DB: &cartWrapper, DBRestaurant: &restWrapper}
-	cartInfo := cart.InfoCart{
-		Application:   &cartApp,
-		LoggerErrWarn: loggerErrWarn,
-		LoggerInfo:    loggerInfo,
-		LoggerTest:    loggerTest,
-	}
-	var _ interfaces.CartApi = &cartInfo
-
-	var result []interface{}
-	result = append(result, userInfo)
-	result = append(result, cartInfo)
-	result = append(result, profileInfo)
-	result = append(result, infoMiddleware)
-	result = append(result, restaurantInfo)
-
-	return result
 }
 
 func main() {

@@ -1,37 +1,14 @@
 package Utils
 
 import (
+	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 type Logger struct {
-	Log *zap.SugaredLogger
-}
-
-func (l *Logger) Debugf(template string, args ...interface{}) {
-	l.Debugf(template, args)
-}
-
-func (l *Logger) Infof(template string, args ...interface{}) {
-	l.Infof(template, args)
-}
-
-func (l *Logger) Warnf(template string, args ...interface{}) {
-	l.Warnf(template, args)
-}
-
-func (l *Logger) Errorf(template string, args ...interface{}) {
-	l.Errorf(template, args)
-}
-
-func (l *Logger) Sync() error {
-	err := l.Sync()
-	if err != nil {
-		return err
-	}
-	return nil
+	Log errors.MultiLogger
 }
 
 func NewLogger(filePath string) *zap.SugaredLogger {
@@ -54,6 +31,6 @@ func NewLogger(filePath string) *zap.SugaredLogger {
 
 	core := zapcore.NewCore(encoder, writerSyncer, zapcore.InfoLevel)
 	logger := zap.New(core, zap.AddCaller())
-	sugarLogger := logger.Sugar()
-	return sugarLogger
+	zapLogger := logger.Sugar()
+	return zapLogger
 }

@@ -6,16 +6,13 @@ import (
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"encoding/json"
 	"github.com/valyala/fasthttp"
-	"go.uber.org/zap"
 	"net/http"
 	"time"
 )
 
 type UserInfo struct {
-	Application   interfaces.AuthorizationApplication
-	LoggerErrWarn *zap.SugaredLogger
-	LoggerInfo    *zap.SugaredLogger
-	LoggerTest    *zap.SugaredLogger
+	Application interfaces.AuthorizationApplication
+	Logger      errors.MultiLogger
 }
 
 func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
@@ -26,7 +23,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -37,10 +34,8 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	checkError := &errors.CheckError{
-		LoggerErrWarn: u.LoggerErrWarn,
-		LoggerInfo:    u.LoggerInfo,
-		LoggerTest:    u.LoggerTest,
-		RequestId:     &reqId,
+		Logger:    u.Logger,
+		RequestId: &reqId,
 	}
 
 	var signUpAll utils.RegistrationRequest
@@ -48,7 +43,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
-		u.LoggerErrWarn.Errorf("SignUpHandler: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
+		u.Logger.Errorf("SignUpHandler: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
 		return
 	}
 
@@ -88,7 +83,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		u.LoggerErrWarn.Errorf("SignUpHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		u.Logger.Errorf("SignUpHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
 		return
 	}
 	//ctx.Response.Header.SetContentType("application/json")
@@ -102,7 +97,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -113,10 +108,8 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	checkError := &errors.CheckError{
-		LoggerErrWarn: u.LoggerErrWarn,
-		LoggerInfo:    u.LoggerInfo,
-		LoggerTest:    u.LoggerTest,
-		RequestId:     &intConvert,
+		Logger:    u.Logger,
+		RequestId: &intConvert,
 	}
 
 	var userLogin utils.Authorization
@@ -124,7 +117,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
-		u.LoggerErrWarn.Errorf("LoginHandler: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, intConvert)
+		u.Logger.Errorf("LoginHandler: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, intConvert)
 		return
 	}
 	var cookieHTTP fasthttp.Cookie
@@ -155,7 +148,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		u.LoggerErrWarn.Errorf("LoginHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, intConvert)
+		u.Logger.Errorf("LoginHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, intConvert)
 		return
 	}
 
@@ -169,7 +162,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -180,10 +173,8 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	checkError := &errors.CheckError{
-		LoggerErrWarn: u.LoggerErrWarn,
-		LoggerInfo:    u.LoggerInfo,
-		LoggerTest:    u.LoggerTest,
-		RequestId:     &reqId,
+		Logger:    u.Logger,
+		RequestId: &reqId,
 	}
 
 	var cookieHTTP fasthttp.Cookie
@@ -224,7 +215,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		u.LoggerErrWarn.Errorf("LogoutHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		u.Logger.Errorf("LogoutHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
 		return
 	}
 
@@ -238,7 +229,7 @@ func (u *UserInfo) PayHandler(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -264,7 +255,7 @@ func (u *UserInfo) PayHandler(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		u.LoggerErrWarn.Errorf("PayHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		u.Logger.Errorf("PayHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
 		return
 	}
 }

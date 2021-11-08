@@ -7,16 +7,13 @@ import (
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"encoding/json"
 	"github.com/valyala/fasthttp"
-	"go.uber.org/zap"
 	"net/http"
 	"strconv"
 )
 
 type InfoProfile struct {
-	Application   interfaces.ProfileApplication
-	LoggerErrWarn *zap.SugaredLogger
-	LoggerInfo    *zap.SugaredLogger
-	LoggerTest    *zap.SugaredLogger
+	Application interfaces.ProfileApplication
+	Logger      errors.MultiLogger
 }
 
 func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
@@ -27,7 +24,7 @@ func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -38,10 +35,8 @@ func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	checkError := &errors.CheckError{
-		LoggerErrWarn: u.LoggerErrWarn,
-		LoggerInfo:    u.LoggerInfo,
-		LoggerTest:    u.LoggerTest,
-		RequestId:     &reqId,
+		Logger:    u.Logger,
+		RequestId: &reqId,
 	}
 
 	idCtx := ctx.UserValue("id")
@@ -51,7 +46,7 @@ func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -86,7 +81,7 @@ func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		u.LoggerErrWarn.Errorf("ProfileHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		u.Logger.Errorf("ProfileHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
 		return
 	}
 
@@ -100,7 +95,7 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -111,10 +106,8 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 	}
 
 	checkError := &errors.CheckError{
-		LoggerErrWarn: u.LoggerErrWarn,
-		LoggerInfo:    u.LoggerInfo,
-		LoggerTest:    u.LoggerTest,
-		RequestId:     &reqId,
+		Logger:    u.Logger,
+		RequestId: &reqId,
 	}
 
 	var userName utils.UpdateName
@@ -122,7 +115,7 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
-		u.LoggerErrWarn.Errorf("UpdateUserName: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
+		u.Logger.Errorf("UpdateUserName: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
 		return
 	}
 
@@ -133,7 +126,7 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -173,7 +166,7 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		u.LoggerErrWarn.Errorf("UpdateUserName: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		u.Logger.Errorf("UpdateUserName: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
 		return
 	}
 
@@ -187,7 +180,7 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -198,10 +191,8 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 	}
 
 	checkError := &errors.CheckError{
-		LoggerErrWarn: u.LoggerErrWarn,
-		LoggerInfo:    u.LoggerInfo,
-		LoggerTest:    u.LoggerTest,
-		RequestId:     &reqId,
+		Logger:    u.Logger,
+		RequestId: &reqId,
 	}
 
 	var userEmail utils.UpdateEmail
@@ -209,7 +200,7 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
-		u.LoggerErrWarn.Errorf("UpdateUserEmail: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
+		u.Logger.Errorf("UpdateUserEmail: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
 		return
 	}
 
@@ -220,7 +211,7 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -260,7 +251,7 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		u.LoggerErrWarn.Errorf("UpdateUserEmail: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		u.Logger.Errorf("UpdateUserEmail: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
 		return
 	}
 
@@ -276,7 +267,7 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 		if errorConvert != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("UpdateUserPassword: GetId: %s, %v", errors.ErrAtoi, errorConvert)
+			u.Logger.Errorf("UpdateUserPassword: GetId: %s, %v", errors.ErrAtoi, errorConvert)
 			return
 		}
 	case int:
@@ -287,10 +278,8 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 		return
 	}
 	checkError := &errors.CheckError{
-		LoggerErrWarn: u.LoggerErrWarn,
-		LoggerInfo:    u.LoggerInfo,
-		LoggerTest:    u.LoggerTest,
-		RequestId:     &reqId,
+		Logger:    u.Logger,
+		RequestId: &reqId,
 	}
 
 	userPassword := utils.UpdatePassword{}
@@ -298,7 +287,7 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
-		u.LoggerErrWarn.Errorf("UpdateUserPassword: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
+		u.Logger.Errorf("UpdateUserPassword: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
 		return
 	}
 
@@ -309,7 +298,7 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -349,7 +338,7 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		u.LoggerErrWarn.Errorf("UpdateUserPassword: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		u.Logger.Errorf("UpdateUserPassword: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
 		return
 	}
 
@@ -363,7 +352,7 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -374,10 +363,8 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 	}
 
 	checkError := &errors.CheckError{
-		LoggerErrWarn: u.LoggerErrWarn,
-		LoggerInfo:    u.LoggerInfo,
-		LoggerTest:    u.LoggerTest,
-		RequestId:     &reqId,
+		Logger:    u.Logger,
+		RequestId: &reqId,
 	}
 
 	var userPhone utils.UpdatePhone
@@ -385,7 +372,7 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
-		u.LoggerErrWarn.Errorf("UpdateUserPhone: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
+		u.Logger.Errorf("UpdateUserPhone: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
 		return
 	}
 
@@ -396,7 +383,7 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -436,7 +423,7 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		u.LoggerErrWarn.Errorf("UpdateUserPhone: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		u.Logger.Errorf("UpdateUserPhone: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
 		return
 	}
 
@@ -450,7 +437,7 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -461,10 +448,8 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 	}
 
 	checkError := &errors.CheckError{
-		LoggerErrWarn: u.LoggerErrWarn,
-		LoggerInfo:    u.LoggerInfo,
-		LoggerTest:    u.LoggerTest,
-		RequestId:     &reqId,
+		Logger:    u.Logger,
+		RequestId: &reqId,
 	}
 	headerAvatar, errFile := ctx.FormFile("avatar")
 	if errFile != nil {
@@ -473,13 +458,6 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 	}
 	var userAvatar utils.UpdateAvatar
 	userAvatar.FileHeader = headerAvatar
-	/*	err := json.Unmarshal(ctx.Request.Body(), &userAvatar)
-		if err != nil {
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
-			u.LoggerErrWarn.Errorf("UpdateUserAvatar: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
-			return
-		}*/
 
 	idCtx := ctx.UserValue("id")
 	id, errConvert := utils.InterfaceConvertInt(idCtx)
@@ -488,7 +466,7 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -531,7 +509,7 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		u.LoggerErrWarn.Errorf("UpdateUserAvatar: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		u.Logger.Errorf("UpdateUserAvatar: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
 		return
 	}
 
@@ -545,7 +523,7 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -556,10 +534,8 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 	}
 
 	checkError := &errors.CheckError{
-		LoggerErrWarn: u.LoggerErrWarn,
-		LoggerInfo:    u.LoggerInfo,
-		LoggerTest:    u.LoggerTest,
-		RequestId:     &reqId,
+		Logger:    u.Logger,
+		RequestId: &reqId,
 	}
 
 	var userBirthday utils.UpdateBirthday
@@ -567,7 +543,7 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
-		u.LoggerErrWarn.Errorf("UpdateUserBirthday: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
+		u.Logger.Errorf("UpdateUserBirthday: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
 		return
 	}
 
@@ -578,7 +554,7 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -618,7 +594,7 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		u.LoggerErrWarn.Errorf("UpdateUserBirthday: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		u.Logger.Errorf("UpdateUserBirthday: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
 		return
 	}
 }
@@ -631,7 +607,7 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -642,10 +618,8 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 	}
 
 	checkError := &errors.CheckError{
-		LoggerErrWarn: u.LoggerErrWarn,
-		LoggerInfo:    u.LoggerInfo,
-		LoggerTest:    u.LoggerTest,
-		RequestId:     &reqId,
+		Logger:    u.Logger,
+		RequestId: &reqId,
 	}
 
 	userAddress := utils.UpdateAddress{}
@@ -653,7 +627,7 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
-		u.LoggerErrWarn.Errorf("UpdateUserAddress: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
+		u.Logger.Errorf("UpdateUserAddress: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
 		return
 	}
 
@@ -664,7 +638,7 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 		case errors.ErrAtoi:
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.LoggerErrWarn.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
 			return
 
 		case errors.ErrNotStringAndInt:
@@ -704,7 +678,7 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		u.LoggerErrWarn.Errorf("UpdateUserAddress: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		u.Logger.Errorf("UpdateUserAddress: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
 		return
 	}
 }

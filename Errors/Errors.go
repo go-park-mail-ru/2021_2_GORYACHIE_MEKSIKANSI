@@ -1,9 +1,16 @@
 package Errors
 
 import (
-	"go.uber.org/zap"
 	"time"
 )
+
+type MultiLogger interface {
+	Debugf(template string, args ...interface{})
+	Infof(template string, args ...interface{})
+	Warnf(template string, args ...interface{})
+	Errorf(template string, args ...interface{})
+	Sync() error
+}
 
 type ResultError struct {
 	Status  int    `json:"status"`
@@ -20,10 +27,8 @@ func (e *Errors) Error() string {
 }
 
 type CheckError struct {
-	RequestId     *int
-	LoggerErrWarn *zap.SugaredLogger
-	LoggerInfo    *zap.SugaredLogger
-	LoggerTest    *zap.SugaredLogger
+	RequestId *int
+	Logger    MultiLogger
 }
 
 // Error of server
