@@ -10,7 +10,7 @@ func (c *CheckError) CheckErrorProfile(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case PGetProfileClientClientNotScan, PGetProfileClientBirthdayNotScan, PGetProfileCourierCourierNotScan, PGetProfileHostHostNotScan,
-			PGetRoleByIdClientNotScan, PGetRoleByIdHostNotScan, PGetRoleByIdCourierNotScan:
+			PGetRoleByIdClientNotScan, PGetRoleByIdHostNotScan, PGetRoleByIdCourierNotScan, PGetProfileUnknownRole:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -137,7 +137,7 @@ func (c *CheckError) CheckErrorProfileUpdatePassword(err error) (error, []byte, 
 func (c *CheckError) CheckErrorProfileUpdatePhone(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case PUpdatePhonePhoneNotUpdate:
+		case PUpdatePhonePhoneNotUpdate, PUpdatePhoneIncorrectPhoneFormat:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -183,7 +183,8 @@ func (c *CheckError) CheckErrorProfileUpdatePhone(err error) (error, []byte, int
 func (c *CheckError) CheckErrorProfileUpdateAvatar(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case PUpdateAvatarAvatarNotUpdate:
+		case PUpdateAvatarAvatarNotUpdate, PUpdateAvatarAvatarNotOpen, PUpdateAvatarAvatarNotUpload,
+		PUpdateAvatarFileNameEmpty,PUpdateAvatarFileWithoutExtension:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,

@@ -10,6 +10,7 @@ import (
 	restaurant "2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	cors "github.com/AdhityaRamadhanus/fasthttpcors"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
@@ -35,7 +36,12 @@ func runServer(port string) {
 		os.Exit(1)
 	}
 
-	startStructure := setUp(connectionPostgres, logger.Log)
+	LoadEnv()
+	sess := ConnectAws()
+	uploader := s3manager.NewUploader(sess)
+	nameBucket := GetEnvWithKey("BUCKET_NAME")
+
+	startStructure := setUp(connectionPostgres, logger.Log, uploader, nameBucket)
 
 	userInfo := startStructure[0].(auth.UserInfo)
 	cartInfo := startStructure[1].(cart.InfoCart)

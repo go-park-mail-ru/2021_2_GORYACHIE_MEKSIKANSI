@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
+	"mime/multipart"
 	"testing"
 	"time"
 )
@@ -466,10 +467,13 @@ func TestUpdatePhone(t *testing.T) {
 var OrmUpdateAvatar = []struct {
 	testName         string
 	inputId          int
-	inputAvatar      string
+	inputAvatar      *Utils.UpdateAvatar
 	inputQueryId     int
+	countQuery     int
 	inputQueryAvatar string
 	errQuery         error
+	errUpload         error
+	countUpload         int
 	outErr           string
 }{
 	{
@@ -477,17 +481,21 @@ var OrmUpdateAvatar = []struct {
 		inputQueryId:     1,
 		inputQueryAvatar: "1",
 		errQuery:         nil,
-		outErr:           "",
+		outErr:           errorsConst.PUpdateAvatarAvatarNotOpen,
 		inputId:          1,
-		inputAvatar:      "1",
+		inputAvatar:      &Utils.UpdateAvatar{FileHeader: &multipart.FileHeader{Filename: "name.txt"}}, //TODO: make fill
+		countQuery:      0,
+		errUpload: nil,
+		countUpload: 0,
 	},
 }
 
-func TestUpdateAvatar(t *testing.T) {
+func TestOrmUpdateAvatar(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
+	mUploader := mocks.NewMockUploader(ctrl)
 	for _, tt := range OrmUpdateAvatar {
 		m.
 			EXPECT().
@@ -495,7 +503,13 @@ func TestUpdateAvatar(t *testing.T) {
 				"UPDATE general_user_info SET avatar = $1 WHERE id = $2",
 				tt.inputQueryAvatar, tt.inputQueryId,
 			).
-			Return(nil, tt.errQuery)
+			Return(nil, tt.errQuery).
+			Times(tt.countQuery)
+		mUploader.
+			EXPECT().
+			Upload(gomock.Any()).
+			Return(nil, tt.errUpload).
+			Times(tt.countUpload)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := testUser.UpdateAvatar(tt.inputId, tt.inputAvatar)
@@ -937,28 +951,28 @@ func TestApplicationUpdatePhone(t *testing.T) {
 var ApplicationUpdateAvatar = []struct {
 	testName                   string
 	inputId                    int
-	inputNewAvatar             string
+	inputNewAvatar             *Utils.UpdateAvatar
 	outErr                     string
 	inputUpdateAvatarId        int
-	inputUpdateAvatarNewAvatar string
+	inputUpdateAvatarNewAvatar *Utils.UpdateAvatar
 	errUpdateAvatar            error
 }{
 	{
 		testName:                   "One",
 		inputId:                    1,
-		inputNewAvatar:             "1",
+		inputNewAvatar:             &Utils.UpdateAvatar{},
 		outErr:                     "",
 		inputUpdateAvatarId:        1,
-		inputUpdateAvatarNewAvatar: "1",
+		inputUpdateAvatarNewAvatar: &Utils.UpdateAvatar{},
 		errUpdateAvatar:            nil,
 	},
 	{
 		testName:                   "Two",
 		inputId:                    1,
-		inputNewAvatar:             "1",
+		inputNewAvatar:             &Utils.UpdateAvatar{},
 		outErr:                     "text",
 		inputUpdateAvatarId:        1,
-		inputUpdateAvatarNewAvatar: "1",
+		inputUpdateAvatarNewAvatar: &Utils.UpdateAvatar{},
 		errUpdateAvatar:            errors.New("text"),
 	},
 }

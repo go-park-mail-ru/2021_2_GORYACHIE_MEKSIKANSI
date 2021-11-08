@@ -49,7 +49,10 @@ func (c CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 					Time: time.Now(),
 				},
 				result, http.StatusOK
-		case AGeneralSignUpNotInsert, ASignUpHostHostNotInsert, AAddTransactionCookieNotInsert, ASignUpCourierCourierNotInsert, ASignUpClientClientNotInsert:
+		case AGeneralSignUpNotInsert, ASignUpHostHostNotInsert, AAddTransactionCookieNotInsert,
+		ASignUpCourierCourierNotInsert, ASignUpClientClientNotInsert, ASignupHostTransactionNotCreate,
+		ASignupCourierTransactionNotCreate, ASignupClientTransactionNotCreate, ASignUpUnknownType, ASignUpHostNotCommit,
+			ASignUpCourierNotCommit, ASignUpClientNotCommit:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -95,7 +98,7 @@ func (c *CheckError) CheckErrorLogin(err error) (error, []byte, int) {
 					Time: time.Now(),
 				},
 				result, http.StatusOK
-		case AAddCookieCookieNotInsert, ASaltNotSelect:
+		case AAddCookieCookieNotInsert, ASaltNotSelect, ALoginVoidLogin:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,

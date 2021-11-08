@@ -10,7 +10,8 @@ func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case CGetCartDishesNotFound, CGetCartDishesNotScan, CGetStructFoodRestaurantNotSelect,
-			CGetStructFoodCheckboxNotScan, CGetStructRadiosRadiosNotSelect, CGetStructRadiosRadiosNotScan, CGetStructRadiosStructRadiosNotScan:
+			CGetStructFoodCheckboxNotScan, CGetStructRadiosRadiosNotSelect, CGetStructRadiosRadiosNotScan,
+			CGetStructRadiosStructRadiosNotScan, CGetStructRadiosStructRadiosNotFound:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
@@ -56,9 +57,11 @@ func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 func (c *CheckError) CheckErrorUpdateCart(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case CDeleteCartCartNotDelete, CDeleteCartStructureFoodNotDelete, CDeleteCartRadiosFoodNotDelete, CUpdateCartCartNotInsert,
-			CUpdateCartStructFoodStructureFoodNotInsert, CUpdateCartRadiosRadiosNotInsert, CGetPriceDeliveryPriceNotFound, CGetPriceDeliveryPriceNotScan,
-			CUpdateCartCartNotFound, CUpdateCartCartNotScan, CUpdateCartStructureFoodStructureFoodNotSelect, CUpdateCartStructRadiosStructRadiosNotSelect:
+		case CDeleteCartCartNotDelete, CDeleteCartStructureFoodNotDelete, CDeleteCartRadiosFoodNotDelete,
+		CUpdateCartCartNotInsert, CUpdateCartStructFoodStructureFoodNotInsert, CUpdateCartRadiosRadiosNotInsert,
+		CGetPriceDeliveryPriceNotFound, CGetPriceDeliveryPriceNotScan, CUpdateCartCartNotFound, CUpdateCartCartNotScan,
+		CUpdateCartStructureFoodStructureFoodNotSelect, CUpdateCartStructRadiosStructRadiosNotSelect,
+			CUpdateCartTransactionNotCreate, CUpdateCartNotCommit:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,

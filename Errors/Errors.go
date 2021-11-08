@@ -43,6 +43,7 @@ const (
 	ErrAuth            = "Вы не авторизированы"
 	IntNil             = 0
 	ErrCartNull        = "Ваша корзина пустая"
+	ErrNotSearchAvatar = "Поле avatar не было найдено"
 )
 
 // Error of Authorization
@@ -59,14 +60,14 @@ const (
 	AGeneralSignUpLoginNotUnique       = "Телефон или Email уже зарегистрирован"
 	AGeneralSignUpIncorrectPhoneFormat = "Неверный формат телефона"
 	ALoginNotFound                     = "user not found"
-	ASignupHostTransactionNotCreate    = "transaction not create"     // TODO: add handler
-	ASignupCourierTransactionNotCreate = "transaction not create"     // TODO: add handler
-	ASignupClientTransactionNotCreate  = "transaction not create"     // TODO: add handler
-	ASignUpUnknownType                 = "unknown type of user"       // TODO: add handler
-	ALoginVoidLogin                    = "email and password is void" // TODO: add handler
-	ASignUpHostNotCommit               = "signup host not commit"     // TODO: add handler
-	ASignUpCourierNotCommit            = "signup courier not commit"  // TODO: add handler
-	ASignUpClientNotCommit             = "signup client not commit"   // TODO: add handler
+	ASignupHostTransactionNotCreate    = "transaction host not create"
+	ASignupCourierTransactionNotCreate = "transaction courier not create"
+	ASignupClientTransactionNotCreate  = "transaction client not create"
+	ASignUpUnknownType                 = "unknown type of user"
+	ALoginVoidLogin                    = "email and password is void"
+	ASignUpHostNotCommit               = "signup host not commit"
+	ASignUpCourierNotCommit            = "signup courier not commit"
+	ASignUpClientNotCommit             = "signup client not commit"
 )
 
 // Error of Middleware
@@ -79,15 +80,15 @@ const (
 	MGetIdByCookieCookieNotFound = "cookie not found"
 )
 
-// Error of Utils
+// Error of main
 const (
-	UCreateDBNotConnect         = "db not connect"             // TODO: add handler
-	UCreateDBCreateFileNotFound = "CreateTables.sql not found" // TODO: add handler
-	UCreateDBDeleteFileNotFound = "DeleteTables.sql not found" // TODO: add handler
-	UCreateDBFillFileNotFound   = "Fill.sql not found"         // TODO: add handler
-	UCreateDBNotCreateTables    = "table not create"           // TODO: add handler
-	UCreateDBNotDeleteTables    = "table not delete"           // TODO: add handler
-	UCreateDBNotFillTables      = "table not fill"             // TODO: add handler
+	MCreateDBNotConnect         = "db not connect"             // TODO: add handler
+	MCreateDBCreateFileNotFound = "CreateTables.sql not found" // TODO: add handler
+	MCreateDBDeleteFileNotFound = "DeleteTables.sql not found" // TODO: add handler
+	MCreateDBFillFileNotFound   = "Fill.sql not found"         // TODO: add handler
+	MCreateDBNotCreateTables    = "table not create"           // TODO: add handler
+	MCreateDBNotDeleteTables    = "table not delete"           // TODO: add handler
+	MCreateDBNotFillTables      = "table not fill"             // TODO: add handler
 )
 
 // Error of profile
@@ -109,30 +110,34 @@ const (
 	PUpdateAvatarAvatarNotUpdate     = "avatar not update"
 	PUpdateBirthdayBirthdayNotUpdate = "birthday not update"
 	PUpdateAddressAddressNotUpdate   = "address not update"
-	PGetProfileUnknownRole           = "unknown role of user"     // TODO: add handler
-	PUpdatePhoneIncorrectPhoneFormat = "Неверный формат телефона" // TODO: add handler
+	PGetProfileUnknownRole           = "unknown role of user"
+	PUpdatePhoneIncorrectPhoneFormat = "incorrect format phone"
+	PUpdateAvatarAvatarNotOpen       = "file not open"
+	PUpdateAvatarAvatarNotUpload     = "avatar not send"
+	PUpdateAvatarFileNameEmpty       = "file name is empty"
+	PUpdateAvatarFileWithoutExtension = "file without extension"
 )
 
 // Error of restaurant
 const (
 	RGetRestaurantsRestaurantsNotFound    = "restaurants not found"
 	RGetRestaurantsRestaurantsNotScan     = "restaurants scan error"
-	RGetRestaurantsRestaurantsNotSelect   = "restaurants not select" // TODO: add handler
+	RGetRestaurantsRestaurantsNotSelect   = "restaurants not select"
 	RGetGeneralInfoRestaurantNotFound     = "restaurant not found"
 	RGetTagsCategoryRestaurantNotScan     = "category restaurants scan error"
 	RGetMenuDishesNotSelect               = "dishes not select"
 	RGetDishesRestaurantDishesNotScan     = "dishes not scan"
 	RGetMenuDishesNotFound                = "dishes not found"
-	RGetDishesDishesNotFound              = "dishes not found"    // TODO: add handler
-	RGetDishesDishesNotScan               = "dishes not scan"     // TODO: add handler
-	RGetStructDishesStructDishesNotSelect = "dishes not select"   // TODO: add handler
-	RGetStructDishesStructDishesNotScan   = "dishes not scan"     // TODO: add handler
-	RGetStructRadiosStructRadiosNotSelect = "radios not select"   // TODO: add handler
-	RGetRadiosRadiosNotScan               = "radios not scan"     // TODO: add handler
-	RGetStructRadiosStructRadiosNotFound  = "radios not found"    // TODO: add handler
-	RGetStructRadiosStructRadiosNotScan   = "radios not scan"     // TODO: add handler
-	RGetTagsCategoryNotSelect             = "category not select" // TODO: add handler
-	RGetRadiosRadiosNotSelect             = "radios not select"   // TODO: add handler
+	RGetDishesDishesNotFound              = "dishes not found"
+	RGetDishesDishesNotScan               = "dishes not scan"
+	RGetStructDishesStructDishesNotSelect = "dishes not select"
+	RGetStructDishesStructDishesNotScan   = "dishes not scan"
+	RGetStructRadiosStructRadiosNotSelect = "struct radios not select"
+	RGetRadiosRadiosNotScan               = "radios not scan"
+	RGetStructRadiosStructRadiosNotFound  = "radios not found"
+	RGetStructRadiosStructRadiosNotScan   = "structure radios not scan"
+	RGetTagsCategoryNotSelect             = "category not select"
+	RGetRadiosRadiosNotSelect             = "radios not select"
 	RGetTagsTagsNotFound                  = "tags not found"
 )
 
@@ -144,7 +149,7 @@ const (
 	CGetStructFoodCheckboxNotScan                  = "checkbox not scan"
 	CGetStructRadiosRadiosNotSelect                = "radios not select"
 	CGetStructRadiosRadiosNotScan                  = "radios not scan"
-	CGetStructRadiosStructRadiosNotFound           = "struct radios not found" // TODO: add handler
+	CGetStructRadiosStructRadiosNotFound           = "struct radios not found"
 	CGetStructRadiosStructRadiosNotScan            = "struct radios not scan"
 	CDeleteCartCartNotDelete                       = "cart not delete"
 	CDeleteCartStructureFoodNotDelete              = "food not delete"
@@ -158,6 +163,6 @@ const (
 	CUpdateCartCartNotScan                         = "cart not scan"
 	CUpdateCartStructureFoodStructureFoodNotSelect = "structure dishes not select"
 	CUpdateCartStructRadiosStructRadiosNotSelect   = "structure radios not select"
-	CUpdateCartTransactionNotCreate                = "transaction not create" // TODO: add handler
-	CUpdateCartNotCommit                           = "update cart not commit" // TODO: add handler
+	CUpdateCartTransactionNotCreate                = "transaction not create"
+	CUpdateCartNotCommit                           = "update cart not commit"
 )

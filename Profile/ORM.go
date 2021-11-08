@@ -4,8 +4,11 @@ import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
-	prof "2021_2_GORYACHIE_MEKSIKANSI/Utils"
+	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -13,6 +16,8 @@ import (
 
 type Wrapper struct {
 	Conn Interfaces.ConnectionInterface
+	Uploader Interfaces.Uploader
+	NameBucket string
 }
 
 func (db *Wrapper) GetRoleById(id int) (string, error) {
@@ -57,8 +62,8 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 	return "", nil
 }
 
-func (db *Wrapper) GetProfileHost(id int) (*prof.Profile, error) {
-	var profile = prof.Profile{}
+func (db *Wrapper) GetProfileHost(id int) (*utils.Profile, error) {
+	var profile = utils.Profile{}
 	err := db.Conn.QueryRow(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
@@ -72,8 +77,8 @@ func (db *Wrapper) GetProfileHost(id int) (*prof.Profile, error) {
 	return &profile, err
 }
 
-func (db *Wrapper) GetProfileClient(id int) (*prof.Profile, error) {
-	var profile = prof.Profile{}
+func (db *Wrapper) GetProfileClient(id int) (*utils.Profile, error) {
+	var profile = utils.Profile{}
 	err := db.Conn.QueryRow(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
@@ -98,8 +103,8 @@ func (db *Wrapper) GetProfileClient(id int) (*prof.Profile, error) {
 	return &profile, nil
 }
 
-func (db *Wrapper) GetProfileCourier(id int) (*prof.Profile, error) {
-	var profile = prof.Profile{}
+func (db *Wrapper) GetProfileCourier(id int) (*utils.Profile, error) {
+	var profile = utils.Profile{}
 	err := db.Conn.QueryRow(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
@@ -163,7 +168,7 @@ func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
 
 	_, err = db.Conn.Exec(context.Background(),
 		"UPDATE general_user_info SET password = $1 WHERE id = $2",
-		prof.HashPassword(newPassword, salt), id)
+		utils.HashPassword(newPassword, salt), id)
 	if err != nil {
 		return &errorsConst.Errors{
 			Text: errorsConst.PUpdatePasswordPasswordNotUpdate,
@@ -202,10 +207,52 @@ func (db *Wrapper) UpdatePhone(id int, newPhone string) error {
 	return nil
 }
 
-func (db *Wrapper) UpdateAvatar(id int, newAvatar string) error {
-	_, err := db.Conn.Exec(context.Background(),
+func (db *Wrapper) UpdateAvatar(id int, newAvatar *Utils.UpdateAvatar) error {
+	header := newAvatar.FileHeader
+	if header.Filename == "" {
+		return &errorsConst.Errors{
+			Text: errorsConst.PUpdateAvatarFileNameEmpty,
+			Time: time.Now(),
+		}
+	}
+	startExtension := strings.LastIndex(header.Filename, ".")
+	if startExtension == -1 {
+		return &errorsConst.Errors{
+			Text: errorsConst.PUpdateAvatarFileWithoutExtension,
+			Time: time.Now(),
+		}
+	}
+	extensionFile := header.Filename[startExtension:]
+
+	fileName := strconv.Itoa(utils.RandomInteger(0, math.MaxInt64))
+
+	fileResult := "/user/" + fileName + extensionFile
+	file, errTet := header.Open()
+	if errTet != nil {
+		return &errorsConst.Errors{
+			Text: errorsConst.PUpdateAvatarAvatarNotOpen,
+			Time: time.Now(),
+		}
+	}
+
+	_, err := db.Uploader.Upload(&s3manager.UploadInput{
+		Bucket: aws.String(db.NameBucket),
+		ACL:    aws.String("public-read"),
+		Key:    aws.String(fileResult),
+		Body:   file,
+	})
+	if err != nil {
+		return &errorsConst.Errors{
+			Text: errorsConst.PUpdateAvatarAvatarNotUpload,
+			Time: time.Now(),
+		}
+	}
+
+	newAvatar.Avatar = fileResult
+
+	_, err = db.Conn.Exec(context.Background(),
 		"UPDATE general_user_info SET avatar = $1 WHERE id = $2",
-		newAvatar, id)
+		newAvatar.Avatar, id)
 	if err != nil {
 		return &errorsConst.Errors{
 			Text: errorsConst.PUpdateAvatarAvatarNotUpdate,

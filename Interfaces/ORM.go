@@ -3,6 +3,7 @@ package Interfaces
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"time"
@@ -50,7 +51,7 @@ type WrapperProfile interface {
 	UpdateEmail(id int, newEmail string) error
 	UpdatePassword(id int, newPassword string) error
 	UpdatePhone(id int, newPhone string) error
-	UpdateAvatar(id int, newAvatar string) error
+	UpdateAvatar(id int, newAvatar *Utils.UpdateAvatar) error
 	UpdateBirthday(id int, newBirthday time.Time) error
 	UpdateAddress(id int, newAddress Utils.AddressCoordinates) error
 }
@@ -83,4 +84,7 @@ type WrapperMiddleware interface {
 	CheckAccess(cookie *Utils.Defense) (bool, error)
 	NewCSRF(cookie *Utils.Defense) (string, error)
 	GetIdByCookie(cookie *Utils.Defense) (int, error)
+}
+type Uploader interface {
+	Upload(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
 }

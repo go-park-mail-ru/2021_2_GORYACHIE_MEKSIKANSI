@@ -453,7 +453,8 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 	}
 	headerAvatar, errFile := ctx.FormFile("avatar")
 	if errFile != nil {
-		println("Всё плохо с file")
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errors.ErrNotSearchAvatar))
 		return
 	}
 	var userAvatar utils.UpdateAvatar

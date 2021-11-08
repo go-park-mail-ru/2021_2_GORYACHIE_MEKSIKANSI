@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS general_user_info
     salt varchar(5) NOT NULL,
     phone varchar(15) UNIQUE NOT NULL,
     email text UNIQUE,
-    avatar text DEFAULT '/uploads/',
+    avatar text DEFAULT '/default/defaultUser.jpg',
     date_registration timestamp DEFAULT NOW() NOT NULL,
     deleted boolean DEFAULT false
 );
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS restaurant (
     description text NOT NULL,
     created timestamp DEFAULT NOW() NOT NULL,
     deleted boolean DEFAULT false,
-    avatar text DEFAULT '/uploads/',
+    avatar text DEFAULT '/default/defaultRestaurant.jpg',
     min_price int DEFAULT 0,
     price_delivery int NOT NULL,
     min_delivery_time int,
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS dishes (
     weight int NOT NULL,
     category_dishes text NOT NULL,
     category_restaurant text NOT NULL,
-    avatar text DEFAULT '/uploads/',
+    avatar text DEFAULT '/default/defaultDishes.jpg',
     deleted boolean DEFAULT false NOT NULL
 );
 
