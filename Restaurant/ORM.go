@@ -5,6 +5,7 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
+	"strings"
 	"time"
 )
 
@@ -194,7 +195,8 @@ func GetStructRadios(db *Wrapper, radId int) ([]Utils.CheckboxesRows, error) {
 		var row Utils.CheckboxesRows
 		err := rowDishes.Scan(&row.Id, &row.Name)
 		if err != nil {
-			if err.Error() == "no rows in result set" {
+			errorText := err.Error()
+			if strings.Contains(errorText, "no rows") {
 				return nil, &errorsConst.Errors{
 					Text: errorsConst.RGetStructRadiosStructRadiosNotFound,
 					Time: time.Now(),
@@ -217,7 +219,8 @@ func (db *Wrapper) GetDishes(restId int, dishesId int) (*Utils.Dishes, error) {
 		dishesId, restId).Scan(
 		&dishes.Id, &dishes.Img, &dishes.Title, &dishes.Cost, &dishes.Ccal, &dishes.Description)
 	if err != nil {
-		if err.Error() == "no rows in result set" {
+		errorText := err.Error()
+		if strings.Contains(errorText, "no rows") {
 			return nil, &errorsConst.Errors{
 				Text: errorsConst.RGetDishesDishesNotFound,
 				Time: time.Now(),

@@ -466,15 +466,20 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 		LoggerTest:    u.LoggerTest,
 		RequestId:     &reqId,
 	}
-
+	headerAvatar, errFile := ctx.FormFile("avatar")
+	if errFile != nil {
+		println("Всё плохо с file")
+		return
+	}
 	var userAvatar utils.UpdateAvatar
-	err := json.Unmarshal(ctx.Request.Body(), &userAvatar)
+	userAvatar.FileHeader = headerAvatar
+/*	err := json.Unmarshal(ctx.Request.Body(), &userAvatar)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
 		u.LoggerErrWarn.Errorf("UpdateUserAvatar: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
 		return
-	}
+	}*/
 
 	idCtx := ctx.UserValue("id")
 	id, errConvert := utils.InterfaceConvertInt(idCtx)
@@ -501,7 +506,7 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 	}
 	ctx.Response.Header.Set("X-CSRF-Token", XCsrfToken)
 
-	err = u.Application.UpdateAvatar(id, userAvatar.Avatar)
+	err := u.Application.UpdateAvatar(id, &userAvatar)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorProfileUpdateAvatar(err)
 	if errOut != nil {
 		switch errOut.Error() {
@@ -517,8 +522,11 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 	}
 
 	ctx.Response.SetStatusCode(http.StatusOK)
-	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
-		StatusHTTP: http.StatusOK,
+	err = json.NewEncoder(ctx).Encode(&utils.Result{
+		Status: http.StatusOK,
+		Body: &utils.UpdateAvatarRequest{
+			PathImg: userAvatar.Avatar,
+		},
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
@@ -614,6 +622,7 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 		return
 	}
 }
+
 func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
 	reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)

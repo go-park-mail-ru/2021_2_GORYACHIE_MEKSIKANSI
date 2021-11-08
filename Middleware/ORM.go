@@ -5,6 +5,7 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
+	"strings"
 	"time"
 )
 
@@ -19,7 +20,8 @@ func (db *Wrapper) CheckAccess(cookie *utils.Defense) (bool, error) {
 		"SELECT client_id, date_life FROM cookie WHERE session_id = $1 AND csrf_token = $2",
 		cookie.SessionId, cookie.CsrfToken).Scan(&id, &timeLiveCookie)
 	if err != nil {
-		if err.Error() == "no rows in result set" {
+		errorText := err.Error()
+		if strings.Contains(errorText, "no rows") {
 			return false, &errorsConst.Errors{
 				Text: errorsConst.MCheckAccessCookieNotFound,
 				Time: time.Now(),
@@ -60,7 +62,8 @@ func (db *Wrapper) GetIdByCookie(cookie *utils.Defense) (int, error) {
 		"SELECT client_id, date_life FROM cookie WHERE session_id = $1",
 		cookie.SessionId).Scan(&id, &timeLiveCookie)
 	if err != nil {
-		if err.Error() == "no rows in result set" {
+		errorText := err.Error()
+		if strings.Contains(errorText, "no rows") {
 			return 0, &errorsConst.Errors{
 				Text: errorsConst.MGetIdByCookieCookieNotFound,
 				Time: time.Now(),

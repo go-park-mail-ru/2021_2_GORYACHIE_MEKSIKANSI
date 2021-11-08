@@ -6,6 +6,7 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
 	"github.com/jackc/pgx/v4"
+	"strings"
 	"time"
 )
 
@@ -64,7 +65,8 @@ func (db *Wrapper) GetStructRadios(id int) ([]Utils.RadiosCartResponse, error) {
 		err = db.Conn.QueryRow(context.Background(),
 			"SELECT name FROM structure_radios WHERE id = $1", radio.Id).Scan(&radio.Name)
 		if err != nil {
-			if err.Error() == "no rows in result set" {
+			errorText := err.Error()
+			if strings.Contains(errorText, "no rows") {
 				return nil, &errorsConst.Errors{
 					Text: errorsConst.CGetStructRadiosStructRadiosNotFound,
 					Time: time.Now(),
@@ -255,7 +257,8 @@ func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*
 			dish.Id, newCart.Restaurant.Id).Scan(
 			&dishes.Id, &dishes.Img, &dishes.Cost, &dishes.Name, &dishes.Description, &count, &dishes.Weight, &dishes.Kilocalorie)
 		if err != nil {
-			if err.Error() == "no rows in result set" {
+			errorText := err.Error()
+			if strings.Contains(errorText, "no rows") {
 				return nil, nil, &errorsConst.Errors{
 					Text: errorsConst.CUpdateCartCartNotFound,
 					Time: time.Now(),
@@ -317,7 +320,8 @@ func (db *Wrapper) GetPriceDelivery(id int) (int, error) {
 	err := db.Conn.QueryRow(context.Background(),
 		"SELECT price_delivery FROM restaurant WHERE id = $1", id).Scan(&price)
 	if err != nil {
-		if err.Error() == "no rows in result set" {
+		errorText := err.Error()
+		if strings.Contains(errorText, "no rows") {
 			return 0, &errorsConst.Errors{
 				Text: errorsConst.CGetPriceDeliveryPriceNotFound,
 				Time: time.Now(),

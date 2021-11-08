@@ -4,7 +4,16 @@ import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
-
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/joho/godotenv"
+	"log"
+	"math"
+	"os"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -71,9 +80,38 @@ func (p *Profile) UpdatePhone(id int, newPhone string) error {
 	return nil
 }
 
-func (p *Profile) UpdateAvatar(id int, newAvatar string) error {
+func (p *Profile) UpdateAvatar(id int, newAvatar *utils.UpdateAvatar) error {
+	LoadEnv()
+	sess := ConnectAws()
+	uploader := s3manager.NewUploader(sess)
+	MyBucket := GetEnvWithKey("BUCKET_NAME")
+	header := newAvatar.FileHeader
+	fileNameTests := strings.Split(header.Filename, ".")
+	n := len(fileNameTests)
+	extensionFile := "." + fileNameTests[n - 1]
+	fileName := strconv.Itoa(utils.RandomInteger(0, math.MaxInt64))
+	fileResult := fileName + extensionFile
 
-	err := p.DB.UpdateAvatar(id, newAvatar)
+	file, errTet := header.Open()
+	if errTet != nil {
+		println("Не открылся file header")
+		return nil
+	}
+
+	up, err := uploader.Upload(&s3manager.UploadInput{
+		Bucket: aws.String(MyBucket),
+		ACL:    aws.String("public-read"),
+		Key:    aws.String(fileResult),
+		Body:   file,
+	})
+	if err != nil {
+		println("Uploader err")
+		println(up)
+	}
+
+	newAvatar.Avatar = "https://img.hmeats.fra1.digitaloceanspaces.com/" + fileResult
+
+	err = p.DB.UpdateAvatar(id, newAvatar.Avatar)
 	if err != nil {
 		return err
 	}
@@ -94,4 +132,36 @@ func (p *Profile) UpdateAddress(id int, newAddress utils.AddressCoordinates) err
 		return err
 	}
 	return nil
+}
+
+func LoadEnv() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+		os.Exit(1)
+	}
+}
+
+func GetEnvWithKey(key string) string {
+	return os.Getenv(key)
+}
+
+func ConnectAws() *session.Session {
+	AccessKeyID := GetEnvWithKey("AWS_ACCESS_KEY_ID")
+	SecretAccessKey := GetEnvWithKey("AWS_SECRET_ACCESS_KEY")
+	MyRegion := GetEnvWithKey("AWS_REGION")
+	sess, err := session.NewSession(
+		&aws.Config{
+			Endpoint: aws.String("fra1.digitaloceanspaces.com"),
+			Region: aws.String(MyRegion),
+			Credentials: credentials.NewStaticCredentials(
+				AccessKeyID,
+				SecretAccessKey,
+				"",
+			),
+		})
+	if err != nil {
+		panic(err)
+	}
+	return sess
 }

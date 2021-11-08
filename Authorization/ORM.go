@@ -7,6 +7,7 @@ import (
 	"context"
 	"github.com/jackc/pgx/v4"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -38,8 +39,9 @@ func (db *Wrapper) GeneralSignUp(signup *utils.RegistrationRequest, transaction 
 
 	if err != nil {
 		errorText := err.Error()
-		if errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_phone_key\" (SQLSTATE 23505)" ||
-			errorText == "0ERROR: duplicate key value violates unique constraint \"general_user_info_email_key\" (SQLSTATE 2355)" {
+		if strings.Contains(errorText, "duplicate key") {
+		//if errorText == "ERROR: duplicate key value violates unique constraint \"general_user_info_phone_key\" (SQLSTATE 23505)" ||
+		//	errorText == "0ERROR: duplicate key value violates unique constraint \"general_user_info_email_key\" (SQLSTATE 2355)" {
 			return 0, &errorsConst.Errors{
 				Text: errorsConst.AGeneralSignUpLoginNotUnique,
 				Time: time.Now(),
@@ -221,7 +223,8 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 		"SELECT salt FROM general_user_info WHERE email = $1",
 		email).Scan(&salt)
 	if err != nil {
-		if err.Error() == "no rows in result set" {
+		errorText := err.Error()
+		if strings.Contains(errorText, "no rows") {
 			return 0, &errorsConst.Errors{
 				Text: errorsConst.ALoginNotFound,
 				Time: time.Now(),
@@ -254,7 +257,8 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 		"SELECT salt FROM general_user_info WHERE phone = $1",
 		phone).Scan(&salt)
 	if err != nil {
-		if err.Error() == "no rows in result set" {
+		errorText := err.Error()
+		if strings.Contains(errorText, "no rows") {
 			return 0, &errorsConst.Errors{
 				Text: errorsConst.ALoginNotFound,
 				Time: time.Now(),

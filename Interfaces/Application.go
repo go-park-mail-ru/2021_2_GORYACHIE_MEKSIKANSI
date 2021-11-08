@@ -25,7 +25,7 @@ type ProfileApplication interface {
 	UpdateEmail(id int, newEmail string) error
 	UpdatePassword(id int, newPassword string) error
 	UpdatePhone(id int, newPhone string) error
-	UpdateAvatar(id int, newAvatar string) error
+	UpdateAvatar(id int, newAvatar *utils.UpdateAvatar) error
 	UpdateBirthday(id int, newBirthday time.Time) error
 	UpdateAddress(id int, newAddress utils.AddressCoordinates) error
 }

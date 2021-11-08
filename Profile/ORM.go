@@ -7,6 +7,7 @@ import (
 	prof "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -19,7 +20,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 
 	err := db.Conn.QueryRow(context.Background(),
 		"SELECT id FROM host WHERE client_id = $1", id).Scan(&role)
-	if err != nil && err.Error() != "no rows in result set" {
+	if err != nil && strings.Contains(err.Error(), "no rows") != true {
 		return "", &errorsConst.Errors{
 			Text: errorsConst.PGetRoleByIdHostNotScan,
 			Time: time.Now(),
@@ -31,7 +32,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT id FROM client WHERE client_id = $1", id).Scan(&role)
-	if err != nil && err.Error() != "no rows in result set" {
+	if err != nil && strings.Contains(err.Error(), "no rows") != true {
 		return "", &errorsConst.Errors{
 			Text: errorsConst.PGetRoleByIdClientNotScan,
 			Time: time.Now(),
@@ -43,7 +44,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT id FROM courier WHERE client_id = $1", id).Scan(&role)
-	if err != nil && err.Error() != "no rows in result set" {
+	if err != nil && strings.Contains(err.Error(), "no rows") != true {
 		return "", &errorsConst.Errors{
 			Text: errorsConst.PGetRoleByIdCourierNotScan,
 			Time: time.Now(),

@@ -1,6 +1,9 @@
 package Utils
 
-import "time"
+import (
+	"mime/multipart"
+	"time"
+)
 
 type Profile struct {
 	Name     string    `json:"name"`
@@ -31,7 +34,12 @@ type UpdatePhone struct {
 }
 
 type UpdateAvatar struct {
-	Avatar string `json:"avatar"` // TODO(N): проверить тип
+	Avatar string
+	FileHeader *multipart.FileHeader
+}
+
+type UpdateAvatarRequest struct {
+	PathImg string `json:"img"`
 }
 
 type UpdateBirthday struct {
