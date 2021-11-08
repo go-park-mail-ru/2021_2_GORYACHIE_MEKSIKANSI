@@ -469,11 +469,11 @@ var OrmUpdateAvatar = []struct {
 	inputId          int
 	inputAvatar      *Utils.UpdateAvatar
 	inputQueryId     int
-	countQuery     int
+	countQuery       int
 	inputQueryAvatar string
 	errQuery         error
-	errUpload         error
-	countUpload         int
+	errUpload        error
+	countUpload      int
 	outErr           string
 }{
 	{
@@ -484,9 +484,9 @@ var OrmUpdateAvatar = []struct {
 		outErr:           errorsConst.PUpdateAvatarAvatarNotOpen,
 		inputId:          1,
 		inputAvatar:      &Utils.UpdateAvatar{FileHeader: &multipart.FileHeader{Filename: "name.txt"}}, //TODO: make fill
-		countQuery:      0,
-		errUpload: nil,
-		countUpload: 0,
+		countQuery:       0,
+		errUpload:        nil,
+		countUpload:      0,
 	},
 }
 

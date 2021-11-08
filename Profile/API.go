@@ -36,7 +36,7 @@ func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
 
 	checkError := &errors.CheckError{
 		Logger:    u.Logger,
-		RequestId: &reqId,
+		RequestId: reqId,
 	}
 
 	idCtx := ctx.UserValue("id")
@@ -107,7 +107,7 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 
 	checkError := &errors.CheckError{
 		Logger:    u.Logger,
-		RequestId: &reqId,
+		RequestId: reqId,
 	}
 
 	var userName utils.UpdateName
@@ -192,7 +192,7 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 
 	checkError := &errors.CheckError{
 		Logger:    u.Logger,
-		RequestId: &reqId,
+		RequestId: reqId,
 	}
 
 	var userEmail utils.UpdateEmail
@@ -279,7 +279,7 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 	}
 	checkError := &errors.CheckError{
 		Logger:    u.Logger,
-		RequestId: &reqId,
+		RequestId: reqId,
 	}
 
 	userPassword := utils.UpdatePassword{}
@@ -364,7 +364,7 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 
 	checkError := &errors.CheckError{
 		Logger:    u.Logger,
-		RequestId: &reqId,
+		RequestId: reqId,
 	}
 
 	var userPhone utils.UpdatePhone
@@ -449,7 +449,7 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 
 	checkError := &errors.CheckError{
 		Logger:    u.Logger,
-		RequestId: &reqId,
+		RequestId: reqId,
 	}
 	headerAvatar, errFile := ctx.FormFile("avatar")
 	if errFile != nil {
@@ -536,7 +536,7 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 
 	checkError := &errors.CheckError{
 		Logger:    u.Logger,
-		RequestId: &reqId,
+		RequestId: reqId,
 	}
 
 	var userBirthday utils.UpdateBirthday
@@ -620,7 +620,7 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 
 	checkError := &errors.CheckError{
 		Logger:    u.Logger,
-		RequestId: &reqId,
+		RequestId: reqId,
 	}
 
 	userAddress := utils.UpdateAddress{}

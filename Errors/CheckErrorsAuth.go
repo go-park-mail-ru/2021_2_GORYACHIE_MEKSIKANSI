@@ -16,7 +16,7 @@ func (c CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 				Explain: AGeneralSignUpLoginNotUnique,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
+				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
@@ -24,7 +24,7 @@ func (c CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 					nil, http.StatusInternalServerError
 			}
 			fmt.Printf("Console: %s\n", AGeneralSignUpLoginNotUnique)
-			c.Logger.Warnf("error: %s, requestId: %d", AGeneralSignUpLoginNotUnique, *c.RequestId)
+			c.Logger.Warnf("error: %s, requestId: %d", AGeneralSignUpLoginNotUnique, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -36,36 +36,36 @@ func (c CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 				Explain: AGeneralSignUpIncorrectPhoneFormat,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
+				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Warnf("error: %s, requestId: %d", AGeneralSignUpIncorrectPhoneFormat, *c.RequestId)
+			c.Logger.Warnf("error: %s, requestId: %d", AGeneralSignUpIncorrectPhoneFormat, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
 				},
 				result, http.StatusOK
 		case AGeneralSignUpNotInsert, ASignUpHostHostNotInsert, AAddTransactionCookieNotInsert,
-		ASignUpCourierCourierNotInsert, ASignUpClientClientNotInsert, ASignupHostTransactionNotCreate,
-		ASignupCourierTransactionNotCreate, ASignupClientTransactionNotCreate, ASignUpUnknownType, ASignUpHostNotCommit,
-			ASignUpCourierNotCommit, ASignUpClientNotCommit:
+			ASignUpCourierCourierNotInsert, ASignUpClientClientNotInsert, ASignupHostTransactionNotCreate,
+			ASignupCourierTransactionNotCreate, ASignupClientTransactionNotCreate, ASignUpUnknownType,
+			ASignUpHostNotCommit, ASignUpCourierNotCommit, ASignUpClientNotCommit:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
+				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Errorf("error: %s, requestId: %d", errIn.Error(), *c.RequestId)
+			c.Logger.Errorf("error: %s, requestId: %d", errIn.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -85,14 +85,14 @@ func (c *CheckError) CheckErrorLogin(err error) (error, []byte, int) {
 				Explain: ALoginOrPasswordIncorrect,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
+				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Warnf("error: %s, requestId: %d", err.Error(), *c.RequestId)
+			c.Logger.Warnf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -104,14 +104,14 @@ func (c *CheckError) CheckErrorLogin(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
+				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), *c.RequestId)
+			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -129,14 +129,14 @@ func (c *CheckError) CheckErrorLogout(err error) (error, []byte, int) {
 			Explain: ErrDB,
 		})
 		if errMarshal != nil {
-			c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
+			c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 			return &Errors{
 					Text: ErrMarshal,
 					Time: time.Now(),
 				},
 				nil, http.StatusInternalServerError
 		}
-		c.Logger.Errorf("error: %s, requestId: %d", ADeleteCookieCookieNotDelete, *c.RequestId)
+		c.Logger.Errorf("error: %s, requestId: %d", ADeleteCookieCookieNotDelete, c.RequestId)
 		return &Errors{
 				Text: ErrCheck,
 				Time: time.Now(),

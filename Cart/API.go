@@ -34,7 +34,7 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 
 	checkError := &errors.CheckError{
 		Logger:    c.Logger,
-		RequestId: &reqId,
+		RequestId: reqId,
 	}
 
 	idCtx := ctx.UserValue("id")
@@ -104,7 +104,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 
 	checkError := &errors.CheckError{
 		Logger:    c.Logger,
-		RequestId: &reqId,
+		RequestId: reqId,
 	}
 
 	var cartRequest utils.CartRequest

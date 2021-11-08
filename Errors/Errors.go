@@ -27,19 +27,19 @@ func (e *Errors) Error() string {
 }
 
 type CheckError struct {
-	RequestId *int
+	RequestId int
 	Logger    MultiLogger
 }
 
 // Error of server
 const (
-	ErrDB              = "ERROR: database is not responding"
-	ErrEncode          = "ERROR: Encode"
-	ErrAtoi            = "ERROR: func Atoi convert string in int"
-	ErrNotStringAndInt = "ERROR: expected type string or int"
-	ErrMarshal         = "ERROR: marshaling in json"
-	ErrCheck           = "ERROR: err check"
-	ErrUnmarshal       = "ERROR: unmarshal json"
+	ErrDB              = "database is not responding"
+	ErrEncode          = "Encode"
+	ErrAtoi            = "func Atoi convert string in int"
+	ErrNotStringAndInt = "expected type string or int"
+	ErrMarshal         = "marshaling in json"
+	ErrCheck           = "err check"
+	ErrUnmarshal       = "unmarshal json"
 	ErrAuth            = "Вы не авторизированы"
 	IntNil             = 0
 	ErrCartNull        = "Ваша корзина пустая"
@@ -82,39 +82,39 @@ const (
 
 // Error of main
 const (
-	MCreateDBNotConnect         = "db not connect"             // TODO: add handler
-	MCreateDBCreateFileNotFound = "CreateTables.sql not found" // TODO: add handler
-	MCreateDBDeleteFileNotFound = "DeleteTables.sql not found" // TODO: add handler
-	MCreateDBFillFileNotFound   = "Fill.sql not found"         // TODO: add handler
-	MCreateDBNotCreateTables    = "table not create"           // TODO: add handler
-	MCreateDBNotDeleteTables    = "table not delete"           // TODO: add handler
-	MCreateDBNotFillTables      = "table not fill"             // TODO: add handler
+	MCreateDBNotConnect         = "db not connect"
+	MCreateDBCreateFileNotFound = "CreateTables.sql not found"
+	MCreateDBDeleteFileNotFound = "DeleteTables.sql not found"
+	MCreateDBFillFileNotFound   = "Fill.sql not found"
+	MCreateDBNotCreateTables    = "table not create"
+	MCreateDBNotDeleteTables    = "table not delete"
+	MCreateDBNotFillTables      = "table not fill"
 )
 
 // Error of profile
 const (
-	PGetRoleByIdClientNotScan        = "check user on client not scan"
-	PGetRoleByIdHostNotScan          = "check user on host not scan"
-	PGetRoleByIdCourierNotScan       = "check user on courier not scan"
-	PGetProfileHostHostNotScan       = "get profile host not scan"
-	PGetProfileClientClientNotScan   = "get profile client not scan"
-	PGetProfileCourierCourierNotScan = "get profile courier not scan"
-	PGetProfileClientBirthdayNotScan = "birthday not scan"
-	PUpdateNameNameNotUpdate         = "name not update"
-	PUpdateEmailEmailNotUpdate       = "email not update"
-	PUpdateEmailEmailRepeat          = "email already exist"
-	PUpdatePhonePhoneNotUpdate       = "phone not update"
-	PUpdatePhonePhoneRepeat          = "phone already exist"
-	PUpdatePasswordSaltNotSelect     = "salt not found"
-	PUpdatePasswordPasswordNotUpdate = "password not update"
-	PUpdateAvatarAvatarNotUpdate     = "avatar not update"
-	PUpdateBirthdayBirthdayNotUpdate = "birthday not update"
-	PUpdateAddressAddressNotUpdate   = "address not update"
-	PGetProfileUnknownRole           = "unknown role of user"
-	PUpdatePhoneIncorrectPhoneFormat = "incorrect format phone"
-	PUpdateAvatarAvatarNotOpen       = "file not open"
-	PUpdateAvatarAvatarNotUpload     = "avatar not send"
-	PUpdateAvatarFileNameEmpty       = "file name is empty"
+	PGetRoleByIdClientNotScan         = "check user on client not scan"
+	PGetRoleByIdHostNotScan           = "check user on host not scan"
+	PGetRoleByIdCourierNotScan        = "check user on courier not scan"
+	PGetProfileHostHostNotScan        = "get profile host not scan"
+	PGetProfileClientClientNotScan    = "get profile client not scan"
+	PGetProfileCourierCourierNotScan  = "get profile courier not scan"
+	PGetProfileClientBirthdayNotScan  = "birthday not scan"
+	PUpdateNameNameNotUpdate          = "name not update"
+	PUpdateEmailEmailNotUpdate        = "email not update"
+	PUpdateEmailEmailRepeat           = "email already exist"
+	PUpdatePhonePhoneNotUpdate        = "phone not update"
+	PUpdatePhonePhoneRepeat           = "phone already exist"
+	PUpdatePasswordSaltNotSelect      = "salt not found"
+	PUpdatePasswordPasswordNotUpdate  = "password not update"
+	PUpdateAvatarAvatarNotUpdate      = "avatar not update"
+	PUpdateBirthdayBirthdayNotUpdate  = "birthday not update"
+	PUpdateAddressAddressNotUpdate    = "address not update"
+	PGetProfileUnknownRole            = "unknown role of user"
+	PUpdatePhoneIncorrectPhoneFormat  = "incorrect format phone"
+	PUpdateAvatarAvatarNotOpen        = "file not open"
+	PUpdateAvatarAvatarNotUpload      = "avatar not send"
+	PUpdateAvatarFileNameEmpty        = "file name is empty"
 	PUpdateAvatarFileWithoutExtension = "file without extension"
 )
 

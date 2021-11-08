@@ -35,8 +35,8 @@ func setUp(connectionDB interfaces.ConnectionInterface, logger errors.MultiLogge
 	var _ interfaces.AuthorizationAPI = &userInfo
 
 	profileWrapper := profile.Wrapper{
-		Conn: connectionDB,
-		Uploader: uploader,
+		Conn:       connectionDB,
+		Uploader:   uploader,
 		NameBucket: nameBucket,
 	}
 	profileApp := profile.Profile{DB: &profileWrapper}

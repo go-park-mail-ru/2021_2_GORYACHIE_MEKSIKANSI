@@ -32,7 +32,7 @@ func runServer(port string) {
 	connectionPostgres, err := CreateDb()
 	defer connectionPostgres.Close()
 	if err != nil {
-		logger.Log.Errorf("Unable to connect to database: %v", err)
+		logger.Log.Errorf("Unable to connect to database: %s", err.Error())
 		os.Exit(1)
 	}
 

@@ -15,14 +15,14 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 				Explain: RGetRestaurantsRestaurantsNotFound,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
+				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Warnf("error: %s, requestId: %d", RGetGeneralInfoRestaurantNotFound, *c.RequestId)
+			c.Logger.Warnf("error: %s, requestId: %d", RGetGeneralInfoRestaurantNotFound, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -34,14 +34,14 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
+				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Errorf("error: %s, requestId: %d", RGetRestaurantsRestaurantsNotScan, *c.RequestId)
+			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -62,14 +62,14 @@ func (c *CheckError) CheckErrorRestaurantId(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
+				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), *c.RequestId)
+			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -91,14 +91,14 @@ func (c *CheckError) CheckErrorRestaurantDishes(err error) (error, []byte, int) 
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
+				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), *c.RequestId)
+			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),

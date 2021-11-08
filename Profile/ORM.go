@@ -15,8 +15,8 @@ import (
 )
 
 type Wrapper struct {
-	Conn Interfaces.ConnectionInterface
-	Uploader Interfaces.Uploader
+	Conn       Interfaces.ConnectionInterface
+	Uploader   Interfaces.Uploader
 	NameBucket string
 }
 

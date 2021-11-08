@@ -7,7 +7,6 @@ import (
 	"github.com/valyala/fasthttp"
 	"math"
 	"net/http"
-	"strconv"
 )
 
 type InfoMiddleware struct {
@@ -27,29 +26,26 @@ func (m *InfoMiddleware) PrintURL(h fasthttp.RequestHandler) fasthttp.RequestHan
 func (m *InfoMiddleware) GetId(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
 		reqIdCtx := ctx.UserValue("reqId")
-		var reqId int
-		var errorConvert error
-		switch reqIdCtx.(type) {
-		case string:
-			reqId, errorConvert = strconv.Atoi(reqIdCtx.(string))
-			if errorConvert != nil {
+		reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
+		if errConvert != nil {
+			switch errConvert.Error() {
+			case errors.ErrAtoi:
 				ctx.Response.SetStatusCode(http.StatusInternalServerError)
 				ctx.Response.SetBody([]byte(errors.ErrAtoi))
-				m.Logger.Errorf("Middleware GetId: %s, %v", errors.ErrAtoi, errorConvert)
+				m.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+				return
+
+			case errors.ErrNotStringAndInt:
+				ctx.Response.SetStatusCode(http.StatusInternalServerError)
+				ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
 				return
 			}
-		case int:
-			reqId = reqIdCtx.(int)
-		default:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-			return
 		}
 		ctx.SetUserValue("reqId", reqId)
 
 		checkError := &errors.CheckError{
 			Logger:    m.Logger,
-			RequestId: &reqId,
+			RequestId: reqId,
 		}
 
 		cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
@@ -78,29 +74,26 @@ func (m *InfoMiddleware) GetId(h fasthttp.RequestHandler) fasthttp.RequestHandle
 func (m *InfoMiddleware) Check(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
 		reqIdCtx := ctx.UserValue("reqId")
-		var reqId int
-		var errorConvert error
-		switch reqIdCtx.(type) {
-		case string:
-			reqId, errorConvert = strconv.Atoi(reqIdCtx.(string))
-			if errorConvert != nil {
+		reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
+		if errConvert != nil {
+			switch errConvert.Error() {
+			case errors.ErrAtoi:
 				ctx.Response.SetStatusCode(http.StatusInternalServerError)
 				ctx.Response.SetBody([]byte(errors.ErrAtoi))
-				m.Logger.Errorf("Middleware Check: %s, %v", errors.ErrAtoi, errorConvert)
+				m.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
+				return
+
+			case errors.ErrNotStringAndInt:
+				ctx.Response.SetStatusCode(http.StatusInternalServerError)
+				ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
 				return
 			}
-		case int:
-			reqId = reqIdCtx.(int)
-		default:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-			return
 		}
 		ctx.SetUserValue("reqId", reqId)
 
 		checkError := &errors.CheckError{
 			Logger:    m.Logger,
-			RequestId: &reqId,
+			RequestId: reqId,
 		}
 
 		cookieDB := utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}

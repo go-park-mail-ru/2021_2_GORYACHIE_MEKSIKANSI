@@ -35,7 +35,7 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 
 	checkError := &errors.CheckError{
 		Logger:    r.Logger,
-		RequestId: &reqId,
+		RequestId: reqId,
 	}
 
 	restaurant, err := r.Application.AllRestaurants()
@@ -89,7 +89,7 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 
 	checkError := &errors.CheckError{
 		Logger:    r.Logger,
-		RequestId: &reqId,
+		RequestId: reqId,
 	}
 
 	idCtx := ctx.UserValue("idRes")
@@ -161,7 +161,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 
 	checkError := &errors.CheckError{
 		Logger:    r.Logger,
-		RequestId: &reqId,
+		RequestId: reqId,
 	}
 
 	idCtx := ctx.UserValue("idRes")

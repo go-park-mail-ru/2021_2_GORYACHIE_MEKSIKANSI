@@ -39,59 +39,29 @@ func (p *Profile) GetProfile(id int) (*utils.Profile, error) {
 }
 
 func (p *Profile) UpdateName(id int, newName string) error {
-	err := p.DB.UpdateName(id, newName)
-	if err != nil {
-		return err
-	}
-	return nil
+	return p.DB.UpdateName(id, newName)
 }
 
 func (p *Profile) UpdateEmail(id int, newEmail string) error {
-	err := p.DB.UpdateEmail(id, newEmail)
-	if err != nil {
-		return err
-	}
-	return nil
+	return p.DB.UpdateEmail(id, newEmail)
 }
 
 func (p *Profile) UpdatePassword(id int, newPassword string) error {
-	err := p.DB.UpdatePassword(id, newPassword)
-	if err != nil {
-		return err
-	}
-	return nil
+	return p.DB.UpdatePassword(id, newPassword)
 }
 
 func (p *Profile) UpdatePhone(id int, newPhone string) error {
-	err := p.DB.UpdatePhone(id, newPhone)
-	if err != nil {
-		return err
-	}
-	return nil
+	return p.DB.UpdatePhone(id, newPhone)
 }
 
 func (p *Profile) UpdateAvatar(id int, newAvatar *utils.UpdateAvatar) error {
-	err := p.DB.UpdateAvatar(id, newAvatar)
-	if err != nil {
-		return err
-	}
-	return nil
+	return p.DB.UpdateAvatar(id, newAvatar)
 }
 
 func (p *Profile) UpdateBirthday(id int, newBirthday time.Time) error {
-	err := p.DB.UpdateBirthday(id, newBirthday)
-	if err != nil {
-		return err
-	}
-	return nil
+	return p.DB.UpdateBirthday(id, newBirthday)
 }
 
 func (p *Profile) UpdateAddress(id int, newAddress utils.AddressCoordinates) error {
-	err := p.DB.UpdateAddress(id, newAddress)
-	if err != nil {
-		return err
-	}
-	return nil
+	return p.DB.UpdateAddress(id, newAddress)
 }
-
-

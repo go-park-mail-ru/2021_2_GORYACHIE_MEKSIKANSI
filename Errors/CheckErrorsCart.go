@@ -17,14 +17,14 @@ func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
+				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), *c.RequestId)
+			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -36,14 +36,14 @@ func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 				Explain: ErrCartNull,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
+				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Warnf("error: %s, requestId: %d", err.Error(), *c.RequestId)
+			c.Logger.Warnf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
@@ -58,23 +58,23 @@ func (c *CheckError) CheckErrorUpdateCart(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case CDeleteCartCartNotDelete, CDeleteCartStructureFoodNotDelete, CDeleteCartRadiosFoodNotDelete,
-		CUpdateCartCartNotInsert, CUpdateCartStructFoodStructureFoodNotInsert, CUpdateCartRadiosRadiosNotInsert,
-		CGetPriceDeliveryPriceNotFound, CGetPriceDeliveryPriceNotScan, CUpdateCartCartNotFound, CUpdateCartCartNotScan,
-		CUpdateCartStructureFoodStructureFoodNotSelect, CUpdateCartStructRadiosStructRadiosNotSelect,
-			CUpdateCartTransactionNotCreate, CUpdateCartNotCommit:
+			CUpdateCartCartNotInsert, CUpdateCartStructFoodStructureFoodNotInsert, CUpdateCartRadiosRadiosNotInsert,
+			CGetPriceDeliveryPriceNotFound, CGetPriceDeliveryPriceNotScan, CUpdateCartCartNotFound,
+			CUpdateCartCartNotScan, CUpdateCartStructureFoodStructureFoodNotSelect,
+			CUpdateCartStructRadiosStructRadiosNotSelect, CUpdateCartTransactionNotCreate, CUpdateCartNotCommit:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, *c.RequestId)
+				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
 						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), *c.RequestId)
+			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 					Time: time.Now(),
