@@ -72,12 +72,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusCreated,
 		Body: &utils.RegistrationResponse{
-			User: &utils.User{
-				TypeUser: signUpAll.TypeUser,
-				Name:     signUpAll.Name,
-				Email:    signUpAll.Email,
-				Phone:    signUpAll.Phone,
-			},
+			User: utils.UserConvertRegistration(&signUpAll),
 		},
 	})
 	if err != nil {

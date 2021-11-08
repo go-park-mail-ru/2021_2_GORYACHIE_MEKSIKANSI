@@ -29,3 +29,13 @@ type Result struct {
 	Status int         `json:"status"`
 	Body   interface{} `json:"body,omitempty"`
 }
+
+func UserConvertRegistration(signUpAll *RegistrationRequest) *User {
+	user := User{
+		TypeUser: signUpAll.TypeUser,
+		Name:     signUpAll.Name,
+		Email:    signUpAll.Email,
+		Phone:    signUpAll.Phone,
+	}
+	return &user
+}
