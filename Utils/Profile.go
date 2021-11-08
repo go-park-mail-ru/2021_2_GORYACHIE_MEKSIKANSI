@@ -34,7 +34,7 @@ type UpdatePhone struct {
 }
 
 type UpdateAvatar struct {
-	Avatar string
+	Avatar     string
 	FileHeader *multipart.FileHeader
 }
 

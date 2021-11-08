@@ -128,9 +128,9 @@ var OrmGetProfileHost = []struct {
 		rowsQuery:  Row{row: []interface{}{"1", "1", "1", "1"}},
 		inputQuery: 1,
 		errQuery:   nil,
-		out:        &Utils.Profile{Name: "1", Email: "1", Phone: "1", Avatar: "1",
+		out: &Utils.Profile{Name: "1", Email: "1", Phone: "1", Avatar: "1",
 			Birthday: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)},
-		outErr:     errorsConst.RGetGeneralInfoRestaurantNotFound,
+		outErr: errorsConst.RGetGeneralInfoRestaurantNotFound,
 	},
 }
 
@@ -177,9 +177,9 @@ var OrmGetProfileCourier = []struct {
 		rowsQuery:  Row{row: []interface{}{"1", "1", "1", "1"}},
 		inputQuery: 1,
 		errQuery:   nil,
-		out:        &Utils.Profile{Name: "1", Email: "1", Phone: "1", Avatar: "1",
+		out: &Utils.Profile{Name: "1", Email: "1", Phone: "1", Avatar: "1",
 			Birthday: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)},
-		outErr:     errorsConst.RGetGeneralInfoRestaurantNotFound,
+		outErr: errorsConst.RGetGeneralInfoRestaurantNotFound,
 	},
 }
 
@@ -224,12 +224,12 @@ var OrmGetProfileClient = []struct {
 	countQueryBirthday           int
 }{
 	{
-		testName:           "One",
-		input:              1,
-		rowsQuery:          Row{row: []interface{}{"1", "1", "1", "1"}},
-		inputQuery:         1,
-		errQuery:           nil,
-		out:                &Utils.Profile{Name: "1", Email: "1", Phone: "1", Avatar: "1",
+		testName:   "One",
+		input:      1,
+		rowsQuery:  Row{row: []interface{}{"1", "1", "1", "1"}},
+		inputQuery: 1,
+		errQuery:   nil,
+		out: &Utils.Profile{Name: "1", Email: "1", Phone: "1", Avatar: "1",
 			Birthday: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)},
 		outErr:             errorsConst.RGetGeneralInfoRestaurantNotFound,
 		inputQueryBirthday: 1,
@@ -626,9 +626,9 @@ var ApplicationGetProfile = []struct {
 	countGetProfileHost     int
 }{
 	{
-		testName:                "One",
-		input:                   1,
-		out:                     &Utils.Profile{Name: "", Email: "", Phone: "", Avatar: "",
+		testName: "One",
+		input:    1,
+		out: &Utils.Profile{Name: "", Email: "", Phone: "", Avatar: "",
 			Birthday: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)},
 		outErr:                  "",
 		inputGetRoleById:        1,

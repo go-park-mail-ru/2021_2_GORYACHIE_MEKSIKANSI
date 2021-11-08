@@ -473,13 +473,13 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 	}
 	var userAvatar utils.UpdateAvatar
 	userAvatar.FileHeader = headerAvatar
-/*	err := json.Unmarshal(ctx.Request.Body(), &userAvatar)
-	if err != nil {
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
-		u.LoggerErrWarn.Errorf("UpdateUserAvatar: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
-		return
-	}*/
+	/*	err := json.Unmarshal(ctx.Request.Body(), &userAvatar)
+		if err != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
+			u.LoggerErrWarn.Errorf("UpdateUserAvatar: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
+			return
+		}*/
 
 	idCtx := ctx.UserValue("id")
 	id, errConvert := utils.InterfaceConvertInt(idCtx)

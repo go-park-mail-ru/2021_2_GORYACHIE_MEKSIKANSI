@@ -85,10 +85,11 @@ func (p *Profile) UpdateAvatar(id int, newAvatar *utils.UpdateAvatar) error {
 	sess := ConnectAws()
 	uploader := s3manager.NewUploader(sess)
 	MyBucket := GetEnvWithKey("BUCKET_NAME")
+
 	header := newAvatar.FileHeader
 	fileNameTests := strings.Split(header.Filename, ".")
 	n := len(fileNameTests)
-	extensionFile := "." + fileNameTests[n - 1]
+	extensionFile := "." + fileNameTests[n-1]
 	fileName := strconv.Itoa(utils.RandomInteger(0, math.MaxInt64))
 	fileResult := fileName + extensionFile
 
@@ -107,9 +108,10 @@ func (p *Profile) UpdateAvatar(id int, newAvatar *utils.UpdateAvatar) error {
 	if err != nil {
 		println("Uploader err")
 		println(up)
+		return nil
 	}
 
-	newAvatar.Avatar = "https://img.hmeats.fra1.digitaloceanspaces.com/" + fileResult
+	newAvatar.Avatar = "https://img.hmeats.fra1.cdn.digitaloceanspaces.com/" + fileResult
 
 	err = p.DB.UpdateAvatar(id, newAvatar.Avatar)
 	if err != nil {
@@ -153,7 +155,7 @@ func ConnectAws() *session.Session {
 	sess, err := session.NewSession(
 		&aws.Config{
 			Endpoint: aws.String("fra1.digitaloceanspaces.com"),
-			Region: aws.String(MyRegion),
+			Region:   aws.String(MyRegion),
 			Credentials: credentials.NewStaticCredentials(
 				AccessKeyID,
 				SecretAccessKey,

@@ -218,9 +218,9 @@ var OrmGetCart = []struct {
 	errQuery    error
 }{
 	{
-		testName:    "One",
-		input:       1,
-		outOne:      &Utils.ResponseCartErrors{Restaurant: Utils.RestaurantIdCastResponse{
+		testName: "One",
+		input:    1,
+		outOne: &Utils.ResponseCartErrors{Restaurant: Utils.RestaurantIdCastResponse{
 			Id: 0, Img: "", Name: "", CostForFreeDelivery: 0, MinDelivery: 0, MaxDelivery: 0, Rating: 0},
 			Dishes: []Utils.DishesCartResponse(nil), Cost: Utils.CostCartResponse{DCost: 0, SumCost: 0},
 			DishErr: []Utils.CastDishesErrs(nil)},
@@ -241,9 +241,9 @@ func TestOrmGetCart(t *testing.T) {
 		m.
 			EXPECT().
 			Query(context.Background(),
-				"SELECT food, count_food, number_item, name, cost, description, " +
-				"avatar, restaurant_id, count, weight, kilocalorie FROM cart JOIN dishes ON cart.food = dishes.id " +
-				"WHERE client_id = $1",
+				"SELECT food, count_food, number_item, name, cost, description, "+
+					"avatar, restaurant_id, count, weight, kilocalorie FROM cart JOIN dishes ON cart.food = dishes.id "+
+					"WHERE client_id = $1",
 				tt.inputQuery,
 			).
 			Return(&tt.resultQuery, tt.errQuery)
@@ -513,15 +513,15 @@ var OrmUpdateCart = []struct {
 			Dishes: []Utils.DishesRequest{{Id: 1, ItemNumber: 1, Count: 1,
 				Radios:      []Utils.RadiosCartRequest{{RadiosId: 1, Id: 1}},
 				Ingredients: []Utils.IngredientsCartRequest{{Id: 1}}}}},
-		outOne:                      &Utils.ResponseCartErrors{
+		outOne: &Utils.ResponseCartErrors{
 			Restaurant: Utils.RestaurantIdCastResponse{
 				Id: 0, Img: "", Name: "", CostForFreeDelivery: 0, MinDelivery: 0, MaxDelivery: 0, Rating: 0},
-				Dishes: []Utils.DishesCartResponse{
+			Dishes: []Utils.DishesCartResponse{
 				{Id: 1, ItemNumber: 0, Img: "1", Name: "1", Count: 1, Cost: 1, Kilocalorie: 1,
 					Weight: 1, Description: "1",
-					RadiosCart: []Utils.RadiosCartResponse{{Name: "1", RadiosId: 0, Id: 1}},
+					RadiosCart:     []Utils.RadiosCartResponse{{Name: "1", RadiosId: 0, Id: 1}},
 					IngredientCart: []Utils.IngredientCartResponse{{Name: "1", Id: 1, Cost: 1}}}},
-					Cost: Utils.CostCartResponse{DCost: 0, SumCost: 0}, DishErr: []Utils.CastDishesErrs(nil)},
+			Cost: Utils.CostCartResponse{DCost: 0, SumCost: 0}, DishErr: []Utils.CastDishesErrs(nil)},
 		outTwo:                      []Utils.CastDishesErrs(nil),
 		outErr:                      "",
 		inputInsertClientId:         1,
@@ -740,9 +740,9 @@ var ApplicationCalculateCost = []struct {
 	countGetPrice  int
 }{
 	{
-		inputResult:    &Utils.ResponseCartErrors{
-			Dishes: []Utils.DishesCartResponse{{Cost: 1, Count: 1}},
-			Cost: Utils.CostCartResponse{SumCost: 1},
+		inputResult: &Utils.ResponseCartErrors{
+			Dishes:     []Utils.DishesCartResponse{{Cost: 1, Count: 1}},
+			Cost:       Utils.CostCartResponse{SumCost: 1},
 			Restaurant: Utils.RestaurantIdCastResponse{CostForFreeDelivery: 5}},
 		inputRest:      &Utils.RestaurantId{Id: 1, CostForFreeDelivery: 5},
 		inputGetPrice:  1,
@@ -798,13 +798,13 @@ var ApplicationGetCart = []struct {
 	countGeneralInfo         int
 }{
 	{
-		testName:                 "One",
-		input:                    1,
-		out:                      &Utils.ResponseCartErrors{
+		testName: "One",
+		input:    1,
+		out: &Utils.ResponseCartErrors{
 			Restaurant: Utils.RestaurantIdCastResponse{
 				Id: 1, Img: "", Name: "", CostForFreeDelivery: 0, MinDelivery: 0, MaxDelivery: 0, Rating: 0},
-				Dishes: []Utils.DishesCartResponse(nil), Cost: Utils.CostCartResponse{DCost: 0, SumCost: 0},
-				DishErr: []Utils.CastDishesErrs{}},
+			Dishes: []Utils.DishesCartResponse(nil), Cost: Utils.CostCartResponse{DCost: 0, SumCost: 0},
+			DishErr: []Utils.CastDishesErrs{}},
 		outErr:                   "",
 		inputGetPrice:            1,
 		resultGetPrice:           1,
@@ -881,14 +881,14 @@ var ApplicationUpdateCart = []struct {
 	countDelete             int
 }{
 	{
-		testName:                "One",
-		inputDishes:             Utils.RequestCartDefault{Restaurant: Utils.RestaurantRequest{Id: 1}},
-		inputId:                 1,
-		out:                     &Utils.ResponseCartErrors{
+		testName:    "One",
+		inputDishes: Utils.RequestCartDefault{Restaurant: Utils.RestaurantRequest{Id: 1}},
+		inputId:     1,
+		out: &Utils.ResponseCartErrors{
 			Restaurant: Utils.RestaurantIdCastResponse{
 				Id: 1, Img: "", Name: "", CostForFreeDelivery: 0, MinDelivery: 0, MaxDelivery: 0, Rating: 0},
-				Dishes: []Utils.DishesCartResponse(nil), Cost: Utils.CostCartResponse{DCost: 0, SumCost: 0},
-				DishErr: []Utils.CastDishesErrs{}},
+			Dishes: []Utils.DishesCartResponse(nil), Cost: Utils.CostCartResponse{DCost: 0, SumCost: 0},
+			DishErr: []Utils.CastDishesErrs{}},
 		outErr:                  "",
 		inputGetPrice:           1,
 		resultGetPrice:          1,

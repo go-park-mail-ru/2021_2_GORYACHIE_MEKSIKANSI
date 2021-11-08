@@ -51,9 +51,13 @@ func runServer(port string) {
 		loggerErrWarn.Errorf("Unable to connect to database: %v", err)
 		os.Exit(1)
 	}
+	//var userInfo interfaces.AuthorizationAPI
+	//var cartInfo interfaces.CartApi
+	//var profileInfo interfaces.ProfileAPI
+	//var infoMid interfaces.MiddlewareAPI
+	//var restaurantInfo interfaces.RestaurantAPI
 
 	startStructure := setUp(connectionPostgres, loggerErrWarn, loggerInfo, loggerTest)
-
 	userInfo := startStructure[0].(auth.UserInfo)
 	cartInfo := startStructure[1].(cart.InfoCart)
 	profileInfo := startStructure[2].(profile.InfoProfile)
@@ -122,6 +126,7 @@ func setUp(connectionDB interfaces.ConnectionInterface, loggerErrWarn *zap.Sugar
 		LoggerInfo:    loggerInfo,
 		LoggerTest:    loggerTest,
 	}
+	var _ interfaces.AuthorizationAPI = &userInfo
 
 	profileWrapper := profile.Wrapper{Conn: connectionDB}
 	profileApp := profile.Profile{DB: &profileWrapper}
@@ -131,6 +136,7 @@ func setUp(connectionDB interfaces.ConnectionInterface, loggerErrWarn *zap.Sugar
 		LoggerInfo:    loggerInfo,
 		LoggerTest:    loggerTest,
 	}
+	var _ interfaces.ProfileAPI = &profileInfo
 
 	midWrapper := mid.Wrapper{Conn: connectionDB}
 	midApp := mid.Middleware{DB: &midWrapper}
@@ -140,6 +146,7 @@ func setUp(connectionDB interfaces.ConnectionInterface, loggerErrWarn *zap.Sugar
 		LoggerInfo:    loggerInfo,
 		LoggerTest:    loggerTest,
 	}
+	var _ interfaces.MiddlewareAPI = &infoMiddleware
 
 	restWrapper := restaurant.Wrapper{Conn: connectionDB}
 	restApp := restaurant.Restaurant{DB: &restWrapper}
@@ -149,6 +156,7 @@ func setUp(connectionDB interfaces.ConnectionInterface, loggerErrWarn *zap.Sugar
 		LoggerInfo:    loggerInfo,
 		LoggerTest:    loggerTest,
 	}
+	var _ interfaces.RestaurantAPI = &restaurantInfo
 
 	cartWrapper := cart.Wrapper{Conn: connectionDB}
 	cartApp := cart.Cart{DB: &cartWrapper, DBRestaurant: &restWrapper}
@@ -158,6 +166,7 @@ func setUp(connectionDB interfaces.ConnectionInterface, loggerErrWarn *zap.Sugar
 		LoggerInfo:    loggerInfo,
 		LoggerTest:    loggerTest,
 	}
+	var _ interfaces.CartApi = &cartInfo
 
 	var result []interface{}
 	result = append(result, userInfo)
