@@ -18,18 +18,9 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
 	reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
-		switch errConvert.Error() {
-		case errors.ErrAtoi:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
-			return
-
-		case errors.ErrNotStringAndInt:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-			return
-		}
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	checkError := &errors.CheckError{
@@ -40,18 +31,9 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 	idCtx := ctx.UserValue("id")
 	id, errConvert := utils.InterfaceConvertInt(idCtx)
 	if errConvert != nil {
-		switch errConvert.Error() {
-		case errors.ErrAtoi:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
-			return
-
-		case errors.ErrNotStringAndInt:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-			return
-		}
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	result, err := c.Application.GetCart(id)
@@ -88,18 +70,9 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
 	reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
-		switch errConvert.Error() {
-		case errors.ErrAtoi:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
-			return
-
-		case errors.ErrNotStringAndInt:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-			return
-		}
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	checkError := &errors.CheckError{
@@ -126,18 +99,9 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	idCtx := ctx.UserValue("id")
 	id, errConvert := utils.InterfaceConvertInt(idCtx)
 	if errConvert != nil {
-		switch errConvert.Error() {
-		case errors.ErrAtoi:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
-			return
-
-		case errors.ErrNotStringAndInt:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-			return
-		}
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	result, err := c.Application.UpdateCart(cartRequest.Cart, id)

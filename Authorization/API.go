@@ -19,18 +19,9 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
 	reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
-		switch errConvert.Error() {
-		case errors.ErrAtoi:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
-			return
-
-		case errors.ErrNotStringAndInt:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-			return
-		}
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	checkError := &errors.CheckError{
@@ -88,18 +79,9 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
 	reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
-		switch errConvert.Error() {
-		case errors.ErrAtoi:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
-			return
-
-		case errors.ErrNotStringAndInt:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-			return
-		}
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	checkError := &errors.CheckError{
@@ -153,18 +135,9 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
 	reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
-		switch errConvert.Error() {
-		case errors.ErrAtoi:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
-			return
-
-		case errors.ErrNotStringAndInt:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-			return
-		}
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	checkError := &errors.CheckError{
@@ -220,18 +193,9 @@ func (u *UserInfo) PayHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
 	reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
-		switch errConvert.Error() {
-		case errors.ErrAtoi:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrAtoi))
-			u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
-			return
-
-		case errors.ErrNotStringAndInt:
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-			return
-		}
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	TokenContext := ctx.UserValue("X-Csrf-Token")

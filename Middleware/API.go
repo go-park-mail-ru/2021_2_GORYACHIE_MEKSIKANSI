@@ -28,18 +28,9 @@ func (m *InfoMiddleware) GetId(h fasthttp.RequestHandler) fasthttp.RequestHandle
 		reqIdCtx := ctx.UserValue("reqId")
 		reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
 		if errConvert != nil {
-			switch errConvert.Error() {
-			case errors.ErrAtoi:
-				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				ctx.Response.SetBody([]byte(errors.ErrAtoi))
-				m.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
-				return
-
-			case errors.ErrNotStringAndInt:
-				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-				return
-			}
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errConvert.Error()))
+			m.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
 		}
 		ctx.SetUserValue("reqId", reqId)
 
@@ -76,18 +67,9 @@ func (m *InfoMiddleware) Check(h fasthttp.RequestHandler) fasthttp.RequestHandle
 		reqIdCtx := ctx.UserValue("reqId")
 		reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
 		if errConvert != nil {
-			switch errConvert.Error() {
-			case errors.ErrAtoi:
-				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				ctx.Response.SetBody([]byte(errors.ErrAtoi))
-				m.Logger.Errorf("SignUpHandler: GetId: %s, %v", errors.ErrAtoi, errConvert)
-				return
-
-			case errors.ErrNotStringAndInt:
-				ctx.Response.SetStatusCode(http.StatusInternalServerError)
-				ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
-				return
-			}
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errConvert.Error()))
+			m.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
 		}
 		ctx.SetUserValue("reqId", reqId)
 
