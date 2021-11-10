@@ -89,8 +89,8 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	TokenContext := ctx.UserValue("X-Csrf-Token")
-	XCsrfToken, errConvert := utils.InterfaceConvertString(TokenContext)
+	tokenContext := ctx.UserValue("X-Csrf-Token")
+	xCsrfToken, errConvert := utils.InterfaceConvertString(tokenContext)
 	if (errConvert != nil) && (errConvert.Error() == errors.ErrNotStringAndInt) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
@@ -118,7 +118,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	}
-	ctx.Response.Header.Set("X-CSRF-Token", XCsrfToken)
+	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 
 	if result != nil {
