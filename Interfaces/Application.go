@@ -41,3 +41,8 @@ type RestaurantApplication interface {
 	GetRestaurant(id int) (*utils.RestaurantId, error)
 	RestaurantDishes(restId int, dishId int) (*utils.Dishes, error)
 }
+
+type OrderApplication interface {
+	CreateOrder(id int, createOrder utils.CreateOrder) error
+	GetOrders(id int) (utils.HistoryOrderArray, error)
+}

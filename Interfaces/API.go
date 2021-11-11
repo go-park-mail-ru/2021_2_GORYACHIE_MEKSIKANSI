@@ -36,3 +36,8 @@ type RestaurantAPI interface {
 	RestaurantIdHandler(ctx *fasthttp.RequestCtx)
 	RestaurantDishesHandler(ctx *fasthttp.RequestCtx)
 }
+
+type OrderAPI interface {
+	CreateOrderHandler(ctx *fasthttp.RequestCtx)
+	GetOrdersHandler(ctx *fasthttp.RequestCtx)
+}

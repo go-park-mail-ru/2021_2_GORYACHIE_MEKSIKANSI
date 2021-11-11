@@ -4,7 +4,7 @@ import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
 	cart "2021_2_GORYACHIE_MEKSIKANSI/Cart"
 	config "2021_2_GORYACHIE_MEKSIKANSI/Configs"
-	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	profile "2021_2_GORYACHIE_MEKSIKANSI/Profile"
 	restaurant "2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
@@ -21,7 +21,7 @@ func runServer(port string) {
 	var logger utils.Logger
 	logger.Log = utils.NewLogger("./logs.txt")
 
-	defer func(loggerErrWarn errors.MultiLogger) {
+	defer func(loggerErrWarn errPkg.MultiLogger) {
 		errLogger := loggerErrWarn.Sync()
 		if errLogger != nil {
 			zap.S().Errorf("LoggerErrWarn the buffer could not be cleared %v", errLogger)
