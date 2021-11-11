@@ -19,6 +19,7 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/microcosm-cc/bluemonday v1.0.16
 	github.com/natefinch/lumberjack v2.0.0+incompatible
+	github.com/pkg/errors v0.9.1
 	github.com/savsgio/gotils v0.0.0-20210907153846-c06938798b52 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

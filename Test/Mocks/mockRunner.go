@@ -460,9 +460,9 @@ func (mr *MockWrapperAuthorizationMockRecorder) AddCookie(arg0, arg1 interface{}
 }
 
 // AddTransactionCookie mocks base method.
-func (m *MockWrapperAuthorization) AddTransactionCookie(arg0 *Utils.Defense, arg1 pgx.Tx, arg2 int) error {
+func (m *MockWrapperAuthorization) addTransactionCookie(arg0 *Utils.Defense, arg1 pgx.Tx, arg2 int) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddTransactionCookie", arg0, arg1, arg2)
+	ret := m.ctrl.Call(m, "addTransactionCookie", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
@@ -470,7 +470,7 @@ func (m *MockWrapperAuthorization) AddTransactionCookie(arg0 *Utils.Defense, arg
 // AddTransactionCookie indicates an expected call of AddTransactionCookie.
 func (mr *MockWrapperAuthorizationMockRecorder) AddTransactionCookie(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddTransactionCookie", reflect.TypeOf((*MockWrapperAuthorization)(nil).AddTransactionCookie), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "addTransactionCookie", reflect.TypeOf((*MockWrapperAuthorization)(nil).addTransactionCookie), arg0, arg1, arg2)
 }
 
 // DeleteCookie mocks base method.
@@ -489,9 +489,9 @@ func (mr *MockWrapperAuthorizationMockRecorder) DeleteCookie(arg0 interface{}) *
 }
 
 // GeneralSignUp mocks base method.
-func (m *MockWrapperAuthorization) GeneralSignUp(arg0 *Utils.RegistrationRequest, arg1 pgx.Tx) (int, error) {
+func (m *MockWrapperAuthorization) generalSignUp(arg0 *Utils.RegistrationRequest, arg1 pgx.Tx) (int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GeneralSignUp", arg0, arg1)
+	ret := m.ctrl.Call(m, "generalSignUp", arg0, arg1)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -500,13 +500,13 @@ func (m *MockWrapperAuthorization) GeneralSignUp(arg0 *Utils.RegistrationRequest
 // GeneralSignUp indicates an expected call of GeneralSignUp.
 func (mr *MockWrapperAuthorizationMockRecorder) GeneralSignUp(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GeneralSignUp", reflect.TypeOf((*MockWrapperAuthorization)(nil).GeneralSignUp), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "generalSignUp", reflect.TypeOf((*MockWrapperAuthorization)(nil).generalSignUp), arg0, arg1)
 }
 
 // GenerateNew mocks base method.
-func (m *MockWrapperAuthorization) GenerateNew() *Utils.Defense {
+func (m *MockWrapperAuthorization) NewDefense() *Utils.Defense {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateNew")
+	ret := m.ctrl.Call(m, "NewDefense")
 	ret0, _ := ret[0].(*Utils.Defense)
 	return ret0
 }
@@ -514,7 +514,7 @@ func (m *MockWrapperAuthorization) GenerateNew() *Utils.Defense {
 // GenerateNew indicates an expected call of GenerateNew.
 func (mr *MockWrapperAuthorizationMockRecorder) GenerateNew() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateNew", reflect.TypeOf((*MockWrapperAuthorization)(nil).GenerateNew))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewDefense", reflect.TypeOf((*MockWrapperAuthorization)(nil).NewDefense))
 }
 
 // LoginByEmail mocks base method.
@@ -661,9 +661,9 @@ func (mr *MockWrapperCartMockRecorder) GetPriceDelivery(arg0 interface{}) *gomoc
 }
 
 // GetStructFood mocks base method.
-func (m *MockWrapperCart) GetStructFood(arg0 int) ([]Utils.IngredientCartResponse, error) {
+func (m *MockWrapperCart) getStructFood(arg0 int) ([]Utils.IngredientCartResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetStructFood", arg0)
+	ret := m.ctrl.Call(m, "getStructFood", arg0)
 	ret0, _ := ret[0].([]Utils.IngredientCartResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -672,13 +672,13 @@ func (m *MockWrapperCart) GetStructFood(arg0 int) ([]Utils.IngredientCartRespons
 // GetStructFood indicates an expected call of GetStructFood.
 func (mr *MockWrapperCartMockRecorder) GetStructFood(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStructFood", reflect.TypeOf((*MockWrapperCart)(nil).GetStructFood), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "getStructFood", reflect.TypeOf((*MockWrapperCart)(nil).getStructFood), arg0)
 }
 
 // GetStructRadios mocks base method.
-func (m *MockWrapperCart) GetStructRadios(arg0 int) ([]Utils.RadiosCartResponse, error) {
+func (m *MockWrapperCart) getStructRadios(arg0 int) ([]Utils.RadiosCartResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetStructRadios", arg0)
+	ret := m.ctrl.Call(m, "getStructRadios", arg0)
 	ret0, _ := ret[0].([]Utils.RadiosCartResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -687,7 +687,7 @@ func (m *MockWrapperCart) GetStructRadios(arg0 int) ([]Utils.RadiosCartResponse,
 // GetStructRadios indicates an expected call of GetStructRadios.
 func (mr *MockWrapperCartMockRecorder) GetStructRadios(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStructRadios", reflect.TypeOf((*MockWrapperCart)(nil).GetStructRadios), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "getStructRadios", reflect.TypeOf((*MockWrapperCart)(nil).getStructRadios), arg0)
 }
 
 // UpdateCart mocks base method.
@@ -707,9 +707,9 @@ func (mr *MockWrapperCartMockRecorder) UpdateCart(arg0, arg1 interface{}) *gomoc
 }
 
 // UpdateCartRadios mocks base method.
-func (m *MockWrapperCart) UpdateCartRadios(arg0 []Utils.RadiosCartRequest, arg1 int, arg2 pgx.Tx) ([]Utils.RadiosCartResponse, error) {
+func (m *MockWrapperCart) updateCartRadios(arg0 []Utils.RadiosCartRequest, arg1 int, arg2 pgx.Tx) ([]Utils.RadiosCartResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateCartRadios", arg0, arg1, arg2)
+	ret := m.ctrl.Call(m, "updateCartRadios", arg0, arg1, arg2)
 	ret0, _ := ret[0].([]Utils.RadiosCartResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -718,13 +718,13 @@ func (m *MockWrapperCart) UpdateCartRadios(arg0 []Utils.RadiosCartRequest, arg1 
 // UpdateCartRadios indicates an expected call of UpdateCartRadios.
 func (mr *MockWrapperCartMockRecorder) UpdateCartRadios(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCartRadios", reflect.TypeOf((*MockWrapperCart)(nil).UpdateCartRadios), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "updateCartRadios", reflect.TypeOf((*MockWrapperCart)(nil).updateCartRadios), arg0, arg1, arg2)
 }
 
 // UpdateCartStructFood mocks base method.
-func (m *MockWrapperCart) UpdateCartStructFood(arg0 []Utils.IngredientsCartRequest, arg1 int, arg2 pgx.Tx) ([]Utils.IngredientCartResponse, error) {
+func (m *MockWrapperCart) updateCartStructFood(arg0 []Utils.IngredientsCartRequest, arg1 int, arg2 pgx.Tx) ([]Utils.IngredientCartResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateCartStructFood", arg0, arg1, arg2)
+	ret := m.ctrl.Call(m, "updateCartStructFood", arg0, arg1, arg2)
 	ret0, _ := ret[0].([]Utils.IngredientCartResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -733,7 +733,7 @@ func (m *MockWrapperCart) UpdateCartStructFood(arg0 []Utils.IngredientsCartReque
 // UpdateCartStructFood indicates an expected call of UpdateCartStructFood.
 func (mr *MockWrapperCartMockRecorder) UpdateCartStructFood(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCartStructFood", reflect.TypeOf((*MockWrapperCart)(nil).UpdateCartStructFood), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "updateCartStructFood", reflect.TypeOf((*MockWrapperCart)(nil).updateCartStructFood), arg0, arg1, arg2)
 }
 
 // MockWrapperMiddleware is a mock of WrapperMiddleware interface.

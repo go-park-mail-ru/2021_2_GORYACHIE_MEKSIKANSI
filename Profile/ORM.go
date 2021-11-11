@@ -8,7 +8,7 @@ import (
 	"context"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"math"
+	"github.com/jackc/pgx/v4"
 	"strconv"
 	"strings"
 	"time"
@@ -21,9 +21,22 @@ type Wrapper struct {
 }
 
 func (db *Wrapper) GetRoleById(id int) (string, error) {
+	tx, err := db.Conn.Begin(context.Background())
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
+
+	if err != nil {
+		return "", &errorsConst.Errors{
+			Text: errorsConst.PGetRoleByIdTransactionNotCreate,
+			Time: time.Now(),
+		}
+	}
+
 	role := 0
 
-	err := db.Conn.QueryRow(context.Background(),
+	err = tx.QueryRow(context.Background(),
 		"SELECT id FROM host WHERE client_id = $1", id).Scan(&role)
 	if err != nil && strings.Contains(err.Error(), "no rows") != true {
 		return "", &errorsConst.Errors{
@@ -35,7 +48,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 		return "host", nil
 	}
 
-	err = db.Conn.QueryRow(context.Background(),
+	err = tx.QueryRow(context.Background(),
 		"SELECT id FROM client WHERE client_id = $1", id).Scan(&role)
 	if err != nil && strings.Contains(err.Error(), "no rows") != true {
 		return "", &errorsConst.Errors{
@@ -47,7 +60,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 		return "client", nil
 	}
 
-	err = db.Conn.QueryRow(context.Background(),
+	err = tx.QueryRow(context.Background(),
 		"SELECT id FROM courier WHERE client_id = $1", id).Scan(&role)
 	if err != nil && strings.Contains(err.Error(), "no rows") != true {
 		return "", &errorsConst.Errors{
@@ -57,6 +70,14 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 	}
 	if role != 0 {
 		return "courier", nil
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return "", &errorsConst.Errors{
+			Text: errorsConst.PGetRoleByIdNotCommit,
+			Time: time.Now(),
+		}
 	}
 
 	return "", nil
@@ -78,8 +99,21 @@ func (db *Wrapper) GetProfileHost(id int) (*utils.Profile, error) {
 }
 
 func (db *Wrapper) GetProfileClient(id int) (*utils.Profile, error) {
+	tx, err := db.Conn.Begin(context.Background())
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
+
+	if err != nil {
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.PGetProfileClientTransactionNotCreate,
+			Time: time.Now(),
+		}
+	}
+
 	var profile = utils.Profile{}
-	err := db.Conn.QueryRow(context.Background(),
+	err = db.Conn.QueryRow(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
@@ -97,6 +131,14 @@ func (db *Wrapper) GetProfileClient(id int) (*utils.Profile, error) {
 				Text: errorsConst.PGetProfileClientBirthdayNotScan,
 				Time: time.Now(),
 			}
+		}
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.PGetProfileClientNotCommit,
+			Time: time.Now(),
 		}
 	}
 
@@ -155,8 +197,21 @@ func (db *Wrapper) UpdateEmail(id int, newEmail string) error {
 }
 
 func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
+	tx, err := db.Conn.Begin(context.Background())
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
+
+	if err != nil {
+		return &errorsConst.Errors{
+			Text: errorsConst.PUpdatePasswordTransactionNotCreate,
+			Time: time.Now(),
+		}
+	}
+
 	var salt string
-	err := db.Conn.QueryRow(context.Background(),
+	err = db.Conn.QueryRow(context.Background(),
 		"SELECT salt FROM general_user_info WHERE id = $1",
 		id).Scan(&salt)
 	if err != nil {
@@ -172,6 +227,14 @@ func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
 	if err != nil {
 		return &errorsConst.Errors{
 			Text: errorsConst.PUpdatePasswordPasswordNotUpdate,
+			Time: time.Now(),
+		}
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return &errorsConst.Errors{
+			Text: errorsConst.PUpdatePasswordNotCommit,
 			Time: time.Now(),
 		}
 	}
@@ -207,26 +270,8 @@ func (db *Wrapper) UpdatePhone(id int, newPhone string) error {
 	return nil
 }
 
-func (db *Wrapper) UpdateAvatar(id int, newAvatar *Utils.UpdateAvatar) error {
+func (db *Wrapper) UpdateAvatar(id int, newAvatar *Utils.UpdateAvatar, newFileName string) error {
 	header := newAvatar.FileHeader
-	if header.Filename == "" {
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdateAvatarFileNameEmpty,
-			Time: time.Now(),
-		}
-	}
-	startExtension := strings.LastIndex(header.Filename, ".")
-	if startExtension == -1 {
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdateAvatarFileWithoutExtension,
-			Time: time.Now(),
-		}
-	}
-	extensionFile := header.Filename[startExtension:]
-
-	fileName := strconv.Itoa(utils.RandomInteger(0, math.MaxInt64))
-
-	fileResult := "/user/" + fileName + extensionFile
 	file, errTet := header.Open()
 	if errTet != nil {
 		return &errorsConst.Errors{
@@ -238,7 +283,7 @@ func (db *Wrapper) UpdateAvatar(id int, newAvatar *Utils.UpdateAvatar) error {
 	_, err := db.Uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(db.NameBucket),
 		ACL:    aws.String("public-read"),
-		Key:    aws.String(fileResult),
+		Key:    aws.String(newFileName),
 		Body:   file,
 	})
 	if err != nil {
@@ -247,8 +292,6 @@ func (db *Wrapper) UpdateAvatar(id int, newAvatar *Utils.UpdateAvatar) error {
 			Time: time.Now(),
 		}
 	}
-
-	newAvatar.Avatar = fileResult
 
 	_, err = db.Conn.Exec(context.Background(),
 		"UPDATE general_user_info SET avatar = $1 WHERE id = $2",
@@ -278,12 +321,13 @@ func (db *Wrapper) UpdateBirthday(id int, newBirthday time.Time) error {
 }
 
 func (db *Wrapper) UpdateAddress(id int, newAddress Utils.AddressCoordinates) error {
+	newAddress.Sanitize()
 	_, err := db.Conn.Exec(context.Background(),
 		"UPDATE address_user SET alias = $1, comment = $2, city = $3, street = $4, house = $5, floor = $6,"+
 			" flat = $7, porch = $8, intercom = $9, latitude = $10, longitude = $11 WHERE client_id = $12",
-		Utils.Sanitize(newAddress.Alias), Utils.Sanitize(newAddress.Comment), Utils.Sanitize(newAddress.City),
-		Utils.Sanitize(newAddress.Street), Utils.Sanitize(newAddress.House), newAddress.Floor, newAddress.Flat,
-		newAddress.Porch, Utils.Sanitize(newAddress.Intercom), newAddress.Coordinates.Latitude,
+		newAddress.Alias, newAddress.Comment, newAddress.City,
+		newAddress.Street, newAddress.House, newAddress.Floor, newAddress.Flat,
+		newAddress.Porch, newAddress.Intercom, newAddress.Coordinates.Latitude,
 		newAddress.Coordinates.Longitude, id)
 	if err != nil {
 		return &errorsConst.Errors{

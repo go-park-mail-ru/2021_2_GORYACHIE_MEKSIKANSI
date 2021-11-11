@@ -67,3 +67,11 @@ type Coordinates struct {
 	Latitude  float32 `json:"latitude"`
 	Longitude float32 `json:"longitude"`
 }
+
+func (a *AddressCoordinates) Sanitize() {
+	a.Alias = Sanitize(a.Alias)
+	a.Comment = Sanitize(a.Comment)
+	a.City = Sanitize(a.City)
+	a.Street = Sanitize(a.Street)
+	a.House = Sanitize(a.House)
+}

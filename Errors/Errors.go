@@ -68,6 +68,10 @@ const (
 	ASignUpHostNotCommit               = "signup host not commit"
 	ASignUpCourierNotCommit            = "signup courier not commit"
 	ASignUpClientNotCommit             = "signup client not commit"
+	ALoginByEmailTransactionNotCreate  = "transaction login by email not create"  // TODO: add in checkErrors
+	ALoginByEmailNotCommit             = "login by email not commit"              // TODO: add in checkErrors
+	ALoginByPhoneTransactionNotCreate  = "transaction  login by phone not create" // TODO: add in checkErrors
+	ALoginByPhoneNotCommit             = "login by phone not commit"              // TODO: add in checkErrors
 )
 
 // Error of Middleware
@@ -93,29 +97,35 @@ const (
 
 // Error of profile
 const (
-	PGetRoleByIdClientNotScan         = "check user on client not scan"
-	PGetRoleByIdHostNotScan           = "check user on host not scan"
-	PGetRoleByIdCourierNotScan        = "check user on courier not scan"
-	PGetProfileHostHostNotScan        = "get profile host not scan"
-	PGetProfileClientClientNotScan    = "get profile client not scan"
-	PGetProfileCourierCourierNotScan  = "get profile courier not scan"
-	PGetProfileClientBirthdayNotScan  = "birthday not scan"
-	PUpdateNameNameNotUpdate          = "name not update"
-	PUpdateEmailEmailNotUpdate        = "email not update"
-	PUpdateEmailEmailRepeat           = "email already exist"
-	PUpdatePhonePhoneNotUpdate        = "phone not update"
-	PUpdatePhonePhoneRepeat           = "phone already exist"
-	PUpdatePasswordSaltNotSelect      = "salt not found"
-	PUpdatePasswordPasswordNotUpdate  = "password not update"
-	PUpdateAvatarAvatarNotUpdate      = "avatar not update"
-	PUpdateBirthdayBirthdayNotUpdate  = "birthday not update"
-	PUpdateAddressAddressNotUpdate    = "address not update"
-	PGetProfileUnknownRole            = "unknown role of user"
-	PUpdatePhoneIncorrectPhoneFormat  = "incorrect format phone"
-	PUpdateAvatarAvatarNotOpen        = "file not open"
-	PUpdateAvatarAvatarNotUpload      = "avatar not send"
-	PUpdateAvatarFileNameEmpty        = "file name is empty"
-	PUpdateAvatarFileWithoutExtension = "file without extension"
+	PGetRoleByIdClientNotScan             = "check user on client not scan"
+	PGetRoleByIdHostNotScan               = "check user on host not scan"
+	PGetRoleByIdCourierNotScan            = "check user on courier not scan"
+	PGetProfileHostHostNotScan            = "get profile host not scan"
+	PGetProfileClientClientNotScan        = "get profile client not scan"
+	PGetProfileCourierCourierNotScan      = "get profile courier not scan"
+	PGetProfileClientBirthdayNotScan      = "birthday not scan"
+	PUpdateNameNameNotUpdate              = "name not update"
+	PUpdateEmailEmailNotUpdate            = "email not update"
+	PUpdateEmailEmailRepeat               = "email already exist"
+	PUpdatePhonePhoneNotUpdate            = "phone not update"
+	PUpdatePhonePhoneRepeat               = "phone already exist"
+	PUpdatePasswordSaltNotSelect          = "salt not found"
+	PUpdatePasswordPasswordNotUpdate      = "password not update"
+	PUpdateAvatarAvatarNotUpdate          = "avatar not update"
+	PUpdateBirthdayBirthdayNotUpdate      = "birthday not update"
+	PUpdateAddressAddressNotUpdate        = "address not update"
+	PGetProfileUnknownRole                = "unknown role of user"
+	PUpdatePhoneIncorrectPhoneFormat      = "incorrect format phone"
+	PUpdateAvatarAvatarNotOpen            = "file not open"
+	PUpdateAvatarAvatarNotUpload          = "avatar not send"
+	PUpdateAvatarFileNameEmpty            = "file name is empty"
+	PUpdateAvatarFileWithoutExtension     = "file without extension"
+	PGetRoleByIdTransactionNotCreate      = "transaction role by id not create"         // TODO: add in checkErrors
+	PGetRoleByIdNotCommit                 = "role by id not commit"                     // TODO: add in checkErrors
+	PGetProfileClientTransactionNotCreate = "transaction get profile client not create" // TODO: add in checkErrors
+	PGetProfileClientNotCommit            = "get profile client not commit"             // TODO: add in checkErrors
+	PUpdatePasswordTransactionNotCreate   = "transaction update password not create"    // TODO: add in checkErrors
+	PUpdatePasswordNotCommit              = "update password not commit"                // TODO: add in checkErrors
 )
 
 // Error of restaurant
@@ -139,6 +149,10 @@ const (
 	RGetTagsCategoryNotSelect             = "category not select"
 	RGetRadiosRadiosNotSelect             = "radios not select"
 	RGetTagsTagsNotFound                  = "tags not found"
+	RGetMenuTransactionNotCreate          = "transaction menu dishes not create" // TODO: add in checkErrors
+	RGetMenuDishesNotCommit               = "menu dishes not commit"             // TODO: add in checkErrors
+	RGetRadiosNotCreate                   = "transaction get radios not create"  // TODO: add in checkErrors
+	RGetRadiosNotCommit                   = "get radios not commit"              // TODO: add in checkErrors
 )
 
 // Error of Cart

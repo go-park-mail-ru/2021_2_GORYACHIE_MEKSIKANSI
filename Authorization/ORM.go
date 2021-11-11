@@ -15,12 +15,12 @@ type Wrapper struct {
 	Conn Interfaces.ConnectionInterface
 }
 
-func (db *Wrapper) GenerateNew() *utils.Defense {
+func (db *Wrapper) NewDefense() *utils.Defense {
 	var tmp utils.Defense
 	return tmp.GenerateNew()
 }
 
-func (db *Wrapper) GeneralSignUp(signup *utils.RegistrationRequest, transaction pgx.Tx) (int, error) {
+func (db *Wrapper) generalSignUp(signup *utils.RegistrationRequest, transaction pgx.Tx) (int, error) {
 	var userId int
 
 	salt := utils.RandString(LenSalt)
@@ -55,17 +55,11 @@ func (db *Wrapper) GeneralSignUp(signup *utils.RegistrationRequest, transaction 
 
 func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest, cookie *utils.Defense) (*utils.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
-	defer func(tx pgx.Tx) {
-		switch err {
-		case nil:
 
-		default:
-			err := tx.Rollback(context.Background())
-			if err != nil {
-				return
-			}
-		}
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
 	}(tx)
+
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ASignupHostTransactionNotCreate,
@@ -73,12 +67,12 @@ func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest, cookie *utils.D
 		}
 	}
 
-	userId, err := db.GeneralSignUp(signup, tx)
+	userId, err := db.generalSignUp(signup, tx)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.AddTransactionCookie(cookie, tx, userId)
+	err = db.addTransactionCookie(cookie, tx, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -103,17 +97,11 @@ func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest, cookie *utils.D
 
 func (db *Wrapper) SignupCourier(signup *utils.RegistrationRequest, cookie *utils.Defense) (*utils.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
-	defer func(tx pgx.Tx) {
-		switch err {
-		case nil:
 
-		default:
-			err := tx.Rollback(context.Background())
-			if err != nil {
-				return
-			}
-		}
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
 	}(tx)
+
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ASignupCourierTransactionNotCreate,
@@ -121,12 +109,12 @@ func (db *Wrapper) SignupCourier(signup *utils.RegistrationRequest, cookie *util
 		}
 	}
 
-	userId, err := db.GeneralSignUp(signup, tx)
+	userId, err := db.generalSignUp(signup, tx)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.AddTransactionCookie(cookie, tx, userId)
+	err = db.addTransactionCookie(cookie, tx, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -152,17 +140,11 @@ func (db *Wrapper) SignupCourier(signup *utils.RegistrationRequest, cookie *util
 
 func (db *Wrapper) SignupClient(signup *utils.RegistrationRequest, cookie *utils.Defense) (*utils.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
-	defer func(tx pgx.Tx) {
-		switch err {
-		case nil:
 
-		default:
-			err := tx.Rollback(context.Background())
-			if err != nil {
-				return
-			}
-		}
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
 	}(tx)
+
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ASignupClientTransactionNotCreate,
@@ -170,12 +152,12 @@ func (db *Wrapper) SignupClient(signup *utils.RegistrationRequest, cookie *utils
 		}
 	}
 
-	userId, err := db.GeneralSignUp(signup, tx)
+	userId, err := db.generalSignUp(signup, tx)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.AddTransactionCookie(cookie, tx, userId)
+	err = db.addTransactionCookie(cookie, tx, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -199,7 +181,7 @@ func (db *Wrapper) SignupClient(signup *utils.RegistrationRequest, cookie *utils
 	return cookie, nil
 }
 
-func (db *Wrapper) AddTransactionCookie(cookie *utils.Defense, Transaction pgx.Tx, id int) error {
+func (db *Wrapper) addTransactionCookie(cookie *utils.Defense, Transaction pgx.Tx, id int) error {
 	_, err := Transaction.Exec(context.Background(),
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
@@ -214,10 +196,23 @@ func (db *Wrapper) AddTransactionCookie(cookie *utils.Defense, Transaction pgx.T
 }
 
 func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
+	tx, err := db.Conn.Begin(context.Background())
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
+
+	if err != nil {
+		return 0, &errorsConst.Errors{
+			Text: errorsConst.ALoginByEmailTransactionNotCreate,
+			Time: time.Now(),
+		}
+	}
+
 	var userId int
 	var salt string
 
-	err := db.Conn.QueryRow(context.Background(),
+	err = tx.QueryRow(context.Background(),
 		"SELECT salt FROM general_user_info WHERE email = $1",
 		email).Scan(&salt)
 	if err != nil {
@@ -234,7 +229,7 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 		}
 	}
 
-	err = db.Conn.QueryRow(context.Background(),
+	err = tx.QueryRow(context.Background(),
 		"SELECT id FROM general_user_info WHERE email = $1 AND password = $2",
 		email, utils.HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
@@ -244,14 +239,35 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 		}
 	}
 
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return 0, &errorsConst.Errors{
+			Text: errorsConst.ALoginByEmailNotCommit,
+			Time: time.Now(),
+		}
+	}
+
 	return userId, nil
 }
 
 func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
+	tx, err := db.Conn.Begin(context.Background())
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
+
+	if err != nil {
+		return 0, &errorsConst.Errors{
+			Text: errorsConst.ALoginByPhoneTransactionNotCreate,
+			Time: time.Now(),
+		}
+	}
+
 	var userId int
 	var salt string
 
-	err := db.Conn.QueryRow(context.Background(),
+	err = tx.QueryRow(context.Background(),
 		"SELECT salt FROM general_user_info WHERE phone = $1",
 		phone).Scan(&salt)
 	if err != nil {
@@ -268,7 +284,7 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 		}
 	}
 
-	err = db.Conn.QueryRow(context.Background(),
+	err = tx.QueryRow(context.Background(),
 		"SELECT id FROM general_user_info WHERE phone = $1 AND password = $2",
 		phone, utils.HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
@@ -277,21 +293,24 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 			Time: time.Now(),
 		}
 	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return 0, &errorsConst.Errors{
+			Text: errorsConst.ALoginByPhoneNotCommit,
+			Time: time.Now(),
+		}
+	}
+
 	return userId, nil
 }
 
 func (db *Wrapper) DeleteCookie(CSRF string) (string, error) {
 	var sessionId string
+	var sessionIdScan interface{}
 	err := db.Conn.QueryRow(context.Background(),
-		"SELECT session_id FROM cookie WHERE csrf_token = $1",
-		CSRF).Scan(&sessionId)
-	if err != nil {
-		return "", &errorsConst.Errors{
-			Text: errorsConst.ADeleteCookieCookieNotDelete,
-			Time: time.Now(),
-		}
-	}
-	_, err = db.Conn.Exec(context.Background(), "DELETE FROM cookie WHERE csrf_token = $1", CSRF)
+		"DELETE FROM cookie WHERE csrf_token = $1 RETURNING session_id", CSRF).Scan(&sessionIdScan)
+	sessionId = sessionIdScan.(string)
 	if err != nil {
 		return "", &errorsConst.Errors{
 			Text: errorsConst.ADeleteCookieCookieNotDelete,

@@ -5,6 +5,7 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
+	"github.com/jackc/pgx/v4"
 	"strings"
 	"time"
 )
@@ -92,7 +93,7 @@ func (db *Wrapper) GetTagsRestaurant(id int) ([]Utils.Tag, error) {
 	return tags, nil
 }
 
-func GetDishesRestaurant(db *Wrapper, name string, id int) ([]Utils.DishesMenu, error) {
+func getDishesRestaurant(db *Wrapper, name string, id int) ([]Utils.DishesMenu, error) {
 	var dishes []Utils.DishesMenu
 	dish := Utils.DishesMenu{}
 	rowDishes, err := db.Conn.Query(context.Background(),
@@ -119,8 +120,20 @@ func GetDishesRestaurant(db *Wrapper, name string, id int) ([]Utils.DishesMenu, 
 }
 
 func (db *Wrapper) GetMenu(id int) ([]Utils.Menu, error) {
+	tx, err := db.Conn.Begin(context.Background())
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
+
+	if err != nil {
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.RGetMenuTransactionNotCreate,
+			Time: time.Now(),
+		}
+	}
 	var result []Utils.Menu
-	rowDishes, err := db.Conn.Query(context.Background(),
+	rowDishes, err := tx.Query(context.Background(),
 		"SELECT DISTINCT category_restaurant FROM dishes WHERE restaurant = $1", id)
 	if err != nil {
 		return nil, &errorsConst.Errors{
@@ -136,7 +149,7 @@ func (db *Wrapper) GetMenu(id int) ([]Utils.Menu, error) {
 			return nil, err
 		}
 
-		dishes, err := GetDishesRestaurant(db, menu.Name, id)
+		dishes, err := getDishesRestaurant(db, menu.Name, id)
 		if err != nil {
 			return nil, err
 		}
@@ -148,6 +161,14 @@ func (db *Wrapper) GetMenu(id int) ([]Utils.Menu, error) {
 	if result == nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.RGetMenuDishesNotFound,
+			Time: time.Now(),
+		}
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.RGetMenuDishesNotCommit,
 			Time: time.Now(),
 		}
 	}
@@ -180,7 +201,7 @@ func (db *Wrapper) GetStructDishes(dishesId int) ([]Utils.Ingredients, error) {
 	return ingredients, nil
 }
 
-func GetStructRadios(db *Wrapper, radId int) ([]Utils.CheckboxesRows, error) {
+func getStructRadios(db *Wrapper, radId int) ([]Utils.CheckboxesRows, error) {
 	rowDishes, err := db.Conn.Query(context.Background(),
 		"SELECT id, name FROM structure_radios WHERE radios = $1", radId)
 	if err != nil {
@@ -235,9 +256,22 @@ func (db *Wrapper) GetDishes(restId int, dishesId int) (*Utils.Dishes, error) {
 }
 
 func (db *Wrapper) GetRadios(dishesId int) ([]Utils.Radios, error) {
+	tx, err := db.Conn.Begin(context.Background())
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
+
+	if err != nil {
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.RGetRadiosNotCreate,
+			Time: time.Now(),
+		}
+	}
+
 	var radios []Utils.Radios
 
-	rowDishes, err := db.Conn.Query(context.Background(),
+	rowDishes, err := tx.Query(context.Background(),
 		"SELECT id, name FROM radios WHERE food = $1", dishesId)
 	if err != nil {
 		return nil, &errorsConst.Errors{
@@ -256,7 +290,7 @@ func (db *Wrapper) GetRadios(dishesId int) ([]Utils.Radios, error) {
 			}
 		}
 
-		rows, err := GetStructRadios(db, rad.Id)
+		rows, err := getStructRadios(db, rad.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -264,6 +298,14 @@ func (db *Wrapper) GetRadios(dishesId int) ([]Utils.Radios, error) {
 		if rows != nil {
 			rad.Rows = rows
 			radios = append(radios, rad)
+		}
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return nil, &errorsConst.Errors{
+			Text: errorsConst.RGetRadiosNotCommit,
+			Time: time.Now(),
 		}
 	}
 

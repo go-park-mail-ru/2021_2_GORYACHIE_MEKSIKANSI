@@ -268,7 +268,7 @@ func TestOrmGetDishesRestaurant(t *testing.T) {
 			Return(&tt.rowsQuery, tt.errQuery)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := GetDishesRestaurant(testUser, tt.inputName, tt.inputId)
+			result, err := getDishesRestaurant(testUser, tt.inputName, tt.inputId)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
@@ -431,7 +431,7 @@ func TestGetStructRadios(t *testing.T) {
 			Return(&tt.rowsQuery, tt.errQuery)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := GetStructRadios(testUser, tt.input)
+			result, err := getStructRadios(testUser, tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))

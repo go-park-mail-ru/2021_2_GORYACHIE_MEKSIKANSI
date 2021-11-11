@@ -51,22 +51,20 @@ type WrapperProfile interface {
 	UpdateEmail(id int, newEmail string) error
 	UpdatePassword(id int, newPassword string) error
 	UpdatePhone(id int, newPhone string) error
-	UpdateAvatar(id int, newAvatar *Utils.UpdateAvatar) error
+	UpdateAvatar(id int, newAvatar *Utils.UpdateAvatar, newFileName string) error
 	UpdateBirthday(id int, newBirthday time.Time) error
 	UpdateAddress(id int, newAddress Utils.AddressCoordinates) error
 }
 
 type WrapperAuthorization interface {
-	GeneralSignUp(signup *Utils.RegistrationRequest, transaction pgx.Tx) (int, error)
 	SignupClient(signup *Utils.RegistrationRequest, cookie *Utils.Defense) (*Utils.Defense, error)
 	SignupCourier(signup *Utils.RegistrationRequest, cookie *Utils.Defense) (*Utils.Defense, error)
 	SignupHost(signup *Utils.RegistrationRequest, cookie *Utils.Defense) (*Utils.Defense, error)
 	LoginByEmail(email string, password string) (int, error)
 	LoginByPhone(phone string, password string) (int, error)
 	DeleteCookie(CSRF string) (string, error)
-	GenerateNew() *Utils.Defense
+	NewDefense() *Utils.Defense
 	AddCookie(cookie *Utils.Defense, id int) error
-	AddTransactionCookie(cookie *Utils.Defense, Transaction pgx.Tx, id int) error
 }
 
 type WrapperCart interface {
@@ -74,10 +72,6 @@ type WrapperCart interface {
 	UpdateCart(dishes Utils.RequestCartDefault, clientId int) (*Utils.ResponseCartErrors, []Utils.CastDishesErrs, error)
 	DeleteCart(id int) error
 	GetPriceDelivery(id int) (int, error)
-	UpdateCartRadios(radios []Utils.RadiosCartRequest, clientId int, tx pgx.Tx) ([]Utils.RadiosCartResponse, error)
-	GetStructRadios(id int) ([]Utils.RadiosCartResponse, error)
-	GetStructFood(id int) ([]Utils.IngredientCartResponse, error)
-	UpdateCartStructFood(ingredients []Utils.IngredientsCartRequest, clientId int, tx pgx.Tx) ([]Utils.IngredientCartResponse, error)
 }
 
 type WrapperMiddleware interface {

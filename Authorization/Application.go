@@ -16,7 +16,7 @@ type Authorization struct {
 func (a *Authorization) SignUp(signup *utils.RegistrationRequest) (*utils.Defense, error) {
 	var cookie *utils.Defense
 	var err error
-	newCookie := a.DB.GenerateNew()
+	newCookie := a.DB.NewDefense()
 	switch signup.TypeUser {
 	case "client":
 		cookie, err = a.DB.SignupClient(signup, newCookie)
@@ -58,7 +58,7 @@ func (a *Authorization) Login(login *utils.Authorization) (*utils.Defense, error
 		return nil, err
 	}
 
-	cookie := a.DB.GenerateNew()
+	cookie := a.DB.NewDefense()
 	err = a.DB.AddCookie(cookie, userId)
 
 	if err != nil {

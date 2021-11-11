@@ -136,7 +136,7 @@ func TestOrmGetStructFood(t *testing.T) {
 			Times(tt.countQueryStructure)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := testUser.GetStructFood(tt.input)
+			result, err := testUser.getStructFood(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
@@ -196,7 +196,7 @@ func TestOrmGetStructRadios(t *testing.T) {
 			Times(tt.countQueryStructure)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := testUser.GetStructRadios(tt.input)
+			result, err := testUser.getStructRadios(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
@@ -388,7 +388,7 @@ func TestOrmUpdateCartStructFood(t *testing.T) {
 			Times(tt.countInsert)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := testUser.UpdateCartStructFood(tt.inputIngredient, tt.inputClientId, mTx)
+			result, err := testUser.updateCartStructFood(tt.inputIngredient, tt.inputClientId, mTx)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
@@ -456,7 +456,7 @@ func TestOrmUpdateCartRadios(t *testing.T) {
 			Times(tt.countInsert)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := testUser.UpdateCartRadios(tt.inputRadios, tt.inputClientId, mTx)
+			result, err := testUser.updateCartRadios(tt.inputRadios, tt.inputClientId, mTx)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))

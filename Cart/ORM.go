@@ -14,7 +14,7 @@ type Wrapper struct {
 	Conn Interfaces.ConnectionInterface
 }
 
-func (db *Wrapper) GetStructFood(id int) ([]Utils.IngredientCartResponse, error) {
+func (db *Wrapper) getStructFood(id int) ([]Utils.IngredientCartResponse, error) {
 	var ingredients []Utils.IngredientCartResponse
 	rows, err := db.Conn.Query(context.Background(),
 		"SELECT checkbox FROM cart_structure_food WHERE client_id = $1", id)
@@ -42,7 +42,7 @@ func (db *Wrapper) GetStructFood(id int) ([]Utils.IngredientCartResponse, error)
 	return ingredients, nil
 }
 
-func (db *Wrapper) GetStructRadios(id int) ([]Utils.RadiosCartResponse, error) {
+func (db *Wrapper) getStructRadios(id int) ([]Utils.RadiosCartResponse, error) {
 	var radios []Utils.RadiosCartResponse
 	rows, err := db.Conn.Query(context.Background(),
 		"SELECT radios_id, radios FROM cart_radios_food WHERE client_id = $1", id)
@@ -118,13 +118,13 @@ func (db *Wrapper) GetCart(id int) (*Utils.ResponseCartErrors, []Utils.CastDishe
 		dish.Weight = dish.Weight * dish.Count
 		dish.Kilocalorie = dish.Kilocalorie * dish.Count
 
-		ingredients, err = db.GetStructFood(id)
+		ingredients, err = db.getStructFood(id)
 		if err != nil {
 			return nil, nil, err
 		}
 		dish.IngredientCart = ingredients
 
-		radios, err = db.GetStructRadios(id)
+		radios, err = db.getStructRadios(id)
 		dish.RadiosCart = radios
 		if err != nil {
 			return nil, nil, err
@@ -171,7 +171,7 @@ func (db *Wrapper) DeleteCart(id int) error {
 	return nil
 }
 
-func (db *Wrapper) UpdateCartStructFood(ingredients []Utils.IngredientsCartRequest, clientId int, tx pgx.Tx) ([]Utils.IngredientCartResponse, error) {
+func (db *Wrapper) updateCartStructFood(ingredients []Utils.IngredientsCartRequest, clientId int, tx pgx.Tx) ([]Utils.IngredientCartResponse, error) {
 	var result []Utils.IngredientCartResponse
 	for _, ingredient := range ingredients {
 		var checkedIngredient Utils.IngredientCartResponse
@@ -198,7 +198,7 @@ func (db *Wrapper) UpdateCartStructFood(ingredients []Utils.IngredientsCartReque
 	}
 	return result, nil
 }
-func (db *Wrapper) UpdateCartRadios(radios []Utils.RadiosCartRequest, clientId int, tx pgx.Tx) ([]Utils.RadiosCartResponse, error) {
+func (db *Wrapper) updateCartRadios(radios []Utils.RadiosCartRequest, clientId int, tx pgx.Tx) ([]Utils.RadiosCartResponse, error) {
 	var result []Utils.RadiosCartResponse
 	for _, radio := range radios {
 		var checkedRadios Utils.RadiosCartResponse
@@ -295,12 +295,12 @@ func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*
 				Time: time.Now(),
 			}
 		}
-		cart.Dishes[i].IngredientCart, err = db.UpdateCartStructFood(dish.Ingredients, clientId, tx)
+		cart.Dishes[i].IngredientCart, err = db.updateCartStructFood(dish.Ingredients, clientId, tx)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		cart.Dishes[i].RadiosCart, err = db.UpdateCartRadios(dish.Radios, clientId, tx)
+		cart.Dishes[i].RadiosCart, err = db.updateCartRadios(dish.Radios, clientId, tx)
 		if err != nil {
 			return nil, nil, err
 		}

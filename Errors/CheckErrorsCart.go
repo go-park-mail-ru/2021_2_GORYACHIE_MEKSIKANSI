@@ -11,7 +11,7 @@ func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 		switch err.Error() {
 		case CGetCartDishesNotFound, CGetCartDishesNotScan, CGetStructFoodRestaurantNotSelect,
 			CGetStructFoodCheckboxNotScan, CGetStructRadiosRadiosNotSelect, CGetStructRadiosRadiosNotScan,
-			CGetStructRadiosStructRadiosNotScan, CGetStructRadiosStructRadiosNotFound:
+			CGetStructRadiosStructRadiosNotFound, CGetStructRadiosStructRadiosNotScan:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,

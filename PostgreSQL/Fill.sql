@@ -79,16 +79,13 @@ SET
 INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1', NOW(), '');
 
 INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, count, weight)
-SELECT 'name', random() * (500 - 10) + 10, random() * (53 - 1) + 1, 'description', 1, 1, random() * (1000 - 1) + 1, 1, 'text', 'text', random() * (101 - 1) - 1, random() * (51 - 1) - 1 FROM generate_series(1, 1000);
+SELECT 'name', random() * (500 - 10) + 10, random() * (53 - 1) + 1, 'description', 1, 1, random() * (1000 - 1) + 1, 1, 'text', 'text', random() * (101 - 1) - 1, random() * (51 - 1) + 1 FROM generate_series(1, 1000);
 UPDATE dishes
 SET
     name = (
             array[
                 'Бургер',
             'Двойной бургер',
-            'Тройной бургер',
-            'Четверной бургер',
-            'Пятерной бургер',
             'Картофель',
             'Сибас',
             'Икра',
@@ -114,7 +111,7 @@ SET
             'Мороженое',
             'Красный рак'
                 ]
-        ) [floor(random() * 29 + 1)],
+        ) [floor(random() * 26 + 1)],
     category_dishes = (
             array[
                 'Суп',
@@ -128,14 +125,12 @@ SET
             array[
                 'Вкусно',
                 'Напитки',
-                'Что-то похожее на еду',
                 'Пиццы',
                 'Суши',
                 'Десерт',
-                'Закуски',
-                'Особые ингредиенты'
+                'Закуски'
                 ]
-           ) [floor(random() * 8 + 1)],
+           ) [floor(random() * 6 + 1)],
     description = (
             array[
                 'Большое комбо. При изменении комплектации цена комбо может измениться.',
@@ -171,10 +166,6 @@ SET
                 'Хороший',
                 'Лучший',
                 'Единственный',
-                'Кака',
-                'Лучший, т.к. единственный',
-                'Хз',
-                'Призрак',
                 'Суши-бар',
                 'Кальянная',
                 'Пиццерия',
@@ -187,7 +178,7 @@ SET
                 'Поп-ап',
                 'Виртуальный'
                 ]
-        ) [floor(random() * 18 + 1)]
+        ) [floor(random() * 14 + 1)]
 ;
 
 INSERT INTO radios (name, food)
@@ -201,10 +192,9 @@ SET
                 'Напиток',
                 'Секретный ингредиент',
                 'Что-то к чаю',
-                'Снеки',
-                'В одном из них яд. Угадай где)'
+                'Снеки'
                 ]
-        ) [floor(random() * 7 + 1)]
+        ) [floor(random() * 6 + 1)]
 ;
 
 INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie)
@@ -217,13 +207,11 @@ SET
                     'Картофель фри',
                     'Коктейль',
                     'Вкусный бургер',
-                    'Волос повара',
                     'Яблоки',
                     'Семга',
-                    'Кака',
                     'Форель'
                     ]
-        ) [floor(random() * 9 + 1)]
+        ) [floor(random() * 7 + 1)]
 ;
 
 INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element)
@@ -234,7 +222,7 @@ SET
                 array[
                     'Сахар',
                     'Соль',
-                    'Кетчап',
+                    'Кетчуп',
                     'Лук',
                     'Морковь',
                     'Котлета',
@@ -243,10 +231,6 @@ SET
                     ]
         ) [floor(random() * 8 + 1)]
 ;
-
-INSERT INTO cart (client_id, food, count_food, number_item, restaurant_id) VALUES (1, 1, 1, 1, 1);
-INSERT INTO cart_structure_food (client_id, checkbox) VALUES (1, 1);
-INSERT INTO cart_radios_food (client_id, radios_id, radios) VALUES (1, 1, 1);
 
 INSERT INTO address_user (client_id, alias, comment, city, street, house, floor, flat, porch, intercom, latitude, longitude)
 VALUES (1, 'Мой дом', 'Есть злая собака', 'Москва', 'Вязов', 2, 5, 28, 2, '28K', 500, 500);

@@ -42,7 +42,7 @@ func TestOrmGenerateNew(t *testing.T) {
 	m := mocks.NewMockConnectionInterface(ctrl)
 	testUser := &Wrapper{Conn: m}
 	t.Run("One", func(t *testing.T) {
-		result := testUser.GenerateNew()
+		result := testUser.NewDefense()
 		require.NotEqual(t, time.Time{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", time.Time{}, result.DateLife))
 		require.NotEqual(t, "", result, fmt.Sprintf("Expected: %v\nbut got: %v", "", result.SessionId))
 		require.NotEqual(t, "", result, fmt.Sprintf("Expected: %v\nbut got: %v", "", result.CsrfToken))
@@ -86,7 +86,7 @@ func TestOrmGeneralSignUp(t *testing.T) {
 			Return(&tt.resultQuery)
 		testUser := &Wrapper{}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := testUser.GeneralSignUp(tt.inputSignup, m)
+			result, err := testUser.generalSignUp(tt.inputSignup, m)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
@@ -353,7 +353,7 @@ func TestOrmAddTransactionCookie(t *testing.T) {
 			Return(nil, tt.errQuery)
 		testUser := &Wrapper{}
 		t.Run(tt.testName, func(t *testing.T) {
-			err := testUser.AddTransactionCookie(tt.inputCookie, m, tt.inputId)
+			err := testUser.addTransactionCookie(tt.inputCookie, m, tt.inputId)
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {

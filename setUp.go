@@ -92,7 +92,7 @@ func CreateDb() (*pgxpool.Pool, error) {
 		}
 	}
 
-	if config.DEBUG {
+	if config.Debug {
 		file, err := ioutil.ReadFile("PostgreSQL/DeleteTables.sql")
 		if err != nil {
 			return nil, &errors.Errors{
@@ -132,7 +132,7 @@ func CreateDb() (*pgxpool.Pool, error) {
 		}
 	}
 
-	if config.DEBUG {
+	if config.Debug {
 		file, err := ioutil.ReadFile("PostgreSQL/Fill.sql")
 		if err != nil {
 			return nil, &errors.Errors{
