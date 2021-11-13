@@ -234,3 +234,6 @@ SET
 
 INSERT INTO address_user (client_id, alias, comment, city, street, house, floor, flat, porch, intercom, latitude, longitude)
 VALUES (1, 'Мой дом', 'Есть злая собака', 'Москва', 'Вязов', 2, 5, 28, 2, '28K', 500, 500);
+
+INSERT INTO promocode (restaurant, name, end_date)
+VALUES (1, 'Бесплатно всё', NOW());

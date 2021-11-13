@@ -55,17 +55,16 @@ func (db *Wrapper) generalSignUp(signup *utils.RegistrationRequest, transaction 
 
 func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest, cookie *utils.Defense) (*utils.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
-
-	defer func(tx pgx.Tx) {
-		tx.Rollback(context.Background())
-	}(tx)
-
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ASignupHostTransactionNotCreate,
 			Time: time.Now(),
 		}
 	}
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
 
 	userId, err := db.generalSignUp(signup, tx)
 	if err != nil {
@@ -97,17 +96,16 @@ func (db *Wrapper) SignupHost(signup *utils.RegistrationRequest, cookie *utils.D
 
 func (db *Wrapper) SignupCourier(signup *utils.RegistrationRequest, cookie *utils.Defense) (*utils.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
-
-	defer func(tx pgx.Tx) {
-		tx.Rollback(context.Background())
-	}(tx)
-
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ASignupCourierTransactionNotCreate,
 			Time: time.Now(),
 		}
 	}
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
 
 	userId, err := db.generalSignUp(signup, tx)
 	if err != nil {
@@ -140,17 +138,16 @@ func (db *Wrapper) SignupCourier(signup *utils.RegistrationRequest, cookie *util
 
 func (db *Wrapper) SignupClient(signup *utils.RegistrationRequest, cookie *utils.Defense) (*utils.Defense, error) {
 	tx, err := db.Conn.Begin(context.Background())
-
-	defer func(tx pgx.Tx) {
-		tx.Rollback(context.Background())
-	}(tx)
-
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.ASignupClientTransactionNotCreate,
 			Time: time.Now(),
 		}
 	}
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
 
 	userId, err := db.generalSignUp(signup, tx)
 	if err != nil {
@@ -197,17 +194,16 @@ func (db *Wrapper) addTransactionCookie(cookie *utils.Defense, Transaction pgx.T
 
 func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 	tx, err := db.Conn.Begin(context.Background())
-
-	defer func(tx pgx.Tx) {
-		tx.Rollback(context.Background())
-	}(tx)
-
 	if err != nil {
 		return 0, &errorsConst.Errors{
 			Text: errorsConst.ALoginByEmailTransactionNotCreate,
 			Time: time.Now(),
 		}
 	}
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
 
 	var userId int
 	var salt string
@@ -252,17 +248,16 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 
 func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 	tx, err := db.Conn.Begin(context.Background())
-
-	defer func(tx pgx.Tx) {
-		tx.Rollback(context.Background())
-	}(tx)
-
 	if err != nil {
 		return 0, &errorsConst.Errors{
 			Text: errorsConst.ALoginByPhoneTransactionNotCreate,
 			Time: time.Now(),
 		}
 	}
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
 
 	var userId int
 	var salt string

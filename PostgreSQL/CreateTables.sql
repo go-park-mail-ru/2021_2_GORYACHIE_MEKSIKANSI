@@ -226,16 +226,40 @@ CREATE TABLE IF NOT EXISTS order_user (
     FOREIGN KEY (restaurant_id) REFERENCES restaurant (id) ON DELETE CASCADE,
     FOREIGN KEY (promocode_id) REFERENCES promocode (id) ON DELETE CASCADE,
     comment text DEFAULT '' NOT NULL,
-    status text DEFAULT '' NOT NULL,
-    method_pay int NOT NULL
+    status int DEFAULT 0 NOT NULL,
+    method_pay text NOT NULL,
+    date_order timestamp DEFAULT NOW(),
+    dCost int,
+    sumCost int
 );
 
 CREATE TABLE IF NOT EXISTS order_list (
     id serial PRIMARY KEY,
     order_id int,
     food int,
+    count int,
     FOREIGN KEY (order_id) REFERENCES order_user (id) ON DELETE CASCADE,
     FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS order_structure_list (
+    id serial PRIMARY KEY,
+    order_id int,
+    food int,
+    structure_food int,
+    FOREIGN KEY (order_id) REFERENCES order_user (id) ON DELETE CASCADE,
+    FOREIGN KEY (structure_food) REFERENCES structure_dishes (id) ON DELETE CASCADE,
+    FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS order_radios_list (
+    id serial PRIMARY KEY,
+    order_id int,
+    radios_id int,
+    radios int,
+    FOREIGN KEY (order_id) REFERENCES order_user (id) ON DELETE CASCADE,
+    FOREIGN KEY (radios_id) REFERENCES radios (id) ON DELETE CASCADE,
+    FOREIGN KEY (radios) REFERENCES structure_radios (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS cart (

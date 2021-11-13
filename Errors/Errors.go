@@ -126,6 +126,8 @@ const (
 	PGetProfileClientNotCommit            = "get profile client not commit"             // TODO: add in checkErrors
 	PUpdatePasswordTransactionNotCreate   = "transaction update password not create"    // TODO: add in checkErrors
 	PUpdatePasswordNotCommit              = "update password not commit"                // TODO: add in checkErrors
+	PAddAddressAddressNotAdd              = "address not insert"                        // TODO: add in checkErrors
+	PAddDeleteAddressNotDelete              = "address not delete"                        // TODO: add in checkErrors
 )
 
 // Error of restaurant
@@ -179,4 +181,22 @@ const (
 	CUpdateCartStructRadiosStructRadiosNotSelect   = "structure radios not select"
 	CUpdateCartTransactionNotCreate                = "transaction not create"
 	CUpdateCartNotCommit                           = "update cart not commit"
+	CGetCartTransactionNotCreate = "transaction get not create"
+	CGetCartNotSelect = "cart not select"
+	CGetCartNotCommit = "transaction get not commit"
+)
+
+// Error of Order
+const (
+	OCreateOrderTransactionNotCreate         = "transaction create order not create"
+	OCreateOrderNotCommit                    = "create order not commit"
+	OGetOrdersTransactionNotCreate           = "transaction get orders not create"
+	OGetOrdersDishesNotCommit                = "get orders not commit"
+	OCreateOrderOrderUserNotInsert           = "not insert in order_user"
+	OCreateOrderOrderRadiosListUserNotInsert = "not insert in order_radios_list"
+	OCreateOrderOrderStructureListNotInsert  = "not insert in order_structure_list"
+	OCreateOrderOrderListNotInsert           = "not insert in order_list"
+	OCreateOrderCountNotUpdate               = "count dish not update"
+	OCreateOrderCountNotCorrect              = "dishes not enough"
+	OCreateOrderCartIsVoid = "cart is void"
 )

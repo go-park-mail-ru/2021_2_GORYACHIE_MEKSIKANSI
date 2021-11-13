@@ -82,31 +82,130 @@ func (db *Wrapper) getStructRadios(id int) ([]Utils.RadiosCartResponse, error) {
 	return radios, nil
 }
 
+//func (db *Wrapper) GetCart(id int) (*Utils.ResponseCartErrors, []Utils.CastDishesErrs, error) {
+//	var cart *Utils.ResponseCartErrors
+//	cart = &Utils.ResponseCartErrors{}
+//	var dishes []Utils.DishesCartResponse
+//	var radios []Utils.RadiosCartResponse
+//	var ingredients []Utils.IngredientCartResponse
+//	var dishesError Utils.CastDishesErrs
+//	var dishesErrors []Utils.CastDishesErrs
+//
+//	var restaurant Utils.RestaurantIdCastResponse
+//	rows, err := db.Conn.Query(context.Background(),
+//		"SELECT food, count_food, number_item, name, cost, description, avatar, restaurant_id, count, weight, kilocalorie FROM cart"+
+//			" JOIN dishes ON cart.food = dishes.id WHERE client_id = $1", id)
+//
+//	var dish *Utils.DishesCartResponse
+//	dish = &Utils.DishesCartResponse{}
+//	count := 0
+//
+//	for rows.Next() {
+//		err = rows.Scan(&dish.Id, &dish.Count, &dish.ItemNumber, &dish.Name, &dish.Cost, &dish.Description, &dish.Img, &restaurant.Id, &count, &dish.Weight, &dish.Kilocalorie)
+//		if err != nil {
+//			return nil, nil, &errorsConst.Errors{
+//				Text: errorsConst.CGetCartDishesNotScan,
+//				Time: time.Now(),
+//			}
+//		}
+//
+//		if dish.Count > count && count != -1 {
+//			dishesError.ItemNumber = dish.ItemNumber
+//			dishesError.NameDish = dish.Name
+//			dishesError.CountAvail = count
+//			dishesErrors = append(dishesErrors, dishesError)
+//		}
+//		dish.Weight = dish.Weight * dish.Count
+//		dish.Kilocalorie = dish.Kilocalorie * dish.Count
+//
+//		ingredients, err = db.getStructFood(id)
+//		if err != nil {
+//			return nil, nil, err
+//		}
+//		dish.IngredientCart = ingredients
+//
+//		radios, err = db.getStructRadios(id)
+//		dish.RadiosCart = radios
+//		if err != nil {
+//			return nil, nil, err
+//		}
+//
+//		dishes = append(dishes, *dish)
+//	}
+//	if cart == nil {
+//		return nil, nil, &errorsConst.Errors{
+//			Text: errorsConst.CGetCartDishesNotFound,
+//			Time: time.Now(),
+//		}
+//	}
+//	cart.Restaurant = restaurant
+//	cart.Dishes = dishes
+//	return cart, dishesErrors, nil
+//}
+
+
 func (db *Wrapper) GetCart(id int) (*Utils.ResponseCartErrors, []Utils.CastDishesErrs, error) {
-	var cart *Utils.ResponseCartErrors
-	cart = &Utils.ResponseCartErrors{}
-	var dishes []Utils.DishesCartResponse
-	var radios []Utils.RadiosCartResponse
-	var ingredients []Utils.IngredientCartResponse
-	var dishesError Utils.CastDishesErrs
-	var dishesErrors []Utils.CastDishesErrs
+	tx, err := db.Conn.Begin(context.Background())
+	if err != nil {
+		return nil, nil, &errorsConst.Errors{
+			Text: errorsConst.CGetCartTransactionNotCreate,
+			Time: time.Now(),
+		}
+	}
 
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
+
+	var result Utils.ResponseCartErrors
+	row, err := tx.Query(context.Background(),
+		"SELECT cart.food, cart.number_item, d.avatar, d.name, cart.count_food, d.cost, d.kilocalorie, d.weight," +
+		" d.description, sr.name, sr.id, sr.radios, sd.name, sd.id, sd.cost, d.restaurant, d.count " +
+		"FROM cart " +
+		"LEFT JOIN dishes d ON d.id = cart.food " +
+		"LEFT JOIN cart_structure_food csf ON csf.client_id = cart.client_id " +
+		"LEFT JOIN structure_dishes sd ON sd.id = csf.checkbox " +
+		"LEFT JOIN cart_radios_food crf ON crf.client_id = cart.client_id " +
+		"LEFT JOIN structure_radios sr ON sr.id = crf.radios " +
+		"WHERE cart.client_id = $1", id)
+	if err != nil {
+		return nil, nil, &errorsConst.Errors{
+			Text: errorsConst.CGetCartNotSelect,
+			Time: time.Now(),
+		}
+	}
+
+	m := make(map[int]Utils.DishesCartResponse)
 	var restaurant Utils.RestaurantIdCastResponse
-	rows, err := db.Conn.Query(context.Background(),
-		"SELECT food, count_food, number_item, name, cost, description, avatar, restaurant_id, count, weight, kilocalorie FROM cart"+
-			" JOIN dishes ON cart.food = dishes.id WHERE client_id = $1", id)
 
-	var dish *Utils.DishesCartResponse
-	dish = &Utils.DishesCartResponse{}
-	count := 0
+	for row.Next() {
+		var radios Utils.RadiosCartResponse
+		var ingredient Utils.IngredientCartResponse
+		var dish Utils.DishesCartResponse
+		var dishesError Utils.CastDishesErrs
+		var dishesErrors []Utils.CastDishesErrs
+		var count int
 
-	for rows.Next() {
-		err = rows.Scan(&dish.Id, &dish.Count, &dish.ItemNumber, &dish.Name, &dish.Cost, &dish.Description, &dish.Img, &restaurant.Id, &count, &dish.Weight, &dish.Kilocalorie)
+		var radiosName, radiosId, radiosRadiosId interface{}
+		var ingredientName, ingredientId, ingredientCost interface{}
+		err := row.Scan(&dish.Id, &dish.ItemNumber, &dish.Img, &dish.Name, &dish.Count, &dish.Cost, &dish.Kilocalorie,
+			&dish.Weight, &dish.Description, &radiosName, &radiosId, &radiosRadiosId, &ingredientName,
+			&ingredientId, &ingredientCost, &restaurant.Id, &count)
+
 		if err != nil {
-			return nil, nil, &errorsConst.Errors{
-				Text: errorsConst.CGetCartDishesNotScan,
-				Time: time.Now(),
-			}
+			return nil, nil, err
+		}
+
+		if radiosName != nil {
+			radios.Name = radiosName.(string)
+			radios.Id = int(radiosId.(int32))
+			radios.RadiosId = int(radiosRadiosId.(int32))
+		}
+
+		if ingredientName != nil {
+			ingredient.Name = ingredientName.(string)
+			ingredient.Id = int(ingredientId.(int32))
+			ingredient.Cost = int(ingredientCost.(int32))
 		}
 
 		if dish.Count > count && count != -1 {
@@ -118,29 +217,49 @@ func (db *Wrapper) GetCart(id int) (*Utils.ResponseCartErrors, []Utils.CastDishe
 		dish.Weight = dish.Weight * dish.Count
 		dish.Kilocalorie = dish.Kilocalorie * dish.Count
 
-		ingredients, err = db.getStructFood(id)
-		if err != nil {
-			return nil, nil, err
-		}
-		dish.IngredientCart = ingredients
+		if val, ok := m[dish.Id]; ok {
+			if ingredient.Id != 0 {
+				val.IngredientCart = append(m[dish.Id].IngredientCart, ingredient)
+				m[dish.Id] = val
+			}
 
-		radios, err = db.getStructRadios(id)
-		dish.RadiosCart = radios
-		if err != nil {
-			return nil, nil, err
-		}
+			if radios.Id != 0 {
+				val.RadiosCart = append(m[dish.Id].RadiosCart, radios)
+				m[dish.Id] = val
+			}
+		} else {
+			if radiosName != nil {
+				dish.RadiosCart = append(dish.RadiosCart, radios)
+			}
 
-		dishes = append(dishes, *dish)
+			if ingredientName != nil {
+				dish.IngredientCart = append(dish.IngredientCart, ingredient)
+			}
+			m[dish.Id] = dish
+		}
 	}
-	if cart == nil {
+
+	if m == nil {
 		return nil, nil, &errorsConst.Errors{
 			Text: errorsConst.CGetCartDishesNotFound,
 			Time: time.Now(),
 		}
 	}
-	cart.Restaurant = restaurant
-	cart.Dishes = dishes
-	return cart, dishesErrors, nil
+	result.Restaurant = restaurant
+
+	for _, dish := range m {
+		result.Dishes = append(result.Dishes, dish)
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return nil, nil, &errorsConst.Errors{
+			Text: errorsConst.CGetCartNotCommit,
+			Time: time.Now(),
+		}
+	}
+
+	return &result, nil, nil
 }
 
 func (db *Wrapper) DeleteCart(id int) error {
@@ -198,6 +317,7 @@ func (db *Wrapper) updateCartStructFood(ingredients []Utils.IngredientsCartReque
 	}
 	return result, nil
 }
+
 func (db *Wrapper) updateCartRadios(radios []Utils.RadiosCartRequest, clientId int, tx pgx.Tx) ([]Utils.RadiosCartResponse, error) {
 	var result []Utils.RadiosCartResponse
 	for _, radio := range radios {
@@ -228,23 +348,16 @@ func (db *Wrapper) updateCartRadios(radios []Utils.RadiosCartRequest, clientId i
 
 func (db *Wrapper) UpdateCart(newCart Utils.RequestCartDefault, clientId int) (*Utils.ResponseCartErrors, []Utils.CastDishesErrs, error) {
 	tx, err := db.Conn.Begin(context.Background())
-	defer func(tx pgx.Tx) {
-		switch err {
-		case nil:
-
-		default:
-			err := tx.Rollback(context.Background())
-			if err != nil {
-				return
-			}
-		}
-	}(tx)
 	if err != nil {
 		return nil, nil, &errorsConst.Errors{
 			Text: errorsConst.CUpdateCartTransactionNotCreate,
 			Time: time.Now(),
 		}
 	}
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
 
 	var dishesErrors []Utils.CastDishesErrs
 	var cart Utils.ResponseCartErrors

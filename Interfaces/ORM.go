@@ -54,6 +54,8 @@ type WrapperProfile interface {
 	UpdateAvatar(id int, newAvatar *Utils.UpdateAvatar, newFileName string) error
 	UpdateBirthday(id int, newBirthday time.Time) error
 	UpdateAddress(id int, newAddress Utils.AddressCoordinates) error
+	AddAddress(id int, newAddress Utils.AddressCoordinates) (int, error)
+	DeleteAddress(id int, addressId int) error
 }
 
 type WrapperAuthorization interface {
@@ -79,6 +81,13 @@ type WrapperMiddleware interface {
 	NewCSRF(cookie *Utils.Defense) (string, error)
 	GetIdByCookie(cookie *Utils.Defense) (int, error)
 }
+
 type Uploader interface {
 	Upload(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
+}
+
+type WrapperOrder interface {
+	CreateOrder(id int, createOrder Utils.CreateOrder, addressId int, cart Utils.ResponseCartErrors, courierId int) error
+	GetOrders(id int) (*Utils.HistoryOrderArray, error)
+	GetPriceDelivery(id int) (int, error)
 }

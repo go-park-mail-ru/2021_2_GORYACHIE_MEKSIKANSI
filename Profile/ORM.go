@@ -22,17 +22,16 @@ type Wrapper struct {
 
 func (db *Wrapper) GetRoleById(id int) (string, error) {
 	tx, err := db.Conn.Begin(context.Background())
-
-	defer func(tx pgx.Tx) {
-		tx.Rollback(context.Background())
-	}(tx)
-
 	if err != nil {
 		return "", &errorsConst.Errors{
 			Text: errorsConst.PGetRoleByIdTransactionNotCreate,
 			Time: time.Now(),
 		}
 	}
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
 
 	role := 0
 
@@ -100,17 +99,16 @@ func (db *Wrapper) GetProfileHost(id int) (*utils.Profile, error) {
 
 func (db *Wrapper) GetProfileClient(id int) (*utils.Profile, error) {
 	tx, err := db.Conn.Begin(context.Background())
-
-	defer func(tx pgx.Tx) {
-		tx.Rollback(context.Background())
-	}(tx)
-
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.PGetProfileClientTransactionNotCreate,
 			Time: time.Now(),
 		}
 	}
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
 
 	var profile = utils.Profile{}
 	err = db.Conn.QueryRow(context.Background(),
@@ -198,17 +196,16 @@ func (db *Wrapper) UpdateEmail(id int, newEmail string) error {
 
 func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
 	tx, err := db.Conn.Begin(context.Background())
-
-	defer func(tx pgx.Tx) {
-		tx.Rollback(context.Background())
-	}(tx)
-
 	if err != nil {
 		return &errorsConst.Errors{
 			Text: errorsConst.PUpdatePasswordTransactionNotCreate,
 			Time: time.Now(),
 		}
 	}
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
 
 	var salt string
 	err = db.Conn.QueryRow(context.Background(),
@@ -324,7 +321,8 @@ func (db *Wrapper) UpdateAddress(id int, newAddress Utils.AddressCoordinates) er
 	newAddress.Sanitize()
 	_, err := db.Conn.Exec(context.Background(),
 		"UPDATE address_user SET alias = $1, comment = $2, city = $3, street = $4, house = $5, floor = $6,"+
-			" flat = $7, porch = $8, intercom = $9, latitude = $10, longitude = $11 WHERE client_id = $12",
+			" flat = $7, porch = $8, intercom = $9, latitude = $10, longitude = $11"+
+			" WHERE client_id = $12 AND deleted = false",
 		newAddress.Alias, newAddress.Comment, newAddress.City,
 		newAddress.Street, newAddress.House, newAddress.Floor, newAddress.Flat,
 		newAddress.Porch, newAddress.Intercom, newAddress.Coordinates.Latitude,
@@ -337,4 +335,38 @@ func (db *Wrapper) UpdateAddress(id int, newAddress Utils.AddressCoordinates) er
 	}
 
 	return nil
+}
+
+func (db *Wrapper) AddAddress(id int, newAddress Utils.AddressCoordinates) (int, error) {
+	var idAddress int
+	newAddress.Sanitize()
+	err := db.Conn.QueryRow(context.Background(),
+		"INSERT INTO address_user (city, street, house, floor, flat, porch, intercom, latitude, longitude, client_id, deleted)"+
+			" VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true) RETURNING id",
+		newAddress.City, newAddress.Street, newAddress.House,
+		newAddress.Floor, newAddress.Flat, newAddress.Porch,
+		newAddress.Intercom, newAddress.Coordinates.Latitude,
+		newAddress.Coordinates.Longitude, id).Scan(&idAddress)
+	if err != nil {
+		return 0, &errorsConst.Errors{
+			Text: errorsConst.PAddAddressAddressNotAdd,
+			Time: time.Now(),
+		}
+	}
+
+	return idAddress, nil
+}
+
+func (db *Wrapper) DeleteAddress(id int, addressId int) error {
+	_, err := db.Conn.Exec(context.Background(),
+		"UPDATE address_user SET deleted = true WHERE client_id = $1 AND id = $2",
+		id, addressId)
+	if err != nil {
+		return &errorsConst.Errors{
+			Text: errorsConst.PAddDeleteAddressNotDelete,
+			Time: time.Now(),
+		}
+	}
+
+	return  nil
 }

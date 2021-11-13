@@ -3,8 +3,9 @@ package Utils
 import "time"
 
 type CreateOrder struct {
-	Address AddressCoordinates `json:"address"`
-	Comment string             `json:"comment"`
+	MethodPay string             `json:"methodPay"`
+	Address   AddressCoordinates `json:"address"`
+	Comment   string             `json:"comment"`
 }
 
 type HistoryOrderArray struct {
@@ -16,7 +17,7 @@ type HistoryOrder struct {
 	Date       time.Time          `json:"date"`
 	Address    AddressCoordinates `json:"address"`
 	Restaurant HistoryResOrder    `json:"restaurant"`
-	Cart       ResponseCartErrors `json:"cart"`
+	Cart       ResponseCartOrder  `json:"cart"`
 }
 
 type HistoryResOrder struct {
@@ -24,4 +25,9 @@ type HistoryResOrder struct {
 	Name    string             `json:"name"`
 	Img     string             `json:"img"`
 	Address AddressCoordinates `json:"address"`
+}
+
+type ResponseCartOrder struct {
+	Dishes     []DishesCartResponse     `json:"dishes"`
+	Cost       CostCartResponse         `json:"cost"`
 }

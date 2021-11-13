@@ -28,6 +28,8 @@ type ProfileApplication interface {
 	UpdateAvatar(id int, newAvatar *utils.UpdateAvatar) error
 	UpdateBirthday(id int, newBirthday time.Time) error
 	UpdateAddress(id int, newAddress utils.AddressCoordinates) error
+	AddAddress(id int, newAddress utils.AddressCoordinates) (int, error)
+	DeleteAddress(id int, addressId int) error
 }
 
 type MiddlewareApplication interface {
@@ -44,5 +46,5 @@ type RestaurantApplication interface {
 
 type OrderApplication interface {
 	CreateOrder(id int, createOrder utils.CreateOrder) error
-	GetOrders(id int) (utils.HistoryOrderArray, error)
+	GetOrders(id int) (*utils.HistoryOrderArray, error)
 }

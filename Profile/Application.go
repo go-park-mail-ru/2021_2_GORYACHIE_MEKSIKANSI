@@ -91,3 +91,11 @@ func (p *Profile) UpdateBirthday(id int, newBirthday time.Time) error {
 func (p *Profile) UpdateAddress(id int, newAddress utils.AddressCoordinates) error {
 	return p.DB.UpdateAddress(id, newAddress)
 }
+
+func (p *Profile) AddAddress(id int, newAddress utils.AddressCoordinates) (int, error) {
+	return p.DB.AddAddress(id, newAddress)
+}
+
+func (p *Profile) DeleteAddress(id int, addressId int) error {
+	return p.DB.DeleteAddress(id, addressId)
+}

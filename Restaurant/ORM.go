@@ -121,17 +121,17 @@ func getDishesRestaurant(db *Wrapper, name string, id int) ([]Utils.DishesMenu, 
 
 func (db *Wrapper) GetMenu(id int) ([]Utils.Menu, error) {
 	tx, err := db.Conn.Begin(context.Background())
-
-	defer func(tx pgx.Tx) {
-		tx.Rollback(context.Background())
-	}(tx)
-
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.RGetMenuTransactionNotCreate,
 			Time: time.Now(),
 		}
 	}
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
+
 	var result []Utils.Menu
 	rowDishes, err := tx.Query(context.Background(),
 		"SELECT DISTINCT category_restaurant FROM dishes WHERE restaurant = $1", id)
@@ -257,17 +257,16 @@ func (db *Wrapper) GetDishes(restId int, dishesId int) (*Utils.Dishes, error) {
 
 func (db *Wrapper) GetRadios(dishesId int) ([]Utils.Radios, error) {
 	tx, err := db.Conn.Begin(context.Background())
-
-	defer func(tx pgx.Tx) {
-		tx.Rollback(context.Background())
-	}(tx)
-
 	if err != nil {
 		return nil, &errorsConst.Errors{
 			Text: errorsConst.RGetRadiosNotCreate,
 			Time: time.Now(),
 		}
 	}
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
 
 	var radios []Utils.Radios
 

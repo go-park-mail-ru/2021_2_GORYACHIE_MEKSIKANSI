@@ -6,6 +6,7 @@ import (
 	config "2021_2_GORYACHIE_MEKSIKANSI/Configs"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
+	order "2021_2_GORYACHIE_MEKSIKANSI/Order"
 	profile "2021_2_GORYACHIE_MEKSIKANSI/Profile"
 	restaurant "2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
@@ -48,6 +49,7 @@ func runServer(port string) {
 	profileInfo := startStructure[2].(profile.InfoProfile)
 	infoMid := startStructure[3].(mid.InfoMiddleware)
 	restaurantInfo := startStructure[4].(restaurant.InfoRestaurant)
+	orderInfo := startStructure[5].(order.InfoOrder)
 
 	myRouter := router.New()
 	apiGroup := myRouter.Group("/api")
@@ -55,6 +57,7 @@ func runServer(port string) {
 	userGroup := versionGroup.Group("/user")
 	restaurantGroup := versionGroup.Group("/restaurant")
 	cartGroup := userGroup.Group("/cart")
+	orderGroup := userGroup.Group("/order")
 
 	userGroup.POST("/login", userInfo.LoginHandler)
 	userGroup.POST("/signup", userInfo.SignUpHandler)
@@ -75,6 +78,9 @@ func runServer(port string) {
 
 	cartGroup.GET("/", infoMid.GetId(cartInfo.GetCartHandler))
 	cartGroup.PUT("/", infoMid.Check(infoMid.GetId(cartInfo.UpdateCartHandler)))
+
+	orderGroup.GET("/", infoMid.GetId(orderInfo.GetOrdersHandler))
+	orderGroup.POST("/", infoMid.Check(infoMid.GetId(orderInfo.CreateOrderHandler)))
 
 	printURL := infoMid.PrintURL(myRouter.Handler)
 

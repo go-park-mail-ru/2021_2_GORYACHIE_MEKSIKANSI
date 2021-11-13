@@ -7,6 +7,7 @@ import (
 	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	interfaces "2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
+	order "2021_2_GORYACHIE_MEKSIKANSI/Order"
 	profile "2021_2_GORYACHIE_MEKSIKANSI/Profile"
 	restaurant "2021_2_GORYACHIE_MEKSIKANSI/Restaurant"
 	"context"
@@ -70,12 +71,26 @@ func setUp(connectionDB interfaces.ConnectionInterface, logger errors.MultiLogge
 	}
 	var _ interfaces.CartApi = &cartInfo
 
+	orderWrapper := order.Wrapper{Conn: connectionDB}
+	orderApp := order.Order{
+		DB:           &orderWrapper,
+		DBCart:       &cartWrapper,
+		DBProfile:    &profileWrapper,
+		DBRestaurant: &restWrapper,
+	}
+	orderInfo := order.InfoOrder{
+		Application: &orderApp,
+		Logger:      logger,
+	}
+	var _ interfaces.OrderAPI = &orderInfo
+
 	var result []interface{}
 	result = append(result, userInfo)
 	result = append(result, cartInfo)
 	result = append(result, profileInfo)
 	result = append(result, infoMiddleware)
 	result = append(result, restaurantInfo)
+	result = append(result, orderInfo)
 
 	return result
 }
