@@ -1,9 +1,5 @@
 package Errors
 
-import (
-	"time"
-)
-
 type MultiLogger interface {
 	Debugf(template string, args ...interface{})
 	Infof(template string, args ...interface{})
@@ -19,7 +15,6 @@ type ResultError struct {
 
 type Errors struct {
 	Text string
-	Time time.Time
 }
 
 func (e *Errors) Error() string {

@@ -21,7 +21,7 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		r.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	checkError := &errors.CheckError{
@@ -44,8 +44,6 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	ctx.SetStatusCode(http.StatusOK)
-
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 		Body: &utils.RestaurantsResponse{
@@ -58,6 +56,8 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
+
+	ctx.SetStatusCode(http.StatusOK)
 }
 
 func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
@@ -66,7 +66,7 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		r.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	checkError := &errors.CheckError{
@@ -79,7 +79,7 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		r.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	restaurant, err := r.Application.GetRestaurant(id)
@@ -98,8 +98,6 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	ctx.SetStatusCode(http.StatusOK)
-
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 		Body: &utils.RestaurantIdResponse{
@@ -112,6 +110,8 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
+
+	ctx.SetStatusCode(http.StatusOK)
 }
 
 func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
@@ -120,7 +120,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		r.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	checkError := &errors.CheckError{
@@ -133,7 +133,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		r.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	idDishCtx := ctx.UserValue("idDish")
@@ -141,7 +141,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		r.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	dishes, err := r.Application.RestaurantDishes(idRes, idDish)
@@ -159,8 +159,6 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	ctx.SetStatusCode(http.StatusOK)
-
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 		Body: &utils.DishesResponse{
@@ -173,4 +171,6 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 		fmt.Printf("Console: %s\n", errors.ErrEncode)
 		return
 	}
+
+	ctx.SetStatusCode(http.StatusOK)
 }

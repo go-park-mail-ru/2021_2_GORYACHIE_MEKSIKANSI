@@ -20,7 +20,7 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		c.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	checkError := &errors.CheckError{
@@ -33,7 +33,7 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		c.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	result, err := c.Application.GetCart(id)
@@ -50,7 +50,7 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	}
-	ctx.Response.SetStatusCode(http.StatusOK)
+
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 		Body: &utils.ResponseCart{
@@ -64,6 +64,7 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
+	ctx.Response.SetStatusCode(http.StatusOK)
 }
 
 func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
@@ -72,7 +73,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		c.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	checkError := &errors.CheckError{
@@ -85,7 +86,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
-		c.Logger.Errorf("UpdateCartHandler: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
+		c.Logger.Errorf("error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
 		return
 	}
 
@@ -101,7 +102,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		c.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	result, err := c.Application.UpdateCart(cartRequest.Cart, id)
@@ -118,8 +119,6 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	}
-	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
-	ctx.Response.SetStatusCode(http.StatusOK)
 
 	if result != nil {
 		err = json.NewEncoder(ctx).Encode(&utils.Result{
@@ -131,7 +130,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 		if err != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errors.ErrEncode))
-			c.Logger.Errorf("UpdateCartHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+			c.Logger.Errorf("error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
 			return
 		}
 		return
@@ -144,7 +143,9 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		c.Logger.Errorf("UpdateCartHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		c.Logger.Errorf("error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
 		return
 	}
+	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
 }

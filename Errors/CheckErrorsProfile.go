@@ -3,7 +3,6 @@ package Errors
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 )
 
 func (c *CheckError) CheckErrorProfile(err error) (error, []byte, int) {
@@ -19,14 +18,12 @@ func (c *CheckError) CheckErrorProfile(err error) (error, []byte, int) {
 				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
-						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
-					Time: time.Now(),
 				},
 				result, http.StatusInternalServerError
 		}
@@ -46,14 +43,12 @@ func (c *CheckError) CheckErrorProfileUpdateName(err error) (error, []byte, int)
 				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
-						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("error: %s, requestId: %d", PUpdateNameNameNotUpdate, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
-					Time: time.Now(),
 				},
 				result, http.StatusInternalServerError
 		}
@@ -73,16 +68,15 @@ func (c *CheckError) CheckErrorProfileUpdateEmail(err error) (error, []byte, int
 				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
-						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("error: %s, requestId: %d", PUpdateEmailEmailNotUpdate, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
-					Time: time.Now(),
 				},
 				result, http.StatusInternalServerError
+
 		case PUpdateEmailEmailRepeat:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
@@ -92,14 +86,12 @@ func (c *CheckError) CheckErrorProfileUpdateEmail(err error) (error, []byte, int
 				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
-						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Warnf("error: %s, requestId: %d", PUpdateEmailEmailRepeat, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
-					Time: time.Now(),
 				},
 				result, http.StatusOK
 		}
@@ -119,14 +111,12 @@ func (c *CheckError) CheckErrorProfileUpdatePassword(err error) (error, []byte, 
 				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
-						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
-					Time: time.Now(),
 				},
 				result, http.StatusInternalServerError
 		}
@@ -146,16 +136,15 @@ func (c *CheckError) CheckErrorProfileUpdatePhone(err error) (error, []byte, int
 				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
-						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
-					Time: time.Now(),
 				},
 				result, http.StatusInternalServerError
+
 		case PUpdatePhonePhoneRepeat:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
@@ -165,14 +154,12 @@ func (c *CheckError) CheckErrorProfileUpdatePhone(err error) (error, []byte, int
 				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
-						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Warnf("error: %s, requestId: %d", PUpdatePhonePhoneRepeat, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
-					Time: time.Now(),
 				},
 				result, http.StatusOK
 		}
@@ -193,14 +180,12 @@ func (c *CheckError) CheckErrorProfileUpdateAvatar(err error) (error, []byte, in
 				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
-						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
-					Time: time.Now(),
 				},
 				result, http.StatusInternalServerError
 		}
@@ -220,14 +205,12 @@ func (c *CheckError) CheckErrorProfileUpdateBirthday(err error) (error, []byte, 
 				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
-						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("error: %s, requestId: %d", PUpdateBirthdayBirthdayNotUpdate, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
-					Time: time.Now(),
 				},
 				result, http.StatusInternalServerError
 		}
@@ -247,14 +230,12 @@ func (c *CheckError) CheckErrorProfileUpdateAddress(err error) (error, []byte, i
 				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
 						Text: ErrMarshal,
-						Time: time.Now(),
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("error: %s, requestId: %d", PUpdateAddressAddressNotUpdate, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
-					Time: time.Now(),
 				},
 				result, http.StatusInternalServerError
 		}

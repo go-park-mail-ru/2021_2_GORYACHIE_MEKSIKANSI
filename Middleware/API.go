@@ -14,7 +14,7 @@ type InfoMiddleware struct {
 	Logger      errors.MultiLogger
 }
 
-func (m *InfoMiddleware) PrintURL(h fasthttp.RequestHandler) fasthttp.RequestHandler {
+func (m *InfoMiddleware) LogURL(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
 		reqId := utils.RandomInteger(0, math.MaxInt64)
 		m.Logger.Infof("Method: %s, URL: %s, requestId: %d", string(ctx.Method()), ctx.URI(), reqId)
@@ -23,14 +23,14 @@ func (m *InfoMiddleware) PrintURL(h fasthttp.RequestHandler) fasthttp.RequestHan
 	})
 }
 
-func (m *InfoMiddleware) GetId(h fasthttp.RequestHandler) fasthttp.RequestHandler {
+func (m *InfoMiddleware) GetIdClient(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
 		reqIdCtx := ctx.UserValue("reqId")
 		reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
 		if errConvert != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errConvert.Error()))
-			m.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+			m.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
 		}
 		ctx.SetUserValue("reqId", reqId)
 
@@ -62,14 +62,14 @@ func (m *InfoMiddleware) GetId(h fasthttp.RequestHandler) fasthttp.RequestHandle
 	})
 }
 
-func (m *InfoMiddleware) Check(h fasthttp.RequestHandler) fasthttp.RequestHandler {
+func (m *InfoMiddleware) CheckClient(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
 		reqIdCtx := ctx.UserValue("reqId")
 		reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
 		if errConvert != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errConvert.Error()))
-			m.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+			m.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
 		}
 		ctx.SetUserValue("reqId", reqId)
 

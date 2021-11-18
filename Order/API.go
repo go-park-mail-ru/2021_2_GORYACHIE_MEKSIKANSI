@@ -20,7 +20,7 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	checkError := &errPkg.CheckError{
@@ -33,7 +33,7 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
-		u.Logger.Errorf("UpdateUserPhone: error: %s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
+		u.Logger.Errorf("error: %s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
 		return
 	}
 
@@ -42,7 +42,7 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
 	}
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := utils.InterfaceConvertString(tokenContext)
@@ -51,7 +51,6 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
 		return
 	}
-	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 
 	err = u.Application.CreateOrder(id, createOrder)
 
@@ -69,7 +68,6 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
 		StatusHTTP: http.StatusOK,
 	})
@@ -79,6 +77,9 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 		return
 	}
+
+	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
 }
 
 func (u *InfoOrder) GetOrdersHandler(ctx *fasthttp.RequestCtx) {
@@ -87,7 +88,7 @@ func (u *InfoOrder) GetOrdersHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	checkError := &errPkg.CheckError{
@@ -99,7 +100,7 @@ func (u *InfoOrder) GetOrdersHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
 	}
 
 	historyOrders, err := u.Application.GetOrders(id)
@@ -116,7 +117,6 @@ func (u *InfoOrder) GetOrdersHandler(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	}
-	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 		Body:   historyOrders,
@@ -127,4 +127,6 @@ func (u *InfoOrder) GetOrdersHandler(ctx *fasthttp.RequestCtx) {
 		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 		return
 	}
+
+	ctx.Response.SetStatusCode(http.StatusOK)
 }
