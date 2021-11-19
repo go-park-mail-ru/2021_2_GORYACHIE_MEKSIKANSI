@@ -1,10 +1,9 @@
 package Authorization
 
 import (
-	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
-	"time"
 )
 
 const LenSalt = 5
@@ -25,9 +24,8 @@ func (a *Authorization) SignUp(signup *utils.RegistrationRequest) (*utils.Defens
 	case "host":
 		cookie, err = a.DB.SignupHost(signup, newCookie)
 	default:
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.ASignUpUnknownType,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.ASignUpUnknownType,
 		}
 	}
 
@@ -48,9 +46,8 @@ func (a *Authorization) Login(login *utils.Authorization) (*utils.Defense, error
 	case login.Phone != "":
 		userId, err = a.DB.LoginByPhone(login.Phone, login.Password)
 	default:
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.ALoginVoidLogin,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.ALoginVoidLogin,
 		}
 	}
 

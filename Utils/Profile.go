@@ -52,7 +52,7 @@ type UpdateAddress struct {
 
 type AddressCoordinates struct {
 	Coordinates Coordinates `json:"coordinates"`
-	Alias       string      `json:"alias"`
+	Alias       string      `json:"alias,omitempty"`
 	City        string      `json:"city"`
 	Street      string      `json:"street,omitempty"`
 	House       string      `json:"house,omitempty"`

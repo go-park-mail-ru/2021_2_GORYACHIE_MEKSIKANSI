@@ -1,13 +1,11 @@
 package Restaurant
 
 import (
-	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
 	"github.com/jackc/pgx/v4"
-	"strings"
-	"time"
 )
 
 type Wrapper struct {
@@ -18,9 +16,8 @@ func (db *Wrapper) GetRestaurants() ([]Utils.Restaurants, error) {
 	row, err := db.Conn.Query(context.Background(),
 		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant ORDER BY random() LIMIT 50")
 	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.RGetRestaurantsRestaurantsNotSelect,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetRestaurantsRestaurantsNotSelect,
 		}
 	}
 
@@ -30,18 +27,16 @@ func (db *Wrapper) GetRestaurants() ([]Utils.Restaurants, error) {
 		err := row.Scan(&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery,
 			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating)
 		if err != nil {
-			return nil, &errorsConst.Errors{
-				Text: errorsConst.RGetRestaurantsRestaurantsNotScan,
-				Time: time.Now(),
+			return nil, &errPkg.Errors{
+				Alias: errPkg.RGetRestaurantsRestaurantsNotScan,
 			}
 		}
 		result = append(result, restaurant)
 	}
 
 	if result == nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.RGetRestaurantsRestaurantsNotFound,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetRestaurantsRestaurantsNotFound,
 		}
 	}
 
@@ -55,9 +50,8 @@ func (db *Wrapper) GetGeneralInfoRestaurant(id int) (*Utils.RestaurantId, error)
 		&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery, &restaurant.MinDelivery,
 		&restaurant.MaxDelivery, &restaurant.Rating)
 	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.RGetGeneralInfoRestaurantNotFound,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetGeneralInfoRestaurantNotFound,
 		}
 	}
 	return &restaurant, nil
@@ -67,9 +61,8 @@ func (db *Wrapper) GetTagsRestaurant(id int) ([]Utils.Tag, error) {
 	rowCategory, err := db.Conn.Query(context.Background(),
 		"SELECT id, category FROM restaurant_category WHERE restaurant = $1", id)
 	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.RGetTagsCategoryNotSelect,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetTagsCategoryNotSelect,
 		}
 	}
 	var tags []Utils.Tag
@@ -77,17 +70,15 @@ func (db *Wrapper) GetTagsRestaurant(id int) ([]Utils.Tag, error) {
 	for rowCategory.Next() {
 		err := rowCategory.Scan(&tag.Id, &tag.Name)
 		if err != nil {
-			return nil, &errorsConst.Errors{
-				Text: errorsConst.RGetTagsCategoryRestaurantNotScan,
-				Time: time.Now(),
+			return nil, &errPkg.Errors{
+				Alias: errPkg.RGetTagsCategoryRestaurantNotScan,
 			}
 		}
 		tags = append(tags, tag)
 	}
 	if tags == nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.RGetTagsTagsNotFound,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetTagsTagsNotFound,
 		}
 	}
 	return tags, nil
@@ -100,18 +91,16 @@ func getDishesRestaurant(db *Wrapper, name string, id int) ([]Utils.DishesMenu, 
 		"SELECT id, avatar, name, cost, kilocalorie FROM dishes WHERE category_restaurant = $1 AND restaurant = $2",
 		name, id)
 	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.RGetMenuDishesNotSelect,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetMenuDishesNotSelect,
 		}
 	}
 
 	for rowDishes.Next() {
 		err := rowDishes.Scan(&dish.Id, &dish.Img, &dish.Name, &dish.Cost, &dish.Kilocalorie)
 		if err != nil {
-			return nil, &errorsConst.Errors{
-				Text: errorsConst.RGetDishesRestaurantDishesNotScan,
-				Time: time.Now(),
+			return nil, &errPkg.Errors{
+				Alias: errPkg.RGetDishesRestaurantDishesNotScan,
 			}
 		}
 		dishes = append(dishes, dish)
@@ -121,24 +110,22 @@ func getDishesRestaurant(db *Wrapper, name string, id int) ([]Utils.DishesMenu, 
 
 func (db *Wrapper) GetMenu(id int) ([]Utils.Menu, error) {
 	tx, err := db.Conn.Begin(context.Background())
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetMenuTransactionNotCreate,
+		}
+	}
 
 	defer func(tx pgx.Tx) {
 		tx.Rollback(context.Background())
 	}(tx)
 
-	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.RGetMenuTransactionNotCreate,
-			Time: time.Now(),
-		}
-	}
 	var result []Utils.Menu
 	rowDishes, err := tx.Query(context.Background(),
 		"SELECT DISTINCT category_restaurant FROM dishes WHERE restaurant = $1", id)
 	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.RGetMenuDishesNotSelect,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetMenuDishesNotSelect,
 		}
 	}
 
@@ -159,17 +146,15 @@ func (db *Wrapper) GetMenu(id int) ([]Utils.Menu, error) {
 	}
 
 	if result == nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.RGetMenuDishesNotFound,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetMenuDishesNotFound,
 		}
 	}
 
 	err = tx.Commit(context.Background())
 	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.RGetMenuDishesNotCommit,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetMenuDishesNotCommit,
 		}
 	}
 
@@ -181,9 +166,8 @@ func (db *Wrapper) GetStructDishes(dishesId int) ([]Utils.Ingredients, error) {
 	rowDishes, err := db.Conn.Query(context.Background(),
 		"SELECT id, name, cost FROM structure_dishes WHERE food = $1", dishesId)
 	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.RGetStructDishesStructDishesNotSelect,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetStructDishesStructDishesNotSelect,
 		}
 	}
 
@@ -191,46 +175,13 @@ func (db *Wrapper) GetStructDishes(dishesId int) ([]Utils.Ingredients, error) {
 		var ingredient Utils.Ingredients
 		err := rowDishes.Scan(&ingredient.Id, &ingredient.Title, &ingredient.Cost)
 		if err != nil {
-			return nil, &errorsConst.Errors{
-				Text: errorsConst.RGetStructDishesStructDishesNotScan,
-				Time: time.Now(),
+			return nil, &errPkg.Errors{
+				Alias: errPkg.RGetStructDishesStructDishesNotScan,
 			}
 		}
 		ingredients = append(ingredients, ingredient)
 	}
 	return ingredients, nil
-}
-
-func getStructRadios(db *Wrapper, radId int) ([]Utils.CheckboxesRows, error) {
-	rowDishes, err := db.Conn.Query(context.Background(),
-		"SELECT id, name FROM structure_radios WHERE radios = $1", radId)
-	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.RGetStructRadiosStructRadiosNotSelect,
-			Time: time.Now(),
-		}
-	}
-
-	var rows []Utils.CheckboxesRows
-	for rowDishes.Next() {
-		var row Utils.CheckboxesRows
-		err := rowDishes.Scan(&row.Id, &row.Name)
-		if err != nil {
-			errorText := err.Error()
-			if strings.Contains(errorText, "no rows") {
-				return nil, &errorsConst.Errors{
-					Text: errorsConst.RGetStructRadiosStructRadiosNotFound,
-					Time: time.Now(),
-				}
-			}
-			return nil, &errorsConst.Errors{
-				Text: errorsConst.RGetStructRadiosStructRadiosNotScan,
-				Time: time.Now(),
-			}
-		}
-		rows = append(rows, row)
-	}
-	return rows, nil
 }
 
 func (db *Wrapper) GetDishes(restId int, dishesId int) (*Utils.Dishes, error) {
@@ -240,16 +191,13 @@ func (db *Wrapper) GetDishes(restId int, dishesId int) (*Utils.Dishes, error) {
 		dishesId, restId).Scan(
 		&dishes.Id, &dishes.Img, &dishes.Title, &dishes.Cost, &dishes.Ccal, &dishes.Description)
 	if err != nil {
-		errorText := err.Error()
-		if strings.Contains(errorText, "no rows") {
-			return nil, &errorsConst.Errors{
-				Text: errorsConst.RGetDishesDishesNotFound,
-				Time: time.Now(),
+		if err == pgx.ErrNoRows {
+			return nil, &errPkg.Errors{
+				Alias: errPkg.RGetDishesDishesNotFound,
 			}
 		}
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.RGetDishesDishesNotScan,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetDishesDishesNotScan,
 		}
 	}
 	return &dishes, nil
@@ -257,55 +205,52 @@ func (db *Wrapper) GetDishes(restId int, dishesId int) (*Utils.Dishes, error) {
 
 func (db *Wrapper) GetRadios(dishesId int) ([]Utils.Radios, error) {
 	tx, err := db.Conn.Begin(context.Background())
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetRadiosNotCreate,
+		}
+	}
 
 	defer func(tx pgx.Tx) {
 		tx.Rollback(context.Background())
 	}(tx)
 
-	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.RGetRadiosNotCreate,
-			Time: time.Now(),
-		}
-	}
-
 	var radios []Utils.Radios
+	m := make(map[int][]Utils.CheckboxesRows)
 
 	rowDishes, err := tx.Query(context.Background(),
-		"SELECT id, name FROM radios WHERE food = $1", dishesId)
+		"SELECT r.id, r.name, sr.id, sr.name FROM radios r "+
+			"LEFT JOIN structure_radios sr ON sr.radios=r.id WHERE r.food = $1", dishesId)
 	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.RGetRadiosRadiosNotSelect,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetRadiosRadiosNotSelect,
 		}
 	}
 
 	for rowDishes.Next() {
 		var rad Utils.Radios
-		err := rowDishes.Scan(&rad.Id, &rad.Title)
+		var elementRadios Utils.CheckboxesRows
+		err := rowDishes.Scan(&rad.Id, &rad.Title, &elementRadios.Id, &elementRadios.Name)
 		if err != nil {
-			return nil, &errorsConst.Errors{
-				Text: errorsConst.RGetRadiosRadiosNotScan,
-				Time: time.Now(),
+			return nil, &errPkg.Errors{
+				Alias: errPkg.RGetRadiosRadiosNotScan,
 			}
 		}
 
-		rows, err := getStructRadios(db, rad.Id)
-		if err != nil {
-			return nil, err
-		}
-
-		if rows != nil {
-			rad.Rows = rows
+		if _, ok := m[rad.Id]; !ok {
 			radios = append(radios, rad)
 		}
+		m[rad.Id] = append(m[rad.Id], elementRadios)
+	}
+
+	for i, rad := range radios {
+		radios[i].Rows = m[rad.Id]
 	}
 
 	err = tx.Commit(context.Background())
 	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.RGetRadiosNotCommit,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetRadiosNotCommit,
 		}
 	}
 

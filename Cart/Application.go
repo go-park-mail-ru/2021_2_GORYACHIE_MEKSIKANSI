@@ -20,10 +20,10 @@ func (c *Cart) CalculateCost(result *Utils.ResponseCartErrors, rest *Utils.Resta
 	for i, dish := range result.Dishes {
 		ingredientCost := 0
 		for _, ingredient := range dish.IngredientCart {
-			ingredientCost = ingredientCost + ingredient.Cost
+			ingredientCost += ingredient.Cost
 		}
 		dishCost := (dish.Cost + ingredientCost) * dish.Count
-		sumCost = sumCost + dishCost
+		sumCost += dishCost
 		result.Dishes[i].Cost = dishCost
 	}
 	cost.SumCost = sumCost
@@ -36,7 +36,7 @@ func (c *Cart) CalculateCost(result *Utils.ResponseCartErrors, rest *Utils.Resta
 			return nil, err
 		}
 	}
-	cost.SumCost = cost.DCost + cost.SumCost
+	cost.SumCost += cost.DCost
 	return &cost, nil
 }
 

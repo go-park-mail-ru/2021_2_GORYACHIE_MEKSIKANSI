@@ -1,9 +1,5 @@
 package Errors
 
-import (
-	"time"
-)
-
 type MultiLogger interface {
 	Debugf(template string, args ...interface{})
 	Infof(template string, args ...interface{})
@@ -18,12 +14,12 @@ type ResultError struct {
 }
 
 type Errors struct {
-	Text string
-	Time time.Time
+	Alias string
+	Text  string
 }
 
 func (e *Errors) Error() string {
-	return e.Text
+	return e.Alias
 }
 
 type CheckError struct {
@@ -68,10 +64,10 @@ const (
 	ASignUpHostNotCommit               = "signup host not commit"
 	ASignUpCourierNotCommit            = "signup courier not commit"
 	ASignUpClientNotCommit             = "signup client not commit"
-	ALoginByEmailTransactionNotCreate  = "transaction login by email not create"  // TODO: add in checkErrors
-	ALoginByEmailNotCommit             = "login by email not commit"              // TODO: add in checkErrors
-	ALoginByPhoneTransactionNotCreate  = "transaction  login by phone not create" // TODO: add in checkErrors
-	ALoginByPhoneNotCommit             = "login by phone not commit"              // TODO: add in checkErrors
+	ALoginByEmailTransactionNotCreate  = "transaction login by email not create"
+	ALoginByEmailNotCommit             = "login by email not commit"
+	ALoginByPhoneTransactionNotCreate  = "transaction  login by phone not create"
+	ALoginByPhoneNotCommit             = "login by phone not commit"
 )
 
 // Error of Middleware
@@ -126,6 +122,8 @@ const (
 	PGetProfileClientNotCommit            = "get profile client not commit"             // TODO: add in checkErrors
 	PUpdatePasswordTransactionNotCreate   = "transaction update password not create"    // TODO: add in checkErrors
 	PUpdatePasswordNotCommit              = "update password not commit"                // TODO: add in checkErrors
+	PAddAddressAddressNotAdd              = "address not insert"                        // TODO: add in checkErrors
+	PAddDeleteAddressNotDelete            = "address not delete"                        // TODO: add in checkErrors
 )
 
 // Error of restaurant
@@ -142,10 +140,7 @@ const (
 	RGetDishesDishesNotScan               = "dishes not scan"
 	RGetStructDishesStructDishesNotSelect = "dishes not select"
 	RGetStructDishesStructDishesNotScan   = "dishes not scan"
-	RGetStructRadiosStructRadiosNotSelect = "struct radios not select"
 	RGetRadiosRadiosNotScan               = "radios not scan"
-	RGetStructRadiosStructRadiosNotFound  = "radios not found"
-	RGetStructRadiosStructRadiosNotScan   = "structure radios not scan"
 	RGetTagsCategoryNotSelect             = "category not select"
 	RGetRadiosRadiosNotSelect             = "radios not select"
 	RGetTagsTagsNotFound                  = "tags not found"
@@ -158,7 +153,6 @@ const (
 // Error of Cart
 const (
 	CGetCartDishesNotFound                         = "dishes not found"
-	CGetCartDishesNotScan                          = "dishes not scan"
 	CGetStructFoodRestaurantNotSelect              = "restaurant not select"
 	CGetStructFoodCheckboxNotScan                  = "checkbox not scan"
 	CGetStructRadiosRadiosNotSelect                = "radios not select"
@@ -179,4 +173,23 @@ const (
 	CUpdateCartStructRadiosStructRadiosNotSelect   = "structure radios not select"
 	CUpdateCartTransactionNotCreate                = "transaction not create"
 	CUpdateCartNotCommit                           = "update cart not commit"
+	CGetCartTransactionNotCreate                   = "transaction get not create"
+	CGetCartNotSelect                              = "cart not select"
+	CGetCartNotCommit                              = "transaction get not commit"
+	CGetCartNotScan                                = "cart not scan"
+)
+
+// Error of Order
+const (
+	OCreateOrderTransactionNotCreate         = "transaction create order not create" // TODO: add in checkErrors
+	OCreateOrderNotCommit                    = "create order not commit"             // TODO: add in checkErrors
+	OGetOrdersTransactionNotCreate           = "transaction get orders not create"   // TODO: add in checkErrors
+	OGetOrdersDishesNotCommit                = "get orders not commit"               // TODO: add in checkErrors
+	OCreateOrderOrderUserNotInsert           = "not insert in order_user"            // TODO: add in checkErrors
+	OCreateOrderOrderRadiosListUserNotInsert = "not insert in order_radios_list"     // TODO: add in checkErrors
+	OCreateOrderOrderStructureListNotInsert  = "not insert in order_structure_list"  // TODO: add in checkErrors
+	OCreateOrderOrderListNotInsert           = "not insert in order_list"            // TODO: add in checkErrors
+	OCreateOrderCountNotUpdate               = "count dish not update"               // TODO: add in checkErrors
+	OCreateOrderCountNotCorrect              = "dishes not enough"                   // TODO: add in checkErrors
+	OCreateOrderCartIsVoid                   = "cart is void"                        // TODO: add in checkErrors
 )

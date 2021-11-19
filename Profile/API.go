@@ -21,7 +21,7 @@ func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 
 	checkError := &errPkg.CheckError{
@@ -34,7 +34,7 @@ func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 
 	profile, err := u.Application.GetProfile(id)
@@ -52,7 +52,6 @@ func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 		Body: &utils.ProfileResponse{
@@ -62,10 +61,11 @@ func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("ProfileHandler: error: %s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 		return
 	}
 
+	ctx.Response.SetStatusCode(http.StatusOK)
 }
 
 func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
@@ -74,7 +74,7 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 
 	checkError := &errPkg.CheckError{
@@ -87,7 +87,7 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
-		u.Logger.Errorf("UpdateUserName: error: %s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
 		return
 	}
 
@@ -96,7 +96,7 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := utils.InterfaceConvertString(tokenContext)
@@ -105,7 +105,6 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
 		return
 	}
-	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 
 	err = u.Application.UpdateName(id, userName.Name)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorProfileUpdateName(err)
@@ -122,17 +121,18 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
 		StatusHTTP: http.StatusOK,
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("UpdateUserName: error: %s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 		return
 	}
 
+	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
 }
 
 func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
@@ -141,7 +141,7 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 
 	checkError := &errPkg.CheckError{
@@ -154,7 +154,7 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
-		u.Logger.Errorf("UpdateUserEmail: error: %s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
 		return
 	}
 
@@ -163,7 +163,7 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := utils.InterfaceConvertString(tokenContext)
@@ -172,7 +172,6 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
 		return
 	}
-	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 
 	err = u.Application.UpdateEmail(id, userEmail.Email)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorProfileUpdateEmail(err)
@@ -189,17 +188,18 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
 		StatusHTTP: http.StatusOK,
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("UpdateUserEmail: error: %s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 		return
 	}
 
+	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
 }
 
 func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
@@ -208,7 +208,7 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 	checkError := &errPkg.CheckError{
 		Logger:    u.Logger,
@@ -220,7 +220,7 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
-		u.Logger.Errorf("UpdateUserPassword: error: %s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
 		return
 	}
 
@@ -229,7 +229,7 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := utils.InterfaceConvertString(tokenContext)
@@ -238,7 +238,6 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
 		return
 	}
-	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 
 	err = u.Application.UpdatePassword(id, userPassword.Password)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorProfileUpdatePassword(err)
@@ -255,17 +254,18 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
 		StatusHTTP: http.StatusOK,
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("UpdateUserPassword: error: %s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 		return
 	}
 
+	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
 }
 
 func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
@@ -274,7 +274,7 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s, %v", errConvert.Error())
 	}
 
 	checkError := &errPkg.CheckError{
@@ -287,7 +287,7 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
-		u.Logger.Errorf("UpdateUserPhone: error: %s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
 		return
 	}
 
@@ -296,7 +296,7 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := utils.InterfaceConvertString(tokenContext)
@@ -305,7 +305,6 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
 		return
 	}
-	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 
 	err = u.Application.UpdatePhone(id, userPhone.Phone)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorProfileUpdatePhone(err)
@@ -322,17 +321,18 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
 		StatusHTTP: http.StatusOK,
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("UpdateUserPhone: error: %s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 		return
 	}
 
+	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
 }
 
 func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
@@ -341,7 +341,7 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 
 	checkError := &errPkg.CheckError{
@@ -362,7 +362,7 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := utils.InterfaceConvertString(tokenContext)
@@ -371,7 +371,6 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
 		return
 	}
-	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 
 	err := u.Application.UpdateAvatar(id, &userAvatar)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorProfileUpdateAvatar(err)
@@ -388,7 +387,6 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 		Body: &utils.UpdateAvatarRequest{
@@ -398,10 +396,12 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("UpdateUserAvatar: error: %s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 		return
 	}
 
+	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
 }
 
 func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
@@ -410,7 +410,7 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 
 	checkError := &errPkg.CheckError{
@@ -423,7 +423,7 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
-		u.Logger.Errorf("UpdateUserBirthday: error: %s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
 		return
 	}
 
@@ -432,7 +432,7 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := utils.InterfaceConvertString(tokenContext)
@@ -441,7 +441,6 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
 		return
 	}
-	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 
 	err = u.Application.UpdateBirthday(id, userBirthday.Birthday)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorProfileUpdateBirthday(err)
@@ -458,16 +457,18 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
 		StatusHTTP: http.StatusOK,
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("UpdateUserBirthday: error: %s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 		return
 	}
+
+	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
 }
 
 func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
@@ -476,7 +477,7 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 
 	checkError := &errPkg.CheckError{
@@ -489,7 +490,7 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
-		u.Logger.Errorf("UpdateUserAddress: error: %s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
 		return
 	}
 
@@ -498,7 +499,7 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := utils.InterfaceConvertString(tokenContext)
@@ -507,7 +508,6 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
 		return
 	}
-	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 
 	err = u.Application.UpdateAddress(id, userAddress.Address)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorProfileUpdateAddress(err)
@@ -524,14 +524,16 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	ctx.Response.SetStatusCode(http.StatusOK)
 	err = json.NewEncoder(ctx).Encode(&utils.ResponseStatus{
 		StatusHTTP: http.StatusOK,
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("UpdateUserAddress: error: %s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 		return
 	}
+
+	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
 }

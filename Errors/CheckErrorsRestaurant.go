@@ -3,7 +3,6 @@ package Errors
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 )
 
 func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
@@ -15,36 +14,33 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 				Explain: RGetRestaurantsRestaurantsNotFound,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
+				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Text: ErrMarshal,
-						Time: time.Now(),
+						Alias: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Warnf("error: %s, requestId: %d", RGetGeneralInfoRestaurantNotFound, c.RequestId)
+			c.Logger.Warnf("%s, requestId: %d", RGetGeneralInfoRestaurantNotFound, c.RequestId)
 			return &Errors{
-					Text: ErrCheck,
-					Time: time.Now(),
+					Alias: ErrCheck,
 				},
 				result, http.StatusOK
+
 		case RGetRestaurantsRestaurantsNotScan, RGetRestaurantsRestaurantsNotSelect:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
+				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Text: ErrMarshal,
-						Time: time.Now(),
+						Alias: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
+			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Text: ErrCheck,
-					Time: time.Now(),
+					Alias: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}
@@ -62,17 +58,15 @@ func (c *CheckError) CheckErrorRestaurantId(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
+				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Text: ErrMarshal,
-						Time: time.Now(),
+						Alias: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
+			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Text: ErrCheck,
-					Time: time.Now(),
+					Alias: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}
@@ -84,24 +78,21 @@ func (c *CheckError) CheckErrorRestaurantDishes(err error) (error, []byte, int) 
 	if err != nil {
 		switch err.Error() {
 		case RGetDishesDishesNotFound, RGetStructDishesStructDishesNotSelect, RGetStructDishesStructDishesNotScan,
-			RGetStructRadiosStructRadiosNotSelect, RGetRadiosRadiosNotScan, RGetStructRadiosStructRadiosNotFound,
-			RGetStructRadiosStructRadiosNotScan, RGetTagsCategoryNotSelect, RGetRadiosRadiosNotSelect, RGetTagsTagsNotFound:
+			RGetRadiosRadiosNotScan, RGetTagsCategoryNotSelect, RGetRadiosRadiosNotSelect, RGetTagsTagsNotFound:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
+				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Text: ErrMarshal,
-						Time: time.Now(),
+						Alias: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
+			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Text: ErrCheck,
-					Time: time.Now(),
+					Alias: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}

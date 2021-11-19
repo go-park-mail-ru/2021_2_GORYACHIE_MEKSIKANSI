@@ -3,13 +3,12 @@ package Errors
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 )
 
 func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case CGetCartDishesNotFound, CGetCartDishesNotScan, CGetStructFoodRestaurantNotSelect,
+		case CGetCartDishesNotFound, CGetStructFoodRestaurantNotSelect,
 			CGetStructFoodCheckboxNotScan, CGetStructRadiosRadiosNotSelect, CGetStructRadiosRadiosNotScan,
 			CGetStructRadiosStructRadiosNotFound, CGetStructRadiosStructRadiosNotScan:
 			result, errMarshal := json.Marshal(ResultError{
@@ -17,36 +16,33 @@ func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
+				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Text: ErrMarshal,
-						Time: time.Now(),
+						Alias: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
+			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Text: ErrCheck,
-					Time: time.Now(),
+					Alias: ErrCheck,
 				},
 				result, http.StatusInternalServerError
+
 		case RGetGeneralInfoRestaurantNotFound:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusNotFound,
 				Explain: ErrCartNull,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
+				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Text: ErrMarshal,
-						Time: time.Now(),
+						Alias: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Warnf("error: %s, requestId: %d", err.Error(), c.RequestId)
+			c.Logger.Warnf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Text: ErrCheck,
-					Time: time.Now(),
+					Alias: ErrCheck,
 				},
 				result, http.StatusOK
 		}
@@ -67,17 +63,15 @@ func (c *CheckError) CheckErrorUpdateCart(err error) (error, []byte, int) {
 				Explain: ErrDB,
 			})
 			if errMarshal != nil {
-				c.Logger.Errorf("error: %s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
+				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Text: ErrMarshal,
-						Time: time.Now(),
+						Alias: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Errorf("error: %s, requestId: %d", err.Error(), c.RequestId)
+			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Text: ErrCheck,
-					Time: time.Now(),
+					Alias: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}

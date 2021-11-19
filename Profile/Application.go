@@ -1,8 +1,7 @@
 package Profile
 
 import (
-	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
-
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"math"
@@ -30,9 +29,8 @@ func (p *Profile) GetProfile(id int) (*utils.Profile, error) {
 	case "host":
 		result, err = p.DB.GetProfileHost(id)
 	default:
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.PGetProfileUnknownRole,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.PGetProfileUnknownRole,
 		}
 	}
 	if err != nil {
@@ -61,17 +59,15 @@ func (p *Profile) UpdatePhone(id int, newPhone string) error {
 func (p *Profile) UpdateAvatar(id int, newAvatar *utils.UpdateAvatar) error {
 	header := newAvatar.FileHeader
 	if header.Filename == "" {
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdateAvatarFileNameEmpty,
-			Time: time.Now(),
+		return &errPkg.Errors{
+			Alias: errPkg.PUpdateAvatarFileNameEmpty,
 		}
 	}
 
 	startExtension := strings.LastIndex(header.Filename, ".")
 	if startExtension == -1 {
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdateAvatarFileWithoutExtension,
-			Time: time.Now(),
+		return &errPkg.Errors{
+			Alias: errPkg.PUpdateAvatarFileWithoutExtension,
 		}
 	}
 	extensionFile := header.Filename[startExtension:]
@@ -90,4 +86,12 @@ func (p *Profile) UpdateBirthday(id int, newBirthday time.Time) error {
 
 func (p *Profile) UpdateAddress(id int, newAddress utils.AddressCoordinates) error {
 	return p.DB.UpdateAddress(id, newAddress)
+}
+
+func (p *Profile) AddAddress(id int, newAddress utils.AddressCoordinates) (int, error) {
+	return p.DB.AddAddress(id, newAddress)
+}
+
+func (p *Profile) DeleteAddress(id int, addressId int) error {
+	return p.DB.DeleteAddress(id, addressId)
 }

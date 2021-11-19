@@ -1,7 +1,7 @@
 package Profile
 
 import (
-	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	"2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
@@ -22,26 +22,23 @@ type Wrapper struct {
 
 func (db *Wrapper) GetRoleById(id int) (string, error) {
 	tx, err := db.Conn.Begin(context.Background())
+	if err != nil {
+		return "", &errPkg.Errors{
+			Alias: errPkg.PGetRoleByIdTransactionNotCreate,
+		}
+	}
 
 	defer func(tx pgx.Tx) {
 		tx.Rollback(context.Background())
 	}(tx)
 
-	if err != nil {
-		return "", &errorsConst.Errors{
-			Text: errorsConst.PGetRoleByIdTransactionNotCreate,
-			Time: time.Now(),
-		}
-	}
-
 	role := 0
 
 	err = tx.QueryRow(context.Background(),
 		"SELECT id FROM host WHERE client_id = $1", id).Scan(&role)
-	if err != nil && strings.Contains(err.Error(), "no rows") != true {
-		return "", &errorsConst.Errors{
-			Text: errorsConst.PGetRoleByIdHostNotScan,
-			Time: time.Now(),
+	if err != nil && err != pgx.ErrNoRows {
+		return "", &errPkg.Errors{
+			Alias: errPkg.PGetRoleByIdHostNotScan,
 		}
 	}
 	if role != 0 {
@@ -50,10 +47,9 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 
 	err = tx.QueryRow(context.Background(),
 		"SELECT id FROM client WHERE client_id = $1", id).Scan(&role)
-	if err != nil && strings.Contains(err.Error(), "no rows") != true {
-		return "", &errorsConst.Errors{
-			Text: errorsConst.PGetRoleByIdClientNotScan,
-			Time: time.Now(),
+	if err != nil && err != pgx.ErrNoRows {
+		return "", &errPkg.Errors{
+			Alias: errPkg.PGetRoleByIdClientNotScan,
 		}
 	}
 	if role != 0 {
@@ -62,10 +58,9 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 
 	err = tx.QueryRow(context.Background(),
 		"SELECT id FROM courier WHERE client_id = $1", id).Scan(&role)
-	if err != nil && strings.Contains(err.Error(), "no rows") != true {
-		return "", &errorsConst.Errors{
-			Text: errorsConst.PGetRoleByIdCourierNotScan,
-			Time: time.Now(),
+	if err != nil && err != pgx.ErrNoRows {
+		return "", &errPkg.Errors{
+			Alias: errPkg.PGetRoleByIdCourierNotScan,
 		}
 	}
 	if role != 0 {
@@ -74,9 +69,8 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 
 	err = tx.Commit(context.Background())
 	if err != nil {
-		return "", &errorsConst.Errors{
-			Text: errorsConst.PGetRoleByIdNotCommit,
-			Time: time.Now(),
+		return "", &errPkg.Errors{
+			Alias: errPkg.PGetRoleByIdNotCommit,
 		}
 	}
 
@@ -89,9 +83,8 @@ func (db *Wrapper) GetProfileHost(id int) (*utils.Profile, error) {
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.PGetProfileHostHostNotScan,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.PGetProfileHostHostNotScan,
 		}
 	}
 
@@ -100,26 +93,23 @@ func (db *Wrapper) GetProfileHost(id int) (*utils.Profile, error) {
 
 func (db *Wrapper) GetProfileClient(id int) (*utils.Profile, error) {
 	tx, err := db.Conn.Begin(context.Background())
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.PGetProfileClientTransactionNotCreate,
+		}
+	}
 
 	defer func(tx pgx.Tx) {
 		tx.Rollback(context.Background())
 	}(tx)
-
-	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.PGetProfileClientTransactionNotCreate,
-			Time: time.Now(),
-		}
-	}
 
 	var profile = utils.Profile{}
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.PGetProfileClientClientNotScan,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.PGetProfileClientClientNotScan,
 		}
 	}
 	timeVoid := time.Time{}
@@ -127,18 +117,16 @@ func (db *Wrapper) GetProfileClient(id int) (*utils.Profile, error) {
 		err = db.Conn.QueryRow(context.Background(),
 			"SELECT date_birthday FROM client WHERE client_id = $1", id).Scan(&profile.Birthday)
 		if err != nil {
-			return nil, &errorsConst.Errors{
-				Text: errorsConst.PGetProfileClientBirthdayNotScan,
-				Time: time.Now(),
+			return nil, &errPkg.Errors{
+				Alias: errPkg.PGetProfileClientBirthdayNotScan,
 			}
 		}
 	}
 
 	err = tx.Commit(context.Background())
 	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.PGetProfileClientNotCommit,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.PGetProfileClientNotCommit,
 		}
 	}
 
@@ -151,9 +139,8 @@ func (db *Wrapper) GetProfileCourier(id int) (*utils.Profile, error) {
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
-		return nil, &errorsConst.Errors{
-			Text: errorsConst.PGetProfileCourierCourierNotScan,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.PGetProfileCourierCourierNotScan,
 		}
 	}
 	return &profile, nil
@@ -164,9 +151,8 @@ func (db *Wrapper) UpdateName(id int, newName string) error {
 		"UPDATE general_user_info SET name = $1 WHERE id = $2",
 		Utils.Sanitize(newName), id)
 	if err != nil {
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdateNameNameNotUpdate,
-			Time: time.Now(),
+		return &errPkg.Errors{
+			Alias: errPkg.PUpdateNameNameNotUpdate,
 		}
 	}
 
@@ -179,17 +165,13 @@ func (db *Wrapper) UpdateEmail(id int, newEmail string) error {
 		Utils.Sanitize(newEmail), id)
 	if err != nil {
 		textError := err.Error()
-		println(textError)
-		if textError == "ERROR: duplicate key value violates unique constraint "+
-			"\"general_user_info_email_key\" (SQLSTATE 23505)" {
-			return &errorsConst.Errors{
-				Text: errorsConst.PUpdateEmailEmailRepeat,
-				Time: time.Now(),
+		if strings.Contains(textError, "duplicate key") {
+			return &errPkg.Errors{
+				Alias: errPkg.PUpdateEmailEmailRepeat,
 			}
 		}
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdateEmailEmailNotUpdate,
-			Time: time.Now(),
+		return &errPkg.Errors{
+			Alias: errPkg.PUpdateEmailEmailNotUpdate,
 		}
 	}
 
@@ -198,26 +180,23 @@ func (db *Wrapper) UpdateEmail(id int, newEmail string) error {
 
 func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
 	tx, err := db.Conn.Begin(context.Background())
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.PUpdatePasswordTransactionNotCreate,
+		}
+	}
 
 	defer func(tx pgx.Tx) {
 		tx.Rollback(context.Background())
 	}(tx)
-
-	if err != nil {
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdatePasswordTransactionNotCreate,
-			Time: time.Now(),
-		}
-	}
 
 	var salt string
 	err = db.Conn.QueryRow(context.Background(),
 		"SELECT salt FROM general_user_info WHERE id = $1",
 		id).Scan(&salt)
 	if err != nil {
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdatePasswordSaltNotSelect,
-			Time: time.Now(),
+		return &errPkg.Errors{
+			Alias: errPkg.PUpdatePasswordSaltNotSelect,
 		}
 	}
 
@@ -225,17 +204,15 @@ func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
 		"UPDATE general_user_info SET password = $1 WHERE id = $2",
 		utils.HashPassword(newPassword, salt), id)
 	if err != nil {
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdatePasswordPasswordNotUpdate,
-			Time: time.Now(),
+		return &errPkg.Errors{
+			Alias: errPkg.PUpdatePasswordPasswordNotUpdate,
 		}
 	}
 
 	err = tx.Commit(context.Background())
 	if err != nil {
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdatePasswordNotCommit,
-			Time: time.Now(),
+		return &errPkg.Errors{
+			Alias: errPkg.PUpdatePasswordNotCommit,
 		}
 	}
 
@@ -244,9 +221,8 @@ func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
 
 func (db *Wrapper) UpdatePhone(id int, newPhone string) error {
 	if _, err := strconv.Atoi(newPhone); err != nil {
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdatePhoneIncorrectPhoneFormat,
-			Time: time.Now(),
+		return &errPkg.Errors{
+			Alias: errPkg.PUpdatePhoneIncorrectPhoneFormat,
 		}
 	}
 
@@ -254,16 +230,14 @@ func (db *Wrapper) UpdatePhone(id int, newPhone string) error {
 		"UPDATE general_user_info SET phone = $1 WHERE id = $2",
 		newPhone, id)
 	if err != nil {
-		if err.Error() == "ERROR: duplicate key value violates unique constraint "+
-			"\"general_user_info_phone_key\" (SQLSTATE 23505)" {
-			return &errorsConst.Errors{
-				Text: errorsConst.PUpdatePhonePhoneRepeat,
-				Time: time.Now(),
+		errText := err.Error()
+		if strings.Contains(errText, "duplicate key") {
+			return &errPkg.Errors{
+				Alias: errPkg.PUpdatePhonePhoneRepeat,
 			}
 		}
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdatePhonePhoneNotUpdate,
-			Time: time.Now(),
+		return &errPkg.Errors{
+			Alias: errPkg.PUpdatePhonePhoneNotUpdate,
 		}
 	}
 
@@ -274,9 +248,8 @@ func (db *Wrapper) UpdateAvatar(id int, newAvatar *Utils.UpdateAvatar, newFileNa
 	header := newAvatar.FileHeader
 	file, errTet := header.Open()
 	if errTet != nil {
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdateAvatarAvatarNotOpen,
-			Time: time.Now(),
+		return &errPkg.Errors{
+			Alias: errPkg.PUpdateAvatarAvatarNotOpen,
 		}
 	}
 
@@ -287,9 +260,8 @@ func (db *Wrapper) UpdateAvatar(id int, newAvatar *Utils.UpdateAvatar, newFileNa
 		Body:   file,
 	})
 	if err != nil {
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdateAvatarAvatarNotUpload,
-			Time: time.Now(),
+		return &errPkg.Errors{
+			Alias: errPkg.PUpdateAvatarAvatarNotUpload,
 		}
 	}
 
@@ -297,9 +269,8 @@ func (db *Wrapper) UpdateAvatar(id int, newAvatar *Utils.UpdateAvatar, newFileNa
 		"UPDATE general_user_info SET avatar = $1 WHERE id = $2",
 		newAvatar.Avatar, id)
 	if err != nil {
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdateAvatarAvatarNotUpdate,
-			Time: time.Now(),
+		return &errPkg.Errors{
+			Alias: errPkg.PUpdateAvatarAvatarNotUpdate,
 		}
 	}
 
@@ -311,9 +282,8 @@ func (db *Wrapper) UpdateBirthday(id int, newBirthday time.Time) error {
 		"UPDATE client SET date_birthday = $1 WHERE client_id = $2",
 		newBirthday, id)
 	if err != nil {
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdateBirthdayBirthdayNotUpdate,
-			Time: time.Now(),
+		return &errPkg.Errors{
+			Alias: errPkg.PUpdateBirthdayBirthdayNotUpdate,
 		}
 	}
 
@@ -324,15 +294,47 @@ func (db *Wrapper) UpdateAddress(id int, newAddress Utils.AddressCoordinates) er
 	newAddress.Sanitize()
 	_, err := db.Conn.Exec(context.Background(),
 		"UPDATE address_user SET alias = $1, comment = $2, city = $3, street = $4, house = $5, floor = $6,"+
-			" flat = $7, porch = $8, intercom = $9, latitude = $10, longitude = $11 WHERE client_id = $12",
+			" flat = $7, porch = $8, intercom = $9, latitude = $10, longitude = $11"+
+			" WHERE client_id = $12 AND deleted = false",
 		newAddress.Alias, newAddress.Comment, newAddress.City,
 		newAddress.Street, newAddress.House, newAddress.Floor, newAddress.Flat,
 		newAddress.Porch, newAddress.Intercom, newAddress.Coordinates.Latitude,
 		newAddress.Coordinates.Longitude, id)
 	if err != nil {
-		return &errorsConst.Errors{
-			Text: errorsConst.PUpdateAddressAddressNotUpdate,
-			Time: time.Now(),
+		return &errPkg.Errors{
+			Alias: errPkg.PUpdateAddressAddressNotUpdate,
+		}
+	}
+
+	return nil
+}
+
+func (db *Wrapper) AddAddress(id int, newAddress Utils.AddressCoordinates) (int, error) {
+	var idAddress int
+	newAddress.Sanitize()
+	err := db.Conn.QueryRow(context.Background(),
+		"INSERT INTO address_user (city, street, house, floor, flat, porch, intercom, latitude, longitude, client_id, deleted)"+
+			" VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true) RETURNING id",
+		newAddress.City, newAddress.Street, newAddress.House,
+		newAddress.Floor, newAddress.Flat, newAddress.Porch,
+		newAddress.Intercom, newAddress.Coordinates.Latitude,
+		newAddress.Coordinates.Longitude, id).Scan(&idAddress)
+	if err != nil {
+		return 0, &errPkg.Errors{
+			Alias: errPkg.PAddAddressAddressNotAdd,
+		}
+	}
+
+	return idAddress, nil
+}
+
+func (db *Wrapper) DeleteAddress(id int, addressId int) error {
+	_, err := db.Conn.Exec(context.Background(),
+		"UPDATE address_user SET deleted = true WHERE client_id = $1 AND id = $2",
+		id, addressId)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.PAddDeleteAddressNotDelete,
 		}
 	}
 

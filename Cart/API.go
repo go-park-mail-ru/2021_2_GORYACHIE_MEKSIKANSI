@@ -1,7 +1,7 @@
 package Cart
 
 import (
-	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	interfaces "2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"encoding/json"
@@ -11,7 +11,7 @@ import (
 
 type InfoCart struct {
 	Application interfaces.CartApplication
-	Logger      errors.MultiLogger
+	Logger      errPkg.MultiLogger
 }
 
 func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
@@ -20,10 +20,10 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		c.Logger.Errorf("%s", errConvert.Error())
 	}
 
-	checkError := &errors.CheckError{
+	checkError := &errPkg.CheckError{
 		Logger:    c.Logger,
 		RequestId: reqId,
 	}
@@ -33,24 +33,24 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		c.Logger.Errorf("%s", errConvert.Error())
 	}
 
 	result, err := c.Application.GetCart(id)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorGetCart(err)
 	if errOut != nil {
 		switch errOut.Error() {
-		case errors.ErrMarshal:
+		case errPkg.ErrMarshal:
 			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			ctx.Response.SetBody([]byte(errPkg.ErrMarshal))
 			return
-		case errors.ErrCheck:
+		case errPkg.ErrCheck:
 			ctx.Response.SetStatusCode(codeHTTP)
 			ctx.Response.SetBody(resultOutAccess)
 			return
 		}
 	}
-	ctx.Response.SetStatusCode(http.StatusOK)
+
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 		Body: &utils.ResponseCart{
@@ -59,11 +59,12 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		c.Logger.Errorf("GetCartHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
+		c.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 		return
 	}
 
+	ctx.Response.SetStatusCode(http.StatusOK)
 }
 
 func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
@@ -72,10 +73,10 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		c.Logger.Errorf("%s", errConvert.Error())
 	}
 
-	checkError := &errors.CheckError{
+	checkError := &errPkg.CheckError{
 		Logger:    c.Logger,
 		RequestId: reqId,
 	}
@@ -84,16 +85,16 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	err := json.Unmarshal(ctx.Request.Body(), &cartRequest)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
-		c.Logger.Errorf("UpdateCartHandler: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
+		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
+		c.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
 		return
 	}
 
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := utils.InterfaceConvertString(tokenContext)
-	if (errConvert != nil) && (errConvert.Error() == errors.ErrNotStringAndInt) {
+	if (errConvert != nil) && (errConvert.Error() == errPkg.ErrNotStringAndInt) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
 		return
 	}
 	idCtx := ctx.UserValue("id")
@@ -101,25 +102,23 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		c.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		c.Logger.Errorf("%s", errConvert.Error())
 	}
 
 	result, err := c.Application.UpdateCart(cartRequest.Cart, id)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorUpdateCart(err)
 	if errOut != nil {
 		switch errOut.Error() {
-		case errors.ErrMarshal:
+		case errPkg.ErrMarshal:
 			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			ctx.Response.SetBody([]byte(errPkg.ErrMarshal))
 			return
-		case errors.ErrCheck:
+		case errPkg.ErrCheck:
 			ctx.Response.SetStatusCode(codeHTTP)
 			ctx.Response.SetBody(resultOutAccess)
 			return
 		}
 	}
-	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
-	ctx.Response.SetStatusCode(http.StatusOK)
 
 	if result != nil {
 		err = json.NewEncoder(ctx).Encode(&utils.Result{
@@ -130,8 +129,8 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 		})
 		if err != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errors.ErrEncode))
-			c.Logger.Errorf("UpdateCartHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+			ctx.Response.SetBody([]byte(errPkg.ErrEncode))
+			c.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 			return
 		}
 		return
@@ -143,8 +142,10 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		c.Logger.Errorf("UpdateCartHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
+		c.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 		return
 	}
+	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
 }

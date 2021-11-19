@@ -1,7 +1,7 @@
 package Authorization
 
 import (
-	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	interfaces "2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 
@@ -13,7 +13,7 @@ import (
 
 type UserInfo struct {
 	Application interfaces.AuthorizationApplication
-	Logger      errors.MultiLogger
+	Logger      errPkg.MultiLogger
 }
 
 func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
@@ -22,10 +22,10 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 
-	checkError := &errors.CheckError{
+	checkError := &errPkg.CheckError{
 		Logger:    u.Logger,
 		RequestId: reqId,
 	}
@@ -34,8 +34,8 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	err := json.Unmarshal(ctx.Request.Body(), &signUpAll)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
-		u.Logger.Errorf("SignUpHandler: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
+		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
+		u.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrUnmarshal, err.Error(), reqId)
 		return
 	}
 
@@ -45,21 +45,16 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	errOut, resultOut, codeHTTP := checkError.CheckErrorSignUp(errIn)
 	if errOut != nil {
 		switch errOut.Error() {
-		case errors.ErrMarshal:
+		case errPkg.ErrMarshal:
 			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			ctx.Response.SetBody([]byte(errPkg.ErrMarshal))
 			return
-		case errors.ErrCheck:
+		case errPkg.ErrCheck:
 			ctx.Response.SetStatusCode(codeHTTP)
 			ctx.Response.SetBody(resultOut)
 			return
 		}
 	}
-
-	utils.SetCookieResponse(&cookieHTTP, *cookieDB, utils.KeyCookieSessionId)
-	ctx.Response.Header.SetCookie(&cookieHTTP)
-	ctx.Response.Header.Set("X-Csrf-Token", cookieDB.CsrfToken)
-	ctx.Response.SetStatusCode(http.StatusOK)
 
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusCreated,
@@ -69,10 +64,15 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		u.Logger.Errorf("SignUpHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
+		u.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrEncode, err.Error(), reqId)
 		return
 	}
+
+	utils.SetCookieResponse(&cookieHTTP, *cookieDB, utils.KeyCookieSessionId)
+	ctx.Response.Header.SetCookie(&cookieHTTP)
+	ctx.Response.Header.Set("X-Csrf-Token", cookieDB.CsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
 	//ctx.Response.Header.SetContentType("application/json")
 }
 
@@ -82,10 +82,10 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 
-	checkError := &errors.CheckError{
+	checkError := &errPkg.CheckError{
 		Logger:    u.Logger,
 		RequestId: reqId,
 	}
@@ -94,8 +94,8 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	err := json.Unmarshal(ctx.Request.Body(), &userLogin)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrUnmarshal))
-		u.Logger.Errorf("LoginHandler: error: %s, %v, requestId: %d", errors.ErrUnmarshal, err, reqId)
+		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
+		u.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrUnmarshal, err.Error(), reqId)
 		return
 	}
 	var cookieHTTP fasthttp.Cookie
@@ -104,32 +104,31 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	errOut, resultOut, codeHTTP := checkError.CheckErrorLogin(err)
 	if errOut != nil {
 		switch errOut.Error() {
-		case errors.ErrMarshal:
+		case errPkg.ErrMarshal:
 			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			ctx.Response.SetBody([]byte(errPkg.ErrMarshal))
 			return
-		case errors.ErrCheck:
+		case errPkg.ErrCheck:
 			ctx.Response.SetStatusCode(codeHTTP)
 			ctx.Response.SetBody(resultOut)
 			return
 		}
 	}
 
-	utils.SetCookieResponse(&cookieHTTP, *cookieDB, utils.KeyCookieSessionId)
-	ctx.Response.Header.SetCookie(&cookieHTTP)
-	ctx.Response.Header.Set("X-CSRF-Token", cookieDB.CsrfToken)
-	ctx.Response.SetStatusCode(http.StatusOK)
-
 	err = json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		u.Logger.Errorf("LoginHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
+		u.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrEncode, err.Error(), reqId)
 		return
 	}
 
+	utils.SetCookieResponse(&cookieHTTP, *cookieDB, utils.KeyCookieSessionId)
+	ctx.Response.Header.SetCookie(&cookieHTTP)
+	ctx.Response.Header.Set("X-CSRF-Token", cookieDB.CsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
 }
 
 func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
@@ -138,10 +137,10 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 
-	checkError := &errors.CheckError{
+	checkError := &errPkg.CheckError{
 		Logger:    u.Logger,
 		RequestId: reqId,
 	}
@@ -151,9 +150,9 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := utils.InterfaceConvertString(tokenContext)
-	if (errConvert != nil) && (errConvert.Error() == errors.ErrNotStringAndInt) {
+	if (errConvert != nil) && (errConvert.Error() == errPkg.ErrNotStringAndInt) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
 		return
 	}
 
@@ -162,11 +161,11 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	errOut, resultOut, codeHTTP := checkError.CheckErrorLogout(err)
 	if errOut != nil {
 		switch errOut.Error() {
-		case errors.ErrMarshal:
+		case errPkg.ErrMarshal:
 			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			ctx.Response.SetBody([]byte(errPkg.ErrMarshal))
 			return
-		case errors.ErrCheck:
+		case errPkg.ErrCheck:
 			ctx.Response.SetStatusCode(codeHTTP)
 			ctx.Response.SetBody(resultOut)
 			return
@@ -183,8 +182,8 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		u.Logger.Errorf("LogoutHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
+		u.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrEncode, err.Error(), reqId)
 		return
 	}
 
@@ -196,26 +195,26 @@ func (u *UserInfo) PayHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("SignUpHandler: GetId: %s, %v", errConvert.Error(), errConvert)
+		u.Logger.Errorf("%s", errConvert.Error())
 	}
 
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := utils.InterfaceConvertString(tokenContext)
-	if (errConvert != nil) && (errConvert.Error() == errors.ErrNotStringAndInt) {
+	if (errConvert != nil) && (errConvert.Error() == errPkg.ErrNotStringAndInt) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrNotStringAndInt))
+		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
 		return
 	}
 
-	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
-	ctx.Response.SetStatusCode(http.StatusOK)
 	err := json.NewEncoder(ctx).Encode(&utils.Result{
 		Status: http.StatusOK,
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		u.Logger.Errorf("PayHandler: error: %s, %v, requestId: %d", errors.ErrEncode, err, reqId)
+		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 		return
 	}
+	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
 }
