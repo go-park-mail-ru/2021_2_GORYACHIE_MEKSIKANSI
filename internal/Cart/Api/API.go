@@ -3,7 +3,7 @@ package Api
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Cart"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
 	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
 	"encoding/json"

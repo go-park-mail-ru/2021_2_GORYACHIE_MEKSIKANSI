@@ -2,7 +2,7 @@ package Orm
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Cart"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
 	"context"
 	"github.com/jackc/pgx/v4"

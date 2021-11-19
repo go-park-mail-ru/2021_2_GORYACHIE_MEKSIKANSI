@@ -2,7 +2,7 @@ package Application
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Cart"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
 	Order2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Order"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant"

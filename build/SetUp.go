@@ -8,7 +8,7 @@ import (
 	Api2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Cart/Api"
 	Application2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Cart/Application"
 	Orm2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Cart/Orm"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
 	Api3 "2021_2_GORYACHIE_MEKSIKANSI/internal/Middleware/Api"
 	Application3 "2021_2_GORYACHIE_MEKSIKANSI/internal/Middleware/Application"

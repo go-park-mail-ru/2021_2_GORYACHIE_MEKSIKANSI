@@ -1,7 +1,7 @@
 package Application
 
 import (
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
 	Profile2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Profile"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"

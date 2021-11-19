@@ -1,4 +1,4 @@
-package Errors
+package MyErrors
 
 import (
 	"encoding/json"

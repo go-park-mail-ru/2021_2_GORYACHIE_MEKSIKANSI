@@ -1,7 +1,7 @@
 package Orm
 
 import (
-	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/internal/Errors"
+	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Middleware/Application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
 	mocks "2021_2_GORYACHIE_MEKSIKANSI/test/Mocks"

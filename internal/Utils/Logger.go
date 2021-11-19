@@ -1,7 +1,7 @@
 package Utils
 
 import (
-	errors "2021_2_GORYACHIE_MEKSIKANSI/internal/Errors"
+	errors "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

@@ -5,7 +5,7 @@ import (
 	config "2021_2_GORYACHIE_MEKSIKANSI/configs"
 	auth "2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization/Api"
 	cart "2021_2_GORYACHIE_MEKSIKANSI/internal/Cart/Api"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/internal/Middleware/Api"
 	order "2021_2_GORYACHIE_MEKSIKANSI/internal/Order/Api"
 	profile "2021_2_GORYACHIE_MEKSIKANSI/internal/Profile/Api"
