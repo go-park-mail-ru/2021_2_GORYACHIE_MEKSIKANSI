@@ -1,10 +1,11 @@
 package Middleware
 
 import (
-	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"context"
+	"github.com/jackc/pgx/v4"
 	"strings"
 	"time"
 )
@@ -20,16 +21,13 @@ func (db *Wrapper) CheckAccess(cookie *utils.Defense) (bool, error) {
 		"SELECT client_id, date_life FROM cookie WHERE session_id = $1 AND csrf_token = $2",
 		cookie.SessionId, cookie.CsrfToken).Scan(&id, &timeLiveCookie)
 	if err != nil {
-		errorText := err.Error()
-		if strings.Contains(errorText, "no rows") {
-			return false, &errorsConst.Errors{
-				Text: errorsConst.MCheckAccessCookieNotFound,
-				Time: time.Now(),
+		if err == pgx.ErrNoRows {
+			return false, &errPkg.Errors{
+				Alias: errPkg.MCheckAccessCookieNotFound,
 			}
 		}
-		return false, &errorsConst.Errors{
-			Text: errorsConst.MCheckAccessCookieNotScan,
-			Time: time.Now(),
+		return false, &errPkg.Errors{
+			Alias: errPkg.MCheckAccessCookieNotScan,
 		}
 	}
 
@@ -46,9 +44,8 @@ func (db *Wrapper) NewCSRF(cookie *utils.Defense) (string, error) {
 		"UPDATE cookie SET csrf_token = $1 WHERE session_id = $2",
 		csrfToken, cookie.SessionId)
 	if err != nil {
-		return "", &errorsConst.Errors{
-			Text: errorsConst.MNewCSRFCSRFNotUpdate,
-			Time: time.Now(),
+		return "", &errPkg.Errors{
+			Alias: errPkg.MNewCSRFCSRFNotUpdate,
 		}
 	}
 
@@ -64,14 +61,12 @@ func (db *Wrapper) GetIdByCookie(cookie *utils.Defense) (int, error) {
 	if err != nil {
 		errorText := err.Error()
 		if strings.Contains(errorText, "no rows") {
-			return 0, &errorsConst.Errors{
-				Text: errorsConst.MGetIdByCookieCookieNotFound,
-				Time: time.Now(),
+			return 0, &errPkg.Errors{
+				Alias: errPkg.MGetIdByCookieCookieNotFound,
 			}
 		}
-		return 0, &errorsConst.Errors{
-			Text: errorsConst.MGetIdByCookieCookieNotScan,
-			Time: time.Now(),
+		return 0, &errPkg.Errors{
+			Alias: errPkg.MGetIdByCookieCookieNotScan,
 		}
 	}
 
@@ -81,8 +76,7 @@ func (db *Wrapper) GetIdByCookie(cookie *utils.Defense) (int, error) {
 		return id, nil
 	}
 
-	return 0, &errorsConst.Errors{
-		Text: errorsConst.MGetIdByCookieCookieExpired,
-		Time: time.Now(),
+	return 0, &errPkg.Errors{
+		Alias: errPkg.MGetIdByCookieCookieExpired,
 	}
 }

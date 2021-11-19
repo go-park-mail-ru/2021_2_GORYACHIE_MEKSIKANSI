@@ -28,6 +28,6 @@ type HistoryResOrder struct {
 }
 
 type ResponseCartOrder struct {
-	Dishes     []DishesCartResponse     `json:"dishes"`
-	Cost       CostCartResponse         `json:"cost"`
+	Dishes []DishesCartResponse `json:"dishes"`
+	Cost   CostCartResponse     `json:"cost"`
 }

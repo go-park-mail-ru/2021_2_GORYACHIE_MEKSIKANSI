@@ -2,7 +2,6 @@ package Configs
 
 const (
 	Debug                = true
-	//Debug                = false
 	DeleteLogs           = true
 	AllowedOriginsDomain = "http://127.0.0.1"
 	AllowedOriginsPort   = "3000"

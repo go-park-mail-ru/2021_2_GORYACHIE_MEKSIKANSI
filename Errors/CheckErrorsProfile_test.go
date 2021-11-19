@@ -19,8 +19,8 @@ func TestCheckErrorProfile(t *testing.T) {
 	}{
 		{
 			errorInput: Errors{
-				Text: PGetProfileClientClientNotScan,
-				Time: time.Now(),
+				Alias: PGetProfileClientClientNotScan,
+				Time:  time.Now(),
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
@@ -29,8 +29,8 @@ func TestCheckErrorProfile(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: PGetProfileClientBirthdayNotScan,
-				Time: time.Now(),
+				Alias: PGetProfileClientBirthdayNotScan,
+				Time:  time.Now(),
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
@@ -39,8 +39,8 @@ func TestCheckErrorProfile(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: PGetProfileCourierCourierNotScan,
-				Time: time.Now(),
+				Alias: PGetProfileCourierCourierNotScan,
+				Time:  time.Now(),
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
@@ -49,8 +49,8 @@ func TestCheckErrorProfile(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: PGetProfileHostHostNotScan,
-				Time: time.Now(),
+				Alias: PGetProfileHostHostNotScan,
+				Time:  time.Now(),
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
@@ -59,8 +59,8 @@ func TestCheckErrorProfile(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: PGetRoleByIdClientNotScan,
-				Time: time.Now(),
+				Alias: PGetRoleByIdClientNotScan,
+				Time:  time.Now(),
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
@@ -69,8 +69,8 @@ func TestCheckErrorProfile(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: PGetRoleByIdHostNotScan,
-				Time: time.Now(),
+				Alias: PGetRoleByIdHostNotScan,
+				Time:  time.Now(),
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
@@ -79,8 +79,8 @@ func TestCheckErrorProfile(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: PGetRoleByIdCourierNotScan,
-				Time: time.Now(),
+				Alias: PGetRoleByIdCourierNotScan,
+				Time:  time.Now(),
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
@@ -124,8 +124,8 @@ func TestCheckErrorProfileCookie(t *testing.T) {
 	}{
 		{
 			errorInput: Errors{
-				Text: MGetIdByCookieCookieNotFound,
-				Time: time.Now(),
+				Alias: MGetIdByCookieCookieNotFound,
+				Time:  time.Now(),
 			},
 			errorExpected:    ErrCheck,
 			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusConflict) + ",\"explain\":\"" + ErrAuth + "\"}",
@@ -133,8 +133,8 @@ func TestCheckErrorProfileCookie(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: MGetIdByCookieCookieExpired,
-				Time: time.Now(),
+				Alias: MGetIdByCookieCookieExpired,
+				Time:  time.Now(),
 			},
 			errorExpected:    ErrCheck,
 			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) + ",\"explain\":\"" + MGetIdByCookieCookieExpired + "\"}",
@@ -142,8 +142,8 @@ func TestCheckErrorProfileCookie(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Text: MGetIdByCookieCookieNotScan,
-				Time: time.Now(),
+				Alias: MGetIdByCookieCookieNotScan,
+				Time:  time.Now(),
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +

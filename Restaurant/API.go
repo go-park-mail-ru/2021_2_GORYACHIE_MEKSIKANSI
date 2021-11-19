@@ -1,18 +1,17 @@
 package Restaurant
 
 import (
-	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	interfaces "2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"encoding/json"
-	"fmt"
 	"github.com/valyala/fasthttp"
 	"net/http"
 )
 
 type InfoRestaurant struct {
 	Application interfaces.RestaurantApplication
-	Logger      errors.MultiLogger
+	Logger      errPkg.MultiLogger
 }
 
 func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
@@ -21,10 +20,10 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
+		r.Logger.Errorf("%s", errConvert.Error())
 	}
 
-	checkError := &errors.CheckError{
+	checkError := &errPkg.CheckError{
 		Logger:    r.Logger,
 		RequestId: reqId,
 	}
@@ -33,11 +32,11 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorRestaurant(err)
 	if errOut != nil {
 		switch errOut.Error() {
-		case errors.ErrMarshal:
+		case errPkg.ErrMarshal:
 			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			ctx.Response.SetBody([]byte(errPkg.ErrMarshal))
 			return
-		case errors.ErrCheck:
+		case errPkg.ErrCheck:
 			ctx.Response.SetStatusCode(codeHTTP)
 			ctx.Response.SetBody(resultOutAccess)
 			return
@@ -52,8 +51,8 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		fmt.Printf("Console: %s\n", errors.ErrEncode)
+		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 		return
 	}
 
@@ -66,10 +65,10 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
+		r.Logger.Errorf("%s", errConvert.Error())
 	}
 
-	checkError := &errors.CheckError{
+	checkError := &errPkg.CheckError{
 		Logger:    r.Logger,
 		RequestId: reqId,
 	}
@@ -79,7 +78,7 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
+		r.Logger.Errorf("%s", errConvert.Error())
 	}
 
 	restaurant, err := r.Application.GetRestaurant(id)
@@ -87,11 +86,11 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorRestaurantId(err) // должна появиться новая ошибка +1
 	if errOut != nil {
 		switch errOut.Error() {
-		case errors.ErrMarshal:
+		case errPkg.ErrMarshal:
 			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			ctx.Response.SetBody([]byte(errPkg.ErrMarshal))
 			return
-		case errors.ErrCheck:
+		case errPkg.ErrCheck:
 			ctx.Response.SetStatusCode(codeHTTP)
 			ctx.Response.SetBody(resultOutAccess)
 			return
@@ -106,8 +105,8 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		fmt.Printf("Console: %s\n", errors.ErrEncode)
+		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 		return
 	}
 
@@ -120,10 +119,10 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
+		r.Logger.Errorf("%s", errConvert.Error())
 	}
 
-	checkError := &errors.CheckError{
+	checkError := &errPkg.CheckError{
 		Logger:    r.Logger,
 		RequestId: reqId,
 	}
@@ -133,7 +132,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
+		r.Logger.Errorf("%s", errConvert.Error())
 	}
 
 	idDishCtx := ctx.UserValue("idDish")
@@ -141,18 +140,18 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
+		r.Logger.Errorf("%s", errConvert.Error())
 	}
 
 	dishes, err := r.Application.RestaurantDishes(idRes, idDish)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorRestaurantDishes(err)
 	if errOut != nil {
 		switch errOut.Error() {
-		case errors.ErrMarshal:
+		case errPkg.ErrMarshal:
 			ctx.Response.SetStatusCode(codeHTTP)
-			ctx.Response.SetBody([]byte(errors.ErrMarshal))
+			ctx.Response.SetBody([]byte(errPkg.ErrMarshal))
 			return
-		case errors.ErrCheck:
+		case errPkg.ErrCheck:
 			ctx.Response.SetStatusCode(codeHTTP)
 			ctx.Response.SetBody(resultOutAccess)
 			return
@@ -167,8 +166,8 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errors.ErrEncode))
-		fmt.Printf("Console: %s\n", errors.ErrEncode)
+		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
 		return
 	}
 

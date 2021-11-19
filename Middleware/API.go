@@ -1,7 +1,7 @@
 package Middleware
 
 import (
-	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	interfaces "2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
 	"github.com/valyala/fasthttp"
@@ -11,14 +11,18 @@ import (
 
 type InfoMiddleware struct {
 	Application interfaces.MiddlewareApplication
-	Logger      errors.MultiLogger
+	Logger      errPkg.MultiLogger
+	ReqId       int
 }
 
 func (m *InfoMiddleware) LogURL(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
-		reqId := utils.RandomInteger(0, math.MaxInt64)
-		m.Logger.Infof("Method: %s, URL: %s, requestId: %d", string(ctx.Method()), ctx.URI(), reqId)
-		ctx.SetUserValue("reqId", reqId)
+		if m.ReqId == math.MaxInt {
+			m.ReqId = 0
+		}
+		m.ReqId++
+		m.Logger.Infof("Method: %s, URL: %s, requestId: %d", string(ctx.Method()), ctx.URI(), m.ReqId)
+		ctx.SetUserValue("reqId", m.ReqId)
 		h(ctx)
 	})
 }
@@ -30,11 +34,11 @@ func (m *InfoMiddleware) GetIdClient(h fasthttp.RequestHandler) fasthttp.Request
 		if errConvert != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errConvert.Error()))
-			m.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
+			m.Logger.Errorf("%s", errConvert.Error())
 		}
 		ctx.SetUserValue("reqId", reqId)
 
-		checkError := &errors.CheckError{
+		checkError := &errPkg.CheckError{
 			Logger:    m.Logger,
 			RequestId: reqId,
 		}
@@ -44,11 +48,11 @@ func (m *InfoMiddleware) GetIdClient(h fasthttp.RequestHandler) fasthttp.Request
 		errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorCookie(err)
 		if resultOutAccess != nil {
 			switch errAccess.Error() {
-			case errors.ErrMarshal:
+			case errPkg.ErrMarshal:
 				ctx.Response.SetStatusCode(codeHTTP)
-				ctx.Response.SetBody([]byte(errors.ErrMarshal))
+				ctx.Response.SetBody([]byte(errPkg.ErrMarshal))
 				return
-			case errors.ErrCheck:
+			case errPkg.ErrCheck:
 				ctx.Response.SetStatusCode(codeHTTP)
 				ctx.Response.SetBody(resultOutAccess)
 				return
@@ -64,16 +68,17 @@ func (m *InfoMiddleware) GetIdClient(h fasthttp.RequestHandler) fasthttp.Request
 
 func (m *InfoMiddleware) CheckClient(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
+
 		reqIdCtx := ctx.UserValue("reqId")
 		reqId, errConvert := utils.InterfaceConvertInt(reqIdCtx)
 		if errConvert != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errConvert.Error()))
-			m.Logger.Errorf("GetIdClient: %s, %v", errConvert.Error(), errConvert)
+			m.Logger.Errorf("%s", errConvert.Error())
 		}
 		ctx.SetUserValue("reqId", reqId)
 
-		checkError := &errors.CheckError{
+		checkError := &errPkg.CheckError{
 			Logger:    m.Logger,
 			RequestId: reqId,
 		}
@@ -85,11 +90,11 @@ func (m *InfoMiddleware) CheckClient(h fasthttp.RequestHandler) fasthttp.Request
 		errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorAccess(err)
 		if errAccess != nil {
 			switch errAccess.Error() {
-			case errors.ErrMarshal:
+			case errPkg.ErrMarshal:
 				ctx.Response.SetStatusCode(codeHTTP)
-				ctx.Response.SetBody([]byte(errors.ErrMarshal))
+				ctx.Response.SetBody([]byte(errPkg.ErrMarshal))
 				return
-			case errors.ErrCheck:
+			case errPkg.ErrCheck:
 				ctx.Response.SetStatusCode(codeHTTP)
 				ctx.Response.SetBody(resultOutAccess)
 				return

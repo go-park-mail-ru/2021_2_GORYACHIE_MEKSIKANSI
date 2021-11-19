@@ -4,7 +4,7 @@ import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/Authorization"
 	cart "2021_2_GORYACHIE_MEKSIKANSI/Cart"
 	config "2021_2_GORYACHIE_MEKSIKANSI/Configs"
-	errors "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	interfaces "2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/Middleware"
 	order "2021_2_GORYACHIE_MEKSIKANSI/Order"
@@ -21,10 +21,9 @@ import (
 	"log"
 	"os"
 	"strings"
-	"time"
 )
 
-func setUp(connectionDB interfaces.ConnectionInterface, logger errors.MultiLogger,
+func setUp(connectionDB interfaces.ConnectionInterface, logger errPkg.MultiLogger,
 	uploader *s3manager.Uploader, nameBucket string) []interface{} {
 
 	authWrapper := auth.Wrapper{Conn: connectionDB}
@@ -101,18 +100,16 @@ func CreateDb() (*pgxpool.Pool, error) {
 		"postgres://"+config.DBLogin+":"+config.DBPassword+
 			"@"+config.DBHost+":"+config.DBPort+"/"+config.DBName)
 	if err != nil {
-		return nil, &errors.Errors{
-			Text: errors.MCreateDBNotConnect,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.MCreateDBNotConnect,
 		}
 	}
 
 	if config.Debug {
 		file, err := ioutil.ReadFile("PostgreSQL/DeleteTables.sql")
 		if err != nil {
-			return nil, &errors.Errors{
-				Text: errors.MCreateDBDeleteFileNotFound,
-				Time: time.Now(),
+			return nil, &errPkg.Errors{
+				Alias: errPkg.MCreateDBDeleteFileNotFound,
 			}
 		}
 
@@ -120,9 +117,8 @@ func CreateDb() (*pgxpool.Pool, error) {
 		for _, request := range requests {
 			_, err = conn.Exec(context.Background(), request)
 			if err != nil {
-				return nil, &errors.Errors{
-					Text: errors.MCreateDBNotDeleteTables,
-					Time: time.Now(),
+				return nil, &errPkg.Errors{
+					Alias: errPkg.MCreateDBNotDeleteTables,
 				}
 			}
 		}
@@ -130,9 +126,8 @@ func CreateDb() (*pgxpool.Pool, error) {
 
 	file, err := ioutil.ReadFile("PostgreSQL/CreateTables.sql")
 	if err != nil {
-		return nil, &errors.Errors{
-			Text: errors.MCreateDBCreateFileNotFound,
-			Time: time.Now(),
+		return nil, &errPkg.Errors{
+			Alias: errPkg.MCreateDBCreateFileNotFound,
 		}
 	}
 
@@ -140,9 +135,8 @@ func CreateDb() (*pgxpool.Pool, error) {
 	for _, request := range requests {
 		_, err = conn.Exec(context.Background(), request)
 		if err != nil {
-			return nil, &errors.Errors{
-				Text: errors.MCreateDBNotCreateTables,
-				Time: time.Now(),
+			return nil, &errPkg.Errors{
+				Alias: errPkg.MCreateDBNotCreateTables,
 			}
 		}
 	}
@@ -150,9 +144,8 @@ func CreateDb() (*pgxpool.Pool, error) {
 	if config.Debug {
 		file, err := ioutil.ReadFile("PostgreSQL/Fill.sql")
 		if err != nil {
-			return nil, &errors.Errors{
-				Text: errors.MCreateDBFillFileNotFound,
-				Time: time.Now(),
+			return nil, &errPkg.Errors{
+				Alias: errPkg.MCreateDBFillFileNotFound,
 			}
 		}
 
@@ -160,9 +153,8 @@ func CreateDb() (*pgxpool.Pool, error) {
 		for _, request := range requests {
 			_, err = conn.Exec(context.Background(), request)
 			if err != nil {
-				return nil, &errors.Errors{
-					Text: errors.MCreateDBNotFillTables,
-					Time: time.Now(),
+				return nil, &errPkg.Errors{
+					Alias: errPkg.MCreateDBNotFillTables,
 				}
 			}
 		}

@@ -1,10 +1,9 @@
 package Order
 
 import (
-	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/Errors"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/Errors"
 	"2021_2_GORYACHIE_MEKSIKANSI/Interfaces"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/Utils"
-	"time"
 )
 
 type Order struct {
@@ -24,10 +23,10 @@ func (o *Order) CalculateCost(result *utils.ResponseCartErrors, rest *utils.Rest
 	for i, dish := range result.Dishes {
 		ingredientCost := 0
 		for _, ingredient := range dish.IngredientCart {
-			ingredientCost = ingredientCost + ingredient.Cost
+			ingredientCost += ingredient.Cost
 		}
 		dishCost := (dish.Cost + ingredientCost) * dish.Count
-		sumCost = sumCost + dishCost
+		sumCost += dishCost
 		result.Dishes[i].Cost = dishCost
 	}
 	cost.SumCost = sumCost
@@ -40,33 +39,27 @@ func (o *Order) CalculateCost(result *utils.ResponseCartErrors, rest *utils.Rest
 			return nil, err
 		}
 	}
-	cost.SumCost = cost.DCost + cost.SumCost
+	cost.SumCost += cost.DCost
 	return &cost, nil
 }
 
 func (o *Order) CreateOrder(id int, createOrder utils.CreateOrder) error {
 	cart, errDish, err := o.DBCart.GetCart(id)
-	if err != nil || errDish != nil {
-		return err
+	if err != nil || errDish != nil || cart.Dishes == nil {
+		return &errPkg.Errors{
+			Alias: errPkg.OCreateOrderCartIsVoid,
+		}
 	}
 	if errDish != nil {
 		return err
 	}
 
-	cart.Restaurant.Id = 1
 	rest, err := o.DBRestaurant.GetGeneralInfoRestaurant(cart.Restaurant.Id)
 	if err != nil {
 		return err
 	}
 
 	cart.CastToRestaurantId(*rest)
-
-	if cart.Restaurant.Id == 0 {
-		return &errorsConst.Errors{
-			Text: errorsConst.OCreateOrderCartIsVoid,
-			Time: time.Now(),
-		}
-	}
 
 	cost, err := o.CalculateCost(cart, rest)
 	if err != nil {
@@ -76,10 +69,10 @@ func (o *Order) CreateOrder(id int, createOrder utils.CreateOrder) error {
 
 	courierId := 1
 
-	err = o.DBCart.DeleteCart(id)
-	if err != nil {
-		return err
-	}
+	//err = o.DBCart.DeleteCart(id)
+	//if err != nil {
+	//	return err
+	//}
 
 	addressId, err := o.DBProfile.AddAddress(id, createOrder.Address)
 	if err != nil {
@@ -99,9 +92,6 @@ func (o *Order) GetOrders(id int) (*utils.HistoryOrderArray, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	//call rest
-	//call calculate cost
 
 	return orders, nil
 }

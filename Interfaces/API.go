@@ -26,9 +26,9 @@ type ProfileAPI interface {
 }
 
 type MiddlewareAPI interface {
-	PrintURL(h fasthttp.RequestHandler) fasthttp.RequestHandler
-	GetId(h fasthttp.RequestHandler) fasthttp.RequestHandler
-	Check(h fasthttp.RequestHandler) fasthttp.RequestHandler
+	LogURL(h fasthttp.RequestHandler) fasthttp.RequestHandler
+	GetIdClient(h fasthttp.RequestHandler) fasthttp.RequestHandler
+	CheckClient(h fasthttp.RequestHandler) fasthttp.RequestHandler
 }
 
 type RestaurantAPI interface {

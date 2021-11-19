@@ -14,6 +14,7 @@ import (
 
 const (
 	KeyCookieSessionId = "session_id"
+	UnlimitedCount     = -1
 )
 
 type ResponseStatus struct {
@@ -63,7 +64,7 @@ func InterfaceConvertInt(value interface{}) (int, error) {
 		intConvert, errorConvert = strconv.Atoi(value.(string))
 		if errorConvert != nil {
 			return errors.IntNil, &errors.Errors{
-				Text: errors.ErrAtoi,
+				Alias: errors.ErrAtoi,
 			}
 		}
 		return intConvert, nil
@@ -72,7 +73,7 @@ func InterfaceConvertInt(value interface{}) (int, error) {
 		return intConvert, nil
 	default:
 		return errors.IntNil, &errors.Errors{
-			Text: errors.ErrNotStringAndInt,
+			Alias: errors.ErrNotStringAndInt,
 		}
 	}
 
@@ -89,7 +90,7 @@ func InterfaceConvertString(value interface{}) (string, error) {
 		return StringConvert, nil
 	default:
 		return "", &errors.Errors{
-			Text: errors.ErrNotStringAndInt,
+			Alias: errors.ErrNotStringAndInt,
 		}
 	}
 

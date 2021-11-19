@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS structure_dishes (
     protein double precision NOT NULL,
     falt double precision NOT NULL,
     carbohydrates double precision NOT NULL,
-    kilocalorie int,
+    kilocalorie int NOT NULL,
     count_element int NOT NULL,
     changed boolean DEFAULT false NOT NULL,
     deleted boolean DEFAULT false NOT NULL
@@ -238,6 +238,7 @@ CREATE TABLE IF NOT EXISTS order_list (
     order_id int,
     food int,
     count int,
+    item_number int,
     FOREIGN KEY (order_id) REFERENCES order_user (id) ON DELETE CASCADE,
     FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE
 );
@@ -257,6 +258,10 @@ CREATE TABLE IF NOT EXISTS order_radios_list (
     order_id int,
     radios_id int,
     radios int,
+    food int,
+    list_id int,
+    FOREIGN KEY (list_id) REFERENCES order_list (id) ON DELETE CASCADE,
+    FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE,
     FOREIGN KEY (order_id) REFERENCES order_user (id) ON DELETE CASCADE,
     FOREIGN KEY (radios_id) REFERENCES radios (id) ON DELETE CASCADE,
     FOREIGN KEY (radios) REFERENCES structure_radios (id) ON DELETE CASCADE
@@ -278,6 +283,10 @@ CREATE TABLE IF NOT EXISTS cart_structure_food (
     id serial PRIMARY KEY,
     checkbox int,
     client_id int,
+    food int,
+    cart_id int,
+    FOREIGN KEY (cart_id) REFERENCES cart (id) ON DELETE CASCADE,
+    FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
     FOREIGN KEY (checkbox) REFERENCES structure_dishes (id) ON DELETE CASCADE
 );
@@ -288,6 +297,10 @@ CREATE TABLE IF NOT EXISTS cart_radios_food (
     radios_id int,
     radios int,
     client_id int,
+    food int,
+    cart_id int,
+    FOREIGN KEY (cart_id) REFERENCES cart (id) ON DELETE CASCADE,
+    FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
     FOREIGN KEY (radios_id) REFERENCES radios (id) ON DELETE CASCADE,
     FOREIGN KEY (radios) REFERENCES structure_radios (id) ON DELETE CASCADE

@@ -78,8 +78,48 @@ SET
 
 INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1', NOW(), '');
 
+INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, count, weight, avatar) VALUES
+    ('Тако', 60, 1, '', 1, 1, 224, 1, 'Горячее', 'Снеки', 1000, 1, 'https://pbs.twimg.com/media/DtAriH3U8AAD3jV.jpg'),
+    ('Пряник', 60, 1, '', 1, 1, 126, 1, 'К чаю', 'К чаю', 1000, 1, 'https://s3.amazonaws.com/images.ecwid.com/images/38011115/2135671623.jpg'),
+    ('Чёрный бургер', 60, 1, '', 1, 1, 361, 1, 'горячее', 'Снеки', 1000, 1, 'https://meat-pepper.ru/image/cache/catalog/products/burgers/kotlety-dly-burgerov-black-angus-3-800x667.jpg'),
+    ('Пицца Ассорти', 60, 1, '', 1, 1, 1024, 1, 'горячее', 'Пиццы', 1000, 1, 'https://www.koolinar.ru/all_image/recipes/156/156543/recipe_7b4bb7f7-1d42-428a-bb0a-3db8df03093a.jpg'),
+    ('Кофе', 60, 1, '', 1, 1, 90, 1, 'горячее', 'Напитки', 1000, 1, 'https://traveltimes.ru/wp-content/uploads/2021/08/kofe-caska-penka-scaled.jpg'),
+    ('Картошка Фри', 60, 1, '', 1, 1, 232, 1, 'горячее', 'Снеки', 1000, 1, 'https://вести35.рф/images/2020/07/06/5f2775ffddc94d76a57605479b3f02e0.jpg'),
+    ('Картошка по деревенски', 60, 1, '', 1, 1, 172, 1, 'Горячее', 'Снеки', 1000, 1, 'https://cherkessk.crazybrothers.ru/wp-content/uploads/Kartofel-po-derevenski.jpg'),
+    ('МакКомбо', 256, 1, '', 1, 1, 5036, 1, 'Горячее', 'Комбо', 1000, 1, 'https://www.eatthis.com/wp-content/uploads/sites/4/2019/05/mcdonalds-fries-food-lights.jpg'),
+    ('Утреннее комбо', 99, 1, '', 1, 1, 4708, 1, 'Горячее', 'Комбо', 1000, 1, 'https://imageproxy.ru/img/crop/1380x920/https/xn--h1ame.xn--80adxhks/storage/app/uploads/public/5e2/700/f07/5e2700f079c4c587329799.jpg'),
+    ('Аппетитное комбо', 150, 1, '', 1, 1, 3575, 1, 'Горячее', 'Комбо', 1000, 1, 'https://www.iphones.ru/wp-content/plugins/wonderm00ns-simple-facebook-open-graph-tags/fbimg.php?img=https%3A%2F%2Fwww.iphones.ru%2Fwp-content%2Fuploads%2F2018%2F08%2FBurgerN.jpg'),
+    ('Универсальное комбо', 100, 1, '', 1, 1, 1500, 1, 'Горячее', 'Комбо', 1000, 1, 'https://eda.yandex.ru/images/3667559/9724883e03ae48c2b6a1e28c5b9ea111-680x500.jpeg')
+    ;
+
+INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element) VALUES
+    ('Кетчуп', 1, 5, 1, 1, 1, 1, 5),
+    ('Горчица', 1, 5, 1, 1, 1, 1, 5),
+    ('Сырные бортики', 4, 5, 1, 1, 1, 1, 5),
+    ('Колбаса', 4, 5, 1, 1, 1, 1, 5),
+    ('Сыр Пармезан', 4, 5, 1, 1, 1, 1, 5),
+    ('Сыр Моцарелла', 4, 5, 1, 1, 1, 1, 5),
+    ('Сахар', 5, 5, 1, 1, 1, 1, 5),
+    ('Кетчуп', 1, 5, 1, 1, 1, 1, 5)
+    ;
+
+INSERT INTO radios (name, food) VALUES
+    ('МакКомбо', 8),
+    ('Утреннее комбо', 9),
+    ('Аппетитное комбо', 10),
+    ('Универсальное комбо', 11)
+    ;
+
+INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie) VALUES
+    ('Картофель Фри', 1, 1, 1, 1, 1),
+    ('Картофель по деревенски', 1, 1, 1, 1, 1),
+    ('Сырный соус', 2, 1, 1, 1, 1),
+    ('Чесночный соус', 2, 1, 1, 1, 1),
+    ('Кисло-сладкий соус', 2, 1, 1, 1, 1)
+    ;
+
 INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, count, weight)
-SELECT 'name', random() * (500 - 10) + 10, random() * (53 - 1) + 1, 'description', 1, 1, random() * (1000 - 1) + 1, 1, 'text', 'text', random() * (101 - 1) - 1, random() * (51 - 1) + 1 FROM generate_series(1, 1000);
+SELECT 'name', random() * (500 - 10) + 10, random() * (53 - 1 - 1) + 1 + 1, 'description', 1, 1, random() * (1000 - 1) + 1, 1, 'text', 'text', random() * (101 - 1) - 1, random() * (51 - 1) + 1 FROM generate_series(1, 1000);
 UPDATE dishes
 SET
     name = (
@@ -152,9 +192,11 @@ SET
             'https://islam.ru/sites/default/files/img/2017/news/90-main-image-w1480.jpg',
             'https://www.eatthis.com/wp-content/uploads/sites/4/2019/05/mcdonalds-fries-food-lights.jpg',
             'https://s1.1zoom.ru/big7/529/Holidays_Christmas_399885.jpg',
-            'https://pbs.twimg.com/media/EVy0CxpXYAAZrD4.jpg:large'
+            'https://pbs.twimg.com/media/EVy0CxpXYAAZrD4.jpg:large',
+                'https://sun9-51.userapi.com/impf/c636323/v636323212/36406/KDUTCfKG8b0.jpg?size=867x1080&quality=96&sign=fe39ffdc81aff59212e58cd37348f5e9&c_uniq_tag=oOwnCg7Lulpo9y6f4R_lk1fuUkM3QkuTNRk0ekN92Vk&type=album'
             ]
-            ) [floor(random() * 11 + 1)]
+            ) [floor(random() * 12 + 1)]
+WHERE id > 12
 ;
 
 INSERT INTO restaurant_category (restaurant, category)
@@ -172,17 +214,16 @@ SET
                 'Бар',
                 'Хенкальная',
                 'Общепит',
-                'Тестовый',
                 'Кафе',
                 'Буфеты',
                 'Поп-ап',
                 'Виртуальный'
                 ]
-        ) [floor(random() * 14 + 1)]
+        ) [floor(random() * 13 + 1)]
 ;
 
 INSERT INTO radios (name, food)
-SELECT 'name', random() * (1000 - 1) + 1 FROM generate_series(1, 1000);
+SELECT 'name', random() * (1000 - 1) + 12 FROM generate_series(1, 1000);
 UPDATE radios
 SET
     name = (
@@ -195,10 +236,11 @@ SET
                 'Снеки'
                 ]
         ) [floor(random() * 6 + 1)]
+WHERE id > 4
 ;
 
 INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie)
-SELECT 'name', random() * (1000 - 1) + 1, 1, 1, 1, 1 FROM generate_series(1, 1000);
+SELECT 'name', random() * (1000 - 1) + 1 + 3, 1, 1, 1, 1 FROM generate_series(1, 1000);
 UPDATE structure_radios
 SET
     name = (
@@ -212,10 +254,11 @@ SET
                     'Форель'
                     ]
         ) [floor(random() * 7 + 1)]
+WHERE id > 9
 ;
 
 INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element)
-SELECT 'name', random() * (1000 - 1) + 1, random() * (25 - 1) + 1, 1, 1, 1, 1, random() * (5 - 1) + 1 FROM generate_series(1, 2000);
+SELECT 'name', random() * (1000 - 1) + 12, random() * (25 - 1) + 1, 1, 1, 1, 1, random() * (5 - 1) + 1 FROM generate_series(1, 2000);
 UPDATE structure_dishes
 SET
     name = (
@@ -230,6 +273,7 @@ SET
                     'Помидор'
                     ]
         ) [floor(random() * 8 + 1)]
+WHERE id > 8
 ;
 
 INSERT INTO address_user (client_id, alias, comment, city, street, house, floor, flat, porch, intercom, latitude, longitude)
