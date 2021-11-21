@@ -1,9 +1,9 @@
 package Api
 
 import (
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
-	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
+	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"github.com/valyala/fasthttp"
 	"math"
 	"net/http"
@@ -30,7 +30,7 @@ func (m *InfoMiddleware) LogURL(h fasthttp.RequestHandler) fasthttp.RequestHandl
 func (m *InfoMiddleware) GetIdClient(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
 		reqIdCtx := ctx.UserValue("reqId")
-		reqId, errConvert := Utils.InterfaceConvertInt(reqIdCtx)
+		reqId, errConvert := Util.InterfaceConvertInt(reqIdCtx)
 		if errConvert != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errConvert.Error()))
@@ -43,7 +43,7 @@ func (m *InfoMiddleware) GetIdClient(h fasthttp.RequestHandler) fasthttp.Request
 			RequestId: reqId,
 		}
 
-		cookieDB := Utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
+		cookieDB := Util.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 		id, err := m.Application.GetIdByCookie(&cookieDB)
 		errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorCookie(err)
 		if resultOutAccess != nil {
@@ -70,7 +70,7 @@ func (m *InfoMiddleware) CheckClient(h fasthttp.RequestHandler) fasthttp.Request
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
 
 		reqIdCtx := ctx.UserValue("reqId")
-		reqId, errConvert := Utils.InterfaceConvertInt(reqIdCtx)
+		reqId, errConvert := Util.InterfaceConvertInt(reqIdCtx)
 		if errConvert != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errConvert.Error()))
@@ -83,7 +83,7 @@ func (m *InfoMiddleware) CheckClient(h fasthttp.RequestHandler) fasthttp.Request
 			RequestId: reqId,
 		}
 
-		cookieDB := Utils.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
+		cookieDB := Util.Defense{SessionId: string(ctx.Request.Header.Cookie("session_id"))}
 		cookieDB.CsrfToken = string(ctx.Request.Header.Peek("X-Csrf-Token"))
 
 		_, err := m.Application.CheckAccess(&cookieDB)

@@ -1,4 +1,4 @@
-package MyErrors
+package MyError
 
 type MultiLogger interface {
 	Debugf(template string, args ...interface{})

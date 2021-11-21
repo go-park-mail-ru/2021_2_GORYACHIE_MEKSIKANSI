@@ -1,10 +1,10 @@
 package Orm
 
 import (
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Profile"
-	Utils2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	Utils2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"context"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
@@ -15,8 +15,8 @@ import (
 )
 
 type Wrapper struct {
-	Conn       Interfaces.ConnectionInterface
-	Uploader   Interfaces.Uploader
+	Conn       Interface.ConnectionInterface
+	Uploader   Interface.Uploader
 	NameBucket string
 }
 

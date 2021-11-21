@@ -1,4 +1,4 @@
-package Interfaces
+package Interface
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization"
@@ -6,13 +6,13 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Order"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Profile"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"time"
 )
 
 type AuthorizationApplication interface {
-	SignUp(signup *Authorization.RegistrationRequest) (*Utils.Defense, error)
-	Login(login *Authorization.Authorization) (*Utils.Defense, error)
+	SignUp(signup *Authorization.RegistrationRequest) (*Util.Defense, error)
+	Login(login *Authorization.Authorization) (*Util.Defense, error)
 	Logout(CSRF string) (string, error)
 }
 
@@ -38,9 +38,9 @@ type ProfileApplication interface {
 }
 
 type MiddlewareApplication interface {
-	CheckAccess(cookie *Utils.Defense) (bool, error)
-	NewCSRF(cookie *Utils.Defense) (string, error)
-	GetIdByCookie(cookie *Utils.Defense) (int, error)
+	CheckAccess(cookie *Util.Defense) (bool, error)
+	NewCSRF(cookie *Util.Defense) (string, error)
+	GetIdByCookie(cookie *Util.Defense) (int, error)
 }
 
 type RestaurantApplication interface {

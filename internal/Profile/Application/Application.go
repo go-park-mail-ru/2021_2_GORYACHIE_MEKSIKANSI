@@ -1,10 +1,10 @@
 package Application
 
 import (
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	Profile2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Profile"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"math"
 	"strconv"
 	"strings"
@@ -12,7 +12,7 @@ import (
 )
 
 type Profile struct {
-	DB Interfaces.WrapperProfile
+	DB Interface.WrapperProfile
 }
 
 func (p *Profile) GetProfile(id int) (*Profile2.Profile, error) {
@@ -73,7 +73,7 @@ func (p *Profile) UpdateAvatar(id int, newAvatar *Profile2.UpdateAvatar) error {
 	}
 	extensionFile := header.Filename[startExtension:]
 
-	fileName := strconv.Itoa(Utils.RandomInteger(0, math.MaxInt64))
+	fileName := strconv.Itoa(Util.RandomInteger(0, math.MaxInt64))
 
 	fileResult := "/user/" + fileName + extensionFile
 

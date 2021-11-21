@@ -1,12 +1,12 @@
 package Application
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant"
 )
 
 type Restaurant struct {
-	DB Interfaces.WrapperRestaurant
+	DB Interface.WrapperRestaurant
 }
 
 func (r *Restaurant) AllRestaurants() ([]utils.Restaurants, error) {

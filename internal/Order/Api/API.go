@@ -2,10 +2,10 @@ package Api
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
-	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
+	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Order"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"encoding/json"
 	"github.com/valyala/fasthttp"
 	"net/http"
@@ -18,7 +18,7 @@ type InfoOrder struct {
 
 func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
-	reqId, errConvert := Utils.InterfaceConvertInt(reqIdCtx)
+	reqId, errConvert := Util.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
@@ -40,14 +40,14 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	idCtx := ctx.UserValue("id")
-	id, errConvert := Utils.InterfaceConvertInt(idCtx)
+	id, errConvert := Util.InterfaceConvertInt(idCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		u.Logger.Errorf("%s", errConvert.Error())
 	}
 	tokenContext := ctx.UserValue("X-Csrf-Token")
-	xCsrfToken, errConvert := Utils.InterfaceConvertString(tokenContext)
+	xCsrfToken, errConvert := Util.InterfaceConvertString(tokenContext)
 	if (errConvert != nil) && (errConvert.Error() == errPkg.ErrNotStringAndInt) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
@@ -70,7 +70,7 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&Utils.ResponseStatus{
+	err = json.NewEncoder(ctx).Encode(&Util.ResponseStatus{
 		StatusHTTP: http.StatusOK,
 	})
 	if err != nil {
@@ -86,7 +86,7 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 
 func (u *InfoOrder) GetOrdersHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
-	reqId, errConvert := Utils.InterfaceConvertInt(reqIdCtx)
+	reqId, errConvert := Util.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
@@ -98,7 +98,7 @@ func (u *InfoOrder) GetOrdersHandler(ctx *fasthttp.RequestCtx) {
 		RequestId: reqId,
 	}
 	idCtx := ctx.UserValue("id")
-	id, errConvert := Utils.InterfaceConvertInt(idCtx)
+	id, errConvert := Util.InterfaceConvertInt(idCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))

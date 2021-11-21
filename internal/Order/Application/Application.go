@@ -2,17 +2,17 @@ package Application
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Cart"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	Order2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Order"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant"
 )
 
 type Order struct {
-	DB           Interfaces.WrapperOrder
-	DBCart       Interfaces.WrapperCart
-	DBProfile    Interfaces.WrapperProfile
-	DBRestaurant Interfaces.WrapperRestaurant
+	DB           Interface.WrapperOrder
+	DBCart       Interface.WrapperCart
+	DBProfile    Interface.WrapperProfile
+	DBRestaurant Interface.WrapperRestaurant
 }
 
 func (o *Order) CalculatePriceDelivery(id int) (int, error) {
