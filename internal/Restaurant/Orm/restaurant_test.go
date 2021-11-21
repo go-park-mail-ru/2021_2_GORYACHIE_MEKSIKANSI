@@ -282,9 +282,9 @@ func TestOrmGetDishesRestaurant(t *testing.T) {
 
 var OrmGetMenu = []struct {
 	testName                     string
-	inputId            int
-	rowsQuery          Rows
-	inputQueryId       int
+	inputId                      int
+	rowsQuery                    Rows
+	inputQueryId                 int
 	errQuery                     error
 	out                          []rest.Menu
 	inputGetDishesRestaurantName string
@@ -293,9 +293,9 @@ var OrmGetMenu = []struct {
 	errGetDishesRestaurant       error
 	outErr                       string
 	inputQueryDishesName         string
-	inputQueryDishesId int
-	rowsQueryDishes    Rows
-	errQueryDishes     error
+	inputQueryDishesId           int
+	rowsQueryDishes              Rows
+	errQueryDishes               error
 }{
 	{
 		testName:               "One",
@@ -349,9 +349,9 @@ func TestOrmGetMenu(t *testing.T) {
 
 var OrmGetStructDishes = []struct {
 	testName                     string
-	input        int
-	rowsQuery    Rows
-	inputQueryId int
+	input                        int
+	rowsQuery                    Rows
+	inputQueryId                 int
 	errQuery                     error
 	out                          []rest.Ingredients
 	inputGetDishesRestaurantName string
@@ -397,9 +397,9 @@ func TestGetStructDishes(t *testing.T) {
 
 var OrmGetStructRadios = []struct {
 	testName                     string
-	input        int
-	rowsQuery    Rows
-	inputQueryId int
+	input                        int
+	rowsQuery                    Rows
+	inputQueryId                 int
 	errQuery                     error
 	out                          []rest.CheckboxesRows
 	inputGetDishesRestaurantName string
@@ -446,9 +446,9 @@ func TestGetStructRadios(t *testing.T) {
 var OrmGetDishes = []struct {
 	testName                     string
 	inputRestId                  int
-	inputDishesId int
-	rowsQuery     Rows
-	inputQueryId  int
+	inputDishesId                int
+	rowsQuery                    Rows
+	inputQueryId                 int
 	errQuery                     error
 	out                          *rest.Dishes
 	inputGetDishesRestaurantName string
@@ -496,17 +496,17 @@ func TestGetDishes(t *testing.T) {
 
 var OrmGetRadios = []struct {
 	testName                     string
-	input                 int
-	rowsQuery             Rows
-	inputQueryId          int
+	input                        int
+	rowsQuery                    Rows
+	inputQueryId                 int
 	errQuery                     error
 	out                          []rest.Radios
 	inputGetDishesRestaurantName string
 	inputGetDishesRestaurantId   int
 	outErr                       string
 	inputQueryIdStructRadios     int
-	errQueryStructRadios  error
-	rowsQueryStructRadios Rows
+	errQueryStructRadios         error
+	rowsQueryStructRadios        Rows
 }{
 	{
 		testName:                 "One",

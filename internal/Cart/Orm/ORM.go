@@ -2,75 +2,14 @@ package Orm
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Cart"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	"context"
 	"github.com/jackc/pgx/v4"
 )
 
 type Wrapper struct {
 	Conn Interface.ConnectionInterface
-}
-
-func (db *Wrapper) getStructFood(id int) ([]Cart.IngredientCartResponse, error) {
-	var ingredients []Cart.IngredientCartResponse
-	rows, err := db.Conn.Query(context.Background(),
-		"SELECT checkbox FROM cart_structure_food WHERE client_id = $1", id)
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.CGetStructFoodRestaurantNotSelect,
-		}
-	}
-	for rows.Next() {
-		var ingredient Cart.IngredientCartResponse
-		err = rows.Scan(&ingredient.Id)
-		if err != nil {
-			return nil, &errPkg.Errors{
-				Alias: errPkg.CGetStructFoodCheckboxNotScan,
-			}
-		}
-
-		err = db.Conn.QueryRow(context.Background(),
-			"SELECT name, cost FROM structure_dishes WHERE id = $1", ingredient.Id).Scan(
-			&ingredient.Name, &ingredient.Cost)
-		ingredients = append(ingredients, ingredient)
-	}
-	return ingredients, nil
-}
-
-func (db *Wrapper) getStructRadios(id int) ([]Cart.RadiosCartResponse, error) {
-	var radios []Cart.RadiosCartResponse
-	rows, err := db.Conn.Query(context.Background(),
-		"SELECT radios_id, radios FROM cart_radios_food WHERE client_id = $1", id)
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.CGetStructRadiosRadiosNotSelect,
-		}
-	}
-	for rows.Next() {
-		var radio Cart.RadiosCartResponse
-		err = rows.Scan(&radio.RadiosId, &radio.Id)
-		if err != nil {
-			return nil, &errPkg.Errors{
-				Alias: errPkg.CGetStructRadiosRadiosNotScan,
-			}
-		}
-
-		err = db.Conn.QueryRow(context.Background(),
-			"SELECT name FROM structure_radios WHERE id = $1", radio.Id).Scan(&radio.Name)
-		if err != nil {
-			if err == pgx.ErrNoRows {
-				return nil, &errPkg.Errors{
-					Alias: errPkg.CGetStructRadiosStructRadiosNotFound,
-				}
-			}
-			return nil, &errPkg.Errors{
-				Alias: errPkg.CGetStructRadiosStructRadiosNotScan,
-			}
-		}
-		radios = append(radios, radio)
-	}
-	return radios, nil
 }
 
 func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, []Cart.CastDishesErrs, error) {
@@ -193,25 +132,43 @@ func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, []Cart.CastDishesE
 }
 
 func (db *Wrapper) DeleteCart(id int) error {
-	_, err := db.Conn.Exec(context.Background(),
+	tx, err := db.Conn.Begin(context.Background())
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.CDeleteCartTransactionNotCreate,
+		}
+	}
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
+
+	_, err = tx.Exec(context.Background(),
 		"DELETE FROM cart WHERE client_id = $1", id)
 	if err != nil {
 		return &errPkg.Errors{
 			Alias: errPkg.CDeleteCartCartNotDelete,
 		}
 	}
-	_, err = db.Conn.Exec(context.Background(),
+	_, err = tx.Exec(context.Background(),
 		"DELETE FROM cart_structure_food WHERE client_id = $1", id)
 	if err != nil {
 		return &errPkg.Errors{
 			Alias: errPkg.CDeleteCartStructureFoodNotDelete,
 		}
 	}
-	_, err = db.Conn.Exec(context.Background(),
+	_, err = tx.Exec(context.Background(),
 		"DELETE FROM cart_radios_food WHERE client_id = $1", id)
 	if err != nil {
 		return &errPkg.Errors{
 			Alias: errPkg.CDeleteCartRadiosFoodNotDelete,
+		}
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.CDeleteCartNotCommit,
 		}
 	}
 	return nil
@@ -222,7 +179,7 @@ func (db *Wrapper) updateCartStructFood(ingredients []Cart.IngredientsCartReques
 	for _, ingredient := range ingredients {
 		var checkedIngredient Cart.IngredientCartResponse
 		var dishId int
-		err := db.Conn.QueryRow(context.Background(),
+		err := tx.QueryRow(context.Background(),
 			"SELECT id, name, cost, food  FROM structure_dishes WHERE id = $1", ingredient.Id).Scan(
 			&checkedIngredient.Id, &checkedIngredient.Name, &checkedIngredient.Cost, &dishId)
 		if err != nil {
@@ -248,7 +205,7 @@ func (db *Wrapper) updateCartRadios(radios []Cart.RadiosCartRequest, clientId in
 	var result []Cart.RadiosCartResponse
 	for _, radio := range radios {
 		var checkedRadios Cart.RadiosCartResponse
-		err := db.Conn.QueryRow(context.Background(),
+		err := tx.QueryRow(context.Background(),
 			"SELECT id, name FROM structure_radios WHERE id = $1", radio.Id).Scan(
 			&checkedRadios.Id, &checkedRadios.Name)
 		if err != nil {
@@ -287,7 +244,7 @@ func (db *Wrapper) UpdateCart(newCart Cart.RequestCartDefault, clientId int) (*C
 	for i, dish := range newCart.Dishes {
 		var dishes Cart.DishesCartResponse
 		count := 0
-		err := db.Conn.QueryRow(context.Background(),
+		err := tx.QueryRow(context.Background(),
 			"SELECT id, avatar, cost, name, description, count, weight, kilocalorie FROM dishes WHERE id = $1 AND restaurant = $2",
 			dish.Id, newCart.Restaurant.Id).Scan(
 			&dishes.Id, &dishes.Img, &dishes.Cost, &dishes.Name, &dishes.Description, &count, &dishes.Weight, &dishes.Kilocalorie)

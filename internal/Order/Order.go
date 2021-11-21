@@ -17,7 +17,7 @@ type HistoryOrderArray struct {
 }
 
 type HistoryOrder struct {
-	Status     int                `json:"status"`
+	Status     int                        `json:"status"`
 	Date       time.Time                  `json:"date"`
 	Address    Profile.AddressCoordinates `json:"address"`
 	Restaurant HistoryResOrder            `json:"restaurant"`
@@ -25,8 +25,8 @@ type HistoryOrder struct {
 }
 
 type HistoryResOrder struct {
-	Id      int                `json:"id"`
-	Name    string             `json:"name"`
+	Id      int                        `json:"id"`
+	Name    string                     `json:"name"`
 	Img     string                     `json:"img"`
 	Address Profile.AddressCoordinates `json:"address"`
 }

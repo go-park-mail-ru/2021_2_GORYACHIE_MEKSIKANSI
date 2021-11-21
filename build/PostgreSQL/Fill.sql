@@ -115,7 +115,11 @@ INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kiloca
     ('Картофель по деревенски', 1, 1, 1, 1, 1),
     ('Сырный соус', 2, 1, 1, 1, 1),
     ('Чесночный соус', 2, 1, 1, 1, 1),
-    ('Кисло-сладкий соус', 2, 1, 1, 1, 1)
+    ('Кисло-сладкий соус', 2, 1, 1, 1, 1),
+    ('Картофель Фри', 3, 1, 1, 1, 1),
+    ('Картофель по деревенски', 3, 1, 1, 1, 1),
+    ('Сырный соус', 4, 1, 1, 1, 1),
+    ('Чесночный соус', 4, 1, 1, 1, 1)
     ;
 
 INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, count, weight)
@@ -254,7 +258,7 @@ SET
                     'Форель'
                     ]
         ) [floor(random() * 7 + 1)]
-WHERE id > 9
+WHERE id > 11
 ;
 
 INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element)

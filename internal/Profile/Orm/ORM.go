@@ -78,13 +78,31 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 }
 
 func (db *Wrapper) GetProfileHost(id int) (*Profile.Profile, error) {
+	tx, err := db.Conn.Begin(context.Background())
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.PGetProfileHostTransactionNotCreate,
+		}
+	}
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
+
 	var profile = Profile.Profile{}
-	err := db.Conn.QueryRow(context.Background(),
+	err = db.Conn.QueryRow(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.PGetProfileHostHostNotScan,
+		}
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.PGetProfileHostNotCommit,
 		}
 	}
 
@@ -104,7 +122,7 @@ func (db *Wrapper) GetProfileClient(id int) (*Profile.Profile, error) {
 	}(tx)
 
 	var profile = Profile.Profile{}
-	err = db.Conn.QueryRow(context.Background(),
+	err = tx.QueryRow(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
@@ -114,7 +132,7 @@ func (db *Wrapper) GetProfileClient(id int) (*Profile.Profile, error) {
 	}
 	timeVoid := time.Time{}
 	if timeVoid != profile.Birthday {
-		err = db.Conn.QueryRow(context.Background(),
+		err = tx.QueryRow(context.Background(),
 			"SELECT date_birthday FROM client WHERE client_id = $1", id).Scan(&profile.Birthday)
 		if err != nil {
 			return nil, &errPkg.Errors{
@@ -134,13 +152,31 @@ func (db *Wrapper) GetProfileClient(id int) (*Profile.Profile, error) {
 }
 
 func (db *Wrapper) GetProfileCourier(id int) (*Profile.Profile, error) {
+	tx, err := db.Conn.Begin(context.Background())
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.PGetProfileCourierTransactionNotCreate,
+		}
+	}
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
+
 	var profile = Profile.Profile{}
-	err := db.Conn.QueryRow(context.Background(),
+	err = db.Conn.QueryRow(context.Background(),
 		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.PGetProfileCourierCourierNotScan,
+		}
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.PGetProfileCourierNotCommit,
 		}
 	}
 	return &profile, nil

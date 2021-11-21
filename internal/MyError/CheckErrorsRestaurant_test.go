@@ -11,8 +11,8 @@ import (
 
 func TestCheckErrorRestaurant(t *testing.T) {
 	testTable := []struct {
-		errorInput    Errors
-		errorExpected string
+		errorInput       Errors
+		errorExpected    string
 		resultExpected   string
 		codeHTTPExpected int
 	}{

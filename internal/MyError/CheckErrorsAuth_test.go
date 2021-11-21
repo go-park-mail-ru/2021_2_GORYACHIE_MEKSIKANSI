@@ -1,8 +1,8 @@
 package MyError
 
 import (
-	test "2021_2_GORYACHIE_MEKSIKANSI/test"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
+	test "2021_2_GORYACHIE_MEKSIKANSI/test"
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
@@ -42,8 +42,8 @@ func TestCheckErrorSignUp(t *testing.T) {
 	}(loggerTest)
 
 	testTable := []struct {
-		errorInput    Errors
-		errorExpected string
+		errorInput       Errors
+		errorExpected    string
 		resultExpected   string
 		codeHTTPExpected int
 	}{
@@ -83,7 +83,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Alias: AAddTransactionCookieNotInsert,
+				Alias: AAddCookieNotInsert,
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
@@ -145,8 +145,8 @@ func TestCheckErrorSignUp(t *testing.T) {
 
 func TestCheckErrorLogin(t *testing.T) {
 	testTable := []struct {
-		errorInput    Errors
-		errorExpected string
+		errorInput       Errors
+		errorExpected    string
 		resultExpected   string
 		codeHTTPExpected int
 	}{
@@ -217,8 +217,8 @@ func TestCheckErrorLogin(t *testing.T) {
 
 func TestCheckErrorLogout(t *testing.T) {
 	testTable := []struct {
-		errorInput    Errors
-		errorExpected string
+		errorInput       Errors
+		errorExpected    string
 		resultExpected   string
 		codeHTTPExpected int
 	}{
@@ -262,8 +262,8 @@ func TestCheckErrorLogout(t *testing.T) {
 
 func TestCheckErrorLogoutAccess(t *testing.T) {
 	testTable := []struct {
-		errorInput    Errors
-		errorExpected string
+		errorInput       Errors
+		errorExpected    string
 		resultExpected   string
 		codeHTTPExpected int
 	}{

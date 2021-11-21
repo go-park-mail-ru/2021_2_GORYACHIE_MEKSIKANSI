@@ -33,12 +33,12 @@ import (
 	"strings"
 )
 
-const(
-	ConfNameMain = "main"
-	ConfNameDB = "database"
+const (
+	ConfNameMain   = "main"
+	ConfNameDB     = "database"
 	ConfNameBucket = "bucket"
-	ConfType = "yml"
-	ConfPath = "./config/"
+	ConfType       = "yml"
+	ConfPath       = "./config/"
 )
 
 func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger,
@@ -199,7 +199,7 @@ func ConnectAws(config config.AwsBucket) (error, *session.Session) {
 	return nil, sess
 }
 
-func InitConfig() (error, []interface {}) {
+func InitConfig() (error, []interface{}) {
 	viper.AddConfigPath(ConfPath)
 	viper.SetConfigType(ConfType)
 

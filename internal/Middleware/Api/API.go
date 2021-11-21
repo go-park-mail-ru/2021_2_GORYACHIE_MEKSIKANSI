@@ -1,8 +1,8 @@
 package Api
 
 import (
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"github.com/valyala/fasthttp"
 	"math"

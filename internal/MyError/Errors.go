@@ -50,7 +50,7 @@ const (
 	ASignUpHostHostNotInsert           = "host not insert"
 	ASignUpCourierCourierNotInsert     = "courier not insert"
 	ASignUpClientClientNotInsert       = "client not insert"
-	AAddTransactionCookieNotInsert     = "cookie with transaction not insert"
+	AAddCookieNotInsert                = "cookie with transaction not insert"
 	ADeleteCookieCookieNotDelete       = "cookie not delete"
 	AAddCookieCookieNotInsert          = "cookie not insert"
 	AGeneralSignUpLoginNotUnique       = "Телефон или Email уже зарегистрирован"
@@ -66,8 +66,10 @@ const (
 	ASignUpClientNotCommit             = "signup client not commit"
 	ALoginByEmailTransactionNotCreate  = "transaction login by email not create"
 	ALoginByEmailNotCommit             = "login by email not commit"
-	ALoginByPhoneTransactionNotCreate  = "transaction  login by phone not create"
+	ALoginByPhoneTransactionNotCreate  = "transaction login by phone not create"
 	ALoginByPhoneNotCommit             = "login by phone not commit"
+	ADeleteCookieTransactionNotCreate  = "transaction delete cookie not create" // TODO: add in checkErrors
+	ADeleteCookieNotCommit             = "transaction delete cookie not create" // TODO: add in checkErrors
 )
 
 // Error of Middleware
@@ -93,37 +95,41 @@ const (
 
 // Error of profile
 const (
-	PGetRoleByIdClientNotScan             = "check user on client not scan"
-	PGetRoleByIdHostNotScan               = "check user on host not scan"
-	PGetRoleByIdCourierNotScan            = "check user on courier not scan"
-	PGetProfileHostHostNotScan            = "get profile host not scan"
-	PGetProfileClientClientNotScan        = "get profile client not scan"
-	PGetProfileCourierCourierNotScan      = "get profile courier not scan"
-	PGetProfileClientBirthdayNotScan      = "birthday not scan"
-	PUpdateNameNameNotUpdate              = "name not update"
-	PUpdateEmailEmailNotUpdate            = "email not update"
-	PUpdateEmailEmailRepeat               = "email already exist"
-	PUpdatePhonePhoneNotUpdate            = "phone not update"
-	PUpdatePhonePhoneRepeat               = "phone already exist"
-	PUpdatePasswordSaltNotSelect          = "salt not found"
-	PUpdatePasswordPasswordNotUpdate      = "password not update"
-	PUpdateAvatarAvatarNotUpdate          = "avatar not update"
-	PUpdateBirthdayBirthdayNotUpdate      = "birthday not update"
-	PUpdateAddressAddressNotUpdate        = "address not update"
-	PGetProfileUnknownRole                = "unknown role of user"
-	PUpdatePhoneIncorrectPhoneFormat      = "incorrect format phone"
-	PUpdateAvatarAvatarNotOpen            = "file not open"
-	PUpdateAvatarAvatarNotUpload          = "avatar not send"
-	PUpdateAvatarFileNameEmpty            = "file name is empty"
-	PUpdateAvatarFileWithoutExtension     = "file without extension"
-	PGetRoleByIdTransactionNotCreate      = "transaction role by id not create"         // TODO: add in checkErrors
-	PGetRoleByIdNotCommit                 = "role by id not commit"                     // TODO: add in checkErrors
-	PGetProfileClientTransactionNotCreate = "transaction get profile client not create" // TODO: add in checkErrors
-	PGetProfileClientNotCommit            = "get profile client not commit"             // TODO: add in checkErrors
-	PUpdatePasswordTransactionNotCreate   = "transaction update password not create"    // TODO: add in checkErrors
-	PUpdatePasswordNotCommit              = "update password not commit"                // TODO: add in checkErrors
-	PAddAddressAddressNotAdd              = "address not insert"                        // TODO: add in checkErrors
-	PAddDeleteAddressNotDelete            = "address not delete"                        // TODO: add in checkErrors
+	PGetRoleByIdClientNotScan              = "check user on client not scan"
+	PGetRoleByIdHostNotScan                = "check user on host not scan"
+	PGetRoleByIdCourierNotScan             = "check user on courier not scan"
+	PGetProfileHostHostNotScan             = "get profile host not scan"
+	PGetProfileClientClientNotScan         = "get profile client not scan"
+	PGetProfileCourierCourierNotScan       = "get profile courier not scan"
+	PGetProfileClientBirthdayNotScan       = "birthday not scan"
+	PUpdateNameNameNotUpdate               = "name not update"
+	PUpdateEmailEmailNotUpdate             = "email not update"
+	PUpdateEmailEmailRepeat                = "email already exist"
+	PUpdatePhonePhoneNotUpdate             = "phone not update"
+	PUpdatePhonePhoneRepeat                = "phone already exist"
+	PUpdatePasswordSaltNotSelect           = "salt not found"
+	PUpdatePasswordPasswordNotUpdate       = "password not update"
+	PUpdateAvatarAvatarNotUpdate           = "avatar not update"
+	PUpdateBirthdayBirthdayNotUpdate       = "birthday not update"
+	PUpdateAddressAddressNotUpdate         = "address not update"
+	PGetProfileUnknownRole                 = "unknown role of user"
+	PUpdatePhoneIncorrectPhoneFormat       = "incorrect format phone"
+	PUpdateAvatarAvatarNotOpen             = "file not open"
+	PUpdateAvatarAvatarNotUpload           = "avatar not send"
+	PUpdateAvatarFileNameEmpty             = "file name is empty"
+	PUpdateAvatarFileWithoutExtension      = "file without extension"
+	PGetRoleByIdTransactionNotCreate       = "transaction role by id not create"          // TODO: add in checkErrors
+	PGetRoleByIdNotCommit                  = "role by id not commit"                      // TODO: add in checkErrors
+	PGetProfileClientTransactionNotCreate  = "transaction get profile client not create"  // TODO: add in checkErrors
+	PGetProfileClientNotCommit             = "get profile client not commit"              // TODO: add in checkErrors
+	PUpdatePasswordTransactionNotCreate    = "transaction update password not create"     // TODO: add in checkErrors
+	PUpdatePasswordNotCommit               = "update password not commit"                 // TODO: add in checkErrors
+	PAddAddressAddressNotAdd               = "address not insert"                         // TODO: add in checkErrors
+	PAddDeleteAddressNotDelete             = "address not delete"                         // TODO: add in checkErrors
+	PGetProfileHostTransactionNotCreate    = "transaction get profile host not create"    // TODO: add in checkErrors
+	PGetProfileHostNotCommit               = "transaction get profile host not commit"    // TODO: add in checkErrors
+	PGetProfileCourierTransactionNotCreate = "transaction get profile courier not create" // TODO: add in checkErrors
+	PGetProfileCourierNotCommit            = "transaction get profile courier not commit" // TODO: add in checkErrors
 )
 
 // Error of restaurant
@@ -177,6 +183,8 @@ const (
 	CGetCartNotSelect                              = "cart not select"
 	CGetCartNotCommit                              = "transaction get not commit"
 	CGetCartNotScan                                = "cart not scan"
+	CDeleteCartTransactionNotCreate                = "transaction delete cart not create" // TODO: add in checkErrors
+	CDeleteCartNotCommit                           = "transaction delete cart not commit" // TODO: add in checkErrors
 )
 
 // Error of Order

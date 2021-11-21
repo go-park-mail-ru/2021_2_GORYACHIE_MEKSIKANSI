@@ -340,9 +340,9 @@ var OrmUpdateCartStructFood = []struct {
 	inputIngredient       []Cart.IngredientsCartRequest
 	out                   []Cart.IngredientCartResponse
 	outErr                string
-	inputQuery  int
-	resultQuery Row
-	countQuery  int
+	inputQuery            int
+	resultQuery           Row
+	countQuery            int
 	inputInsertIngredient int
 	inputInsertClient     int
 	errInsert             error
@@ -406,9 +406,9 @@ var OrmUpdateCartRadios = []struct {
 	inputRadios         []Cart.RadiosCartRequest
 	out                 []Cart.RadiosCartResponse
 	outErr              string
-	inputQuery  int
-	resultQuery Row
-	countQuery  int
+	inputQuery          int
+	resultQuery         Row
+	countQuery          int
 	inputInsertRadiosId int
 	inputInsertRadios   int
 	inputInsertClient   int
@@ -470,11 +470,11 @@ func TestOrmUpdateCartRadios(t *testing.T) {
 
 var OrmUpdateCart = []struct {
 	testName                    string
-	inputClientId int
-	inputCart     Cart.RequestCartDefault
-	outOne        *Cart.ResponseCartErrors
-	outTwo        []Cart.CastDishesErrs
-	outErr        string
+	inputClientId               int
+	inputCart                   Cart.RequestCartDefault
+	outOne                      *Cart.ResponseCartErrors
+	outTwo                      []Cart.CastDishesErrs
+	outErr                      string
 	inputInsertClientId         int
 	inputInsertFood             int
 	inputInsertCountFood        int
@@ -483,20 +483,20 @@ var OrmUpdateCart = []struct {
 	errInsert                   error
 	countInsert                 int
 	inputInsertDishId           int
-	inputQueryRestaurantId int
-	resultQuery            Row
-	countQuery             int
+	inputQueryRestaurantId      int
+	resultQuery                 Row
+	countQuery                  int
 	errBegin                    error
-	inputQueryStruct       int
-	resultQueryStruct      Row
-	countQueryStruct       int
+	inputQueryStruct            int
+	resultQueryStruct           Row
+	countQueryStruct            int
 	inputInsertStructIngredient int
 	inputInsertStructClient     int
 	errInsertStruct             error
 	countInsertStruct           int
-	inputQueryRadios       int
-	resultQueryRadios      Row
-	countQueryRadios       int
+	inputQueryRadios            int
+	resultQueryRadios           Row
+	countQueryRadios            int
 	inputInsertRadiosId         int
 	inputInsertRadios           int
 	inputInsertClient           int

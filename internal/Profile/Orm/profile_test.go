@@ -39,13 +39,13 @@ func (r *Row) Scan(dest ...interface{}) error {
 
 var OrmGetRoleById = []struct {
 	testName                     string
-	input             int
-	rowsQueryHost     Row
-	inputQueryHost    int
-	rowsQueryClient   Row
-	inputQueryClient  int
-	rowsQueryCourier  Row
-	inputQueryCourier int
+	input                        int
+	rowsQueryHost                Row
+	inputQueryHost               int
+	rowsQueryClient              Row
+	inputQueryClient             int
+	rowsQueryCourier             Row
+	inputQueryCourier            int
 	errQuery                     error
 	out                          string
 	inputGetDishesRestaurantName string
@@ -115,9 +115,9 @@ func TestGetRoleById(t *testing.T) {
 
 var OrmGetProfileHost = []struct {
 	testName                     string
-	input      int
-	rowsQuery  Row
-	inputQuery int
+	input                        int
+	rowsQuery                    Row
+	inputQuery                   int
 	errQuery                     error
 	out                          *Profile.Profile
 	inputGetDishesRestaurantName string
@@ -164,9 +164,9 @@ func TestGetProfileHost(t *testing.T) {
 
 var OrmGetProfileCourier = []struct {
 	testName                     string
-	input      int
-	rowsQuery  Row
-	inputQuery int
+	input                        int
+	rowsQuery                    Row
+	inputQuery                   int
 	errQuery                     error
 	out                          *Profile.Profile
 	inputGetDishesRestaurantName string
@@ -213,16 +213,16 @@ func TestGetProfileCourier(t *testing.T) {
 
 var OrmGetProfileClient = []struct {
 	testName                     string
-	input              int
-	rowsQuery          Row
-	inputQuery         int
+	input                        int
+	rowsQuery                    Row
+	inputQuery                   int
 	errQuery                     error
 	out                          *Profile.Profile
 	inputGetDishesRestaurantName string
 	inputGetDishesRestaurantId   int
-	outErr             string
-	rowsQueryBirthday  Row
-	inputQueryBirthday int
+	outErr                       string
+	rowsQueryBirthday            Row
+	inputQueryBirthday           int
 	countQueryBirthday           int
 }{
 	{
@@ -371,9 +371,9 @@ var OrmUpdatePassword = []struct {
 	inputQueryId       int
 	inputQuerySalt     int
 	inputQueryPassword string
-	errQuery  error
-	querySalt Row
-	outErr    string
+	errQuery           error
+	querySalt          Row
+	outErr             string
 }{
 	{
 		testName:           "One",

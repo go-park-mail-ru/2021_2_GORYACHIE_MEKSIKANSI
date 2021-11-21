@@ -57,9 +57,9 @@ var OrmGeneralSignUp = []struct {
 	inputTransaction pgx.Tx
 	inputQueryPhone  string
 	inputQueryEmail  string
-	inputQueryName string
-	resultQuery    Row
-	out            int
+	inputQueryName   string
+	resultQuery      Row
+	out              int
 	outErr           string
 }{
 	{
@@ -102,10 +102,10 @@ func TestOrmGeneralSignUp(t *testing.T) {
 var OrmLoginByEmail = []struct {
 	testName           string
 	inputEmail         string
-	inputPassword   string
-	resultQuerySalt Row
-	resultQueryId   Row
-	out             int
+	inputPassword      string
+	resultQuerySalt    Row
+	resultQueryId      Row
+	out                int
 	outErr             string
 	inputQuerySalt     string
 	inputQueryPassword string
@@ -158,10 +158,10 @@ func TestOrmLoginByEmail(t *testing.T) {
 var OrmLoginByPhone = []struct {
 	testName           string
 	inputPhone         string
-	inputPassword   string
-	resultQuerySalt Row
-	resultQueryId   Row
-	out             int
+	inputPassword      string
+	resultQuerySalt    Row
+	resultQueryId      Row
+	out                int
 	outErr             string
 	inputQuerySalt     string
 	inputQueryPassword string
@@ -355,7 +355,7 @@ func TestOrmAddTransactionCookie(t *testing.T) {
 			Return(nil, tt.errQuery)
 		testUser := &Wrapper{}
 		t.Run(tt.testName, func(t *testing.T) {
-			err := testUser.addTransactionCookie(tt.inputCookie, m, tt.inputId)
+			err := testUser.addCookie(tt.inputCookie, m, tt.inputId)
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
@@ -377,9 +377,9 @@ var OrmSignupClient = []struct {
 	inputQueryCookieDateLife  time.Time
 	inputQueryInfoPhone       string
 	inputQueryInfoEmail       string
-	inputQueryInfoName string
-	resultQueryInfo    Row
-	inputInsert        int
+	inputQueryInfoName        string
+	resultQueryInfo           Row
+	inputInsert               int
 	ErrInsert                 error
 	countInsert               int
 	countQueryCookie          int
@@ -484,9 +484,9 @@ var OrmSignupCourier = []struct {
 	inputQueryCookieDateLife  time.Time
 	inputQueryInfoPhone       string
 	inputQueryInfoEmail       string
-	inputQueryInfoName string
-	resultQueryInfo    Row
-	inputInsert        int
+	inputQueryInfoName        string
+	resultQueryInfo           Row
+	inputInsert               int
 	ErrInsert                 error
 	countInsert               int
 	countQueryCookie          int
@@ -591,9 +591,9 @@ var OrmSignupHost = []struct {
 	inputQueryCookieDateLife  time.Time
 	inputQueryInfoPhone       string
 	inputQueryInfoEmail       string
-	inputQueryInfoName string
-	resultQueryInfo    Row
-	inputInsert        int
+	inputQueryInfoName        string
+	resultQueryInfo           Row
+	inputInsert               int
 	ErrInsert                 error
 	countInsert               int
 	countQueryCookie          int

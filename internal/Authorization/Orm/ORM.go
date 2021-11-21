@@ -3,8 +3,8 @@ package Orm
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization/Application"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"context"
 	"github.com/jackc/pgx/v4"
@@ -68,7 +68,7 @@ func (db *Wrapper) SignupHost(signup *Authorization.RegistrationRequest, cookie 
 		return nil, err
 	}
 
-	err = db.addTransactionCookie(cookie, tx, userId)
+	err = db.addCookie(cookie, tx, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func (db *Wrapper) SignupCourier(signup *Authorization.RegistrationRequest, cook
 		return nil, err
 	}
 
-	err = db.addTransactionCookie(cookie, tx, userId)
+	err = db.addCookie(cookie, tx, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +145,7 @@ func (db *Wrapper) SignupClient(signup *Authorization.RegistrationRequest, cooki
 		return nil, err
 	}
 
-	err = db.addTransactionCookie(cookie, tx, userId)
+	err = db.addCookie(cookie, tx, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -167,13 +167,13 @@ func (db *Wrapper) SignupClient(signup *Authorization.RegistrationRequest, cooki
 	return cookie, nil
 }
 
-func (db *Wrapper) addTransactionCookie(cookie *Util.Defense, Transaction pgx.Tx, id int) error {
+func (db *Wrapper) addCookie(cookie *Util.Defense, Transaction pgx.Tx, id int) error {
 	_, err := Transaction.Exec(context.Background(),
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.AAddTransactionCookieNotInsert,
+			Alias: errPkg.AAddCookieNotInsert,
 		}
 	}
 
@@ -277,9 +277,20 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 }
 
 func (db *Wrapper) DeleteCookie(CSRF string) (string, error) {
+	tx, err := db.Conn.Begin(context.Background())
+	if err != nil {
+		return "", &errPkg.Errors{
+			Alias: errPkg.ADeleteCookieTransactionNotCreate,
+		}
+	}
+
+	defer func(tx pgx.Tx) {
+		tx.Rollback(context.Background())
+	}(tx)
+
 	var sessionId string
 	var sessionIdScan interface{}
-	err := db.Conn.QueryRow(context.Background(),
+	err = tx.QueryRow(context.Background(),
 		"DELETE FROM cookie WHERE csrf_token = $1 RETURNING session_id", CSRF).Scan(&sessionIdScan)
 	if sessionIdScan != nil {
 		sessionId = sessionIdScan.(string)
@@ -287,6 +298,13 @@ func (db *Wrapper) DeleteCookie(CSRF string) (string, error) {
 	if err != nil {
 		return "", &errPkg.Errors{
 			Alias: errPkg.ADeleteCookieCookieNotDelete,
+		}
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return "", &errPkg.Errors{
+			Alias: errPkg.ADeleteCookieNotCommit,
 		}
 	}
 	return sessionId, nil

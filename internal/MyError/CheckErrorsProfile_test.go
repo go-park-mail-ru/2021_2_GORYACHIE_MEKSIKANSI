@@ -12,8 +12,8 @@ import (
 
 func TestCheckErrorProfile(t *testing.T) {
 	testTable := []struct {
-		errorInput    Errors
-		errorExpected string
+		errorInput       Errors
+		errorExpected    string
 		resultExpected   string
 		codeHTTPExpected int
 	}{
@@ -117,8 +117,8 @@ func TestCheckErrorProfile(t *testing.T) {
 
 func TestCheckErrorProfileCookie(t *testing.T) {
 	testTable := []struct {
-		errorInput    Errors
-		errorExpected string
+		errorInput       Errors
+		errorExpected    string
 		resultExpected   string
 		codeHTTPExpected int
 	}{

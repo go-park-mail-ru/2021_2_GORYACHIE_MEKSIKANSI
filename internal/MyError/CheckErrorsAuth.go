@@ -46,7 +46,7 @@ func (c CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 				},
 				result, http.StatusOK
 
-		case AGeneralSignUpNotInsert, ASignUpHostHostNotInsert, AAddTransactionCookieNotInsert,
+		case AGeneralSignUpNotInsert, ASignUpHostHostNotInsert, AAddCookieNotInsert,
 			ASignUpCourierCourierNotInsert, ASignUpClientClientNotInsert, ASignupHostTransactionNotCreate,
 			ASignupCourierTransactionNotCreate, ASignupClientTransactionNotCreate, ASignUpUnknownType,
 			ASignUpHostNotCommit, ASignUpCourierNotCommit, ASignUpClientNotCommit:
