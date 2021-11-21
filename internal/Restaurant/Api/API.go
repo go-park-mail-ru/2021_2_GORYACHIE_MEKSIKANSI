@@ -2,10 +2,10 @@ package Api
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
-	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
+	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"encoding/json"
 	"github.com/valyala/fasthttp"
 	"net/http"
@@ -18,7 +18,7 @@ type InfoRestaurant struct {
 
 func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
-	reqId, errConvert := Utils.InterfaceConvertInt(reqIdCtx)
+	reqId, errConvert := Util.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
@@ -63,7 +63,7 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 
 func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
-	reqId, errConvert := Utils.InterfaceConvertInt(reqIdCtx)
+	reqId, errConvert := Util.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
@@ -76,7 +76,7 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	idCtx := ctx.UserValue("idRes")
-	id, errConvert := Utils.InterfaceConvertInt(idCtx)
+	id, errConvert := Util.InterfaceConvertInt(idCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
@@ -117,7 +117,7 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 
 func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
-	reqId, errConvert := Utils.InterfaceConvertInt(reqIdCtx)
+	reqId, errConvert := Util.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
@@ -130,7 +130,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	idCtx := ctx.UserValue("idRes")
-	idRes, errConvert := Utils.InterfaceConvertInt(idCtx)
+	idRes, errConvert := Util.InterfaceConvertInt(idCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
@@ -138,7 +138,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	idDishCtx := ctx.UserValue("idDish")
-	idDish, errConvert := Utils.InterfaceConvertInt(idDishCtx)
+	idDish, errConvert := Util.InterfaceConvertInt(idDishCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))

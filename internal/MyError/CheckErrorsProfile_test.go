@@ -1,4 +1,4 @@
-package MyErrors
+package MyError
 
 import (
 	test "2021_2_GORYACHIE_MEKSIKANSI/test"

@@ -1,9 +1,9 @@
 package Orm
 
 import (
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"context"
 	"github.com/jackc/pgx/v4"
 	"strings"
@@ -11,10 +11,10 @@ import (
 )
 
 type Wrapper struct {
-	Conn Interfaces.ConnectionInterface
+	Conn Interface.ConnectionInterface
 }
 
-func (db *Wrapper) CheckAccess(cookie *Utils.Defense) (bool, error) {
+func (db *Wrapper) CheckAccess(cookie *Util.Defense) (bool, error) {
 	var timeLiveCookie time.Time
 	var id int
 	err := db.Conn.QueryRow(context.Background(),
@@ -38,8 +38,8 @@ func (db *Wrapper) CheckAccess(cookie *Utils.Defense) (bool, error) {
 	return false, nil
 }
 
-func (db *Wrapper) NewCSRF(cookie *Utils.Defense) (string, error) {
-	csrfToken := Utils.RandString(5)
+func (db *Wrapper) NewCSRF(cookie *Util.Defense) (string, error) {
+	csrfToken := Util.RandString(5)
 	_, err := db.Conn.Exec(context.Background(),
 		"UPDATE cookie SET csrf_token = $1 WHERE session_id = $2",
 		csrfToken, cookie.SessionId)
@@ -52,7 +52,7 @@ func (db *Wrapper) NewCSRF(cookie *Utils.Defense) (string, error) {
 	return csrfToken, nil
 }
 
-func (db *Wrapper) GetIdByCookie(cookie *Utils.Defense) (int, error) {
+func (db *Wrapper) GetIdByCookie(cookie *Util.Defense) (int, error) {
 	var timeLiveCookie time.Time
 	var id int
 	err := db.Conn.QueryRow(context.Background(),

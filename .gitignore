@@ -24,4 +24,7 @@
 .idea
 .git
 go.sum
+
+# configs
 /*.env
+/config/*.yml

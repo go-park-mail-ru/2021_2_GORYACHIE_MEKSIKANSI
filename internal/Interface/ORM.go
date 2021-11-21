@@ -1,4 +1,4 @@
-package Interfaces
+package Interface
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization"
@@ -6,7 +6,7 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Order"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Profile"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant"
-	Utils2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	Utils2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"context"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/jackc/pgconn"

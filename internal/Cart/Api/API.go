@@ -3,9 +3,9 @@ package Api
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Cart"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
-	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
+	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"encoding/json"
 	"github.com/valyala/fasthttp"
 	"net/http"
@@ -18,7 +18,7 @@ type InfoCart struct {
 
 func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
-	reqId, errConvert := Utils.InterfaceConvertInt(reqIdCtx)
+	reqId, errConvert := Util.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
@@ -31,7 +31,7 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	idCtx := ctx.UserValue("id")
-	id, errConvert := Utils.InterfaceConvertInt(idCtx)
+	id, errConvert := Util.InterfaceConvertInt(idCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
@@ -71,7 +71,7 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 
 func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
-	reqId, errConvert := Utils.InterfaceConvertInt(reqIdCtx)
+	reqId, errConvert := Util.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
@@ -93,14 +93,14 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	tokenContext := ctx.UserValue("X-Csrf-Token")
-	xCsrfToken, errConvert := Utils.InterfaceConvertString(tokenContext)
+	xCsrfToken, errConvert := Util.InterfaceConvertString(tokenContext)
 	if (errConvert != nil) && (errConvert.Error() == errPkg.ErrNotStringAndInt) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
 		return
 	}
 	idCtx := ctx.UserValue("id")
-	id, errConvert := Utils.InterfaceConvertInt(idCtx)
+	id, errConvert := Util.InterfaceConvertInt(idCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))

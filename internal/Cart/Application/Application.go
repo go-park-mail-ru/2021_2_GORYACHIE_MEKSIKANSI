@@ -2,13 +2,13 @@ package Application
 
 import (
 	Cart2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Cart"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	Utils2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant"
 )
 
 type Cart struct {
-	DB           Interfaces.WrapperCart
-	DBRestaurant Interfaces.WrapperRestaurant
+	DB           Interface.WrapperCart
+	DBRestaurant Interface.WrapperRestaurant
 }
 
 func (c *Cart) CalculatePriceDelivery(id int) (int, error) {

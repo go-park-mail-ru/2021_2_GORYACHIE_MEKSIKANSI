@@ -3,7 +3,7 @@ package Orm
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization/Application"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	mocks "2021_2_GORYACHIE_MEKSIKANSI/test/Mocks"
 	"context"
 	"errors"
@@ -273,7 +273,7 @@ func TestOrmDeleteCookie(t *testing.T) {
 
 var OrmAddCookie = []struct {
 	testName            string
-	inputCookie         *Utils.Defense
+	inputCookie         *Util.Defense
 	inputId             int
 	outErr              string
 	errQuery            error
@@ -286,7 +286,7 @@ var OrmAddCookie = []struct {
 		testName:            "One",
 		inputQuerySessionId: "1",
 		inputQueryCSRFToken: "1",
-		inputCookie:         &Utils.Defense{SessionId: "1", CsrfToken: "1"},
+		inputCookie:         &Util.Defense{SessionId: "1", CsrfToken: "1"},
 		inputId:             1,
 		errQuery:            nil,
 		inputQueryClientId:  1,
@@ -320,7 +320,7 @@ func TestOrmAddCookie(t *testing.T) {
 
 var OrmAddTransactionCookie = []struct {
 	testName            string
-	inputCookie         *Utils.Defense
+	inputCookie         *Util.Defense
 	inputId             int
 	outErr              string
 	errQuery            error
@@ -333,7 +333,7 @@ var OrmAddTransactionCookie = []struct {
 		testName:            "One",
 		inputQuerySessionId: "1",
 		inputQueryCSRFToken: "1",
-		inputCookie:         &Utils.Defense{SessionId: "1", CsrfToken: "1"},
+		inputCookie:         &Util.Defense{SessionId: "1", CsrfToken: "1"},
 		inputId:             1,
 		errQuery:            nil,
 		inputQueryClientId:  1,
@@ -367,7 +367,7 @@ func TestOrmAddTransactionCookie(t *testing.T) {
 
 var OrmSignupClient = []struct {
 	testName                  string
-	inputCookie               *Utils.Defense
+	inputCookie               *Util.Defense
 	inputSignUp               *Authorization.RegistrationRequest
 	outErr                    string
 	errQueryCookie            error
@@ -394,7 +394,7 @@ var OrmSignupClient = []struct {
 		inputQueryCookieSessionId: "1",
 		inputQueryCookieCSRFToken: "1",
 		inputQueryCookieDateLife:  time.Time{},
-		inputCookie:               &Utils.Defense{SessionId: "1", CsrfToken: "1"},
+		inputCookie:               &Util.Defense{SessionId: "1", CsrfToken: "1"},
 		inputSignUp:               &Authorization.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
 		errQueryCookie:            nil,
 		inputQueryCookieClientId:  1,
@@ -462,7 +462,7 @@ func TestOrmSignupClient(t *testing.T) {
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.SignupClient(tt.inputSignUp, tt.inputCookie)
-			require.NotEqual(t, &Utils.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &Utils.Defense{}, result))
+			require.NotEqual(t, &Util.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &Util.Defense{}, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
@@ -474,7 +474,7 @@ func TestOrmSignupClient(t *testing.T) {
 
 var OrmSignupCourier = []struct {
 	testName                  string
-	inputCookie               *Utils.Defense
+	inputCookie               *Util.Defense
 	inputSignUp               *Authorization.RegistrationRequest
 	outErr                    string
 	errQueryCookie            error
@@ -501,7 +501,7 @@ var OrmSignupCourier = []struct {
 		inputQueryCookieSessionId: "1",
 		inputQueryCookieCSRFToken: "1",
 		inputQueryCookieDateLife:  time.Time{},
-		inputCookie:               &Utils.Defense{SessionId: "1", CsrfToken: "1"},
+		inputCookie:               &Util.Defense{SessionId: "1", CsrfToken: "1"},
 		inputSignUp:               &Authorization.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
 		errQueryCookie:            nil,
 		inputQueryCookieClientId:  1,
@@ -569,7 +569,7 @@ func TestOrmSignupCourier(t *testing.T) {
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.SignupCourier(tt.inputSignUp, tt.inputCookie)
-			require.NotEqual(t, &Utils.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &Utils.Defense{}, result))
+			require.NotEqual(t, &Util.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &Util.Defense{}, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
@@ -581,7 +581,7 @@ func TestOrmSignupCourier(t *testing.T) {
 
 var OrmSignupHost = []struct {
 	testName                  string
-	inputCookie               *Utils.Defense
+	inputCookie               *Util.Defense
 	inputSignUp               *Authorization.RegistrationRequest
 	outErr                    string
 	errQueryCookie            error
@@ -608,7 +608,7 @@ var OrmSignupHost = []struct {
 		inputQueryCookieSessionId: "1",
 		inputQueryCookieCSRFToken: "1",
 		inputQueryCookieDateLife:  time.Time{},
-		inputCookie:               &Utils.Defense{SessionId: "1", CsrfToken: "1"},
+		inputCookie:               &Util.Defense{SessionId: "1", CsrfToken: "1"},
 		inputSignUp:               &Authorization.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
 		errQueryCookie:            nil,
 		inputQueryCookieClientId:  1,
@@ -676,7 +676,7 @@ func TestOrmSignupHost(t *testing.T) {
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.SignupHost(tt.inputSignUp, tt.inputCookie)
-			require.NotEqual(t, &Utils.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &Utils.Defense{}, result))
+			require.NotEqual(t, &Util.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &Util.Defense{}, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
@@ -688,73 +688,73 @@ func TestOrmSignupHost(t *testing.T) {
 
 var ApplicationSignUp = []struct {
 	testName                 string
-	out                      *Utils.Defense
+	out                      *Util.Defense
 	outErr                   string
 	input                    *Authorization.RegistrationRequest
 	inputSignupClientSignUp  *Authorization.RegistrationRequest
-	resultSignupClient       *Utils.Defense
+	resultSignupClient       *Util.Defense
 	errSignupClient          error
 	countSignupClient        int
 	inputSignupCourierSignUp *Authorization.RegistrationRequest
-	resultSignupCourier      *Utils.Defense
+	resultSignupCourier      *Util.Defense
 	errSignupCourier         error
 	countSignupCourier       int
 	inputSignupHostSignUp    *Authorization.RegistrationRequest
-	resultSignupHost         *Utils.Defense
+	resultSignupHost         *Util.Defense
 	errSignupHost            error
 	countSignupHost          int
-	resultGenerateNew        *Utils.Defense
-	inputSignupClientCookie  *Utils.Defense
-	inputSignupCourierCookie *Utils.Defense
-	inputSignupHostCookie    *Utils.Defense
+	resultGenerateNew        *Util.Defense
+	inputSignupClientCookie  *Util.Defense
+	inputSignupCourierCookie *Util.Defense
+	inputSignupHostCookie    *Util.Defense
 }{
 	{
 		input:                   &Authorization.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "client"},
 		testName:                "One",
 		outErr:                  "",
-		resultSignupClient:      &Utils.Defense{},
+		resultSignupClient:      &Util.Defense{},
 		inputSignupClientSignUp: &Authorization.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "client"},
-		out:                     &Utils.Defense{},
+		out:                     &Util.Defense{},
 		errSignupClient:         nil,
 		countSignupClient:       1,
-		resultGenerateNew:       &Utils.Defense{},
-		inputSignupClientCookie: &Utils.Defense{},
+		resultGenerateNew:       &Util.Defense{},
+		inputSignupClientCookie: &Util.Defense{},
 	},
 	{
 		input:                    &Authorization.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "courier"},
 		testName:                 "Two",
 		outErr:                   "",
-		resultSignupCourier:      &Utils.Defense{},
+		resultSignupCourier:      &Util.Defense{},
 		inputSignupCourierSignUp: &Authorization.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "courier"},
-		out:                      &Utils.Defense{},
+		out:                      &Util.Defense{},
 		errSignupCourier:         nil,
 		countSignupCourier:       1,
-		resultGenerateNew:        &Utils.Defense{},
-		inputSignupCourierCookie: &Utils.Defense{},
+		resultGenerateNew:        &Util.Defense{},
+		inputSignupCourierCookie: &Util.Defense{},
 	},
 	{
 		input:                 &Authorization.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "host"},
 		testName:              "Three",
 		outErr:                "",
-		resultSignupHost:      &Utils.Defense{},
+		resultSignupHost:      &Util.Defense{},
 		inputSignupHostSignUp: &Authorization.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "host"},
-		out:                   &Utils.Defense{},
+		out:                   &Util.Defense{},
 		errSignupHost:         nil,
 		countSignupHost:       1,
-		resultGenerateNew:     &Utils.Defense{},
-		inputSignupHostCookie: &Utils.Defense{},
+		resultGenerateNew:     &Util.Defense{},
+		inputSignupHostCookie: &Util.Defense{},
 	},
 	{
 		input:                   &Authorization.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "client"},
 		testName:                "Four",
 		outErr:                  "text",
-		resultSignupClient:      &Utils.Defense{},
+		resultSignupClient:      &Util.Defense{},
 		inputSignupClientSignUp: &Authorization.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "client"},
 		out:                     nil,
 		errSignupClient:         errors.New("text"),
 		countSignupClient:       1,
-		resultGenerateNew:       &Utils.Defense{},
-		inputSignupClientCookie: &Utils.Defense{},
+		resultGenerateNew:       &Util.Defense{},
+		inputSignupClientCookie: &Util.Defense{},
 	},
 }
 
@@ -798,7 +798,7 @@ func TestApplicationSignUp(t *testing.T) {
 
 var ApplicationLogin = []struct {
 	testName             string
-	out                  *Utils.Defense
+	out                  *Util.Defense
 	outErr               string
 	input                *Authorization.Authorization
 	inputLoginEmail      string
@@ -808,9 +808,9 @@ var ApplicationLogin = []struct {
 	countLoginEmail      int
 	countLoginPhone      int
 	inputLoginPhone      string
-	resultGenerateNew    *Utils.Defense
+	resultGenerateNew    *Util.Defense
 	countGenerateNew     int
-	inputAddCookieCookie *Utils.Defense
+	inputAddCookieCookie *Util.Defense
 	inputAddCookieId     int
 	errAddCookie         error
 	countAddCookie       int
@@ -819,7 +819,7 @@ var ApplicationLogin = []struct {
 		input:                &Authorization.Authorization{Email: "1", Phone: "", Password: "1"},
 		testName:             "One",
 		outErr:               "",
-		out:                  &Utils.Defense{},
+		out:                  &Util.Defense{},
 		inputLoginEmail:      "1",
 		inputLoginPhone:      "1",
 		inputLoginPassword:   "1",
@@ -827,9 +827,9 @@ var ApplicationLogin = []struct {
 		errLogin:             nil,
 		countLoginEmail:      1,
 		countLoginPhone:      0,
-		resultGenerateNew:    &Utils.Defense{},
+		resultGenerateNew:    &Util.Defense{},
 		countGenerateNew:     1,
-		inputAddCookieCookie: &Utils.Defense{},
+		inputAddCookieCookie: &Util.Defense{},
 		inputAddCookieId:     1,
 		errAddCookie:         nil,
 		countAddCookie:       1,
@@ -838,7 +838,7 @@ var ApplicationLogin = []struct {
 		input:                &Authorization.Authorization{Email: "", Phone: "1", Password: "1"},
 		testName:             "Two",
 		outErr:               "",
-		out:                  &Utils.Defense{},
+		out:                  &Util.Defense{},
 		inputLoginEmail:      "",
 		inputLoginPhone:      "1",
 		inputLoginPassword:   "1",
@@ -846,9 +846,9 @@ var ApplicationLogin = []struct {
 		errLogin:             nil,
 		countLoginEmail:      0,
 		countLoginPhone:      1,
-		resultGenerateNew:    &Utils.Defense{},
+		resultGenerateNew:    &Util.Defense{},
 		countGenerateNew:     1,
-		inputAddCookieCookie: &Utils.Defense{},
+		inputAddCookieCookie: &Util.Defense{},
 		inputAddCookieId:     1,
 		errAddCookie:         nil,
 		countAddCookie:       1,
@@ -865,9 +865,9 @@ var ApplicationLogin = []struct {
 		errLogin:             nil,
 		countLoginEmail:      0,
 		countLoginPhone:      1,
-		resultGenerateNew:    &Utils.Defense{},
+		resultGenerateNew:    &Util.Defense{},
 		countGenerateNew:     1,
-		inputAddCookieCookie: &Utils.Defense{},
+		inputAddCookieCookie: &Util.Defense{},
 		inputAddCookieId:     1,
 		errAddCookie:         errors.New("text"),
 		countAddCookie:       1,

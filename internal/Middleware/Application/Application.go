@@ -1,12 +1,12 @@
 package Application
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
-	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 )
 
 type Middleware struct {
-	DB Interfaces.WrapperMiddleware
+	DB Interface.WrapperMiddleware
 }
 
 func (m *Middleware) CheckAccess(cookie *utils.Defense) (bool, error) {

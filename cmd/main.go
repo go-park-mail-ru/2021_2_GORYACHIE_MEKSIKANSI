@@ -2,15 +2,15 @@ package main
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/build"
-	config "2021_2_GORYACHIE_MEKSIKANSI/configs"
+	"2021_2_GORYACHIE_MEKSIKANSI/config"
 	auth "2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization/Api"
 	cart "2021_2_GORYACHIE_MEKSIKANSI/internal/Cart/Api"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
 	mid "2021_2_GORYACHIE_MEKSIKANSI/internal/Middleware/Api"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	order "2021_2_GORYACHIE_MEKSIKANSI/internal/Order/Api"
 	profile "2021_2_GORYACHIE_MEKSIKANSI/internal/Profile/Api"
 	restaurant "2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant/Api"
-	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	cors "github.com/AdhityaRamadhanus/fasthttpcors"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/fasthttp/router"
@@ -31,17 +31,29 @@ func runServer(port string) {
 		}
 	}(logger.Log)
 
-	connectionPostgres, err := build.CreateDb()
+	errConfig, configStructure := build.InitConfig()
+	if errConfig != nil {
+		logger.Log.Errorf("%s", errConfig.Error())
+		return
+	}
+	appConfig := configStructure[0].(config.AppConfig)
+	dbConfig := configStructure[1].(config.DBConfig)
+	awsConfig := configStructure[2].(config.AwsConfig)
+
+	connectionPostgres, err := build.CreateDb(dbConfig.Db, appConfig.Primary.Debug)
 	defer connectionPostgres.Close()
 	if err != nil {
 		logger.Log.Errorf("Unable to connect to database: %s", err.Error())
 		os.Exit(1)
 	}
 
-	build.LoadEnv()
-	sess := build.ConnectAws()
+	errAws, sess := build.ConnectAws(awsConfig.Aws)
+	if errAws != nil {
+		logger.Log.Errorf("AWS: %s", errAws.Error())
+		return
+	}
 	uploader := s3manager.NewUploader(sess)
-	nameBucket := build.GetEnvWithKey("BUCKET_NAME")
+	nameBucket := awsConfig.Aws.Name
 
 	startStructure := build.SetUp(connectionPostgres, logger.Log, uploader, nameBucket)
 
@@ -86,7 +98,7 @@ func runServer(port string) {
 	printURL := infoMid.LogURL(myRouter.Handler)
 
 	withCors := cors.NewCorsHandler(cors.Options{
-		AllowedOrigins: []string{config.AllowedOriginsDomain + ":" + config.AllowedOriginsPort},
+		AllowedOrigins: []string{appConfig.Cors.Host + ":" + appConfig.Cors.Port},
 		AllowedHeaders: []string{"access-control-allow-origin", "content-type",
 			"x-csrf-token", "access-control-expose-headers"},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS", "PUT"},

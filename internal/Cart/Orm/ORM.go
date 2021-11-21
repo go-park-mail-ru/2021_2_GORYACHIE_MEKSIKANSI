@@ -2,14 +2,14 @@ package Orm
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Cart"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	"context"
 	"github.com/jackc/pgx/v4"
 )
 
 type Wrapper struct {
-	Conn Interfaces.ConnectionInterface
+	Conn Interface.ConnectionInterface
 }
 
 func (db *Wrapper) getStructFood(id int) ([]Cart.IngredientCartResponse, error) {

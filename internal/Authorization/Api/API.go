@@ -2,9 +2,9 @@ package Api
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
-	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
+	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 
 	"encoding/json"
 	"github.com/valyala/fasthttp"
@@ -19,7 +19,7 @@ type UserInfo struct {
 
 func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
-	reqId, errConvert := Utils.InterfaceConvertInt(reqIdCtx)
+	reqId, errConvert := Util.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
@@ -70,7 +70,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	Utils.SetCookieResponse(&cookieHTTP, *cookieDB, Utils.KeyCookieSessionId)
+	Util.SetCookieResponse(&cookieHTTP, *cookieDB, Util.KeyCookieSessionId)
 	ctx.Response.Header.SetCookie(&cookieHTTP)
 	ctx.Response.Header.Set("X-Csrf-Token", cookieDB.CsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
@@ -79,7 +79,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 
 func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
-	reqId, errConvert := Utils.InterfaceConvertInt(reqIdCtx)
+	reqId, errConvert := Util.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
@@ -126,7 +126,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	Utils.SetCookieResponse(&cookieHTTP, *cookieDB, Utils.KeyCookieSessionId)
+	Util.SetCookieResponse(&cookieHTTP, *cookieDB, Util.KeyCookieSessionId)
 	ctx.Response.Header.SetCookie(&cookieHTTP)
 	ctx.Response.Header.Set("X-CSRF-Token", cookieDB.CsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
@@ -134,7 +134,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 
 func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
-	reqId, errConvert := Utils.InterfaceConvertInt(reqIdCtx)
+	reqId, errConvert := Util.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
@@ -147,10 +147,10 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	var cookieHTTP fasthttp.Cookie
-	var cookieDB Utils.Defense
+	var cookieDB Util.Defense
 
 	tokenContext := ctx.UserValue("X-Csrf-Token")
-	xCsrfToken, errConvert := Utils.InterfaceConvertString(tokenContext)
+	xCsrfToken, errConvert := Util.InterfaceConvertString(tokenContext)
 	if (errConvert != nil) && (errConvert.Error() == errPkg.ErrNotStringAndInt) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
@@ -174,7 +174,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	cookieDB.DateLife = time.Now().Add(time.Hour * -3)
-	Utils.SetCookieResponse(&cookieHTTP, cookieDB, Utils.KeyCookieSessionId)
+	Util.SetCookieResponse(&cookieHTTP, cookieDB, Util.KeyCookieSessionId)
 	ctx.Response.Header.SetCookie(&cookieHTTP)
 	ctx.Response.SetStatusCode(http.StatusOK)
 
@@ -192,7 +192,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 
 func (u *UserInfo) PayHandler(ctx *fasthttp.RequestCtx) {
 	reqIdCtx := ctx.UserValue("reqId")
-	reqId, errConvert := Utils.InterfaceConvertInt(reqIdCtx)
+	reqId, errConvert := Util.InterfaceConvertInt(reqIdCtx)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
@@ -200,7 +200,7 @@ func (u *UserInfo) PayHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	tokenContext := ctx.UserValue("X-Csrf-Token")
-	xCsrfToken, errConvert := Utils.InterfaceConvertString(tokenContext)
+	xCsrfToken, errConvert := Util.InterfaceConvertString(tokenContext)
 	if (errConvert != nil) && (errConvert.Error() == errPkg.ErrNotStringAndInt) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))

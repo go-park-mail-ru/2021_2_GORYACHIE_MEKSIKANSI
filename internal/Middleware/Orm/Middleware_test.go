@@ -1,9 +1,9 @@
 package Orm
 
 import (
-	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
+	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Middleware/Application"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	mocks "2021_2_GORYACHIE_MEKSIKANSI/test/Mocks"
 	"context"
 	"fmt"
@@ -39,7 +39,7 @@ func (r *Row) Scan(dest ...interface{}) error {
 
 var OrmCheckAccess = []struct {
 	testName            string
-	input               *Utils.Defense
+	input               *Util.Defense
 	out                 bool
 	outErr              string
 	inputQuerySessionId string
@@ -52,7 +52,7 @@ var OrmCheckAccess = []struct {
 		inputQuerySessionId: "1",
 		inputQueryCSRFToken: "1",
 		outQuery:            Row{row: []interface{}{1, time.Now()}},
-		input:               &Utils.Defense{SessionId: "1", CsrfToken: "1"},
+		input:               &Util.Defense{SessionId: "1", CsrfToken: "1"},
 	},
 }
 
@@ -83,7 +83,7 @@ func TestOrmCheckAccess(t *testing.T) {
 
 var OrmNewCSRF = []struct {
 	testName            string
-	input               *Utils.Defense
+	input               *Util.Defense
 	outErr              string
 	inputQuerySessionId string
 	errQuery            error
@@ -93,7 +93,7 @@ var OrmNewCSRF = []struct {
 		outErr:              "",
 		inputQuerySessionId: "1",
 		errQuery:            nil,
-		input:               &Utils.Defense{SessionId: "1", CsrfToken: "1"},
+		input:               &Util.Defense{SessionId: "1", CsrfToken: "1"},
 	},
 }
 
@@ -124,7 +124,7 @@ func TestOrmNewCSRF(t *testing.T) {
 
 var OrmGetIdByCookie = []struct {
 	testName            string
-	input               *Utils.Defense
+	input               *Util.Defense
 	out                 int
 	outErr              string
 	inputQuerySessionId string
@@ -134,7 +134,7 @@ var OrmGetIdByCookie = []struct {
 		testName:            "One",
 		inputQuerySessionId: "1",
 		outQuery:            Row{row: []interface{}{1, time.Now()}},
-		input:               &Utils.Defense{SessionId: "1"},
+		input:               &Util.Defense{SessionId: "1"},
 		out:                 0,
 		outErr:              errorsConst.MGetIdByCookieCookieExpired,
 	},
@@ -167,8 +167,8 @@ func TestOrmGetIdByCookie(t *testing.T) {
 
 var ApplicationCheckAccess = []struct {
 	testName         string
-	input            *Utils.Defense
-	inputCheckAccess *Utils.Defense
+	input            *Util.Defense
+	inputCheckAccess *Util.Defense
 	out              bool
 	outCheckAccess   bool
 	outErr           string
@@ -179,8 +179,8 @@ var ApplicationCheckAccess = []struct {
 		outErr:           "",
 		out:              false,
 		outCheckAccess:   false,
-		input:            &Utils.Defense{SessionId: "1", CsrfToken: "1"},
-		inputCheckAccess: &Utils.Defense{SessionId: "1", CsrfToken: "1"},
+		input:            &Util.Defense{SessionId: "1", CsrfToken: "1"},
+		inputCheckAccess: &Util.Defense{SessionId: "1", CsrfToken: "1"},
 		errCheckAccess:   nil,
 	},
 }
@@ -210,8 +210,8 @@ func TestApplicationCheckAccess(t *testing.T) {
 
 var ApplicationNewCSRF = []struct {
 	testName     string
-	input        *Utils.Defense
-	inputNewCSRF *Utils.Defense
+	input        *Util.Defense
+	inputNewCSRF *Util.Defense
 	out          string
 	outErr       string
 	errNewCSRF   error
@@ -221,8 +221,8 @@ var ApplicationNewCSRF = []struct {
 		testName:     "One",
 		outErr:       "",
 		errNewCSRF:   nil,
-		input:        &Utils.Defense{SessionId: "1", CsrfToken: "1"},
-		inputNewCSRF: &Utils.Defense{SessionId: "1", CsrfToken: "1"},
+		input:        &Util.Defense{SessionId: "1", CsrfToken: "1"},
+		inputNewCSRF: &Util.Defense{SessionId: "1", CsrfToken: "1"},
 		out:          "1",
 		outNewCSRF:   "1",
 	},
@@ -253,8 +253,8 @@ func TestApplicationNewCSRF(t *testing.T) {
 
 var ApplicationGetIdByCookie = []struct {
 	testName    string
-	input       *Utils.Defense
-	inputGetId  *Utils.Defense
+	input       *Util.Defense
+	inputGetId  *Util.Defense
 	out         int
 	outErr      string
 	resultGetId int
@@ -262,8 +262,8 @@ var ApplicationGetIdByCookie = []struct {
 }{
 	{
 		testName:    "One",
-		input:       &Utils.Defense{SessionId: "1"},
-		inputGetId:  &Utils.Defense{SessionId: "1"},
+		input:       &Util.Defense{SessionId: "1"},
+		inputGetId:  &Util.Defense{SessionId: "1"},
 		out:         1,
 		outErr:      "",
 		resultGetId: 1,

@@ -2,17 +2,17 @@ package Orm
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Cart"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Order"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Profile"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"context"
 	"github.com/jackc/pgx/v4"
 )
 
 type Wrapper struct {
-	Conn Interfaces.ConnectionInterface
+	Conn Interface.ConnectionInterface
 }
 
 func (db *Wrapper) CreateOrder(id int, createOrder Order.CreateOrder, addressId int, cart Cart.ResponseCartErrors, courierId int) error {
@@ -87,7 +87,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder Order.CreateOrder, addressId 
 			}
 		}
 
-		if newCount < 0 && newCount != Utils.UnlimitedCount-dish.Count {
+		if newCount < 0 && newCount != Util.UnlimitedCount-dish.Count {
 			return &errPkg.Errors{
 				Alias: errPkg.OCreateOrderCountNotCorrect,
 			}

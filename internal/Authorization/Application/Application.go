@@ -2,19 +2,19 @@ package Application
 
 import (
 	Authorization2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 )
 
 const LenSalt = 5
 
 type Authorization struct {
-	DB Interfaces.WrapperAuthorization
+	DB Interface.WrapperAuthorization
 }
 
-func (a *Authorization) SignUp(signup *Authorization2.RegistrationRequest) (*Utils.Defense, error) {
-	var cookie *Utils.Defense
+func (a *Authorization) SignUp(signup *Authorization2.RegistrationRequest) (*Util.Defense, error) {
+	var cookie *Util.Defense
 	var err error
 	newCookie := a.DB.NewDefense()
 	switch signup.TypeUser {
@@ -37,7 +37,7 @@ func (a *Authorization) SignUp(signup *Authorization2.RegistrationRequest) (*Uti
 	return cookie, nil
 }
 
-func (a *Authorization) Login(login *Authorization2.Authorization) (*Utils.Defense, error) {
+func (a *Authorization) Login(login *Authorization2.Authorization) (*Util.Defense, error) {
 	var userId int
 	var err error
 	switch {

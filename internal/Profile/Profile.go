@@ -1,7 +1,7 @@
 package Profile
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"mime/multipart"
 	"time"
 )
@@ -70,9 +70,9 @@ type Coordinates struct {
 }
 
 func (a *AddressCoordinates) Sanitize() {
-	a.Alias = Utils.Sanitize(a.Alias)
-	a.Comment = Utils.Sanitize(a.Comment)
-	a.City = Utils.Sanitize(a.City)
-	a.Street = Utils.Sanitize(a.Street)
-	a.House = Utils.Sanitize(a.House)
+	a.Alias = Util.Sanitize(a.Alias)
+	a.Comment = Util.Sanitize(a.Comment)
+	a.City = Util.Sanitize(a.City)
+	a.Street = Util.Sanitize(a.Street)
+	a.House = Util.Sanitize(a.House)
 }

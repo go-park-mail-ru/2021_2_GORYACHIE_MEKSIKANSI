@@ -1,8 +1,8 @@
-package MyErrors
+package MyError
 
 import (
 	test "2021_2_GORYACHIE_MEKSIKANSI/test"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Utils"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
@@ -14,8 +14,8 @@ import (
 )
 
 func TestCheckErrorSignUp(t *testing.T) {
-	reqId := Utils.RandomInteger(0, math.MaxInt64)
-	loggerTest := Utils.NewLogger("./loggTest.txt")
+	reqId := Util.RandomInteger(0, math.MaxInt64)
+	loggerTest := Util.NewLogger("./loggTest.txt")
 
 	defer func(loggerErrWarn *zap.SugaredLogger) {
 		errLogger := loggerErrWarn.Sync()

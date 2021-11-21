@@ -1,18 +1,18 @@
 package build
 
 import (
-	config "2021_2_GORYACHIE_MEKSIKANSI/configs"
+	"2021_2_GORYACHIE_MEKSIKANSI/config"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization/Api"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization/Application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization/Orm"
 	Api2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Cart/Api"
 	Application2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Cart/Application"
 	Orm2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Cart/Orm"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyErrors"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interfaces"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	Api3 "2021_2_GORYACHIE_MEKSIKANSI/internal/Middleware/Api"
 	Application3 "2021_2_GORYACHIE_MEKSIKANSI/internal/Middleware/Application"
 	Orm3 "2021_2_GORYACHIE_MEKSIKANSI/internal/Middleware/Orm"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	Api4 "2021_2_GORYACHIE_MEKSIKANSI/internal/Order/Api"
 	Application4 "2021_2_GORYACHIE_MEKSIKANSI/internal/Order/Application"
 	Orm4 "2021_2_GORYACHIE_MEKSIKANSI/internal/Order/Orm"
@@ -28,14 +28,20 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/joho/godotenv"
+	"github.com/spf13/viper"
 	"io/ioutil"
-	"log"
-	"os"
 	"strings"
 )
 
-func SetUp(connectionDB Interfaces.ConnectionInterface, logger errPkg.MultiLogger,
+const(
+	ConfNameMain = "main"
+	ConfNameDB = "database"
+	ConfNameBucket = "bucket"
+	ConfType = "yml"
+	ConfPath = "./config/"
+)
+
+func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger,
 	uploader *s3manager.Uploader, nameBucket string) []interface{} {
 
 	authWrapper := Orm.Wrapper{Conn: connectionDB}
@@ -44,7 +50,7 @@ func SetUp(connectionDB Interfaces.ConnectionInterface, logger errPkg.MultiLogge
 		Application: &authApp,
 		Logger:      logger,
 	}
-	var _ Interfaces.AuthorizationAPI = &userInfo
+	var _ Interface.AuthorizationAPI = &userInfo
 
 	profileWrapper := Orm5.Wrapper{
 		Conn:       connectionDB,
@@ -56,7 +62,7 @@ func SetUp(connectionDB Interfaces.ConnectionInterface, logger errPkg.MultiLogge
 		Application: &profileApp,
 		Logger:      logger,
 	}
-	var _ Interfaces.ProfileAPI = &profileInfo
+	var _ Interface.ProfileAPI = &profileInfo
 
 	midWrapper := Orm3.Wrapper{Conn: connectionDB}
 	midApp := Application3.Middleware{DB: &midWrapper}
@@ -64,7 +70,7 @@ func SetUp(connectionDB Interfaces.ConnectionInterface, logger errPkg.MultiLogge
 		Application: &midApp,
 		Logger:      logger,
 	}
-	var _ Interfaces.MiddlewareAPI = &infoMiddleware
+	var _ Interface.MiddlewareAPI = &infoMiddleware
 
 	restWrapper := Orm6.Wrapper{Conn: connectionDB}
 	restApp := Application6.Restaurant{DB: &restWrapper}
@@ -72,7 +78,7 @@ func SetUp(connectionDB Interfaces.ConnectionInterface, logger errPkg.MultiLogge
 		Application: &restApp,
 		Logger:      logger,
 	}
-	var _ Interfaces.RestaurantAPI = &restaurantInfo
+	var _ Interface.RestaurantAPI = &restaurantInfo
 
 	cartWrapper := Orm2.Wrapper{Conn: connectionDB}
 	cartApp := Application2.Cart{DB: &cartWrapper, DBRestaurant: &restWrapper}
@@ -80,7 +86,7 @@ func SetUp(connectionDB Interfaces.ConnectionInterface, logger errPkg.MultiLogge
 		Application: &cartApp,
 		Logger:      logger,
 	}
-	var _ Interfaces.CartApi = &cartInfo
+	var _ Interface.CartApi = &cartInfo
 
 	orderWrapper := Orm4.Wrapper{Conn: connectionDB}
 	orderApp := Application4.Order{
@@ -93,7 +99,7 @@ func SetUp(connectionDB Interfaces.ConnectionInterface, logger errPkg.MultiLogge
 		Application: &orderApp,
 		Logger:      logger,
 	}
-	var _ Interfaces.OrderAPI = &orderInfo
+	var _ Interface.OrderAPI = &orderInfo
 
 	var result []interface{}
 	result = append(result, userInfo)
@@ -106,18 +112,18 @@ func SetUp(connectionDB Interfaces.ConnectionInterface, logger errPkg.MultiLogge
 	return result
 }
 
-func CreateDb() (*pgxpool.Pool, error) {
+func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 	var err error
 	conn, err := pgxpool.Connect(context.Background(),
-		"postgres://"+config.DBLogin+":"+config.DBPassword+
-			"@"+config.DBHost+":"+config.DBPort+"/"+config.DBName)
+		"postgres://"+configDB.UserName+":"+configDB.Password+
+			"@"+configDB.Host+":"+configDB.Port+"/"+configDB.SchemaName)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.MCreateDBNotConnect,
 		}
 	}
 
-	if config.Debug {
+	if debug {
 		file, err := ioutil.ReadFile("build/PostgreSQL/DeleteTables.sql")
 		if err != nil {
 			return nil, &errPkg.Errors{
@@ -153,7 +159,7 @@ func CreateDb() (*pgxpool.Pool, error) {
 		}
 	}
 
-	if config.Debug {
+	if debug {
 		file, err := ioutil.ReadFile("build/PostgreSQL/Fill.sql")
 		if err != nil {
 			return nil, &errPkg.Errors{
@@ -174,34 +180,78 @@ func CreateDb() (*pgxpool.Pool, error) {
 	return conn, nil
 }
 
-func LoadEnv() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-		os.Exit(1)
-	}
-}
-
-func GetEnvWithKey(key string) string {
-	return os.Getenv(key)
-}
-
-func ConnectAws() *session.Session {
-	AccessKeyID := GetEnvWithKey("AWS_ACCESS_KEY_ID")
-	SecretAccessKey := GetEnvWithKey("AWS_SECRET_ACCESS_KEY")
-	MyRegion := GetEnvWithKey("AWS_REGION")
-	sess, err := session.NewSession(
+func ConnectAws(config config.AwsBucket) (error, *session.Session) {
+	sess, errNewSess := session.NewSession(
 		&aws.Config{
-			Endpoint: aws.String("fra1.digitaloceanspaces.com"),
-			Region:   aws.String(MyRegion),
+			Endpoint: aws.String(config.Endpoint),
+			Region:   aws.String(config.Region),
 			Credentials: credentials.NewStaticCredentials(
-				AccessKeyID,
-				SecretAccessKey,
+				config.AccessKeyId,
+				config.SecretAccessKey,
 				"",
 			),
 		})
-	if err != nil {
-		panic(err)
+	if errNewSess != nil {
+		return &errPkg.Errors{
+			Alias: errNewSess.Error(),
+		}, nil
 	}
-	return sess
+	return nil, sess
+}
+
+func InitConfig() (error, []interface {}) {
+	viper.AddConfigPath(ConfPath)
+	viper.SetConfigType(ConfType)
+
+	viper.SetConfigName(ConfNameMain)
+	errRead := viper.ReadInConfig()
+	if errRead != nil {
+		return &errPkg.Errors{
+			Alias: errRead.Error(),
+		}, nil
+	}
+	appConfig := config.AppConfig{}
+	errUnmarshal := viper.Unmarshal(&appConfig)
+	if errUnmarshal != nil {
+		return &errPkg.Errors{
+			Alias: errUnmarshal.Error(),
+		}, nil
+	}
+
+	viper.SetConfigName(ConfNameDB)
+	errRead = viper.ReadInConfig()
+	if errRead != nil {
+		return &errPkg.Errors{
+			Alias: errRead.Error(),
+		}, nil
+	}
+	dbConfig := config.DBConfig{}
+	errUnmarshal = viper.Unmarshal(&dbConfig)
+	if errUnmarshal != nil {
+		return &errPkg.Errors{
+			Alias: errUnmarshal.Error(),
+		}, nil
+	}
+
+	viper.SetConfigName(ConfNameBucket)
+	errRead = viper.ReadInConfig()
+	if errRead != nil {
+		return &errPkg.Errors{
+			Alias: errRead.Error(),
+		}, nil
+	}
+	awsConfig := config.AwsConfig{}
+	errUnmarshal = viper.Unmarshal(&awsConfig)
+	if errUnmarshal != nil {
+		return &errPkg.Errors{
+			Alias: errUnmarshal.Error(),
+		}, nil
+	}
+
+	var result []interface{}
+	result = append(result, appConfig)
+	result = append(result, dbConfig)
+	result = append(result, awsConfig)
+
+	return nil, result
 }
