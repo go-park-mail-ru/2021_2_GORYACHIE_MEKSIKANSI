@@ -355,7 +355,7 @@ func TestOrmAddTransactionCookie(t *testing.T) {
 			Return(nil, tt.errQuery)
 		testUser := &Wrapper{}
 		t.Run(tt.testName, func(t *testing.T) {
-			err := testUser.addCookie(tt.inputCookie, m, tt.inputId)
+			err := testUser.addTransactionCookie(tt.inputCookie, m, tt.inputId)
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {

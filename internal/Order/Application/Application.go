@@ -16,7 +16,7 @@ type Order struct {
 }
 
 func (o *Order) CalculatePriceDelivery(id int) (int, error) {
-	return o.DB.GetPriceDelivery(id)
+	return o.DBCart.GetPriceDelivery(id)
 }
 
 func (o *Order) CalculateCost(result *Cart.ResponseCartErrors, rest *Restaurant.RestaurantId) (*Cart.CostCartResponse, error) {

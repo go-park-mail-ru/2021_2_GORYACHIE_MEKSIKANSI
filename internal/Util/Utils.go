@@ -97,6 +97,5 @@ func InterfaceConvertString(value interface{}) (string, error) {
 }
 
 func Sanitize(str string) string {
-	p := bluemonday.StrictPolicy()
-	return p.Sanitize(str)
+	return bluemonday.StrictPolicy().Sanitize(str)
 }

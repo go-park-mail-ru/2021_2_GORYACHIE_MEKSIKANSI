@@ -8,9 +8,7 @@ import (
 func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case CGetCartDishesNotFound, CGetStructFoodRestaurantNotSelect,
-			CGetStructFoodCheckboxNotScan, CGetStructRadiosRadiosNotSelect, CGetStructRadiosRadiosNotScan,
-			CGetStructRadiosStructRadiosNotFound, CGetStructRadiosStructRadiosNotScan:
+		case CGetCartDishesNotFound:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,

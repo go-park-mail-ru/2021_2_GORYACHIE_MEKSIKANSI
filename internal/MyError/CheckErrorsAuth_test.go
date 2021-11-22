@@ -83,7 +83,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Alias: AAddCookieNotInsert,
+				Alias: AAddTransactionCookieNotInsert,
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +

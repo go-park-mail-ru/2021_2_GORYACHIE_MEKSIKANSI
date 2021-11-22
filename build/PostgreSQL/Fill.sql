@@ -78,207 +78,56 @@ SET
 
 INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1', NOW(), '');
 
-INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, count, weight, avatar) VALUES
-    ('Тако', 60, 1, '', 1, 1, 224, 1, 'Горячее', 'Снеки', 1000, 1, 'https://pbs.twimg.com/media/DtAriH3U8AAD3jV.jpg'),
-    ('Пряник', 60, 1, '', 1, 1, 126, 1, 'К чаю', 'К чаю', 1000, 1, 'https://s3.amazonaws.com/images.ecwid.com/images/38011115/2135671623.jpg'),
-    ('Чёрный бургер', 60, 1, '', 1, 1, 361, 1, 'горячее', 'Снеки', 1000, 1, 'https://meat-pepper.ru/image/cache/catalog/products/burgers/kotlety-dly-burgerov-black-angus-3-800x667.jpg'),
-    ('Пицца Ассорти', 60, 1, '', 1, 1, 1024, 1, 'горячее', 'Пиццы', 1000, 1, 'https://www.koolinar.ru/all_image/recipes/156/156543/recipe_7b4bb7f7-1d42-428a-bb0a-3db8df03093a.jpg'),
-    ('Кофе', 60, 1, '', 1, 1, 90, 1, 'горячее', 'Напитки', 1000, 1, 'https://traveltimes.ru/wp-content/uploads/2021/08/kofe-caska-penka-scaled.jpg'),
-    ('Картошка Фри', 60, 1, '', 1, 1, 232, 1, 'горячее', 'Снеки', 1000, 1, 'https://вести35.рф/images/2020/07/06/5f2775ffddc94d76a57605479b3f02e0.jpg'),
-    ('Картошка по деревенски', 60, 1, '', 1, 1, 172, 1, 'Горячее', 'Снеки', 1000, 1, 'https://cherkessk.crazybrothers.ru/wp-content/uploads/Kartofel-po-derevenski.jpg'),
-    ('МакКомбо', 256, 1, '', 1, 1, 5036, 1, 'Горячее', 'Комбо', 1000, 1, 'https://www.eatthis.com/wp-content/uploads/sites/4/2019/05/mcdonalds-fries-food-lights.jpg'),
-    ('Утреннее комбо', 99, 1, '', 1, 1, 4708, 1, 'Горячее', 'Комбо', 1000, 1, 'https://imageproxy.ru/img/crop/1380x920/https/xn--h1ame.xn--80adxhks/storage/app/uploads/public/5e2/700/f07/5e2700f079c4c587329799.jpg'),
-    ('Аппетитное комбо', 150, 1, '', 1, 1, 3575, 1, 'Горячее', 'Комбо', 1000, 1, 'https://www.iphones.ru/wp-content/plugins/wonderm00ns-simple-facebook-open-graph-tags/fbimg.php?img=https%3A%2F%2Fwww.iphones.ru%2Fwp-content%2Fuploads%2F2018%2F08%2FBurgerN.jpg'),
-    ('Универсальное комбо', 100, 1, '', 1, 1, 1500, 1, 'Горячее', 'Комбо', 1000, 1, 'https://eda.yandex.ru/images/3667559/9724883e03ae48c2b6a1e28c5b9ea111-680x500.jpeg')
+INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, count, weight, avatar, place_category, place) VALUES
+    ('Тако', 60, 1, '', 1, 1, 224, 1, 'Горячее', 'Снеки', 1000, 1, 'https://pbs.twimg.com/media/DtAriH3U8AAD3jV.jpg', 0, 0),
+    ('Пряник', 60, 1, '', 1, 1, 126, 1, 'К чаю', 'К чаю', 1000, 1, 'https://s3.amazonaws.com/images.ecwid.com/images/38011115/2135671623.jpg', 1, 0),
+    ('Чёрный бургер', 60, 1, '', 1, 1, 361, 1, 'горячее', 'Снеки', 1000, 1, 'https://meat-pepper.ru/image/cache/catalog/products/burgers/kotlety-dly-burgerov-black-angus-3-800x667.jpg', 0, 1),
+    ('Пицца Ассорти', 60, 1, '', 1, 1, 1024, 1, 'горячее', 'Пиццы', 1000, 1, 'https://www.koolinar.ru/all_image/recipes/156/156543/recipe_7b4bb7f7-1d42-428a-bb0a-3db8df03093a.jpg', 2, 0),
+    ('Кофе', 60, 1, '', 1, 1, 90, 1, 'горячее', 'Напитки', 1000, 1, 'https://traveltimes.ru/wp-content/uploads/2021/08/kofe-caska-penka-scaled.jpg', 3, 0),
+    ('Картошка Фри', 60, 1, '', 1, 1, 232, 1, 'горячее', 'Снеки', 1000, 1, 'https://вести35.рф/images/2020/07/06/5f2775ffddc94d76a57605479b3f02e0.jpg', 0, 2),
+    ('Картошка по деревенски', 60, 1, '', 1, 1, 172, 1, 'Горячее', 'Снеки', 1000, 1, 'https://cherkessk.crazybrothers.ru/wp-content/uploads/Kartofel-po-derevenski.jpg', 0, 3),
+    ('МакКомбо', 256, 1, '', 1, 1, 5036, 1, 'Горячее', 'Комбо', 1000, 1, 'https://www.eatthis.com/wp-content/uploads/sites/4/2019/05/mcdonalds-fries-food-lights.jpg', 4, 0),
+    ('Утреннее комбо', 99, 1, '', 1, 1, 4708, 1, 'Горячее', 'Комбо', 1000, 1, 'https://imageproxy.ru/img/crop/1380x920/https/xn--h1ame.xn--80adxhks/storage/app/uploads/public/5e2/700/f07/5e2700f079c4c587329799.jpg', 4, 1),
+    ('Аппетитное комбо', 150, 1, '', 1, 1, 3575, 1, 'Горячее', 'Комбо', 1000, 1, 'https://www.iphones.ru/wp-content/plugins/wonderm00ns-simple-facebook-open-graph-tags/fbimg.php?img=https%3A%2F%2Fwww.iphones.ru%2Fwp-content%2Fuploads%2F2018%2F08%2FBurgerN.jpg', 4, 2),
+    ('Универсальное комбо', 100, 1, '', 1, 1, 1500, 1, 'Горячее', 'Комбо', 1000, 1, 'https://eda.yandex.ru/images/3667559/9724883e03ae48c2b6a1e28c5b9ea111-680x500.jpeg', 4, 3)
     ;
 
-INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element) VALUES
-    ('Кетчуп', 1, 5, 1, 1, 1, 1, 5),
-    ('Горчица', 1, 5, 1, 1, 1, 1, 5),
-    ('Сырные бортики', 4, 5, 1, 1, 1, 1, 5),
-    ('Колбаса', 4, 5, 1, 1, 1, 1, 5),
-    ('Сыр Пармезан', 4, 5, 1, 1, 1, 1, 5),
-    ('Сыр Моцарелла', 4, 5, 1, 1, 1, 1, 5),
-    ('Сахар', 5, 5, 1, 1, 1, 1, 5),
-    ('Кетчуп', 1, 5, 1, 1, 1, 1, 5)
+INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element, place) VALUES
+    ('Кетчуп', 1, 5, 1, 1, 1, 1, 5, 0),
+    ('Горчица', 1, 5, 1, 1, 1, 1, 5, 1),
+    ('Сырные бортики', 4, 5, 1, 1, 1, 1, 5, 0),
+    ('Колбаса', 4, 5, 1, 1, 1, 1, 5, 1),
+    ('Сыр Пармезан', 4, 5, 1, 1, 1, 1, 5, 2),
+    ('Сыр Моцарелла', 4, 5, 1, 1, 1, 1, 5, 3),
+    ('Сахар', 5, 5, 1, 1, 1, 1, 5, 0),
+    ('Кетчап', 1, 5, 1, 1, 1, 1, 5, 2)
     ;
 
-INSERT INTO radios (name, food) VALUES
-    ('МакКомбо', 8),
-    ('Утреннее комбо', 9),
-    ('Аппетитное комбо', 10),
-    ('Универсальное комбо', 11)
+INSERT INTO radios (name, food, place) VALUES
+    ('МакКомбо', 8, 0),
+    ('Утреннее комбо', 9, 0),
+    ('Аппетитное комбо', 10, 0),
+    ('Универсальное комбо', 11, 0)
     ;
 
-INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie) VALUES
-    ('Картофель Фри', 1, 1, 1, 1, 1),
-    ('Картофель по деревенски', 1, 1, 1, 1, 1),
-    ('Сырный соус', 2, 1, 1, 1, 1),
-    ('Чесночный соус', 2, 1, 1, 1, 1),
-    ('Кисло-сладкий соус', 2, 1, 1, 1, 1),
-    ('Картофель Фри', 3, 1, 1, 1, 1),
-    ('Картофель по деревенски', 3, 1, 1, 1, 1),
-    ('Сырный соус', 4, 1, 1, 1, 1),
-    ('Чесночный соус', 4, 1, 1, 1, 1)
+INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie, place) VALUES
+    ('Картофель Фри', 1, 1, 1, 1, 1, 0),
+    ('Картофель по деревенски', 1, 1, 1, 1, 1, 1),
+    ('Сырный соус', 2, 1, 1, 1, 1, 0),
+    ('Чесночный соус', 2, 1, 1, 1, 1, 1),
+    ('Кисло-сладкий соус', 2, 1, 1, 1, 1, 2),
+    ('Картофель Фри', 3, 1, 1, 1, 1, 0),
+    ('Картофель по деревенски', 3, 1, 1, 1, 1, 1),
+    ('Сырный соус', 4, 1, 1, 1, 1, 0),
+    ('Чесночный соус', 4, 1, 1, 1, 1, 1)
     ;
 
-INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, count, weight)
-SELECT 'name', random() * (500 - 10) + 10, random() * (53 - 1 - 1) + 1 + 1, 'description', 1, 1, random() * (1000 - 1) + 1, 1, 'text', 'text', random() * (101 - 1) - 1, random() * (51 - 1) + 1 FROM generate_series(1, 1000);
-UPDATE dishes
-SET
-    name = (
-            array[
-                'Бургер',
-            'Двойной бургер',
-            'Картофель',
-            'Сибас',
-            'Икра',
-            'Белый хлеб',
-            'Молоко',
-            'Кефир',
-            'Печенье',
-            'Арахис',
-            'Колбаса',
-            'Сыр',
-            'Пицца Пеппрони',
-            'Пицца Ассорти',
-            'Пицца Четыре сыра',
-            'Кока-кола',
-            'Фанта',
-            'Спрайт',
-            'Чёрый чай',
-            'Кофе',
-            'Кофе (негорячий)',
-            'Тако',
-            'БигМак',
-            'Стрипсы',
-            'Мороженое',
-            'Красный рак'
-                ]
-        ) [floor(random() * 26 + 1)],
-    category_dishes = (
-            array[
-                'Суп',
-                'Вода',
-                'Почти кола',
-                'Арбузы',
-                'Что-то похожее на еду'
-                ]
-           ) [floor(random() * 5 + 1)],
-    category_restaurant = (
-            array[
-                'Вкусно',
-                'Напитки',
-                'Пиццы',
-                'Суши',
-                'Десерт',
-                'Закуски'
-                ]
-           ) [floor(random() * 6 + 1)],
-    description = (
-            array[
-                'Большое комбо. При изменении комплектации цена комбо может измениться.',
-                'Вкуснейшее произведение кулинарии, которое отправит вас в гастрономический оргазм',
-                'Самое вкусное блюдо, после которого вы захотите ещё в 0.5 раз больше!',
-                'Красивейшее оформление блюдо подчерквиает мастерство нашего повара - мистера Пеннивайз',
-                'Думаешь это вкусно? Правильно думаешь! Бери его и получишь его же!'
-                ]
-           ) [floor(random() * 5 + 1)],
-    avatar = (
-            array[
-            'https://s.fishki.net/upload/users/2019/11/29/1518141/85ae61606d59ee2b2701adeed30a1d71.png',
-            'https://pbs.twimg.com/media/EBGtDaiVAAAv8Nh.jpg',
-            'https://avatars.mds.yandex.net/i?id=8190d1c6f0a87d9dcc258676e69b5018-2431862-images-thumbs&n=13',
-            'https://avatars.mds.yandex.net/get-altay/1031166/2a00000162001941c99c64ec1cf8a9fa2edd/XXL',
-            'https://moscow-restaurants.ru/netcat_files/38/26/1391/IMG_9985.jpeg_800.jpg',
-            'https://www.iphones.ru/wp-content/plugins/wonderm00ns-simple-facebook-open-graph-tags/fbimg.php?img=https%3A%2F%2Fwww.iphones.ru%2Fwp-content%2Fuploads%2F2018%2F08%2FBurgerN.jpg',
-            'https://imageproxy.ru/img/crop/1380x920/https/xn--h1ame.xn--80adxhks/storage/app/uploads/public/5e2/700/f07/5e2700f079c4c587329799.jpg',
-            'https://islam.ru/sites/default/files/img/2017/news/90-main-image-w1480.jpg',
-            'https://www.eatthis.com/wp-content/uploads/sites/4/2019/05/mcdonalds-fries-food-lights.jpg',
-            'https://s1.1zoom.ru/big7/529/Holidays_Christmas_399885.jpg',
-            'https://pbs.twimg.com/media/EVy0CxpXYAAZrD4.jpg:large',
-                'https://sun9-51.userapi.com/impf/c636323/v636323212/36406/KDUTCfKG8b0.jpg?size=867x1080&quality=96&sign=fe39ffdc81aff59212e58cd37348f5e9&c_uniq_tag=oOwnCg7Lulpo9y6f4R_lk1fuUkM3QkuTNRk0ekN92Vk&type=album'
-            ]
-            ) [floor(random() * 12 + 1)]
-WHERE id > 12
+INSERT INTO restaurant_category (restaurant, category, place)
+VALUES
+(1, 'Кафе', 0),
+(1, 'Поп-ап', 1)
 ;
 
-INSERT INTO restaurant_category (restaurant, category)
-SELECT random() * (53 - 1) + 1, 'name' FROM generate_series(1, 350);
-UPDATE restaurant_category
-SET
-    category = (
-            array[
-                'Хороший',
-                'Лучший',
-                'Единственный',
-                'Суши-бар',
-                'Кальянная',
-                'Пиццерия',
-                'Бар',
-                'Хенкальная',
-                'Общепит',
-                'Кафе',
-                'Буфеты',
-                'Поп-ап',
-                'Виртуальный'
-                ]
-        ) [floor(random() * 13 + 1)]
-;
-
-INSERT INTO radios (name, food)
-SELECT 'name', random() * (1000 - 1) + 12 FROM generate_series(1, 1000);
-UPDATE radios
-SET
-    name = (
-            array[
-                'Комплимент от повара',
-                'Бургер',
-                'Напиток',
-                'Секретный ингредиент',
-                'Что-то к чаю',
-                'Снеки'
-                ]
-        ) [floor(random() * 6 + 1)]
-WHERE id > 4
-;
-
-INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie)
-SELECT 'name', random() * (1000 - 1) + 1 + 3, 1, 1, 1, 1 FROM generate_series(1, 1000);
-UPDATE structure_radios
-SET
-    name = (
-                array[
-                    'Кола-ванила',
-                    'Картофель фри',
-                    'Коктейль',
-                    'Вкусный бургер',
-                    'Яблоки',
-                    'Семга',
-                    'Форель'
-                    ]
-        ) [floor(random() * 7 + 1)]
-WHERE id > 11
-;
-
-INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element)
-SELECT 'name', random() * (1000 - 1) + 12, random() * (25 - 1) + 1, 1, 1, 1, 1, random() * (5 - 1) + 1 FROM generate_series(1, 2000);
-UPDATE structure_dishes
-SET
-    name = (
-                array[
-                    'Сахар',
-                    'Соль',
-                    'Кетчуп',
-                    'Лук',
-                    'Морковь',
-                    'Котлета',
-                    'Огурец',
-                    'Помидор'
-                    ]
-        ) [floor(random() * 8 + 1)]
-WHERE id > 8
-;
 
 INSERT INTO address_user (client_id, alias, comment, city, street, house, floor, flat, porch, intercom, latitude, longitude)
 VALUES (1, 'Мой дом', 'Есть злая собака', 'Москва', 'Вязов', 2, 5, 28, 2, '28K', 500, 500);
