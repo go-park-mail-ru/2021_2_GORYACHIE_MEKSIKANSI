@@ -346,6 +346,7 @@ func (db *Wrapper) GetRadios(dishesId int) ([]Restaurant.Radios, error) {
 		place[placeRadios] = temp
 		radiosInfo[placeRadios] = rad
 	}
+
 	for i := 0; i < len(place); i++ {
 		radios = append(radios, radiosInfo[i])
 		var rows []Restaurant.CheckboxesRows

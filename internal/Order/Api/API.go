@@ -13,7 +13,6 @@ import (
 
 type InfoOrder struct {
 	Application interfaces.OrderApplication
-	Cart        interfaces.CartApplication
 	Logger      errPkg.MultiLogger
 }
 

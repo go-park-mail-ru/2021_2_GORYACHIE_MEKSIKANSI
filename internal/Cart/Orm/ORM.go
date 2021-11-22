@@ -28,7 +28,8 @@ func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, []Cart.CastDishesE
 	var result Cart.ResponseCartErrors
 	row, err := tx.Query(contextTransaction,
 		"SELECT cart.id, cart.food, cart.number_item, d.avatar, d.name, cart.count_food, d.cost, d.kilocalorie, d.weight,"+
-			" d.description, sr.name, sr.id, sr.radios, sd.name, sd.id, sd.cost, d.restaurant, d.count, sr.kilocalorie, sd.kilocalorie "+
+			" d.description, sr.name, sr.id, sr.radios, sd.name, sd.id, sd.cost, d.restaurant, d.count, sr.kilocalorie, sd.kilocalorie,"+
+			" cart.place, crf.place, sd.place "+
 			"FROM cart "+
 			"LEFT JOIN dishes d ON d.id = cart.food "+
 			"LEFT JOIN cart_structure_food csf ON csf.client_id = cart.client_id and d.id=csf.food and cart.id=csf.cart_id "+
@@ -42,24 +43,44 @@ func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, []Cart.CastDishesE
 		}
 	}
 
-	m := make(map[int]Cart.DishesCartResponse)
+	place := make(map[int]map[int]interface{})
+	infoDishes := make(map[int]Cart.DishesCartResponse)
 	var restaurant Cart.RestaurantIdCastResponse
 
 	for row.Next() {
 		var dish Cart.DishesCartResponse
 		var count, cartId int
 
+		var getPlaceDishes, getPlaceRadios, getPlaceIngredient interface{}
 		var ingredientKilocalorie, radiosKilocalorie interface{}
 		var radiosName, radiosId, radiosRadiosId interface{}
 		var ingredientName, ingredientId, ingredientCost interface{}
 		err := row.Scan(&cartId, &dish.Id, &dish.ItemNumber, &dish.Img, &dish.Name, &dish.Count, &dish.Cost, &dish.Kilocalorie,
 			&dish.Weight, &dish.Description, &radiosName, &radiosId, &radiosRadiosId, &ingredientName,
-			&ingredientId, &ingredientCost, &restaurant.Id, &count, &radiosKilocalorie, &ingredientKilocalorie)
+			&ingredientId, &ingredientCost, &restaurant.Id, &count, &radiosKilocalorie, &ingredientKilocalorie,
+			&getPlaceDishes, &getPlaceRadios, &getPlaceIngredient)
 
 		if err != nil {
 			return nil, nil, &errPkg.Errors{
 				Alias: errPkg.CGetCartNotScan,
 			}
+		}
+
+		var placeDishes, placeRadios, placeIngredient int
+		if getPlaceDishes != nil {
+			placeDishes = int(getPlaceDishes.(int32))
+		} else {
+			placeDishes = -1
+		}
+		if getPlaceRadios != nil {
+			placeRadios = int(getPlaceRadios.(int32))
+		} else {
+			placeRadios = -1
+		}
+		if getPlaceIngredient != nil {
+			placeIngredient = int(getPlaceIngredient.(int32))
+		} else {
+			placeIngredient = -1
 		}
 
 		var radios Cart.RadiosCartResponse
@@ -89,38 +110,41 @@ func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, []Cart.CastDishesE
 		dish.Weight = dish.Weight * dish.Count
 		dish.Kilocalorie = dish.Kilocalorie * dish.Count
 
-		if val, ok := m[cartId]; ok {
-			if ingredient.Id != 0 {
-				val.IngredientCart = append(m[cartId].IngredientCart, ingredient)
-				m[cartId] = val
-			}
-
-			if radios.Id != 0 {
-				val.RadiosCart = append(m[cartId].RadiosCart, radios)
-				m[cartId] = val
-			}
-		} else {
-			if radiosName != nil {
-				dish.RadiosCart = append(dish.RadiosCart, radios)
-			}
-
-			if ingredientName != nil {
-				dish.IngredientCart = append(dish.IngredientCart, ingredient)
-			}
-			m[cartId] = dish
+		temp := place[placeDishes]
+		if temp == nil {
+			temp = make(map[int]interface{})
 		}
+
+		if placeIngredient != -1 {
+			temp[placeIngredient] = ingredient
+		}
+		if placeRadios != -1 {
+			temp[placeRadios] = radios
+		}
+
+		place[placeDishes] = temp
+		infoDishes[placeDishes] = dish
 	}
 
-	if m == nil {
+	for i := 0; i < len(place); i++ {
+		dish := infoDishes[i]
+		for j := 0; j < len(place[i]); j++ {
+			switch place[i][j].(type) {
+			case Cart.RadiosCartResponse:
+				dish.RadiosCart = append(dish.RadiosCart, place[i][j].(Cart.RadiosCartResponse))
+			case Cart.IngredientCartResponse:
+				dish.IngredientCart = append(dish.IngredientCart, place[i][j].(Cart.IngredientCartResponse))
+			}
+		}
+		result.Dishes = append(result.Dishes, dish)
+	}
+
+	if len(place) == 0 {
 		return nil, nil, &errPkg.Errors{
 			Alias: errPkg.CGetCartDishesNotFound,
 		}
 	}
 	result.Restaurant = restaurant
-
-	for _, dish := range m {
-		result.Dishes = append(result.Dishes, dish)
-	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
@@ -206,9 +230,7 @@ func (db *Wrapper) updateCartStructFood(ingredients []Cart.IngredientsCartReques
 
 func (db *Wrapper) updateCartRadios(radios []Cart.RadiosCartRequest, clientId int, cartId int, tx Interface.TransactionInterface, contextTransaction context.Context) ([]Cart.RadiosCartResponse, int, error) {
 	var result []Cart.RadiosCartResponse
-	elementPlace := 0
 	radiosPlace := 0
-	lastInsertIdRadios := 0
 	for _, radio := range radios {
 		var checkedRadios Cart.RadiosCartResponse
 		err := tx.QueryRow(contextTransaction,
@@ -221,22 +243,15 @@ func (db *Wrapper) updateCartRadios(radios []Cart.RadiosCartRequest, clientId in
 		}
 		result = append(result, checkedRadios)
 
-		if lastInsertIdRadios == radio.Id {
-			elementPlace++
-		} else {
-			elementPlace = 0
-		}
-
 		_, err = tx.Exec(contextTransaction,
-			"INSERT INTO cart_radios_food (radios_id, radios, client_id, cart_id, place_radios, place_element_radios) VALUES ($1, $2, $3, $4, $5, $6)",
-			radio.RadiosId, radio.Id, clientId, cartId, radiosPlace, elementPlace)
+			"INSERT INTO cart_radios_food (radios_id, radios, client_id, cart_id, place) VALUES ($1, $2, $3, $4, $5)",
+			radio.RadiosId, radio.Id, clientId, cartId, radiosPlace)
 		if err != nil {
 			return nil, 0, &errPkg.Errors{
 				Alias: errPkg.CUpdateCartRadiosRadiosNotInsert,
 			}
 		}
 		radiosPlace++
-		lastInsertIdRadios = radio.Id
 	}
 	return result, radiosPlace, nil
 }

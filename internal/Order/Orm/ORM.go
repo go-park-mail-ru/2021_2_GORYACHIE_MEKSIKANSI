@@ -54,26 +54,15 @@ func (db *Wrapper) CreateOrder(id int, createOrder Order.CreateOrder, addressId 
 		}
 
 		if dish.RadiosCart != nil {
-			elementRadiosPlace := 0
-			lastInsertRadiosId := 0
 			for _, radios := range dish.RadiosCart {
-				if lastInsertRadiosId == radios.Id {
-					elementRadiosPlace++
-					elementPlace++
-				} else {
-					elementRadiosPlace = 0
-				}
-
 				_, err = tx.Exec(contextTransaction,
-					"INSERT INTO order_radios_list (order_id, radios_id, radios, food, list_id, place_radios, place_element_radios) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-					orderId, radios.RadiosId, radios.Id, cart.Dishes[i].Id, listId, elementPlace, elementRadiosPlace)
+					"INSERT INTO order_radios_list (order_id, radios_id, radios, food, list_id, place) VALUES ($1, $2, $3, $4, $5, $6)",
+					orderId, radios.RadiosId, radios.Id, cart.Dishes[i].Id, listId, elementPlace)
 				if err != nil {
 					return &errPkg.Errors{
 						Alias: errPkg.OCreateOrderOrderRadiosListUserNotInsert,
 					}
 				}
-
-				lastInsertRadiosId = radios.Id
 			}
 		}
 
@@ -140,7 +129,7 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 			" au.longitude, d.id, d.avatar, d.name, ol.count_dishes, "+
 			"d.cost, d.kilocalorie, d.weight, d.description, sr.name, "+
 			"sr.radios, sr.id, sd.name, sd.id, sd.cost, restaurant_id, r.name, r.avatar, r.city, r.street,"+
-			" r.house, r.floor, r.latitude, r.longitude, dCost, sumCost "+
+			" r.house, r.floor, r.latitude, r.longitude, dCost, sumCost, ol.place, orl.place, osl.place "+
 			"FROM order_user"+
 			" LEFT JOIN address_user au ON au.id = order_user.address_id"+
 			" LEFT JOIN order_list ol ON ol.order_id = order_user.id"+
@@ -149,7 +138,7 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 			" LEFT JOIN order_radios_list orl ON orl.order_id = order_user.id and ol.food=orl.food and ol.id=orl.list_id"+
 			" LEFT JOIN structure_radios sr ON sr.id = orl.radios"+
 			" LEFT JOIN structure_dishes sd ON sd.id = osl.structure_food"+
-			" LEFT JOIN restaurant r ON r.id = order_user.restaurant_id WHERE order_user.client_id = $1", id)
+			" LEFT JOIN restaurant r ON r.id = order_user.restaurant_id WHERE order_user.client_id = $1 ORDER BY date_order", id)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.OGetOrdersNotSelect,
@@ -157,62 +146,120 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 	}
 
 	m := make(map[int]Order.HistoryOrder)
-	mAdditionalInfo := make(map[int]interface{})
+	placeOrder := make(map[int]int)
+	place := make(map[int]struct {
+		StructureDish map[int]map[int]interface{}
+		InfoDishes    map[int]Cart.DishesCartResponse
+	})
+	numberPlaceOrder := 0
 	for row.Next() {
-		var orderId int
 		var address Profile.AddressCoordinates
 		var dish Cart.DishesCartResponse
 		var order Order.HistoryOrder
 		var restaurant Order.HistoryResOrder
 
+		var getPlaceDishes, getPlaceRadios, getPlaceIngredient interface{}
 		var srName, srRadios, srId interface{}
 		var sdName, sdId, sdCost interface{}
 
-		err := row.Scan(&orderId, &dish.ItemNumber, &order.Date, &order.Status, &address.Alias,
+		err := row.Scan(&order.Id, &dish.ItemNumber, &order.Date, &order.Status, &address.Alias,
 			&address.City, &address.Street, &address.House, &address.Flat, &address.Porch,
 			&address.Floor, &address.Intercom, &address.Comment, &address.Coordinates.Latitude,
 			&address.Coordinates.Longitude, &dish.Id, &dish.Img, &dish.Name, &dish.Count,
 			&dish.Cost, &dish.Kilocalorie, &dish.Weight, &dish.Description, &srName, &srRadios,
 			&srId, &sdName, &sdId, &sdCost, &restaurant.Id, &restaurant.Name, &restaurant.Img,
-			&restaurant.Address.City, &restaurant.Address.Street, &restaurant.Address.House, &restaurant.Address.Floor,
-			&restaurant.Address.Coordinates.Latitude, &restaurant.Address.Coordinates.Longitude,
-			&order.Cart.Cost.DCost, &order.Cart.Cost.SumCost)
+			&restaurant.Address.City, &restaurant.Address.Street, &restaurant.Address.House,
+			&restaurant.Address.Floor, &restaurant.Address.Coordinates.Latitude, &restaurant.Address.Coordinates.Longitude,
+			&order.Cart.Cost.DCost, &order.Cart.Cost.SumCost, &getPlaceDishes, &getPlaceRadios, &getPlaceIngredient)
 
 		if err != nil {
 			return nil, err
 		}
 
+		var placeDishes, placeRadios, placeIngredient int
+		if getPlaceDishes != nil {
+			placeDishes = int(getPlaceDishes.(int32))
+		} else {
+			placeDishes = -1
+		}
+		if getPlaceRadios != nil {
+			placeRadios = int(getPlaceRadios.(int32))
+		} else {
+			placeRadios = -1
+		}
+		if getPlaceIngredient != nil {
+			placeIngredient = int(getPlaceIngredient.(int32))
+		} else {
+			placeIngredient = -1
+		}
+
+		var ingredient Cart.IngredientCartResponse
 		if sdName != nil {
-			var ingredient Cart.IngredientCartResponse
 			ingredient.Name = sdName.(string)
 			ingredient.Id = int(sdId.(int32))
 			ingredient.Cost = int(sdCost.(int32))
-			dish.IngredientCart = append(dish.IngredientCart, ingredient)
 		}
 
+		var radios Cart.RadiosCartResponse
 		if srName != nil {
-			var radios Cart.RadiosCartResponse
 			radios.Name = srName.(string)
 			radios.RadiosId = int(srRadios.(int32))
 			radios.Id = int(srId.(int32))
-			dish.RadiosCart = append(dish.RadiosCart, radios)
 		}
 
-		if val, ok := m[orderId]; ok {
-			val.Cart.Dishes = append(val.Cart.Dishes, dish)
-			m[orderId] = val
+		temp := place[order.Id]
+		if temp.InfoDishes == nil {
+			temp.InfoDishes = make(map[int]Cart.DishesCartResponse)
+		}
 
-		} else {
-			order.Cart.Dishes = append(order.Cart.Dishes, dish)
+		if placeRadios != -1 {
+			if temp.StructureDish == nil {
+				temp.StructureDish = make(map[int]map[int]interface{})
+			}
+			if temp.StructureDish[placeDishes] == nil {
+				temp.StructureDish[placeDishes] = make(map[int]interface{})
+			}
+			temp.StructureDish[placeDishes][placeRadios] = radios
+		}
+
+		if placeIngredient != -1 {
+			if temp.StructureDish == nil {
+				temp.StructureDish = make(map[int]map[int]interface{})
+			}
+			if temp.StructureDish[placeDishes] == nil {
+				temp.StructureDish[placeDishes] = make(map[int]interface{})
+			}
+			temp.StructureDish[placeDishes][placeIngredient] = ingredient
+		}
+
+		temp.InfoDishes[placeDishes] = dish
+
+		place[order.Id] = temp
+
+		if _, ok := m[order.Id]; !ok {
 			order.Address = address
 			order.Restaurant = restaurant
-			mAdditionalInfo[orderId] = orderId
-
-			m[orderId] = order
+			m[order.Id] = order
+			placeOrder[numberPlaceOrder] = order.Id
+			numberPlaceOrder++
 		}
 	}
 
-	for _, order := range m {
+	for i := 0; i < len(placeOrder); i++ {
+		order := m[placeOrder[i]]
+		for j := 0; j < len(place[placeOrder[i]].InfoDishes); j++ {
+			structDish := place[placeOrder[i]].StructureDish[j]
+			dish := place[placeOrder[i]].InfoDishes[j]
+			for k := 0; k < len(structDish); k++ {
+				switch structDish[k].(type) {
+				case Cart.RadiosCartResponse:
+					dish.RadiosCart = append(dish.RadiosCart, structDish[k].(Cart.RadiosCartResponse))
+				case Cart.IngredientCartResponse:
+					dish.IngredientCart = append(dish.IngredientCart, structDish[k].(Cart.IngredientCartResponse))
+				}
+			}
+			order.Cart.Dishes = append(order.Cart.Dishes, dish)
+		}
 		result.Orders = append(result.Orders, order)
 	}
 
