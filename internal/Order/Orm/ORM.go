@@ -8,7 +8,6 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Profile"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"context"
-	"github.com/jackc/pgx/v4"
 )
 
 type Wrapper struct {
@@ -16,20 +15,21 @@ type Wrapper struct {
 }
 
 func (db *Wrapper) CreateOrder(id int, createOrder Order.CreateOrder, addressId int, cart Cart.ResponseCartErrors, courierId int) error {
-	tx, err := db.Conn.Begin(context.Background())
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
 			Alias: errPkg.OCreateOrderTransactionNotCreate,
 		}
 	}
 
-	defer func(tx pgx.Tx) {
-		tx.Rollback(context.Background())
-	}(tx)
+	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
+		tx.Rollback(contextTransaction)
+	}(tx, contextTransaction)
 
 	var orderId int
 
-	err = tx.QueryRow(context.Background(),
+	err = tx.QueryRow(contextTransaction,
 		"INSERT INTO order_user (client_id, courier_id, address_id, restaurant_id, promocode_id, comment,"+
 			" method_pay, dCost, sumCost) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id",
 		id, courierId, addressId, cart.Restaurant.Id, 1, createOrder.Comment, createOrder.MethodPay,
@@ -40,45 +40,59 @@ func (db *Wrapper) CreateOrder(id int, createOrder Order.CreateOrder, addressId 
 		}
 	}
 
+	dishPlace := 0
+	elementPlace := 0
 	for i, dish := range cart.Dishes {
 		var listId int
-		err = tx.QueryRow(context.Background(),
-			"INSERT INTO order_list (order_id, food, count, item_number) VALUES ($1, $2, $3, $4) RETURNING id",
-			orderId, dish.Id, dish.Count, dish.ItemNumber).Scan(&listId)
+		err = tx.QueryRow(contextTransaction,
+			"INSERT INTO order_list (order_id, food, count_dishes, item_number, place) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+			orderId, dish.Id, dish.Count, dish.ItemNumber, dishPlace).Scan(&listId)
 		if err != nil {
 			return &errPkg.Errors{
 				Alias: errPkg.OCreateOrderOrderListNotInsert,
 			}
 		}
 
-		if dish.IngredientCart != nil {
-			for _, ingredient := range dish.IngredientCart {
-				_, err = tx.Exec(context.Background(),
-					"INSERT INTO order_structure_list (order_id, food, structure_food) VALUES ($1, $2, $3)",
-					orderId, dish.Id, ingredient.Id)
-				if err != nil {
-					return &errPkg.Errors{
-						Alias: errPkg.OCreateOrderOrderStructureListNotInsert,
-					}
-				}
-			}
-		}
-
 		if dish.RadiosCart != nil {
+			elementRadiosPlace := 0
+			lastInsertRadiosId := 0
 			for _, radios := range dish.RadiosCart {
-				_, err = tx.Exec(context.Background(),
-					"INSERT INTO order_radios_list (order_id, radios_id, radios, food, list_id) VALUES ($1, $2, $3, $4, $5)",
-					orderId, radios.RadiosId, radios.Id, cart.Dishes[i].Id, listId)
+				if lastInsertRadiosId == radios.Id {
+					elementRadiosPlace++
+					elementPlace++
+				} else {
+					elementRadiosPlace = 0
+				}
+
+				_, err = tx.Exec(contextTransaction,
+					"INSERT INTO order_radios_list (order_id, radios_id, radios, food, list_id, place_radios, place_element_radios) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+					orderId, radios.RadiosId, radios.Id, cart.Dishes[i].Id, listId, elementPlace, elementRadiosPlace)
 				if err != nil {
 					return &errPkg.Errors{
 						Alias: errPkg.OCreateOrderOrderRadiosListUserNotInsert,
 					}
 				}
+
+				lastInsertRadiosId = radios.Id
+			}
+		}
+
+		if dish.IngredientCart != nil {
+			for _, ingredient := range dish.IngredientCart {
+				_, err = tx.Exec(contextTransaction,
+					"INSERT INTO order_structure_list (order_id, food, structure_food, place) VALUES ($1, $2, $3, $4)",
+					orderId, dish.Id, ingredient.Id, elementPlace)
+				if err != nil {
+					return &errPkg.Errors{
+						Alias: errPkg.OCreateOrderOrderStructureListNotInsert,
+					}
+				}
+				elementPlace++
 			}
 		}
 
 		var newCount int
-		err = tx.QueryRow(context.Background(),
+		err = tx.QueryRow(contextTransaction,
 			"UPDATE dishes SET count = count - $1 WHERE id = $2 RETURNING count",
 			dish.Count, dish.Id).Scan(&newCount)
 		if err != nil {
@@ -92,10 +106,11 @@ func (db *Wrapper) CreateOrder(id int, createOrder Order.CreateOrder, addressId 
 				Alias: errPkg.OCreateOrderCountNotCorrect,
 			}
 		}
-
+		dishPlace++
+		elementPlace = 0
 	}
 
-	err = tx.Commit(context.Background())
+	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
 			Alias: errPkg.OCreateOrderNotCommit,
@@ -106,22 +121,23 @@ func (db *Wrapper) CreateOrder(id int, createOrder Order.CreateOrder, addressId 
 }
 
 func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
-	tx, err := db.Conn.Begin(context.Background())
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.OGetOrdersTransactionNotCreate,
 		}
 	}
 
-	defer func(tx pgx.Tx) {
-		tx.Rollback(context.Background())
-	}(tx)
+	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
+		tx.Rollback(contextTransaction)
+	}(tx, contextTransaction)
 
 	var result Order.HistoryOrderArray
-	row, err := tx.Query(context.Background(),
+	row, err := tx.Query(contextTransaction,
 		"SELECT order_user.id, ol.item_number, date_order, status, au.alias, au.city, au.street, au.house,"+
 			" au.flat, au.porch, au.floor, au.intercom, au.comment, au.latitude,"+
-			" au.longitude, d.id, d.avatar, d.name, ol.count, "+
+			" au.longitude, d.id, d.avatar, d.name, ol.count_dishes, "+
 			"d.cost, d.kilocalorie, d.weight, d.description, sr.name, "+
 			"sr.radios, sr.id, sd.name, sd.id, sd.cost, restaurant_id, r.name, r.avatar, r.city, r.street,"+
 			" r.house, r.floor, r.latitude, r.longitude, dCost, sumCost "+
@@ -136,7 +152,7 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 			" LEFT JOIN restaurant r ON r.id = order_user.restaurant_id WHERE order_user.client_id = $1", id)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetMenuDishesNotSelect,
+			Alias: errPkg.OGetOrdersNotSelect,
 		}
 	}
 
@@ -146,8 +162,6 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 		var orderId int
 		var address Profile.AddressCoordinates
 		var dish Cart.DishesCartResponse
-		var radios Cart.RadiosCartResponse
-		var ingredient Cart.IngredientCartResponse
 		var order Order.HistoryOrder
 		var restaurant Order.HistoryResOrder
 
@@ -169,6 +183,7 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 		}
 
 		if sdName != nil {
+			var ingredient Cart.IngredientCartResponse
 			ingredient.Name = sdName.(string)
 			ingredient.Id = int(sdId.(int32))
 			ingredient.Cost = int(sdCost.(int32))
@@ -176,6 +191,7 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 		}
 
 		if srName != nil {
+			var radios Cart.RadiosCartResponse
 			radios.Name = srName.(string)
 			radios.RadiosId = int(srRadios.(int32))
 			radios.Id = int(srId.(int32))
@@ -200,7 +216,7 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 		result.Orders = append(result.Orders, order)
 	}
 
-	err = tx.Commit(context.Background())
+	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.OGetOrdersDishesNotCommit,
@@ -208,21 +224,4 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 	}
 
 	return &result, nil
-}
-
-func (db *Wrapper) GetPriceDelivery(id int) (int, error) {
-	var price int
-	err := db.Conn.QueryRow(context.Background(),
-		"SELECT price_delivery FROM restaurant WHERE id = $1", id).Scan(&price)
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return 0, &errPkg.Errors{
-				Alias: errPkg.CGetPriceDeliveryPriceNotFound,
-			}
-		}
-		return 0, &errPkg.Errors{
-			Alias: errPkg.CGetPriceDeliveryPriceNotScan,
-		}
-	}
-	return price, nil
 }

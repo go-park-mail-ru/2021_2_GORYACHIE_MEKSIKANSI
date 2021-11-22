@@ -27,7 +27,7 @@ type RestaurantId struct {
 	MaxDelivery         int         `json:"maxDTime"`
 	Rating              float32     `json:"rating"`
 	Tags                interface{} `json:"tags"`
-	Menu                interface{} `json:"menu"`
+	Menu                []Menu      `json:"menu"`
 }
 
 type Tag struct {
@@ -36,8 +36,8 @@ type Tag struct {
 }
 
 type Menu struct {
-	Name       string      `json:"name"`
-	DishesMenu interface{} `json:"dishes"`
+	Name       string       `json:"name"`
+	DishesMenu []DishesMenu `json:"dishes"`
 }
 
 type DishesMenu struct {

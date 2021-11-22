@@ -15,9 +15,21 @@ type Wrapper struct {
 }
 
 func (db *Wrapper) CheckAccess(cookie *Util.Defense) (bool, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.MCheckAccessTransactionNotCreate,
+		}
+	}
+
+	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
+		tx.Rollback(contextTransaction)
+	}(tx, contextTransaction)
+
 	var timeLiveCookie time.Time
 	var id int
-	err := db.Conn.QueryRow(context.Background(),
+	err = tx.QueryRow(contextTransaction,
 		"SELECT client_id, date_life FROM cookie WHERE session_id = $1 AND csrf_token = $2",
 		cookie.SessionId, cookie.CsrfToken).Scan(&id, &timeLiveCookie)
 	if err != nil {
@@ -31,6 +43,13 @@ func (db *Wrapper) CheckAccess(cookie *Util.Defense) (bool, error) {
 		}
 	}
 
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.MCheckAccessNotCommit,
+		}
+	}
+
 	if time.Now().Before(timeLiveCookie) {
 		return true, nil
 	}
@@ -39,8 +58,20 @@ func (db *Wrapper) CheckAccess(cookie *Util.Defense) (bool, error) {
 }
 
 func (db *Wrapper) NewCSRF(cookie *Util.Defense) (string, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return "", &errPkg.Errors{
+			Alias: errPkg.MNewCSRFCSRFTransactionNotCreate,
+		}
+	}
+
+	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
+		tx.Rollback(contextTransaction)
+	}(tx, contextTransaction)
+
 	csrfToken := Util.RandString(5)
-	_, err := db.Conn.Exec(context.Background(),
+	_, err = tx.Exec(contextTransaction,
 		"UPDATE cookie SET csrf_token = $1 WHERE session_id = $2",
 		csrfToken, cookie.SessionId)
 	if err != nil {
@@ -49,13 +80,32 @@ func (db *Wrapper) NewCSRF(cookie *Util.Defense) (string, error) {
 		}
 	}
 
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return "", &errPkg.Errors{
+			Alias: errPkg.MNewCSRFCSRFNotCommit,
+		}
+	}
+
 	return csrfToken, nil
 }
 
 func (db *Wrapper) GetIdByCookie(cookie *Util.Defense) (int, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return 0, &errPkg.Errors{
+			Alias: errPkg.MGetIdByCookieTransactionNotCreate,
+		}
+	}
+
+	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
+		tx.Rollback(contextTransaction)
+	}(tx, contextTransaction)
+
 	var timeLiveCookie time.Time
 	var id int
-	err := db.Conn.QueryRow(context.Background(),
+	err = db.Conn.QueryRow(contextTransaction,
 		"SELECT client_id, date_life FROM cookie WHERE session_id = $1",
 		cookie.SessionId).Scan(&id, &timeLiveCookie)
 	if err != nil {
@@ -71,6 +121,13 @@ func (db *Wrapper) GetIdByCookie(cookie *Util.Defense) (int, error) {
 	}
 
 	realTime := time.Now()
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return 0, &errPkg.Errors{
+			Alias: errPkg.MGetIdByCookieNotCommit,
+		}
+	}
 
 	if realTime.Before(timeLiveCookie) {
 		return id, nil

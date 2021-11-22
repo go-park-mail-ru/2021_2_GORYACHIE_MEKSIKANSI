@@ -120,6 +120,7 @@ CREATE TABLE IF NOT EXISTS restaurant_category (
     id serial PRIMARY KEY,
     category text NOT NULL,
     restaurant int,
+    place int,
     FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE
 );
 
@@ -129,6 +130,8 @@ CREATE TABLE IF NOT EXISTS dishes (
     cost int,
     count int,
     restaurant int,
+    place int,
+    place_category int,
     FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE,
     description text NOT NULL,
     protein double precision NOT NULL,
@@ -165,6 +168,7 @@ CREATE TABLE IF NOT EXISTS structure_dishes (
     name text DEFAULT '' NOT NULL,
     cost int,
     food int,
+    place int,
     FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE,
     protein double precision NOT NULL,
     falt double precision NOT NULL,
@@ -178,6 +182,7 @@ CREATE TABLE IF NOT EXISTS structure_dishes (
 CREATE TABLE IF NOT EXISTS radios (
    id serial PRIMARY KEY,
    name text DEFAULT '' NOT NULL,
+   place int,
    food int,
    FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE
 );
@@ -186,6 +191,7 @@ CREATE TABLE IF NOT EXISTS structure_radios (
     id serial PRIMARY KEY,
     name text DEFAULT '' NOT NULL,
     radios int,
+    place int,
     FOREIGN KEY (radios) REFERENCES radios (id) ON DELETE CASCADE,
     protein double precision NOT NULL,
     falt double precision NOT NULL,
@@ -237,7 +243,8 @@ CREATE TABLE IF NOT EXISTS order_list (
     id serial PRIMARY KEY,
     order_id int,
     food int,
-    count int,
+    place int,
+    count_dishes int,
     item_number int,
     FOREIGN KEY (order_id) REFERENCES order_user (id) ON DELETE CASCADE,
     FOREIGN KEY (food) REFERENCES dishes (id) ON DELETE CASCADE
@@ -246,6 +253,7 @@ CREATE TABLE IF NOT EXISTS order_list (
 CREATE TABLE IF NOT EXISTS order_structure_list (
     id serial PRIMARY KEY,
     order_id int,
+    place int,
     food int,
     structure_food int,
     FOREIGN KEY (order_id) REFERENCES order_user (id) ON DELETE CASCADE,
@@ -256,6 +264,8 @@ CREATE TABLE IF NOT EXISTS order_structure_list (
 CREATE TABLE IF NOT EXISTS order_radios_list (
     id serial PRIMARY KEY,
     order_id int,
+    place_radios int,
+    place_element_radios int,
     radios_id int,
     radios int,
     food int,
@@ -269,6 +279,7 @@ CREATE TABLE IF NOT EXISTS order_radios_list (
 
 CREATE TABLE IF NOT EXISTS cart (
     id serial PRIMARY KEY,
+    place int,
     number_item int NOT NULL,
     client_id int,
     food int,
@@ -283,6 +294,7 @@ CREATE TABLE IF NOT EXISTS cart_structure_food (
     id serial PRIMARY KEY,
     checkbox int,
     client_id int,
+    place int,
     food int,
     cart_id int,
     FOREIGN KEY (cart_id) REFERENCES cart (id) ON DELETE CASCADE,
@@ -296,6 +308,8 @@ CREATE TABLE IF NOT EXISTS cart_radios_food (
     id serial PRIMARY KEY,
     radios_id int,
     radios int,
+    place_radios int,
+    place_element_radios int,
     client_id int,
     food int,
     cart_id int,

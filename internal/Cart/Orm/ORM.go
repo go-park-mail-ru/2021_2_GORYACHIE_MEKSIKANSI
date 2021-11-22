@@ -13,19 +13,20 @@ type Wrapper struct {
 }
 
 func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, []Cart.CastDishesErrs, error) {
-	tx, err := db.Conn.Begin(context.Background())
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, nil, &errPkg.Errors{
 			Alias: errPkg.CGetCartTransactionNotCreate,
 		}
 	}
 
-	defer func(tx pgx.Tx) {
-		tx.Rollback(context.Background())
-	}(tx)
+	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
+		tx.Rollback(contextTransaction)
+	}(tx, contextTransaction)
 
 	var result Cart.ResponseCartErrors
-	row, err := tx.Query(context.Background(),
+	row, err := tx.Query(contextTransaction,
 		"SELECT cart.id, cart.food, cart.number_item, d.avatar, d.name, cart.count_food, d.cost, d.kilocalorie, d.weight,"+
 			" d.description, sr.name, sr.id, sr.radios, sd.name, sd.id, sd.cost, d.restaurant, d.count, sr.kilocalorie, sd.kilocalorie "+
 			"FROM cart "+
@@ -45,8 +46,6 @@ func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, []Cart.CastDishesE
 	var restaurant Cart.RestaurantIdCastResponse
 
 	for row.Next() {
-		var radios Cart.RadiosCartResponse
-		var ingredient Cart.IngredientCartResponse
 		var dish Cart.DishesCartResponse
 		var count, cartId int
 
@@ -63,6 +62,7 @@ func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, []Cart.CastDishesE
 			}
 		}
 
+		var radios Cart.RadiosCartResponse
 		if radiosName != nil {
 			radios.Name = radiosName.(string)
 			radios.Id = int(radiosId.(int32))
@@ -70,6 +70,7 @@ func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, []Cart.CastDishesE
 			dish.Kilocalorie += int(radiosKilocalorie.(int32))
 		}
 
+		var ingredient Cart.IngredientCartResponse
 		if ingredientName != nil {
 			ingredient.Name = ingredientName.(string)
 			ingredient.Id = int(ingredientId.(int32))
@@ -121,7 +122,7 @@ func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, []Cart.CastDishesE
 		result.Dishes = append(result.Dishes, dish)
 	}
 
-	err = tx.Commit(context.Background())
+	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, nil, &errPkg.Errors{
 			Alias: errPkg.CGetCartNotCommit,
@@ -132,32 +133,33 @@ func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, []Cart.CastDishesE
 }
 
 func (db *Wrapper) DeleteCart(id int) error {
-	tx, err := db.Conn.Begin(context.Background())
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
 			Alias: errPkg.CDeleteCartTransactionNotCreate,
 		}
 	}
 
-	defer func(tx pgx.Tx) {
-		tx.Rollback(context.Background())
-	}(tx)
+	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
+		tx.Rollback(contextTransaction)
+	}(tx, contextTransaction)
 
-	_, err = tx.Exec(context.Background(),
+	_, err = tx.Exec(contextTransaction,
 		"DELETE FROM cart WHERE client_id = $1", id)
 	if err != nil {
 		return &errPkg.Errors{
 			Alias: errPkg.CDeleteCartCartNotDelete,
 		}
 	}
-	_, err = tx.Exec(context.Background(),
+	_, err = tx.Exec(contextTransaction,
 		"DELETE FROM cart_structure_food WHERE client_id = $1", id)
 	if err != nil {
 		return &errPkg.Errors{
 			Alias: errPkg.CDeleteCartStructureFoodNotDelete,
 		}
 	}
-	_, err = tx.Exec(context.Background(),
+	_, err = tx.Exec(contextTransaction,
 		"DELETE FROM cart_radios_food WHERE client_id = $1", id)
 	if err != nil {
 		return &errPkg.Errors{
@@ -165,7 +167,7 @@ func (db *Wrapper) DeleteCart(id int) error {
 		}
 	}
 
-	err = tx.Commit(context.Background())
+	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
 			Alias: errPkg.CDeleteCartNotCommit,
@@ -174,12 +176,12 @@ func (db *Wrapper) DeleteCart(id int) error {
 	return nil
 }
 
-func (db *Wrapper) updateCartStructFood(ingredients []Cart.IngredientsCartRequest, clientId int, tx pgx.Tx, cartId int) ([]Cart.IngredientCartResponse, error) {
+func (db *Wrapper) updateCartStructFood(ingredients []Cart.IngredientsCartRequest, clientId int, cartId int, place int, tx Interface.TransactionInterface, contextTransaction context.Context) ([]Cart.IngredientCartResponse, error) {
 	var result []Cart.IngredientCartResponse
 	for _, ingredient := range ingredients {
 		var checkedIngredient Cart.IngredientCartResponse
 		var dishId int
-		err := tx.QueryRow(context.Background(),
+		err := tx.QueryRow(contextTransaction,
 			"SELECT id, name, cost, food  FROM structure_dishes WHERE id = $1", ingredient.Id).Scan(
 			&checkedIngredient.Id, &checkedIngredient.Name, &checkedIngredient.Cost, &dishId)
 		if err != nil {
@@ -189,62 +191,77 @@ func (db *Wrapper) updateCartStructFood(ingredients []Cart.IngredientsCartReques
 		}
 		result = append(result, checkedIngredient)
 
-		_, err = tx.Exec(context.Background(),
-			"INSERT INTO cart_structure_food (checkbox, client_id, food, cart_id) VALUES ($1, $2, $3, $4)",
-			ingredient.Id, clientId, dishId, cartId)
+		_, err = tx.Exec(contextTransaction,
+			"INSERT INTO cart_structure_food (checkbox, client_id, food, cart_id, place) VALUES ($1, $2, $3, $4, $5)",
+			ingredient.Id, clientId, dishId, cartId, place)
 		if err != nil {
 			return nil, &errPkg.Errors{
 				Alias: errPkg.CUpdateCartStructFoodStructureFoodNotInsert,
 			}
 		}
+		place++
 	}
 	return result, nil
 }
 
-func (db *Wrapper) updateCartRadios(radios []Cart.RadiosCartRequest, clientId int, tx pgx.Tx, cartId int) ([]Cart.RadiosCartResponse, error) {
+func (db *Wrapper) updateCartRadios(radios []Cart.RadiosCartRequest, clientId int, cartId int, tx Interface.TransactionInterface, contextTransaction context.Context) ([]Cart.RadiosCartResponse, int, error) {
 	var result []Cart.RadiosCartResponse
+	elementPlace := 0
+	radiosPlace := 0
+	lastInsertIdRadios := 0
 	for _, radio := range radios {
 		var checkedRadios Cart.RadiosCartResponse
-		err := tx.QueryRow(context.Background(),
+		err := tx.QueryRow(contextTransaction,
 			"SELECT id, name FROM structure_radios WHERE id = $1", radio.Id).Scan(
 			&checkedRadios.Id, &checkedRadios.Name)
 		if err != nil {
-			return nil, &errPkg.Errors{
+			return nil, 0, &errPkg.Errors{
 				Alias: errPkg.CUpdateCartStructRadiosStructRadiosNotSelect,
 			}
 		}
 		result = append(result, checkedRadios)
 
-		_, err = tx.Exec(context.Background(),
-			"INSERT INTO cart_radios_food (radios_id, radios, client_id, cart_id) VALUES ($1, $2, $3, $4)",
-			radio.RadiosId, radio.Id, clientId, cartId)
+		if lastInsertIdRadios == radio.Id {
+			elementPlace++
+		} else {
+			elementPlace = 0
+		}
+
+		_, err = tx.Exec(contextTransaction,
+			"INSERT INTO cart_radios_food (radios_id, radios, client_id, cart_id, place_radios, place_element_radios) VALUES ($1, $2, $3, $4, $5, $6)",
+			radio.RadiosId, radio.Id, clientId, cartId, radiosPlace, elementPlace)
 		if err != nil {
-			return nil, &errPkg.Errors{
+			return nil, 0, &errPkg.Errors{
 				Alias: errPkg.CUpdateCartRadiosRadiosNotInsert,
 			}
 		}
+		radiosPlace++
+		lastInsertIdRadios = radio.Id
 	}
-	return result, nil
+	return result, radiosPlace, nil
 }
 
 func (db *Wrapper) UpdateCart(newCart Cart.RequestCartDefault, clientId int) (*Cart.ResponseCartErrors, []Cart.CastDishesErrs, error) {
-	tx, err := db.Conn.Begin(context.Background())
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, nil, &errPkg.Errors{
 			Alias: errPkg.CUpdateCartTransactionNotCreate,
 		}
 	}
 
-	defer func(tx pgx.Tx) {
-		tx.Rollback(context.Background())
-	}(tx)
+	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
+		tx.Rollback(contextTransaction)
+	}(tx, contextTransaction)
 
 	var dishesErrors []Cart.CastDishesErrs
 	var cart Cart.ResponseCartErrors
+
+	structureDishesPlace := 0
 	for i, dish := range newCart.Dishes {
 		var dishes Cart.DishesCartResponse
 		count := 0
-		err := tx.QueryRow(context.Background(),
+		err := tx.QueryRow(contextTransaction,
 			"SELECT id, avatar, cost, name, description, count, weight, kilocalorie FROM dishes WHERE id = $1 AND restaurant = $2",
 			dish.Id, newCart.Restaurant.Id).Scan(
 			&dishes.Id, &dishes.Img, &dishes.Cost, &dishes.Name, &dishes.Description, &count, &dishes.Weight, &dishes.Kilocalorie)
@@ -277,25 +294,27 @@ func (db *Wrapper) UpdateCart(newCart Cart.RequestCartDefault, clientId int) (*C
 		cart.Dishes = append(cart.Dishes, dishes)
 
 		var idCart int
-		err = tx.QueryRow(context.Background(),
-			"INSERT INTO cart (client_id, food, count_food, restaurant_id, number_item) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-			clientId, dish.Id, dish.Count, newCart.Restaurant.Id, newCart.Dishes[i].ItemNumber).Scan(&idCart)
+		err = tx.QueryRow(contextTransaction,
+			"INSERT INTO cart (client_id, food, count_food, restaurant_id, number_item, place) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+			clientId, dish.Id, dish.Count, newCart.Restaurant.Id, newCart.Dishes[i].ItemNumber, i).Scan(&idCart)
 		if err != nil {
 			return nil, nil, &errPkg.Errors{
 				Alias: errPkg.CUpdateCartCartNotInsert,
 			}
 		}
-		cart.Dishes[i].IngredientCart, err = db.updateCartStructFood(dish.Ingredients, clientId, tx, idCart)
+		cart.Dishes[i].RadiosCart, structureDishesPlace, err = db.updateCartRadios(dish.Radios, clientId, idCart, tx, contextTransaction)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		cart.Dishes[i].RadiosCart, err = db.updateCartRadios(dish.Radios, clientId, tx, idCart)
+		cart.Dishes[i].IngredientCart, err = db.updateCartStructFood(dish.Ingredients, clientId, idCart, structureDishesPlace, tx, contextTransaction)
 		if err != nil {
 			return nil, nil, err
 		}
+
+		structureDishesPlace = 0
 	}
-	err = tx.Commit(context.Background())
+	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, nil, &errPkg.Errors{
 			Alias: errPkg.CUpdateCartNotCommit,
@@ -305,8 +324,20 @@ func (db *Wrapper) UpdateCart(newCart Cart.RequestCartDefault, clientId int) (*C
 }
 
 func (db *Wrapper) GetPriceDelivery(id int) (int, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return 0, &errPkg.Errors{
+			Alias: errPkg.CGetPriceDeliveryTransactionNotCreate,
+		}
+	}
+
+	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
+		tx.Rollback(contextTransaction)
+	}(tx, contextTransaction)
+
 	var price int
-	err := db.Conn.QueryRow(context.Background(),
+	err = tx.QueryRow(contextTransaction,
 		"SELECT price_delivery FROM restaurant WHERE id = $1", id).Scan(&price)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -318,5 +349,13 @@ func (db *Wrapper) GetPriceDelivery(id int) (int, error) {
 			Alias: errPkg.CGetPriceDeliveryPriceNotScan,
 		}
 	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return 0, &errPkg.Errors{
+			Alias: errPkg.CGetPriceDeliveryNotCommit,
+		}
+	}
+
 	return price, nil
 }

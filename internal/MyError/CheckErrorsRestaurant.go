@@ -51,7 +51,7 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 func (c *CheckError) CheckErrorRestaurantId(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case RGetGeneralInfoRestaurantNotFound, RGetTagsCategoryRestaurantNotScan, RGetMenuDishesNotSelect,
+		case RGetGeneralInfoRestaurantNotFound, RGetTagsRestaurantRestaurantNotScan, RGetMenuDishesNotSelect,
 			RGetDishesRestaurantDishesNotScan, RGetMenuDishesNotFound, RGetTagsTagsNotFound:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
@@ -78,7 +78,7 @@ func (c *CheckError) CheckErrorRestaurantDishes(err error) (error, []byte, int) 
 	if err != nil {
 		switch err.Error() {
 		case RGetDishesDishesNotFound, RGetStructDishesStructDishesNotSelect, RGetStructDishesStructDishesNotScan,
-			RGetRadiosRadiosNotScan, RGetTagsCategoryNotSelect, RGetRadiosRadiosNotSelect, RGetTagsTagsNotFound:
+			RGetRadiosRadiosNotScan, RGetTagsRestaurantNotSelect, RGetRadiosRadiosNotSelect, RGetTagsTagsNotFound:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,

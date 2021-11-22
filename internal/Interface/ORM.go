@@ -94,5 +94,4 @@ type Uploader interface {
 type WrapperOrder interface {
 	CreateOrder(id int, createOrder Order.CreateOrder, addressId int, cart Cart.ResponseCartErrors, courierId int) error
 	GetOrders(id int) (*Order.HistoryOrderArray, error)
-	GetPriceDelivery(id int) (int, error)
 }
