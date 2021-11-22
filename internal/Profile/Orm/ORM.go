@@ -29,9 +29,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	role := 0
 
@@ -87,9 +85,7 @@ func (db *Wrapper) GetProfileHost(id int) (*Profile.Profile, error) {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var profile = Profile.Profile{}
 	err = tx.QueryRow(contextTransaction,
@@ -120,9 +116,7 @@ func (db *Wrapper) GetProfileClient(id int) (*Profile.Profile, error) {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var profile = Profile.Profile{}
 	err = tx.QueryRow(contextTransaction,
@@ -133,10 +127,12 @@ func (db *Wrapper) GetProfileClient(id int) (*Profile.Profile, error) {
 			Alias: errPkg.PGetProfileClientClientNotScan,
 		}
 	}
-	timeVoid := time.Time{}
-	if timeVoid != profile.Birthday {
+
+	if profile.Birthday != "" {
+		var birthday time.Time
 		err = tx.QueryRow(contextTransaction,
-			"SELECT date_birthday FROM client WHERE client_id = $1", id).Scan(&profile.Birthday)
+			"SELECT date_birthday FROM client WHERE client_id = $1", id).Scan(&birthday)
+		profile.Birthday, _ = Utils2.FormatDate(birthday)
 		if err != nil {
 			return nil, &errPkg.Errors{
 				Alias: errPkg.PGetProfileClientBirthdayNotScan,
@@ -195,9 +191,7 @@ func (db *Wrapper) UpdateName(id int, newName string) error {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
 		"UPDATE general_user_info SET name = $1 WHERE id = $2",
@@ -227,9 +221,7 @@ func (db *Wrapper) UpdateEmail(id int, newEmail string) error {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
 		"UPDATE general_user_info SET email = $1 WHERE id = $2",
@@ -265,9 +257,7 @@ func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var salt string
 	err = tx.QueryRow(contextTransaction,
@@ -307,9 +297,7 @@ func (db *Wrapper) UpdatePhone(id int, newPhone string) error {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	if _, err := strconv.Atoi(newPhone); err != nil {
 		return &errPkg.Errors{
@@ -351,9 +339,7 @@ func (db *Wrapper) UpdateAvatar(id int, newAvatar *Profile.UpdateAvatar, newFile
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	header := newAvatar.FileHeader
 	file, errTet := header.Open()
@@ -394,7 +380,7 @@ func (db *Wrapper) UpdateAvatar(id int, newAvatar *Profile.UpdateAvatar, newFile
 	return nil
 }
 
-func (db *Wrapper) UpdateBirthday(id int, newBirthday time.Time) error {
+func (db *Wrapper) UpdateBirthday(id int, newBirthday string) error {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
@@ -403,13 +389,17 @@ func (db *Wrapper) UpdateBirthday(id int, newBirthday time.Time) error {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
-
+	defer tx.Rollback(contextTransaction)
+	layout := "02.01.2006"
+	birthday, err := time.Parse(layout, newBirthday)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.PUpdateBirthdayNotParse,
+		}
+	}
 	_, err = tx.Exec(contextTransaction,
 		"UPDATE client SET date_birthday = $1 WHERE client_id = $2",
-		newBirthday, id)
+		birthday, id)
 	if err != nil {
 		return &errPkg.Errors{
 			Alias: errPkg.PUpdateBirthdayBirthdayNotUpdate,
@@ -435,9 +425,7 @@ func (db *Wrapper) UpdateAddress(id int, newAddress Profile.AddressCoordinates) 
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	newAddress.Sanitize()
 	_, err = tx.Exec(contextTransaction,
@@ -473,9 +461,7 @@ func (db *Wrapper) AddAddress(id int, newAddress Profile.AddressCoordinates) (in
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var idAddress int
 	newAddress.Sanitize()
@@ -511,9 +497,7 @@ func (db *Wrapper) DeleteAddress(id int, addressId int) error {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
 		"UPDATE address_user SET deleted = true WHERE client_id = $1 AND id = $2",

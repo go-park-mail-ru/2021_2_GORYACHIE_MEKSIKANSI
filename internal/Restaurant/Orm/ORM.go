@@ -4,8 +4,10 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"context"
 	"github.com/jackc/pgx/v4"
+	"time"
 )
 
 type Wrapper struct {
@@ -21,9 +23,7 @@ func (db *Wrapper) GetRestaurants() ([]Restaurant.Restaurants, error) {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	row, err := tx.Query(contextTransaction,
 		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant ORDER BY random() LIMIT 50")
@@ -71,9 +71,7 @@ func (db *Wrapper) GetGeneralInfoRestaurant(id int) (*Restaurant.RestaurantId, e
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var restaurant Restaurant.RestaurantId
 	err = tx.QueryRow(contextTransaction,
@@ -105,9 +103,7 @@ func (db *Wrapper) GetTagsRestaurant(id int) ([]Restaurant.Tag, error) {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	rowCategory, err := tx.Query(contextTransaction,
 		"SELECT id, category, place FROM restaurant_category WHERE restaurant = $1", id)
@@ -155,9 +151,7 @@ func (db *Wrapper) GetMenu(id int) ([]Restaurant.Menu, error) {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var result []Restaurant.Menu
 
@@ -222,9 +216,7 @@ func (db *Wrapper) GetStructDishes(dishesId int) ([]Restaurant.Ingredients, erro
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var ingredients []Restaurant.Ingredients
 	rowDishes, err := tx.Query(contextTransaction,
@@ -271,9 +263,7 @@ func (db *Wrapper) GetDishes(restId int, dishesId int) (*Restaurant.Dishes, erro
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var dishes Restaurant.Dishes
 	err = tx.QueryRow(contextTransaction,
@@ -310,9 +300,7 @@ func (db *Wrapper) GetRadios(dishesId int) ([]Restaurant.Radios, error) {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	rowDishes, err := tx.Query(contextTransaction,
 		"SELECT r.id, r.name, sr.id, sr.name, r.place, sr.place FROM radios r "+
@@ -364,4 +352,79 @@ func (db *Wrapper) GetRadios(dishesId int) ([]Restaurant.Radios, error) {
 	}
 
 	return radios, nil
+}
+
+func (db *Wrapper) GetReview(id int) ([]Restaurant.Review, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetReviewNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	rowDishes, err := tx.Query(contextTransaction,
+		"SELECT gn.name, r.text, r.date_create, r.rate FROM review r "+
+			"LEFT JOIN general_user_info gn ON r.author=gn.id "+
+			"WHERE r.restaurant = $1 ORDER BY r.date_create", id)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetReviewNotSelect,
+		}
+	}
+
+	var result []Restaurant.Review
+	for rowDishes.Next() {
+		var review Restaurant.Review
+		var date time.Time
+		err := rowDishes.Scan(&review.Name, &review.Text, &date, &review.Rate)
+		if err != nil {
+			return nil, &errPkg.Errors{
+				Alias: errPkg.RGetReviewNotScan,
+			}
+		}
+		review.Date, review.Time = Util.FormatDate(date)
+		result = append(result, review)
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetReviewNotCommit,
+		}
+	}
+
+	return result, nil
+}
+
+func (db *Wrapper) CreateReview(id int, review Restaurant.NewReview) error {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.RCreateReviewNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	_, err = tx.Exec(contextTransaction,
+		"INSERT INTO review (author, restaurant, text, rate) VALUES ($1, $2, $3, $4)",
+		id, review.Restaurant.Id, review.Text, review.Rate)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.RCreateReviewNotInsert,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.RCreateReviewNotCommit,
+		}
+	}
+
+	return nil
 }

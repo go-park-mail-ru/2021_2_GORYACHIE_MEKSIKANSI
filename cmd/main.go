@@ -83,11 +83,13 @@ func runServer(port string) {
 	userGroup.PUT("/avatar", infoMid.CheckClient(infoMid.GetIdClient(profileInfo.UpdateUserAvatar)))
 	userGroup.PUT("/birthday", infoMid.CheckClient(infoMid.GetIdClient(profileInfo.UpdateUserBirthday)))
 	userGroup.PUT("/address", infoMid.CheckClient(infoMid.GetIdClient(profileInfo.UpdateUserAddress)))
-	userGroup.POST("/pay", infoMid.CheckClient(infoMid.CheckClient(userInfo.PayHandler)))
+	userGroup.POST("/pay", infoMid.CheckClient(infoMid.GetIdClient(userInfo.PayHandler)))
+	userGroup.POST("/review", infoMid.CheckClient(infoMid.GetIdClient(restaurantInfo.CreateReviewHandler)))
 
 	restaurantGroup.GET("/", restaurantInfo.RestaurantHandler)
 	restaurantGroup.GET("/{idRes}/dish/{idDish}", restaurantInfo.RestaurantDishesHandler)
 	restaurantGroup.GET("/{idRes}", restaurantInfo.RestaurantIdHandler)
+	restaurantGroup.GET("/{idRes}/review", restaurantInfo.GetReviewHandler)
 
 	cartGroup.GET("/", infoMid.GetIdClient(cartInfo.GetCartHandler))
 	cartGroup.PUT("/", infoMid.CheckClient(infoMid.GetIdClient(cartInfo.UpdateCartHandler)))

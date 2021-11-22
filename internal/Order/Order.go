@@ -3,7 +3,6 @@ package Order
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Cart"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Profile"
-	"time"
 )
 
 type CreateOrder struct {
@@ -19,7 +18,8 @@ type HistoryOrderArray struct {
 type HistoryOrder struct {
 	Id         int                        `json:"id"`
 	Status     int                        `json:"status"`
-	Date       time.Time                  `json:"date"`
+	Date       string                     `json:"date"`
+	Time       string                     `json:"time"`
 	Address    Profile.AddressCoordinates `json:"address"`
 	Restaurant HistoryResOrder            `json:"restaurant"`
 	Cart       ResponseCartOrder          `json:"cart"`

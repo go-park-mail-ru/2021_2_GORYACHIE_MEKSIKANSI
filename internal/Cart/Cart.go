@@ -96,7 +96,7 @@ type IngredientsCartRequest struct {
 	Id int `json:"id"`
 }
 
-func (c *ResponseCartErrors) CastToRequestCartDefault(a RequestCartDefault) {
+func (c *ResponseCartErrors) CastFromRequestCartDefault(a RequestCartDefault) {
 	for i, dish := range a.Dishes {
 		c.Dishes[i].Id = dish.Id
 		c.Dishes[i].ItemNumber = dish.ItemNumber
@@ -112,7 +112,7 @@ func (c *ResponseCartErrors) CastToRequestCartDefault(a RequestCartDefault) {
 	}
 }
 
-func (c *ResponseCartErrors) CastToRestaurantId(a Restaurant.RestaurantId) {
+func (c *ResponseCartErrors) CastFromRestaurantId(a Restaurant.RestaurantId) {
 	c.Restaurant.Id = a.Id
 	c.Restaurant.Img = a.Img
 	c.Restaurant.Rating = a.Rating

@@ -7,7 +7,6 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Profile"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
-	"time"
 )
 
 type AuthorizationApplication interface {
@@ -31,7 +30,7 @@ type ProfileApplication interface {
 	UpdatePassword(id int, newPassword string) error
 	UpdatePhone(id int, newPhone string) error
 	UpdateAvatar(id int, newAvatar *Profile.UpdateAvatar) error
-	UpdateBirthday(id int, newBirthday time.Time) error
+	UpdateBirthday(id int, newBirthday string) error
 	UpdateAddress(id int, newAddress Profile.AddressCoordinates) error
 	AddAddress(id int, newAddress Profile.AddressCoordinates) (int, error)
 	DeleteAddress(id int, addressId int) error
@@ -47,6 +46,8 @@ type RestaurantApplication interface {
 	AllRestaurants() ([]Restaurant.Restaurants, error)
 	GetRestaurant(id int) (*Restaurant.RestaurantId, error)
 	RestaurantDishes(restId int, dishId int) (*Restaurant.Dishes, error)
+	CreateReview(id int, review Restaurant.NewReview) error
+	GetReview(id int) (*Restaurant.ResReview, error)
 }
 
 type OrderApplication interface {

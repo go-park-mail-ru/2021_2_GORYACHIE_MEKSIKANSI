@@ -23,9 +23,7 @@ func (db *Wrapper) CheckAccess(cookie *Util.Defense) (bool, error) {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var timeLiveCookie time.Time
 	var id int
@@ -66,9 +64,7 @@ func (db *Wrapper) NewCSRF(cookie *Util.Defense) (string, error) {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	csrfToken := Util.RandString(5)
 	_, err = tx.Exec(contextTransaction,
@@ -99,9 +95,7 @@ func (db *Wrapper) GetIdByCookie(cookie *Util.Defense) (int, error) {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var timeLiveCookie time.Time
 	var id int

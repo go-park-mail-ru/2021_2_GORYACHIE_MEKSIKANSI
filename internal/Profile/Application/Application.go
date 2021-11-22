@@ -8,7 +8,6 @@ import (
 	"math"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type Profile struct {
@@ -81,7 +80,7 @@ func (p *Profile) UpdateAvatar(id int, newAvatar *Profile2.UpdateAvatar) error {
 	return p.DB.UpdateAvatar(id, newAvatar, fileResult)
 }
 
-func (p *Profile) UpdateBirthday(id int, newBirthday time.Time) error {
+func (p *Profile) UpdateBirthday(id int, newBirthday string) error {
 	return p.DB.UpdateBirthday(id, newBirthday)
 }
 

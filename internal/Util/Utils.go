@@ -10,6 +10,7 @@ import (
 	"math/big"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -98,4 +99,15 @@ func InterfaceConvertString(value interface{}) (string, error) {
 
 func Sanitize(str string) string {
 	return bluemonday.StrictPolicy().Sanitize(str)
+}
+
+func ConvertInt32ToInt(i *int32) int {
+	if i != nil {
+		return int(*i)
+	}
+	return -1
+}
+
+func FormatDate(date time.Time) (string, string) {
+	return date.Format("02.01.2006"), date.Format("15:04")
 }
