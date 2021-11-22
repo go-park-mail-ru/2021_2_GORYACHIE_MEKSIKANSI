@@ -17,6 +17,7 @@ type HistoryOrderArray struct {
 }
 
 type HistoryOrder struct {
+	Id         int                        `json:"id"`
 	Status     int                        `json:"status"`
 	Date       time.Time                  `json:"date"`
 	Address    Profile.AddressCoordinates `json:"address"`
