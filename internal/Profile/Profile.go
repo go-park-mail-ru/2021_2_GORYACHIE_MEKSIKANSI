@@ -3,15 +3,14 @@ package Profile
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"mime/multipart"
-	"time"
 )
 
 type Profile struct {
-	Name     string    `json:"name"`
-	Email    string    `json:"email"`
-	Phone    string    `json:"phone"`
-	Avatar   string    `json:"avatar"`
-	Birthday time.Time `json:"birthday,omitempty"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
+	Avatar   string `json:"avatar"`
+	Birthday string `json:"birthday,omitempty"`
 }
 
 type ProfileResponse struct {
@@ -44,7 +43,7 @@ type UpdateAvatarRequest struct {
 }
 
 type UpdateBirthday struct {
-	Birthday time.Time `json:"birthday"`
+	Birthday string `json:"birthday"`
 }
 
 type UpdateAddress struct {
@@ -57,7 +56,7 @@ type AddressCoordinates struct {
 	City        string      `json:"city"`
 	Street      string      `json:"street,omitempty"`
 	House       string      `json:"house,omitempty"`
-	Flat        int         `json:"flat,omitempty"`
+	Flat        string      `json:"flat,omitempty"`
 	Porch       int         `json:"porch,omitempty"`
 	Floor       int         `json:"floor,omitempty"`
 	Intercom    string      `json:"intercom,omitempty"`

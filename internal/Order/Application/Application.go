@@ -61,7 +61,7 @@ func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) error {
 		return err
 	}
 
-	cart.CastToRestaurantId(*rest)
+	cart.CastFromRestaurantId(*rest)
 
 	cost, err := o.CalculateCost(cart, rest)
 	if err != nil {

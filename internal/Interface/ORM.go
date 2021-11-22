@@ -11,7 +11,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
-	"time"
 )
 
 type ConnectionInterface interface {
@@ -45,6 +44,8 @@ type WrapperRestaurant interface {
 	GetGeneralInfoRestaurant(id int) (*Restaurant.RestaurantId, error)
 	GetMenu(id int) ([]Restaurant.Menu, error)
 	GetTagsRestaurant(id int) ([]Restaurant.Tag, error)
+	GetReview(id int) ([]Restaurant.Review, error)
+	CreateReview(id int, review Restaurant.NewReview) error
 }
 
 type WrapperProfile interface {
@@ -57,7 +58,7 @@ type WrapperProfile interface {
 	UpdatePassword(id int, newPassword string) error
 	UpdatePhone(id int, newPhone string) error
 	UpdateAvatar(id int, newAvatar *Profile.UpdateAvatar, newFileName string) error
-	UpdateBirthday(id int, newBirthday time.Time) error
+	UpdateBirthday(id int, newBirthday string) error
 	UpdateAddress(id int, newAddress Profile.AddressCoordinates) error
 	AddAddress(id int, newAddress Profile.AddressCoordinates) (int, error)
 	DeleteAddress(id int, addressId int) error

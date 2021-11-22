@@ -154,6 +154,7 @@ const (
 	PAddAddressNotCommit                   = "transaction add address not commit"         // TODO: add in checkErrors
 	PAddDeleteAddressTransactionNotCreate  = "transaction delete address not create"      // TODO: add in checkErrors
 	PAddDeleteAddressNotCommit             = "transaction delete address not commit"      // TODO: add in checkErrors
+	PUpdateBirthdayNotParse                = "birthday not parse"                         // TODO: add in checkErrors
 )
 
 // Error of restaurant
@@ -189,6 +190,13 @@ const (
 	RGetDishesTransactionNotCreate         = "transaction get dishes not create"          // TODO: add in checkErrors
 	RGetDishesNotCommit                    = "get get dishes not commit"                  // TODO: add in checkErrors
 	RGetMenuDishesCategoryNotSelect        = "category not select"                        // TODO: add in checkErrors
+	RGetReviewNotCreate                    = "transaction get review not create"          // TODO: add in checkErrors
+	RGetReviewNotCommit                    = "get get review not commit"                  // TODO: add in checkErrors
+	RCreateReviewNotCreate                 = "transaction create review not create"       // TODO: add in checkErrors
+	RCreateReviewNotCommit                 = "get create review not commit"               // TODO: add in checkErrors
+	RGetReviewNotSelect                    = "get get review not select"                  // TODO: add in checkErrors
+	RGetReviewNotScan                      = "get get review not scan"                    // TODO: add in checkErrors
+	RCreateReviewNotInsert                 = "get get review not insert"                  // TODO: add in checkErrors
 )
 
 // Error of Cart
@@ -212,6 +220,7 @@ const (
 	CGetCartNotSelect                              = "cart not select"
 	CGetCartNotCommit                              = "transaction get not commit"
 	CGetCartNotScan                                = "cart not scan"
+	CGetCartCartNotFound                           = "cart is void"                              // TODO: add in checkErrors
 	CDeleteCartTransactionNotCreate                = "transaction delete cart not create"        // TODO: add in checkErrors
 	CDeleteCartNotCommit                           = "transaction delete cart not commit"        // TODO: add in checkErrors
 	CGetPriceDeliveryTransactionNotCreate          = "transaction get price delivery not create" // TODO: add in checkErrors
@@ -231,5 +240,6 @@ const (
 	OCreateOrderCountNotUpdate               = "count dish not update"               // TODO: add in checkErrors
 	OCreateOrderCountNotCorrect              = "dishes not enough"                   // TODO: add in checkErrors
 	OCreateOrderCartIsVoid                   = "cart is void"                        // TODO: add in checkErrors
-	OGetOrdersNotSelect                      = "all not selected"                    // TODO: add in checkErrors
+	OGetOrdersNotSelect                      = "orders not selected"                 // TODO: add in checkErrors
+	OGetOrdersNotScan                        = "orders not scan"                     // TODO: add in checkErrors
 )

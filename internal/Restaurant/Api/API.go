@@ -208,10 +208,12 @@ func (r *InfoRestaurant) CreateReviewHandler(ctx *fasthttp.RequestCtx) {
 	}
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := Util.InterfaceConvertString(tokenContext)
-	if (errConvert != nil) && (errConvert.Error() == errPkg.ErrNotStringAndInt) {
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
-		return
+	if errConvert != nil {
+		if errConvert.Error() == errPkg.ErrNotStringAndInt {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
+			return
+		}
 	}
 
 	err = r.Application.CreateReview(id, newReview)
@@ -264,8 +266,7 @@ func (r *InfoRestaurant) GetReviewHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		r.Logger.Errorf("%s", errConvert.Error())
 	}
-
-	err, restaurant := r.Application.GetReview(id)
+	restaurant, err := r.Application.GetReview(id)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorGetReview(err)
 	if errOut != nil {
 		switch errOut.Error() {

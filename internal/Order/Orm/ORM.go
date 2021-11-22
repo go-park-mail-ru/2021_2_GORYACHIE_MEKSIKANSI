@@ -8,6 +8,7 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Profile"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"context"
+	"time"
 )
 
 type Wrapper struct {
@@ -23,9 +24,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder Order.CreateOrder, addressId 
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var orderId int
 
@@ -69,8 +68,8 @@ func (db *Wrapper) CreateOrder(id int, createOrder Order.CreateOrder, addressId 
 		if dish.IngredientCart != nil {
 			for _, ingredient := range dish.IngredientCart {
 				_, err = tx.Exec(contextTransaction,
-					"INSERT INTO order_structure_list (order_id, food, structure_food, place) VALUES ($1, $2, $3, $4)",
-					orderId, dish.Id, ingredient.Id, elementPlace)
+					"INSERT INTO order_structure_list (order_id, food, structure_food, list_id, place) VALUES ($1, $2, $3, $4, $5)",
+					orderId, dish.Id, ingredient.Id, listId, elementPlace)
 				if err != nil {
 					return &errPkg.Errors{
 						Alias: errPkg.OCreateOrderOrderStructureListNotInsert,
@@ -118,9 +117,7 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var result Order.HistoryOrderArray
 	row, err := tx.Query(contextTransaction,
@@ -134,7 +131,7 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 			" LEFT JOIN address_user au ON au.id = order_user.address_id"+
 			" LEFT JOIN order_list ol ON ol.order_id = order_user.id"+
 			" LEFT JOIN dishes d ON d.id = ol.food"+
-			" LEFT JOIN order_structure_list osl ON osl.order_id = order_user.id and d.id=osl.food"+
+			" LEFT JOIN order_structure_list osl ON osl.order_id = order_user.id and d.id=osl.food and ol.id=osl.list_id"+
 			" LEFT JOIN order_radios_list orl ON orl.order_id = order_user.id and ol.food=orl.food and ol.id=orl.list_id"+
 			" LEFT JOIN structure_radios sr ON sr.id = orl.radios"+
 			" LEFT JOIN structure_dishes sd ON sd.id = osl.structure_food"+
@@ -158,11 +155,12 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 		var order Order.HistoryOrder
 		var restaurant Order.HistoryResOrder
 
-		var getPlaceDishes, getPlaceRadios, getPlaceIngredient interface{}
-		var srName, srRadios, srId interface{}
-		var sdName, sdId, sdCost interface{}
+		var getPlaceDishes, getPlaceRadios, getPlaceIngredient *int32
+		var srRadios, srId, sdId, sdCost *int32
+		var srName, sdName *string
 
-		err := row.Scan(&order.Id, &dish.ItemNumber, &order.Date, &order.Status, &address.Alias,
+		var date time.Time
+		err := row.Scan(&order.Id, &dish.ItemNumber, &date, &order.Status, &address.Alias,
 			&address.City, &address.Street, &address.House, &address.Flat, &address.Porch,
 			&address.Floor, &address.Intercom, &address.Comment, &address.Coordinates.Latitude,
 			&address.Coordinates.Longitude, &dish.Id, &dish.Img, &dish.Name, &dish.Count,
@@ -173,38 +171,29 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 			&order.Cart.Cost.DCost, &order.Cart.Cost.SumCost, &getPlaceDishes, &getPlaceRadios, &getPlaceIngredient)
 
 		if err != nil {
-			return nil, err
+			return nil, &errPkg.Errors{
+				Alias: errPkg.OGetOrdersNotScan,
+			}
 		}
 
-		var placeDishes, placeRadios, placeIngredient int
-		if getPlaceDishes != nil {
-			placeDishes = int(getPlaceDishes.(int32))
-		} else {
-			placeDishes = -1
-		}
-		if getPlaceRadios != nil {
-			placeRadios = int(getPlaceRadios.(int32))
-		} else {
-			placeRadios = -1
-		}
-		if getPlaceIngredient != nil {
-			placeIngredient = int(getPlaceIngredient.(int32))
-		} else {
-			placeIngredient = -1
-		}
+		order.Date, order.Time = Util.FormatDate(date)
+
+		placeDishes := Util.ConvertInt32ToInt(getPlaceDishes)
+		placeRadios := Util.ConvertInt32ToInt(getPlaceRadios)
+		placeIngredient := Util.ConvertInt32ToInt(getPlaceIngredient)
 
 		var ingredient Cart.IngredientCartResponse
 		if sdName != nil {
-			ingredient.Name = sdName.(string)
-			ingredient.Id = int(sdId.(int32))
-			ingredient.Cost = int(sdCost.(int32))
+			ingredient.Name = *sdName
+			ingredient.Id = int(*sdId)
+			ingredient.Cost = int(*sdCost)
 		}
 
 		var radios Cart.RadiosCartResponse
 		if srName != nil {
-			radios.Name = srName.(string)
-			radios.RadiosId = int(srRadios.(int32))
-			radios.Id = int(srId.(int32))
+			radios.Name = *srName
+			radios.RadiosId = int(*srRadios)
+			radios.Id = int(*srId)
 		}
 
 		temp := place[order.Id]

@@ -151,10 +151,12 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := Util.InterfaceConvertString(tokenContext)
-	if (errConvert != nil) && (errConvert.Error() == errPkg.ErrNotStringAndInt) {
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
-		return
+	if errConvert != nil {
+		if errConvert.Error() == errPkg.ErrNotStringAndInt {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
+			return
+		}
 	}
 
 	var err error
@@ -201,10 +203,12 @@ func (u *UserInfo) PayHandler(ctx *fasthttp.RequestCtx) {
 
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := Util.InterfaceConvertString(tokenContext)
-	if (errConvert != nil) && (errConvert.Error() == errPkg.ErrNotStringAndInt) {
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
-		return
+	if errConvert != nil {
+		if errConvert.Error() == errPkg.ErrNotStringAndInt {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
+			return
+		}
 	}
 
 	err := json.NewEncoder(ctx).Encode(&Authorization.Result{

@@ -12,6 +12,10 @@ import (
 	"strings"
 )
 
+const (
+	PhoneLen = 12
+)
+
 type Wrapper struct {
 	Conn Interface.ConnectionInterface
 }
@@ -26,16 +30,21 @@ func (db *Wrapper) generalSignUp(signup *Authorization.RegistrationRequest, tran
 
 	salt := Util.RandString(Application.LenSalt)
 
-	if _, err := strconv.Atoi(signup.Phone); err != nil {
+	Util.Sanitize(signup.Phone)
+	if _, err := strconv.Atoi(signup.Phone); err != nil || len(signup.Phone) != PhoneLen {
 		return 0, &errPkg.Errors{
 			Alias: errPkg.AGeneralSignUpIncorrectPhoneFormat,
 		}
 	}
 
+	s := []rune(signup.Phone)
+	s[0] = '8'
+	phone := string(s)
+
 	err := transaction.QueryRow(contextTransaction,
 		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
 		Util.Sanitize(signup.Name), Util.Sanitize(signup.Email),
-		signup.Phone, Util.HashPassword(signup.Password, salt), salt).Scan(&userId)
+		phone, Util.HashPassword(signup.Password, salt), salt).Scan(&userId)
 
 	if err != nil {
 		errorText := err.Error()
@@ -60,9 +69,7 @@ func (db *Wrapper) SignupHost(signup *Authorization.RegistrationRequest, cookie 
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	userId, err := db.generalSignUp(signup, tx, contextTransaction)
 	if err != nil {
@@ -75,7 +82,7 @@ func (db *Wrapper) SignupHost(signup *Authorization.RegistrationRequest, cookie 
 	}
 
 	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO host (client_id) VALUES ($1)", userId, contextTransaction)
+		"INSERT INTO host (client_id) VALUES ($1)", userId)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.ASignUpHostHostNotInsert,
@@ -99,9 +106,7 @@ func (db *Wrapper) SignupCourier(signup *Authorization.RegistrationRequest, cook
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	userId, err := db.generalSignUp(signup, tx, contextTransaction)
 	if err != nil {
@@ -139,9 +144,7 @@ func (db *Wrapper) SignupClient(signup *Authorization.RegistrationRequest, cooki
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	userId, err := db.generalSignUp(signup, tx, contextTransaction)
 	if err != nil {
@@ -192,9 +195,7 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var userId int
 	var salt string
@@ -241,9 +242,7 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var userId int
 	var salt string
@@ -290,17 +289,12 @@ func (db *Wrapper) DeleteCookie(CSRF string) (string, error) {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
-	var sessionId string
-	var sessionIdScan interface{}
+	var sessionId *string
 	err = tx.QueryRow(contextTransaction,
-		"DELETE FROM cookie WHERE csrf_token = $1 RETURNING session_id", CSRF).Scan(&sessionIdScan)
-	if sessionIdScan != nil {
-		sessionId = sessionIdScan.(string)
-	}
+		"DELETE FROM cookie WHERE csrf_token = $1 RETURNING session_id", CSRF).Scan(&sessionId)
+
 	if err != nil {
 		return "", &errPkg.Errors{
 			Alias: errPkg.ADeleteCookieCookieNotDelete,
@@ -313,7 +307,7 @@ func (db *Wrapper) DeleteCookie(CSRF string) (string, error) {
 			Alias: errPkg.ADeleteCookieNotCommit,
 		}
 	}
-	return sessionId, nil
+	return *sessionId, nil
 }
 
 func (db *Wrapper) AddCookie(cookie *Util.Defense, id int) error {
@@ -325,9 +319,7 @@ func (db *Wrapper) AddCookie(cookie *Util.Defense, id int) error {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",

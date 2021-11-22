@@ -1,7 +1,5 @@
 package Restaurant
 
-import "time"
-
 type RestaurantsResponse struct {
 	RestaurantsGet interface{} `json:"restaurants"`
 }
@@ -21,15 +19,15 @@ type RestaurantIdResponse struct {
 }
 
 type RestaurantId struct {
-	Id                  int         `json:"id"`
-	Img                 string      `json:"img"`
-	Name                string      `json:"name"`
-	CostForFreeDelivery int         `json:"costFFD"`
-	MinDelivery         int         `json:"minDTime"`
-	MaxDelivery         int         `json:"maxDTime"`
-	Rating              float32     `json:"rating"`
-	Tags                interface{} `json:"tags"`
-	Menu                []Menu      `json:"menu"`
+	Id                  int     `json:"id"`
+	Img                 string  `json:"img"`
+	Name                string  `json:"name"`
+	CostForFreeDelivery int     `json:"costFFD"`
+	MinDelivery         int     `json:"minDTime"`
+	MaxDelivery         int     `json:"maxDTime"`
+	Rating              float32 `json:"rating"`
+	Tags                []Tag   `json:"tags"`
+	Menu                []Menu  `json:"menu"`
 }
 
 type Tag struct {
@@ -100,13 +98,25 @@ type ResReview struct {
 	MinDelivery         int      `json:"minDTime"`
 	MaxDelivery         int      `json:"maxDTime"`
 	Rating              float32  `json:"rate"`
+	Tags                []Tag    `json:"tags"`
 	Reviews             []Review `json:"reviews"`
 }
 
 type Review struct {
-	Name string    `json:"name"`
-	Text string    `json:"text"`
-	Date time.Time `json:"date"`
-	Time time.Time `json:"time"`
-	Rate int       `json:"rate"`
+	Name string `json:"name"`
+	Text string `json:"text"`
+	Date string `json:"date"`
+	Time string `json:"time"`
+	Rate int    `json:"rate"`
+}
+
+func (r *ResReview) CastFromRestaurantId(rest RestaurantId) {
+	r.Id = rest.Id
+	r.Img = rest.Img
+	r.Name = rest.Name
+	r.CostForFreeDelivery = rest.CostForFreeDelivery
+	r.MinDelivery = rest.MinDelivery
+	r.MaxDelivery = rest.MaxDelivery
+	r.Rating = rest.Rating
+	r.Tags = rest.Tags
 }

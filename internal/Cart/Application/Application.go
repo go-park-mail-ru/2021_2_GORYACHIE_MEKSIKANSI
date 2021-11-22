@@ -52,7 +52,7 @@ func (c *Cart) GetCart(id int) (*Cart2.ResponseCartErrors, error) {
 		return nil, err
 	}
 
-	result.CastToRestaurantId(*rest)
+	result.CastFromRestaurantId(*rest)
 
 	cost, err := c.CalculateCost(result, rest)
 	if err != nil {
@@ -84,9 +84,9 @@ func (c *Cart) UpdateCart(dishes Cart2.RequestCartDefault, clientId int) (*Cart2
 		return nil, err
 	}
 
-	result.CastToRestaurantId(*rest)
+	result.CastFromRestaurantId(*rest)
 
-	result.CastToRequestCartDefault(dishes)
+	result.CastFromRequestCartDefault(dishes)
 
 	cost, err := c.CalculateCost(result, rest)
 	if err != nil {

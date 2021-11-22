@@ -4,6 +4,7 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Cart"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"context"
 	"github.com/jackc/pgx/v4"
 )
@@ -21,22 +22,20 @@ func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, []Cart.CastDishesE
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var result Cart.ResponseCartErrors
 	row, err := tx.Query(contextTransaction,
-		"SELECT cart.id, cart.food, cart.number_item, d.avatar, d.name, cart.count_food, d.cost, d.kilocalorie, d.weight,"+
+		"SELECT cart_food.id, cart_food.food, cart_food.number_item, d.avatar, d.name, cart_food.count_food, d.cost, d.kilocalorie, d.weight,"+
 			" d.description, sr.name, sr.id, sr.radios, sd.name, sd.id, sd.cost, d.restaurant, d.count, sr.kilocalorie, sd.kilocalorie,"+
-			" cart.place, crf.place, sd.place "+
-			"FROM cart "+
-			"LEFT JOIN dishes d ON d.id = cart.food "+
-			"LEFT JOIN cart_structure_food csf ON csf.client_id = cart.client_id and d.id=csf.food and cart.id=csf.cart_id "+
-			"LEFT JOIN structure_dishes sd ON sd.id = csf.checkbox and sd.food=cart.food "+
-			"LEFT JOIN cart_radios_food crf ON crf.client_id = cart.client_id and cart.id=crf.cart_id "+
+			" cart_food.place, crf.place, sd.place "+
+			"FROM cart_food "+
+			"LEFT JOIN dishes d ON d.id = cart_food.food "+
+			"LEFT JOIN cart_structure_food csf ON csf.client_id = cart_food.client_id and d.id=csf.food and cart_food.id=csf.cart_id "+
+			"LEFT JOIN structure_dishes sd ON sd.id = csf.checkbox and sd.food=cart_food.food "+
+			"LEFT JOIN cart_radios_food crf ON crf.client_id = cart_food.client_id and cart_food.id=crf.cart_id "+
 			"LEFT JOIN structure_radios sr ON sr.id = crf.radios "+
-			"WHERE cart.client_id = $1", id)
+			"WHERE cart_food.client_id = $1", id)
 	if err != nil {
 		return nil, nil, &errPkg.Errors{
 			Alias: errPkg.CGetCartNotSelect,
@@ -51,10 +50,10 @@ func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, []Cart.CastDishesE
 		var dish Cart.DishesCartResponse
 		var count, cartId int
 
-		var getPlaceDishes, getPlaceRadios, getPlaceIngredient interface{}
-		var ingredientKilocalorie, radiosKilocalorie interface{}
-		var radiosName, radiosId, radiosRadiosId interface{}
-		var ingredientName, ingredientId, ingredientCost interface{}
+		var getPlaceDishes, getPlaceRadios, getPlaceIngredient *int32
+		var ingredientKilocalorie, radiosKilocalorie *int32
+		var radiosId, radiosRadiosId, ingredientId, ingredientCost *int32
+		var radiosName, ingredientName *string
 		err := row.Scan(&cartId, &dish.Id, &dish.ItemNumber, &dish.Img, &dish.Name, &dish.Count, &dish.Cost, &dish.Kilocalorie,
 			&dish.Weight, &dish.Description, &radiosName, &radiosId, &radiosRadiosId, &ingredientName,
 			&ingredientId, &ingredientCost, &restaurant.Id, &count, &radiosKilocalorie, &ingredientKilocalorie,
@@ -66,37 +65,24 @@ func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, []Cart.CastDishesE
 			}
 		}
 
-		var placeDishes, placeRadios, placeIngredient int
-		if getPlaceDishes != nil {
-			placeDishes = int(getPlaceDishes.(int32))
-		} else {
-			placeDishes = -1
-		}
-		if getPlaceRadios != nil {
-			placeRadios = int(getPlaceRadios.(int32))
-		} else {
-			placeRadios = -1
-		}
-		if getPlaceIngredient != nil {
-			placeIngredient = int(getPlaceIngredient.(int32))
-		} else {
-			placeIngredient = -1
-		}
+		placeDishes := Util.ConvertInt32ToInt(getPlaceDishes)
+		placeRadios := Util.ConvertInt32ToInt(getPlaceRadios)
+		placeIngredient := Util.ConvertInt32ToInt(getPlaceIngredient)
 
 		var radios Cart.RadiosCartResponse
 		if radiosName != nil {
-			radios.Name = radiosName.(string)
-			radios.Id = int(radiosId.(int32))
-			radios.RadiosId = int(radiosRadiosId.(int32))
-			dish.Kilocalorie += int(radiosKilocalorie.(int32))
+			radios.Name = *radiosName
+			radios.Id = int(*radiosId)
+			radios.RadiosId = int(*radiosRadiosId)
+			dish.Kilocalorie += int(*radiosKilocalorie)
 		}
 
 		var ingredient Cart.IngredientCartResponse
 		if ingredientName != nil {
-			ingredient.Name = ingredientName.(string)
-			ingredient.Id = int(ingredientId.(int32))
-			ingredient.Cost = int(ingredientCost.(int32))
-			dish.Kilocalorie += int(ingredientKilocalorie.(int32))
+			ingredient.Name = *ingredientName
+			ingredient.Id = int(*ingredientId)
+			ingredient.Cost = int(*ingredientCost)
+			dish.Kilocalorie += int(*ingredientKilocalorie)
 		}
 
 		if dish.Count > count && count != -1 {
@@ -141,7 +127,7 @@ func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, []Cart.CastDishesE
 
 	if len(place) == 0 {
 		return nil, nil, &errPkg.Errors{
-			Alias: errPkg.CGetCartDishesNotFound,
+			Alias: errPkg.CGetCartCartNotFound,
 		}
 	}
 	result.Restaurant = restaurant
@@ -165,29 +151,13 @@ func (db *Wrapper) DeleteCart(id int) error {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
-		"DELETE FROM cart WHERE client_id = $1", id)
+		"DELETE FROM cart_food CASCADE WHERE client_id = $1", id)
 	if err != nil {
 		return &errPkg.Errors{
 			Alias: errPkg.CDeleteCartCartNotDelete,
-		}
-	}
-	_, err = tx.Exec(contextTransaction,
-		"DELETE FROM cart_structure_food WHERE client_id = $1", id)
-	if err != nil {
-		return &errPkg.Errors{
-			Alias: errPkg.CDeleteCartStructureFoodNotDelete,
-		}
-	}
-	_, err = tx.Exec(contextTransaction,
-		"DELETE FROM cart_radios_food WHERE client_id = $1", id)
-	if err != nil {
-		return &errPkg.Errors{
-			Alias: errPkg.CDeleteCartRadiosFoodNotDelete,
 		}
 	}
 
@@ -265,9 +235,7 @@ func (db *Wrapper) UpdateCart(newCart Cart.RequestCartDefault, clientId int) (*C
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var dishesErrors []Cart.CastDishesErrs
 	var cart Cart.ResponseCartErrors
@@ -293,7 +261,7 @@ func (db *Wrapper) UpdateCart(newCart Cart.RequestCartDefault, clientId int) (*C
 
 		dishes.Count = dish.Count
 
-		if dish.Count > count && count != -1 {
+		if dish.Count > count && count != Util.UnlimitedCount {
 			var dishesError Cart.CastDishesErrs
 			dishesError.ItemNumber = dish.ItemNumber
 			dishesError.NameDish = dishes.Name
@@ -310,7 +278,7 @@ func (db *Wrapper) UpdateCart(newCart Cart.RequestCartDefault, clientId int) (*C
 
 		var idCart int
 		err = tx.QueryRow(contextTransaction,
-			"INSERT INTO cart (client_id, food, count_food, restaurant_id, number_item, place) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+			"INSERT INTO cart_food (client_id, food, count_food, restaurant_id, number_item, place) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
 			clientId, dish.Id, dish.Count, newCart.Restaurant.Id, newCart.Dishes[i].ItemNumber, i).Scan(&idCart)
 		if err != nil {
 			return nil, nil, &errPkg.Errors{
@@ -347,9 +315,7 @@ func (db *Wrapper) GetPriceDelivery(id int) (int, error) {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface, contextTransaction context.Context) {
-		tx.Rollback(contextTransaction)
-	}(tx, contextTransaction)
+	defer tx.Rollback(contextTransaction)
 
 	var price int
 	err = tx.QueryRow(contextTransaction,
