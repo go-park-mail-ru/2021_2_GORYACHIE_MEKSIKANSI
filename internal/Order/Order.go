@@ -20,6 +20,7 @@ type HistoryOrder struct {
 	Id         int                        `json:"id"`
 	Status     int                        `json:"status"`
 	Date       time.Time                  `json:"date"`
+	Time       time.Time                  `json:"time"`
 	Address    Profile.AddressCoordinates `json:"address"`
 	Restaurant HistoryResOrder            `json:"restaurant"`
 	Cart       ResponseCartOrder          `json:"cart"`

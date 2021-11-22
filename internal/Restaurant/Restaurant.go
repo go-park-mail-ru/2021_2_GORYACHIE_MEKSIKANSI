@@ -1,5 +1,7 @@
 package Restaurant
 
+import "time"
+
 type RestaurantsResponse struct {
 	RestaurantsGet interface{} `json:"restaurants"`
 }
@@ -78,4 +80,33 @@ type Ingredients struct {
 	Id    int    `json:"id"`
 	Title string `json:"name"`
 	Cost  int    `json:"cost"`
+}
+
+type NewReview struct {
+	Restaurant RestaurantId `json:"restaurant"`
+	Text       string       `json:"text"`
+	Rate       int          `json:"rate"`
+}
+
+type ResNewReview struct {
+	Id int `json:"id"`
+}
+
+type ResReview struct {
+	Id                  int      `json:"id"`
+	Img                 string   `json:"img"`
+	Name                string   `json:"name"`
+	CostForFreeDelivery int      `json:"costFFD"`
+	MinDelivery         int      `json:"minDTime"`
+	MaxDelivery         int      `json:"maxDTime"`
+	Rating              float32  `json:"rate"`
+	Reviews             []Review `json:"reviews"`
+}
+
+type Review struct {
+	Name string    `json:"name"`
+	Text string    `json:"text"`
+	Date time.Time `json:"date"`
+	Time time.Time `json:"time"`
+	Rate int       `json:"rate"`
 }

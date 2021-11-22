@@ -47,6 +47,8 @@ type RestaurantApplication interface {
 	AllRestaurants() ([]Restaurant.Restaurants, error)
 	GetRestaurant(id int) (*Restaurant.RestaurantId, error)
 	RestaurantDishes(restId int, dishId int) (*Restaurant.Dishes, error)
+	CreateReview(id int, review Restaurant.NewReview) error
+	GetReview(id int) (error, Restaurant.ResReview)
 }
 
 type OrderApplication interface {

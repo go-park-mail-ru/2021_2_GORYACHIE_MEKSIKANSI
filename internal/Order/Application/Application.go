@@ -71,10 +71,10 @@ func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) error {
 
 	courierId := 1
 
-	//err = o.DBCart.DeleteCart(id)
-	//if err != nil {
-	//	return err
-	//}
+	err = o.DBCart.DeleteCart(id)
+	if err != nil {
+		return err
+	}
 
 	addressId, err := o.DBProfile.AddAddress(id, createOrder.Address)
 	if err != nil {
