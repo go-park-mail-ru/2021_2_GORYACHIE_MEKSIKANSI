@@ -102,11 +102,9 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := Util.InterfaceConvertString(tokenContext)
 	if errConvert != nil {
-		if errConvert.Error() == errPkg.ErrNotStringAndInt {
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
-			return
-		}
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		return
 	}
 
 	err = u.Application.UpdateName(id, userName.Name)
@@ -171,11 +169,9 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := Util.InterfaceConvertString(tokenContext)
 	if errConvert != nil {
-		if errConvert.Error() == errPkg.ErrNotStringAndInt {
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
-			return
-		}
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		return
 	}
 
 	err = u.Application.UpdateEmail(id, userEmail.Email)
@@ -239,11 +235,9 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := Util.InterfaceConvertString(tokenContext)
 	if errConvert != nil {
-		if errConvert.Error() == errPkg.ErrNotStringAndInt {
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
-			return
-		}
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		return
 	}
 
 	err = u.Application.UpdatePassword(id, userPassword.Password)
@@ -308,11 +302,9 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := Util.InterfaceConvertString(tokenContext)
 	if errConvert != nil {
-		if errConvert.Error() == errPkg.ErrNotStringAndInt {
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
-			return
-		}
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		return
 	}
 
 	err = u.Application.UpdatePhone(id, userPhone.Phone)
@@ -376,11 +368,9 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := Util.InterfaceConvertString(tokenContext)
 	if errConvert != nil {
-		if errConvert.Error() == errPkg.ErrNotStringAndInt {
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
-			return
-		}
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		return
 	}
 
 	err := u.Application.UpdateAvatar(id, &userAvatar)
@@ -448,11 +438,9 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := Util.InterfaceConvertString(tokenContext)
 	if errConvert != nil {
-		if errConvert.Error() == errPkg.ErrNotStringAndInt {
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
-			return
-		}
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		return
 	}
 
 	err = u.Application.UpdateBirthday(id, userBirthday.Birthday)
@@ -517,11 +505,9 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := Util.InterfaceConvertString(tokenContext)
 	if errConvert != nil {
-		if errConvert.Error() == errPkg.ErrNotStringAndInt {
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
-			return
-		}
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		return
 	}
 
 	err = u.Application.UpdateAddress(id, userAddress.Address)
