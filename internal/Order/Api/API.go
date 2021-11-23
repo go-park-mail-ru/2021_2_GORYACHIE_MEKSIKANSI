@@ -49,11 +49,9 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := Util.InterfaceConvertString(tokenContext)
 	if errConvert != nil {
-		if errConvert.Error() == errPkg.ErrNotStringAndInt {
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errPkg.ErrNotStringAndInt))
-			return
-		}
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		return
 	}
 	err = u.Application.CreateOrder(id, createOrder)
 
