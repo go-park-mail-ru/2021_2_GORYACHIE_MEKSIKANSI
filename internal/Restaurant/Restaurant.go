@@ -110,6 +110,10 @@ type Review struct {
 	Rate int    `json:"rate"`
 }
 
+type SearchRestaurant struct {
+	SearchText string `json:"searchText"`
+}
+
 func (r *ResReview) CastFromRestaurantId(rest RestaurantId) {
 	r.Id = rest.Id
 	r.Img = rest.Img
