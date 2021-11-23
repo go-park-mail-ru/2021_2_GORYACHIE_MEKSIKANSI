@@ -6,6 +6,7 @@ import (
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	Order2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Order"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant"
+	"time"
 )
 
 type Order struct {
@@ -56,7 +57,7 @@ func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) error {
 		return err
 	}
 
-	rest, err := o.DBRestaurant.GetGeneralInfoRestaurant(cart.Restaurant.Id)
+	rest, err := o.DBRestaurant.GetRestaurant(cart.Restaurant.Id)
 	if err != nil {
 		return err
 	}
@@ -90,10 +91,25 @@ func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) error {
 }
 
 func (o *Order) GetOrders(id int) (*Order2.HistoryOrderArray, error) {
-	orders, err := o.DB.GetOrders(id)
+	return o.DB.GetOrders(id)
+}
+
+func (o *Order) GetActiveOrder(idClient int, idOrder int) (*Order2.ActiveOrder, error) {
+	order, err := o.DB.GetOrder(idClient, idOrder)
 	if err != nil {
 		return nil, err
 	}
 
-	return orders, nil
+	go o.UpdateStatusOrder(idOrder, 0)
+
+	return order, nil
+}
+
+func (o *Order) UpdateStatusOrder(id int, status int) error {
+	for i := 1; i <= 7; i++ {
+		time.Sleep(time.Second * 15)
+		o.DB.UpdateStatusOrder(id, i)
+		//o.DB.UpdateStatusOrder(id, status)
+	}
+	return nil
 }

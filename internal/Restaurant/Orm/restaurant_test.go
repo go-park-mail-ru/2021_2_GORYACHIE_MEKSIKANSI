@@ -146,15 +146,15 @@ var OrmGetGeneralInfoRestaurant = []struct {
 		out: &rest.RestaurantId{Id: 1, Img: "1", Name: "1",
 			CostForFreeDelivery: 1, MinDelivery: 1, MaxDelivery: 1, Rating: 1, Tags: interface{}(nil), Menu: interface{}(nil)},
 		row:    Row{row: []interface{}{1, "1", "1", 1, 1, 1, 1.0}, errRow: nil},
-		outErr: errorsConst.RGetGeneralInfoRestaurantNotFound,
+		outErr: errorsConst.RGetRestaurantRestaurantNotFound,
 	},
 	{
 		testName:   "Two",
 		input:      1,
 		inputQuery: 1,
 		out:        nil,
-		row:        Row{row: []interface{}{}, errRow: errors.New(errorsConst.RGetGeneralInfoRestaurantNotFound)},
-		outErr:     errorsConst.RGetGeneralInfoRestaurantNotFound,
+		row:        Row{row: []interface{}{}, errRow: errors.New(errorsConst.RGetRestaurantRestaurantNotFound)},
+		outErr:     errorsConst.RGetRestaurantRestaurantNotFound,
 	},
 }
 
@@ -173,7 +173,7 @@ func TestOrmGetGeneralInfoRestaurant(t *testing.T) {
 			Return(&tt.row)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := testUser.GetGeneralInfoRestaurant(tt.input)
+			result, err := testUser.GetRestaurant(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
@@ -200,7 +200,7 @@ var OrmGetTagsRestaurant = []struct {
 		errQuery:   nil,
 		out:        []rest.Tag{{Id: 1, Name: "1"}},
 		rowsQuery:  Rows{row: []interface{}{1, "1"}, errRow: nil, rows: 1},
-		outErr:     errorsConst.RGetGeneralInfoRestaurantNotFound,
+		outErr:     errorsConst.RGetRestaurantRestaurantNotFound,
 	},
 }
 
@@ -250,7 +250,7 @@ var OrmGetDishesRestaurant = []struct {
 		errQuery:       nil,
 		out:            []rest.DishesMenu{{Id: 1, Name: "1", Cost: 1, Kilocalorie: 1, Img: "1"}},
 		rowsQuery:      Rows{row: []interface{}{1, "1", "1", 1, 1}, errRow: nil, rows: 1},
-		outErr:         errorsConst.RGetGeneralInfoRestaurantNotFound,
+		outErr:         errorsConst.RGetRestaurantRestaurantNotFound,
 	},
 }
 
@@ -306,7 +306,7 @@ var OrmGetMenu = []struct {
 		outGetDishesRestaurant: []rest.Menu{{}},
 		errGetDishesRestaurant: nil,
 		rowsQuery:              Rows{row: []interface{}{"1"}, errRow: nil, rows: 1},
-		outErr:                 errorsConst.RGetGeneralInfoRestaurantNotFound,
+		outErr:                 errorsConst.RGetRestaurantRestaurantNotFound,
 		inputQueryDishesName:   "1",
 		inputQueryDishesId:     1,
 		rowsQueryDishes:        Rows{row: []interface{}{1, "1", "1", 1, 1}, errRow: nil, rows: 1},
@@ -365,7 +365,7 @@ var OrmGetStructDishes = []struct {
 		errQuery:     nil,
 		out:          []rest.Ingredients{{Id: 1, Title: "1", Cost: 1}},
 		rowsQuery:    Rows{rows: 1, row: []interface{}{1, "1", 1}},
-		outErr:       errorsConst.RGetGeneralInfoRestaurantNotFound,
+		outErr:       errorsConst.RGetRestaurantRestaurantNotFound,
 	},
 }
 
@@ -413,7 +413,7 @@ var OrmGetStructRadios = []struct {
 		errQuery:     nil,
 		out:          []rest.CheckboxesRows{{Id: 1, Name: "1"}},
 		rowsQuery:    Rows{rows: 1, row: []interface{}{1, "1"}},
-		outErr:       errorsConst.RGetGeneralInfoRestaurantNotFound,
+		outErr:       errorsConst.RGetRestaurantRestaurantNotFound,
 	},
 }
 
@@ -464,7 +464,7 @@ var OrmGetDishes = []struct {
 		out: &rest.Dishes{Id: 1, Img: "1", Title: "1", Cost: 1, Ccal: 1, Description: "1",
 			Radios: interface{}(nil), Ingredient: interface{}(nil)},
 		rowsQuery: Rows{rows: 1, row: []interface{}{1, "1", "1", 1, 1, "1"}},
-		outErr:    errorsConst.RGetGeneralInfoRestaurantNotFound,
+		outErr:    errorsConst.RGetRestaurantRestaurantNotFound,
 	},
 }
 
@@ -515,7 +515,7 @@ var OrmGetRadios = []struct {
 		errQuery:                 nil,
 		out:                      []rest.Radios{{Title: "1", Id: 1, Rows: []rest.CheckboxesRows{{Id: 1, Name: "1"}}}},
 		rowsQuery:                Rows{rows: 1, row: []interface{}{1, "1", "1", 1, 1, "1"}},
-		outErr:                   errorsConst.RGetGeneralInfoRestaurantNotFound,
+		outErr:                   errorsConst.RGetRestaurantRestaurantNotFound,
 		inputQueryIdStructRadios: 1,
 		errQueryStructRadios:     nil,
 		rowsQueryStructRadios:    Rows{rows: 1, row: []interface{}{1, "1"}},

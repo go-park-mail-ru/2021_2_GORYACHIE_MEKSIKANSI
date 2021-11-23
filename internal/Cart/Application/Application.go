@@ -47,7 +47,7 @@ func (c *Cart) GetCart(id int) (*Cart2.ResponseCartErrors, error) {
 		return nil, err
 	}
 
-	rest, err := c.DBRestaurant.GetGeneralInfoRestaurant(result.Restaurant.Id)
+	rest, err := c.DBRestaurant.GetRestaurant(result.Restaurant.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (c *Cart) UpdateCart(dishes Cart2.RequestCartDefault, clientId int) (*Cart2
 		return nil, err
 	}
 
-	rest, err := c.DBRestaurant.GetGeneralInfoRestaurant(dishes.Restaurant.Id)
+	rest, err := c.DBRestaurant.GetRestaurant(dishes.Restaurant.Id)
 	if err != nil {
 		return nil, err
 	}

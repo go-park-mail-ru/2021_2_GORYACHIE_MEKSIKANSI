@@ -41,11 +41,14 @@ type WrapperRestaurant interface {
 	GetStructDishes(dishesId int) ([]Restaurant.Ingredients, error)
 	GetRadios(dishesId int) ([]Restaurant.Radios, error)
 	GetDishes(restId int, dishesId int) (*Restaurant.Dishes, error)
-	GetGeneralInfoRestaurant(id int) (*Restaurant.RestaurantId, error)
+	GetRestaurant(id int) (*Restaurant.RestaurantId, error)
 	GetMenu(id int) ([]Restaurant.Menu, error)
 	GetTagsRestaurant(id int) ([]Restaurant.Tag, error)
 	GetReview(id int) ([]Restaurant.Review, error)
 	CreateReview(id int, review Restaurant.NewReview) error
+	SearchCategory(name string) ([]int, error)
+	SearchRestaurant(name string) ([]int, error)
+	GetGeneralInfoRestaurant(id int) (*Restaurant.Restaurants, error)
 }
 
 type WrapperProfile interface {
@@ -95,4 +98,6 @@ type Uploader interface {
 type WrapperOrder interface {
 	CreateOrder(id int, createOrder Order.CreateOrder, addressId int, cart Cart.ResponseCartErrors, courierId int) error
 	GetOrders(id int) (*Order.HistoryOrderArray, error)
+	GetOrder(idClient int, idOrder int) (*Order.ActiveOrder, error)
+	UpdateStatusOrder(id int, status int) error
 }

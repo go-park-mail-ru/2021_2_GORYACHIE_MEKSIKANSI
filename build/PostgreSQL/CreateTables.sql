@@ -1,3 +1,5 @@
+DROP INDEX IF EXISTS
+    restaurant_fts, restaurant_category_fts;
 CREATE TABLE IF NOT EXISTS general_user_info
 (
     id SERIAL PRIMARY KEY,
@@ -31,8 +33,22 @@ CREATE TABLE IF NOT EXISTS restaurant (
     floor int,
     rating double precision,
     latitude double precision NOT NULL,
-    longitude double precision NOT NULL
+    longitude double precision NOT NULL,
+    fts TSVECTOR
 );
+
+CREATE INDEX restaurant_fts ON restaurant (fts);
+
+CREATE TABLE IF NOT EXISTS restaurant_category (
+   id serial PRIMARY KEY,
+   category text NOT NULL,
+   restaurant int,
+   place int,
+   FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE,
+   fts TSVECTOR
+);
+
+CREATE INDEX restaurant_category_fts ON restaurant_category (fts);
 
 CREATE TABLE IF NOT EXISTS cookie (
     id serial PRIMARY KEY,
@@ -113,14 +129,6 @@ CREATE TABLE IF NOT EXISTS event (
     end_date timestamp NOT NULL,
     name text NOT NULL,
     description text NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS restaurant_category (
-    id serial PRIMARY KEY,
-    category text NOT NULL,
-    restaurant int,
-    place int,
-    FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS dishes (

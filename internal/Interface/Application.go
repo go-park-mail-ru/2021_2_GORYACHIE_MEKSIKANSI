@@ -54,4 +54,6 @@ type RestaurantApplication interface {
 type OrderApplication interface {
 	CreateOrder(id int, createOrder Order.CreateOrder) error
 	GetOrders(id int) (*Order.HistoryOrderArray, error)
+	GetActiveOrder(idClient int, idOrder int) (*Order.ActiveOrder, error)
+	UpdateStatusOrder(id int, status int) error
 }

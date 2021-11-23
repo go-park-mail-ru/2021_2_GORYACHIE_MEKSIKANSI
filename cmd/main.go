@@ -97,6 +97,7 @@ func runServer(port string) {
 
 	orderGroup.GET("/", infoMid.GetIdClient(orderInfo.GetOrdersHandler))
 	orderGroup.POST("/", infoMid.CheckClient(infoMid.GetIdClient(orderInfo.CreateOrderHandler)))
+	orderGroup.GET("/{idOrd}/active", infoMid.GetIdClient(orderInfo.GetOrderActiveHandler))
 
 	printURL := infoMid.LogURL(myRouter.Handler)
 

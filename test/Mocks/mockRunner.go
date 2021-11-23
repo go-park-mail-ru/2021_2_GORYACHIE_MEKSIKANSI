@@ -158,7 +158,7 @@ func (mr *MockWrapperRestaurantMockRecorder) GetDishes(arg0, arg1 interface{}) *
 // GetGeneralInfoRestaurant mocks base method.
 func (m *MockWrapperRestaurant) GetGeneralInfoRestaurant(arg0 int) (*Restaurant.RestaurantId, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetGeneralInfoRestaurant", arg0)
+	ret := m.ctrl.Call(m, "GetRestaurant", arg0)
 	ret0, _ := ret[0].(*Restaurant.RestaurantId)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -167,7 +167,7 @@ func (m *MockWrapperRestaurant) GetGeneralInfoRestaurant(arg0 int) (*Restaurant.
 // GetGeneralInfoRestaurant indicates an expected call of GetGeneralInfoRestaurant.
 func (mr *MockWrapperRestaurantMockRecorder) GetGeneralInfoRestaurant(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGeneralInfoRestaurant", reflect.TypeOf((*MockWrapperRestaurant)(nil).GetGeneralInfoRestaurant), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRestaurant", reflect.TypeOf((*MockWrapperRestaurant)(nil).GetGeneralInfoRestaurant), arg0)
 }
 
 // GetMenu mocks base method.

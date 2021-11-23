@@ -20,7 +20,7 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Warnf("%s, requestId: %d", RGetGeneralInfoRestaurantNotFound, c.RequestId)
+			c.Logger.Warnf("%s, requestId: %d", RGetRestaurantRestaurantNotFound, c.RequestId)
 			return &Errors{
 					Alias: ErrCheck,
 				},
@@ -51,7 +51,7 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 func (c *CheckError) CheckErrorRestaurantId(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case RGetGeneralInfoRestaurantNotFound, RGetTagsRestaurantRestaurantNotScan, RGetMenuDishesNotSelect,
+		case RGetRestaurantRestaurantNotFound, RGetTagsRestaurantRestaurantNotScan, RGetMenuDishesNotSelect,
 			RGetDishesRestaurantDishesNotScan, RGetMenuDishesNotFound, RGetTagsTagsNotFound:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,

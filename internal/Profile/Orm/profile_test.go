@@ -69,7 +69,7 @@ var OrmGetRoleById = []struct {
 		countQueryClient:  1,
 		errQuery:          nil,
 		out:               "client",
-		outErr:            errorsConst.RGetGeneralInfoRestaurantNotFound,
+		outErr:            errorsConst.RGetRestaurantRestaurantNotFound,
 	},
 }
 
@@ -132,7 +132,7 @@ var OrmGetProfileHost = []struct {
 		errQuery:   nil,
 		out: &Profile.Profile{Name: "1", Email: "1", Phone: "1", Avatar: "1",
 			Birthday: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)},
-		outErr: errorsConst.RGetGeneralInfoRestaurantNotFound,
+		outErr: errorsConst.RGetRestaurantRestaurantNotFound,
 	},
 }
 
@@ -181,7 +181,7 @@ var OrmGetProfileCourier = []struct {
 		errQuery:   nil,
 		out: &Profile.Profile{Name: "1", Email: "1", Phone: "1", Avatar: "1",
 			Birthday: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)},
-		outErr: errorsConst.RGetGeneralInfoRestaurantNotFound,
+		outErr: errorsConst.RGetRestaurantRestaurantNotFound,
 	},
 }
 
@@ -233,7 +233,7 @@ var OrmGetProfileClient = []struct {
 		errQuery:   nil,
 		out: &Profile.Profile{Name: "1", Email: "1", Phone: "1", Avatar: "1",
 			Birthday: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)},
-		outErr:             errorsConst.RGetGeneralInfoRestaurantNotFound,
+		outErr:             errorsConst.RGetRestaurantRestaurantNotFound,
 		inputQueryBirthday: 1,
 		rowsQueryBirthday:  Row{row: []interface{}{time.Now()}},
 		countQueryBirthday: 0,
