@@ -175,6 +175,11 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 				Alias: errPkg.OGetOrdersNotScan,
 			}
 		}
+		switch order.Status {
+		case 0: order.Status = 1
+		case 1, 2, 3: order.Status = 2
+		case 4: order.Status = 3
+		}
 
 		order.Date, order.Time = Util.FormatDate(date)
 
@@ -255,9 +260,207 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.OGetOrdersDishesNotCommit,
+			Alias: errPkg.OGetOrdersNotCommit,
 		}
 	}
 
 	return &result, nil
+}
+
+func (db *Wrapper) GetOrder(idClient int, idOrder int) (*Order.ActiveOrder, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.OGetOrderTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	row, err := tx.Query(contextTransaction,
+		"SELECT order_user.id, ol.item_number, date_order, status, au.alias, au.city, au.street, au.house,"+
+			" au.flat, au.porch, au.floor, au.intercom, au.comment, au.latitude,"+
+			" au.longitude, d.id, d.avatar, d.name, ol.count_dishes, "+
+			"d.cost, d.kilocalorie, d.weight, d.description, sr.name, "+
+			"sr.radios, sr.id, sd.name, sd.id, sd.cost, restaurant_id, r.name, r.avatar, r.city, r.street,"+
+			" r.house, r.floor, r.latitude, r.longitude, dCost, sumCost, ol.place, orl.place, osl.place "+
+			"FROM order_user"+
+			" LEFT JOIN address_user au ON au.id = order_user.address_id"+
+			" LEFT JOIN order_list ol ON ol.order_id = order_user.id"+
+			" LEFT JOIN dishes d ON d.id = ol.food"+
+			" LEFT JOIN order_structure_list osl ON osl.order_id = order_user.id and d.id=osl.food and ol.id=osl.list_id"+
+			" LEFT JOIN order_radios_list orl ON orl.order_id = order_user.id and ol.food=orl.food and ol.id=orl.list_id"+
+			" LEFT JOIN structure_radios sr ON sr.id = orl.radios"+
+			" LEFT JOIN structure_dishes sd ON sd.id = osl.structure_food"+
+			" LEFT JOIN restaurant r ON r.id = order_user.restaurant_id WHERE order_user.client_id = $1 AND order_user.id = $2", idClient, idOrder)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.OGetOrderNotSelect,
+		}
+	}
+
+	structureDish := make(map[int]map[int]interface{})
+	infoDishes := make(map[int]Cart.DishesCartResponse)
+
+	var order Order.ActiveOrder
+
+	for row.Next() {
+		var address Profile.AddressCoordinates
+		var dish Cart.DishesCartResponse
+		var restaurant Order.HistoryResOrder
+
+		var getPlaceDishes, getPlaceRadios, getPlaceIngredient *int32
+		var srRadios, srId, sdId, sdCost *int32
+		var srName, sdName *string
+
+		var date time.Time
+		err := row.Scan(&order.Id, &dish.ItemNumber, &date, &order.Status, &address.Alias,
+			&address.City, &address.Street, &address.House, &address.Flat, &address.Porch,
+			&address.Floor, &address.Intercom, &address.Comment, &address.Coordinates.Latitude,
+			&address.Coordinates.Longitude, &dish.Id, &dish.Img, &dish.Name, &dish.Count,
+			&dish.Cost, &dish.Kilocalorie, &dish.Weight, &dish.Description, &srName, &srRadios,
+			&srId, &sdName, &sdId, &sdCost, &restaurant.Id, &restaurant.Name, &restaurant.Img,
+			&restaurant.Address.City, &restaurant.Address.Street, &restaurant.Address.House,
+			&restaurant.Address.Floor, &restaurant.Address.Coordinates.Latitude, &restaurant.Address.Coordinates.Longitude,
+			&order.Cart.Cost.DCost, &order.Cart.Cost.SumCost, &getPlaceDishes, &getPlaceRadios, &getPlaceIngredient)
+
+		if err != nil {
+			return nil, &errPkg.Errors{
+				Alias: errPkg.OGetOrderNotScan,
+			}
+		}
+
+		order.Date, order.Time = Util.FormatDate(date)
+
+		placeDishes := Util.ConvertInt32ToInt(getPlaceDishes)
+		placeRadios := Util.ConvertInt32ToInt(getPlaceRadios)
+		placeIngredient := Util.ConvertInt32ToInt(getPlaceIngredient)
+
+		var ingredient Cart.IngredientCartResponse
+		if sdName != nil {
+			ingredient.Name = *sdName
+			ingredient.Id = int(*sdId)
+			ingredient.Cost = int(*sdCost)
+		}
+
+		var radios Cart.RadiosCartResponse
+		if srName != nil {
+			radios.Name = *srName
+			radios.RadiosId = int(*srRadios)
+			radios.Id = int(*srId)
+		}
+
+		if placeRadios != -1 {
+			if structureDish == nil {
+				structureDish = make(map[int]map[int]interface{})
+			}
+			if structureDish[placeDishes] == nil {
+				structureDish[placeDishes] = make(map[int]interface{})
+			}
+			structureDish[placeDishes][placeRadios] = radios
+		}
+
+		if placeIngredient != -1 {
+			if structureDish == nil {
+				structureDish = make(map[int]map[int]interface{})
+			}
+			if structureDish[placeDishes] == nil {
+				structureDish[placeDishes] = make(map[int]interface{})
+			}
+			structureDish[placeDishes][placeIngredient] = ingredient
+		}
+
+		infoDishes[placeDishes] = dish
+
+		order.Address = address
+		order.Restaurant = restaurant
+	}
+
+	for j := 0; j < len(infoDishes); j++ {
+		structDish := structureDish[j]
+		dish := infoDishes[j]
+		for k := 0; k < len(structDish); k++ {
+			switch structDish[k].(type) {
+			case Cart.RadiosCartResponse:
+				dish.RadiosCart = append(dish.RadiosCart, structDish[k].(Cart.RadiosCartResponse))
+			case Cart.IngredientCartResponse:
+				dish.IngredientCart = append(dish.IngredientCart, structDish[k].(Cart.IngredientCartResponse))
+			}
+		}
+		order.Cart.Dishes = append(order.Cart.Dishes, dish)
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.OGetOrderNotCommit,
+		}
+	}
+
+	return &order, nil
+}
+
+func (db *Wrapper) UpdateStatusOrder(id int, status int) error {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.OUpdateStatusOrderTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	_, err = tx.Exec(contextTransaction,
+		"UPDATE order_user SET status = $1 WHERE id = $2",
+		status, id)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.OUpdateStatusOrderNotUpdate,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.OUpdateStatusOrderNotCommit,
+		}
+	}
+
+	return nil
+}
+
+func (db *Wrapper) CheckRun(id int) (bool, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.OUpdateStatusOrderTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	var check bool
+	err = tx.QueryRow(contextTransaction,
+		"SELECT check_run FROM order_user WHERE id = $1",
+		id).Scan(&check)
+	_, err = tx.Exec(contextTransaction,
+		"UPDATE order_user SET check_run = false WHERE id = $1",
+		id)
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.OUpdateStatusOrderNotUpdate,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.OUpdateStatusOrderNotCommit,
+		}
+	}
+
+	return check, nil
 }

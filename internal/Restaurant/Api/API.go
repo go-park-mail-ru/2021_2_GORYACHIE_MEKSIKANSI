@@ -294,3 +294,57 @@ func (r *InfoRestaurant) GetReviewHandler(ctx *fasthttp.RequestCtx) {
 
 	ctx.SetStatusCode(http.StatusOK)
 }
+
+func (r *InfoRestaurant) SearchRestaurantHandler(ctx *fasthttp.RequestCtx) {
+	reqIdCtx := ctx.UserValue("reqId")
+	reqId, errConvert := Util.InterfaceConvertInt(reqIdCtx)
+	if errConvert != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		r.Logger.Errorf("%s", errConvert.Error())
+	}
+
+	checkError := &errPkg.CheckError{
+		Logger:    r.Logger,
+		RequestId: reqId,
+	}
+
+	searchRes := Restaurant.SearchRestaurant{}
+	err := json.Unmarshal(ctx.Request.Body(), &searchRes)
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
+		return
+	}
+
+	restaurant, err := r.Application.SearchRestaurant(searchRes.SearchText)
+	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorSearchRes(err)
+	if errOut != nil {
+		switch errOut.Error() {
+		case errPkg.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errPkg.ErrMarshal))
+			return
+		case errPkg.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOutAccess)
+			return
+		}
+	}
+
+	err = json.NewEncoder(ctx).Encode(&Authorization.Result{
+		Status: http.StatusOK,
+		Body: &Restaurant.RestaurantsResponse{
+			RestaurantsGet: restaurant,
+		},
+	})
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		return
+	}
+
+	ctx.SetStatusCode(http.StatusOK)
+}

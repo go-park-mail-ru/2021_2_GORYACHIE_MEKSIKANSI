@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	PhoneLen = 12
+	PhoneLen = 11
 )
 
 type Wrapper struct {

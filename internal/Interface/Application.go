@@ -48,9 +48,12 @@ type RestaurantApplication interface {
 	RestaurantDishes(restId int, dishId int) (*Restaurant.Dishes, error)
 	CreateReview(id int, review Restaurant.NewReview) error
 	GetReview(id int) (*Restaurant.ResReview, error)
+	SearchRestaurant(search string) ([]Restaurant.Restaurants, error)
 }
 
 type OrderApplication interface {
 	CreateOrder(id int, createOrder Order.CreateOrder) error
 	GetOrders(id int) (*Order.HistoryOrderArray, error)
+	GetActiveOrder(idClient int, idOrder int) (*Order.ActiveOrder, error)
+	UpdateStatusOrder(id int, status int) error
 }

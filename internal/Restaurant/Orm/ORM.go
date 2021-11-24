@@ -26,7 +26,7 @@ func (db *Wrapper) GetRestaurants() ([]Restaurant.Restaurants, error) {
 	defer tx.Rollback(contextTransaction)
 
 	row, err := tx.Query(contextTransaction,
-		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant ORDER BY random() LIMIT 50")
+		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant")
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.RGetRestaurantsRestaurantsNotSelect,
@@ -62,12 +62,12 @@ func (db *Wrapper) GetRestaurants() ([]Restaurant.Restaurants, error) {
 	return result, nil
 }
 
-func (db *Wrapper) GetGeneralInfoRestaurant(id int) (*Restaurant.RestaurantId, error) {
+func (db *Wrapper) GetRestaurant(id int) (*Restaurant.RestaurantId, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetGeneralInfoTransactionNotCreate,
+			Alias: errPkg.RGetRestaurantTransactionNotCreate,
 		}
 	}
 
@@ -80,14 +80,14 @@ func (db *Wrapper) GetGeneralInfoRestaurant(id int) (*Restaurant.RestaurantId, e
 		&restaurant.MaxDelivery, &restaurant.Rating)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetGeneralInfoRestaurantNotFound,
+			Alias: errPkg.RGetRestaurantRestaurantNotFound,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetGeneralInfoNotCommit,
+			Alias: errPkg.RGetRestaurantNotCommit,
 		}
 	}
 
@@ -296,7 +296,7 @@ func (db *Wrapper) GetRadios(dishesId int) ([]Restaurant.Radios, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRadiosNotCreate,
+			Alias: errPkg.RGetRadiosTransactionNotCreate,
 		}
 	}
 
@@ -359,7 +359,7 @@ func (db *Wrapper) GetReview(id int) ([]Restaurant.Review, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetReviewNotCreate,
+			Alias: errPkg.RGetReviewTransactionNotCreate,
 		}
 	}
 
@@ -389,6 +389,12 @@ func (db *Wrapper) GetReview(id int) ([]Restaurant.Review, error) {
 		result = append(result, review)
 	}
 
+	if result == nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetReviewEmpty,
+		}
+	}
+
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
@@ -404,7 +410,7 @@ func (db *Wrapper) CreateReview(id int, review Restaurant.NewReview) error {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.RCreateReviewNotCreate,
+			Alias: errPkg.RCreateReviewTransactionNotCreate,
 		}
 	}
 
@@ -427,4 +433,126 @@ func (db *Wrapper) CreateReview(id int, review Restaurant.NewReview) error {
 	}
 
 	return nil
+}
+
+func (db *Wrapper) SearchCategory(name string) ([]int, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RSearchCategoryTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	rows, err := tx.Query(contextTransaction,
+		"SELECT id FROM restaurant_category WHERE fts @@ to_tsquery($1)",
+		name)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RSearchCategoryNotSelect,
+		}
+	}
+
+	var result []int
+	for rows.Next() {
+		var restaurantId int
+		err := rows.Scan(&restaurantId)
+		if err != nil {
+			return nil, &errPkg.Errors{
+				Alias: errPkg.RSearchCategoryNotScan,
+			}
+		}
+		result = append(result, restaurantId)
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RSearchCategoryNotCommit,
+		}
+	}
+
+	return result, nil
+}
+
+func (db *Wrapper) SearchRestaurant(name string) ([]int, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RSearchRestaurantTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	rows, err := tx.Query(contextTransaction,
+		"SELECT id FROM restaurant WHERE fts @@ to_tsquery($1)",
+		name)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RSearchRestaurantNotSelect,
+		}
+	}
+
+	var result []int
+	for rows.Next() {
+		var restaurantId int
+		err := rows.Scan(&restaurantId)
+		if err != nil {
+			return nil, &errPkg.Errors{
+				Alias: errPkg.RSearchRestaurantNotScan,
+			}
+		}
+		result = append(result, restaurantId)
+	}
+
+	if result == nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RSearchRestaurantEmpty,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RSearchRestaurantNotCommit,
+		}
+	}
+
+	return result, nil
+}
+
+func (db *Wrapper) GetGeneralInfoRestaurant(id int) (*Restaurant.Restaurants, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetGeneralInfoTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	restaurant := Restaurant.Restaurants{}
+	err = tx.QueryRow(contextTransaction,
+		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant WHERE id = $1",
+		id).Scan(&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery,
+		&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetGeneralInfoNotScan,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetGeneralInfoNotCommit,
+		}
+	}
+
+	return &restaurant, nil
 }

@@ -57,7 +57,7 @@ INSERT INTO restaurant (owner, name, description, price_delivery, min_delivery_t
       (1, 'Loving Hut', 'description', 0, 15, 30, 'city', 'street', 'house', 100, 1, 1, 1),
       (1, 'Garden Fresh', 'description', 0, 15, 30, 'city', 'street', 'house', 100, 3.2, 1, 1),
       (1, 'Cafe Epi', 'description', 0, 15, 30, 'city', 'street', 'house', 100, 2.1, 1, 1),
-      (1, 'Tai Pan', 'description', 0, 15, 30, 'city', 'street', 'house', 100, 4.2, 1, 1)
+      (1, 'Макдоналдс', 'description', 0, 15, 30, 'city', 'street', 'house', 100, 4.2, 1, 1)
 ;
 
 UPDATE restaurant
@@ -73,7 +73,8 @@ SET
             'https://skidka-na-prazdnik.ru/wp-content/uploads/2020/06/xxl.jpg',
             'https://avatars.mds.yandex.net/get-zen_doc/1878571/pub_5d1f02fb24e56600ad2b65d5_5d1f036ff221ef00adfa7d8f/scale_1200'
                 ]
-        ) [floor(random() * 8 + 1)]
+        ) [floor(random() * 8 + 1)],
+    fts = to_tsvector(name)
 ;
 
 INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1', NOW(), '');
@@ -127,6 +128,9 @@ VALUES
 (1, 'Кафе', 0),
 (1, 'Поп-ап', 1)
 ;
+
+UPDATE restaurant_category
+    SET fts = to_tsvector(category);
 
 
 INSERT INTO address_user (client_id, alias, comment, city, street, house, floor, flat, porch, intercom, latitude, longitude)

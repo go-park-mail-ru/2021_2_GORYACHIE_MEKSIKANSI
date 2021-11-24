@@ -90,12 +90,14 @@ func runServer(port string) {
 	restaurantGroup.GET("/{idRes}/dish/{idDish}", restaurantInfo.RestaurantDishesHandler)
 	restaurantGroup.GET("/{idRes}", restaurantInfo.RestaurantIdHandler)
 	restaurantGroup.GET("/{idRes}/review", restaurantInfo.GetReviewHandler)
+	restaurantGroup.GET("/search", restaurantInfo.SearchRestaurantHandler)
 
 	cartGroup.GET("/", infoMid.GetIdClient(cartInfo.GetCartHandler))
 	cartGroup.PUT("/", infoMid.CheckClient(infoMid.GetIdClient(cartInfo.UpdateCartHandler)))
 
 	orderGroup.GET("/", infoMid.GetIdClient(orderInfo.GetOrdersHandler))
 	orderGroup.POST("/", infoMid.CheckClient(infoMid.GetIdClient(orderInfo.CreateOrderHandler)))
+	orderGroup.GET("/{idOrd}/active", infoMid.GetIdClient(orderInfo.GetOrderActiveHandler))
 
 	printURL := infoMid.LogURL(myRouter.Handler)
 

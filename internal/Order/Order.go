@@ -36,3 +36,13 @@ type ResponseCartOrder struct {
 	Dishes []Cart.DishesCartResponse `json:"dishes"`
 	Cost   Cart.CostCartResponse     `json:"cost"`
 }
+
+type ActiveOrder struct {
+	Id         int                        `json:"id"`
+	Status     int                        `json:"status"`
+	Date       string                     `json:"date"`
+	Time       string                     `json:"time"`
+	Address    Profile.AddressCoordinates `json:"address"`
+	Restaurant HistoryResOrder            `json:"restaurant"`
+	Cart       ResponseCartOrder          `json:"cart"`
+}

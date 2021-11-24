@@ -18,7 +18,7 @@ func (r *Restaurant) AllRestaurants() ([]restaurant.Restaurants, error) {
 }
 
 func (r *Restaurant) GetRestaurant(id int) (*restaurant.RestaurantId, error) {
-	restInfo, err := r.DB.GetGeneralInfoRestaurant(id)
+	restInfo, err := r.DB.GetRestaurant(id)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (r *Restaurant) GetReview(id int) (*restaurant.ResReview, error) {
 		return nil, err
 	}
 
-	restInfo, err := r.DB.GetGeneralInfoRestaurant(id)
+	restInfo, err := r.DB.GetRestaurant(id)
 	if err != nil {
 		return nil, err
 	}
@@ -83,4 +83,28 @@ func (r *Restaurant) GetReview(id int) (*restaurant.ResReview, error) {
 	review.Tags = tags
 	review.Reviews = reviewInfo
 	return &review, nil
+}
+
+func (r *Restaurant) SearchRestaurant(search string) ([]restaurant.Restaurants, error) {
+	result, err := r.DB.SearchCategory(search)
+	if err != nil {
+		return nil, err
+	}
+
+	if result == nil {
+		result, err = r.DB.SearchRestaurant(search)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	var searchResult []restaurant.Restaurants
+	for _, id := range result {
+		restaurantInfo, err := r.DB.GetGeneralInfoRestaurant(id)
+		if err != nil {
+			return nil, err
+		}
+		searchResult = append(searchResult, *restaurantInfo)
+	}
+	return searchResult, nil
 }
