@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/timestamp.proto";
+
+// Middleware
+message Defense {
+  google.protobuf.Timestamp date_life = 1;
+  string session_id = 2;
+  string  x_csrf_token = 3;
+}
+
+message CheckResponse {
+  bool valid = 1;
+  string Error = 2;  // TODO(): Уточнить у Миши насчет типа ошибок
+}
+
+message NewCSRFResponse {
+  string x_csrf_token = 1;
+  string Error = 2;
+}
+
+message IdClientResponse {
+  int64 id_client = 1;
+  string Error = 2;
+}
+
+//Authorization
+
+message Registration {
+  string type_user = 1;
+  string name = 2;
+  string email = 3;
+  string phone = 4;
+  string password = 5;
+}
+
+message RegistrationResponse {
+  Defense defense = 1;
+  string error = 2;
+}
+
+service Authorization {
+  rpc CheckAccessUser(Defense) returns (CheckResponse);
+  rpc NewCSRFUser(Defense) returns (NewCSRFResponse);
+  rpc GetIdByCookie(Defense) returns (IdClientResponse);
+}
