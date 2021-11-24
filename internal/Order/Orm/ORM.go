@@ -175,6 +175,11 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 				Alias: errPkg.OGetOrdersNotScan,
 			}
 		}
+		switch order.Status {
+		case 0: order.Status = 1
+		case 1, 2, 3: order.Status = 2
+		case 4: order.Status = 3
+		}
 
 		order.Date, order.Time = Util.FormatDate(date)
 
@@ -386,10 +391,6 @@ func (db *Wrapper) GetOrder(idClient int, idOrder int) (*Order.ActiveOrder, erro
 		order.Cart.Dishes = append(order.Cart.Dishes, dish)
 	}
 
-	if order.Status >= 3 {
-		order.Status = order.Status - 3
-	}
-
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
@@ -428,4 +429,38 @@ func (db *Wrapper) UpdateStatusOrder(id int, status int) error {
 	}
 
 	return nil
+}
+
+func (db *Wrapper) CheckRun(id int) (bool, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.OUpdateStatusOrderTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	var check bool
+	err = tx.QueryRow(contextTransaction,
+		"SELECT check_run FROM order_user WHERE id = $1",
+		id).Scan(&check)
+	_, err = tx.Exec(contextTransaction,
+		"UPDATE order_user SET check_run = false WHERE id = $1",
+		id)
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.OUpdateStatusOrderNotUpdate,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.OUpdateStatusOrderNotCommit,
+		}
+	}
+
+	return check, nil
 }

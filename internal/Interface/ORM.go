@@ -100,4 +100,5 @@ type WrapperOrder interface {
 	GetOrders(id int) (*Order.HistoryOrderArray, error)
 	GetOrder(idClient int, idOrder int) (*Order.ActiveOrder, error)
 	UpdateStatusOrder(id int, status int) error
+	CheckRun(id int) (bool, error)
 }

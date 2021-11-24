@@ -243,7 +243,8 @@ CREATE TABLE IF NOT EXISTS order_user (
     method_pay text NOT NULL,
     date_order timestamp DEFAULT NOW(),
     dCost int,
-    sumCost int
+    sumCost int,
+    check_run boolean DEFAULT true
 );
 
 CREATE TABLE IF NOT EXISTS order_list (
