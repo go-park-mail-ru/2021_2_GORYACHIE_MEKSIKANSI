@@ -176,9 +176,12 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 			}
 		}
 		switch order.Status {
-		case 0: order.Status = 1
-		case 1, 2, 3: order.Status = 2
-		case 4: order.Status = 3
+		case 0:
+			order.Status = 1
+		case 1, 2, 3:
+			order.Status = 2
+		case 4:
+			order.Status = 3
 		}
 
 		order.Date, order.Time = Util.FormatDate(date)

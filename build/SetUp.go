@@ -22,15 +22,11 @@ import (
 	Api6 "2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant/Api"
 	Application6 "2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant/Application"
 	Orm6 "2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant/Orm"
-	"context"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/spf13/viper"
-	"io/ioutil"
-	"strings"
 )
 
 const (
@@ -110,74 +106,6 @@ func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger
 	result = append(result, orderInfo)
 
 	return result
-}
-
-func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
-	var err error
-	conn, err := pgxpool.Connect(context.Background(),
-		"postgres://"+configDB.UserName+":"+configDB.Password+
-			"@"+configDB.Host+":"+configDB.Port+"/"+configDB.SchemaName)
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.MCreateDBNotConnect,
-		}
-	}
-
-	if debug {
-		file, err := ioutil.ReadFile("build/PostgreSQL/DeleteTables.sql")
-		if err != nil {
-			return nil, &errPkg.Errors{
-				Alias: errPkg.MCreateDBDeleteFileNotFound,
-			}
-		}
-
-		requests := strings.Split(string(file), ";")
-		for _, request := range requests {
-			_, err = conn.Exec(context.Background(), request)
-			if err != nil {
-				return nil, &errPkg.Errors{
-					Alias: errPkg.MCreateDBNotDeleteTables,
-				}
-			}
-		}
-	}
-
-	file, err := ioutil.ReadFile("build/PostgreSQL/CreateTables.sql")
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.MCreateDBCreateFileNotFound,
-		}
-	}
-
-	requests := strings.Split(string(file), ";")
-	for _, request := range requests {
-		_, err = conn.Exec(context.Background(), request)
-		if err != nil {
-			return nil, &errPkg.Errors{
-				Alias: errPkg.MCreateDBNotCreateTables,
-			}
-		}
-	}
-
-	if debug {
-		file, err := ioutil.ReadFile("build/PostgreSQL/Fill.sql")
-		if err != nil {
-			return nil, &errPkg.Errors{
-				Alias: errPkg.MCreateDBFillFileNotFound,
-			}
-		}
-
-		requests := strings.Split(string(file), ";")
-		for _, request := range requests {
-			_, err = conn.Exec(context.Background(), request)
-			if err != nil {
-				return nil, &errPkg.Errors{
-					Alias: errPkg.MCreateDBNotFillTables,
-				}
-			}
-		}
-	}
-	return conn, nil
 }
 
 func ConnectAws(config config.AwsBucket) (error, *session.Session) {

@@ -53,20 +53,20 @@ type DishesResponse struct {
 }
 
 type Dishes struct {
-	Id          int         `json:"id"`
-	Img         string      `json:"img"`
-	Title       string      `json:"name"`
-	Cost        int         `json:"cost"`
-	Ccal        int         `json:"ccal"`
-	Description string      `json:"desc"`
-	Radios      interface{} `json:"radios,omitempty"`
-	Ingredient  interface{} `json:"ingredients,omitempty"`
+	Id          int           `json:"id"`
+	Img         string        `json:"img"`
+	Title       string        `json:"name"`
+	Cost        int           `json:"cost"`
+	Ccal        int           `json:"ccal"`
+	Description string        `json:"desc"`
+	Radios      []Radios      `json:"radios,omitempty"`
+	Ingredient  []Ingredients `json:"ingredients,omitempty"`
 }
 
 type Radios struct {
-	Title string      `json:"name"`
-	Id    int         `json:"id"`
-	Rows  interface{} `json:"opt"`
+	Title string           `json:"name"`
+	Id    int              `json:"id"`
+	Rows  []CheckboxesRows `json:"opt"`
 }
 
 type CheckboxesRows struct {

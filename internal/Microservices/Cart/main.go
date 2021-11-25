@@ -2,9 +2,10 @@ package main
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
-	orm "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Authorization/Orm"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Authorization/application"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Authorization/proto"
+	ormCart "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Cart/Orm"
+	appCart "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Cart/application"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Cart/proto"
+	ormRes "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Restaurant/Orm"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/build"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
@@ -15,7 +16,7 @@ import (
 )
 
 const (
-	Port    = ":8081"
+	Port    = ":8082"
 	Network = "tcp"
 )
 
@@ -51,9 +52,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	authWrapper := orm.Wrapper{Conn: connectDB}
-	authorizationManager := Application.AuthorizationManager{DB: &authWrapper}
-	proto.RegisterAuthorizationServiceServer(server, &authorizationManager)
+	cartWrapper := ormCart.Wrapper{Conn: connectDB}
+	resWrapper := ormRes.Wrapper{Conn: connectDB}
+	cartManager := appCart.CartManager{
+		DB:    &cartWrapper,
+		DBRes: &resWrapper,
+	}
+	proto.RegisterCartServiceServer(server, &cartManager)
 
 	logger.Log.Infof("Listen in 127.0.0.1%s", Port)
 	errServ := server.Serve(listen)

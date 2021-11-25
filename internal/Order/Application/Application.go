@@ -99,7 +99,7 @@ func (o *Order) GetActiveOrder(idClient int, idOrder int) (*Order2.ActiveOrder, 
 	if err != nil {
 		return nil, err
 	}
-	check, _ :=o.DB.CheckRun(idOrder)
+	check, _ := o.DB.CheckRun(idOrder)
 	if check {
 		go o.UpdateStatusOrder(idOrder, 4)
 	}
