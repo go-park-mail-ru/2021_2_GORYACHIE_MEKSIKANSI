@@ -11,13 +11,14 @@ import (
 
 type Order struct {
 	DB           Interface.WrapperOrder
-	DBCart       Interface.WrapperCart
+	//DBCart       Interface.WrapperCart
 	DBProfile    Interface.WrapperProfile
-	DBRestaurant Interface.WrapperRestaurant
+	//DBRestaurant Interface.WrapperRestaurant
 }
 
 func (o *Order) CalculatePriceDelivery(id int) (int, error) {
-	return o.DBCart.GetPriceDelivery(id)
+	return 1, nil
+	//return o.DBCart.GetPriceDelivery(id)
 }
 
 func (o *Order) CalculateCost(result *Cart.ResponseCartErrors, rest *Restaurant.RestaurantId) (*Cart.CostCartResponse, error) {

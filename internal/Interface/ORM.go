@@ -3,6 +3,9 @@ package Interface
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Cart"
+	authProto "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Authorization/proto"
+	cartProto "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Cart/proto"
+	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Restaurant/proto"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Order"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Profile"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant"
@@ -11,6 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
+	"google.golang.org/grpc"
 )
 
 type ConnectionInterface interface {
@@ -36,6 +40,24 @@ type TransactionInterface interface {
 	Conn() *pgx.Conn
 }
 
+type ConnectRestaurantService interface {
+	AllRestaurants(ctx context.Context, in *resProto.Empty, opts ...grpc.CallOption) (*resProto.Restaurants, error)
+	GetRestaurant(ctx context.Context, in *resProto.RestaurantId, opts ...grpc.CallOption) (*resProto.RestaurantInfo, error)
+	RestaurantDishes(ctx context.Context, in *resProto.DishInfo, opts ...grpc.CallOption) (*resProto.Dishes, error)
+	CreateReview(ctx context.Context, in *resProto.NewReview, opts ...grpc.CallOption) (*resProto.Error, error)
+	GetReview(ctx context.Context, in *resProto.RestaurantId, opts ...grpc.CallOption) (*resProto.ResReview, error)
+	SearchRestaurant(ctx context.Context, in *resProto.SearchRestaurantText, opts ...grpc.CallOption) (*resProto.Restaurants, error)
+}
+
+type WrapperRestaurantServer interface {
+	AllRestaurants() ([]Restaurant.Restaurants, error)
+	GetRestaurant(id int) (*Restaurant.RestaurantId, error)
+	RestaurantDishes(restId int, dishId int) (*Restaurant.Dishes, error)
+	CreateReview(id int, review Restaurant.NewReview) error
+	GetReview(id int) (*Restaurant.ResReview, error)
+	SearchRestaurant(search string) ([]Restaurant.Restaurants, error)
+}
+
 type WrapperRestaurant interface {
 	GetRestaurants() ([]Restaurant.Restaurants, error)
 	GetStructDishes(dishesId int) ([]Restaurant.Ingredients, error)
@@ -50,6 +72,7 @@ type WrapperRestaurant interface {
 	SearchRestaurant(name string) ([]int, error)
 	GetGeneralInfoRestaurant(id int) (*Restaurant.Restaurants, error)
 }
+
 
 type WrapperProfile interface {
 	GetRoleById(id int) (string, error)
@@ -67,15 +90,42 @@ type WrapperProfile interface {
 	DeleteAddress(id int, addressId int) error
 }
 
+type ConnectAuthService interface {
+	CheckAccessUser(ctx context.Context, in *authProto.Defense, opts ...grpc.CallOption) (*authProto.CheckAccess, error)
+	NewCSRFUser(ctx context.Context, in *authProto.Defense, opts ...grpc.CallOption) (*authProto.CSRFResponse, error)
+	GetIdByCookie(ctx context.Context, in *authProto.Defense, opts ...grpc.CallOption) (*authProto.IdClientResponse, error)
+	SignUp(ctx context.Context, in *authProto.RegistrationRequest, opts ...grpc.CallOption) (*authProto.DefenseResponse, error)
+	Login(ctx context.Context, in *authProto.Authorization, opts ...grpc.CallOption) (*authProto.DefenseResponse, error)
+	Logout(ctx context.Context, in *authProto.CSRF, opts ...grpc.CallOption) (*authProto.CSRFResponse, error)
+}
+
 type WrapperAuthorization interface {
-	SignupClient(signup *Authorization.RegistrationRequest, cookie *Utils2.Defense) (*Utils2.Defense, error)
-	SignupCourier(signup *Authorization.RegistrationRequest, cookie *Utils2.Defense) (*Utils2.Defense, error)
-	SignupHost(signup *Authorization.RegistrationRequest, cookie *Utils2.Defense) (*Utils2.Defense, error)
-	LoginByEmail(email string, password string) (int, error)
-	LoginByPhone(phone string, password string) (int, error)
-	DeleteCookie(CSRF string) (string, error)
-	NewDefense() *Utils2.Defense
-	AddCookie(cookie *Utils2.Defense, id int) error
+	SignUp(signup *Authorization.RegistrationRequest) (*Utils2.Defense, error)
+	Login(login *Authorization.Authorization) (*Utils2.Defense, error)
+	Logout(CSRF string) (string, error)
+	CheckAccess(cookie *Utils2.Defense) (bool, error)
+	NewCSRF(cookie *Utils2.Defense) (string, error)
+	GetIdByCookie(cookie *Utils2.Defense) (int, error)
+}
+
+type ConnectCartService interface {
+	CalculatePriceDelivery(ctx context.Context, in *cartProto.CalculatePriceDeliveryId, opts ...grpc.CallOption) (*cartProto.CalculatePriceDeliveryResponse, error)
+	GetCart(ctx context.Context, in *cartProto.CartId, opts ...grpc.CallOption) (*cartProto.ResponseCartErrors, error)
+	UpdateCart(ctx context.Context, in *cartProto.RequestCartDefault, opts ...grpc.CallOption) (*cartProto.ResponseCartErrors, error)
+	DeleteCart(ctx context.Context, in *cartProto.DeleteCartId, opts ...grpc.CallOption) (*cartProto.DeleteCartResponse, error)
+}
+
+type WrapperCartServer interface {
+	CalculatePriceDelivery(id int) (int, error)
+	GetCart(id int) (*Cart.ResponseCartErrors, error)
+	UpdateCart(dishes Cart.RequestCartDefault, clientId int) (*Cart.ResponseCartErrors, error)
+	DeleteCart(id int) error
+}
+
+type WrapperMiddleware interface {
+	CheckAccess(cookie *Utils2.Defense) (bool, error)
+	NewCSRF(cookie *Utils2.Defense) (string, error)
+	GetIdByCookie(cookie *Utils2.Defense) (int, error)
 }
 
 type WrapperCart interface {
@@ -83,12 +133,6 @@ type WrapperCart interface {
 	UpdateCart(dishes Cart.RequestCartDefault, clientId int) (*Cart.ResponseCartErrors, []Cart.CastDishesErrs, error)
 	DeleteCart(id int) error
 	GetPriceDelivery(id int) (int, error)
-}
-
-type WrapperMiddleware interface {
-	CheckAccess(cookie *Utils2.Defense) (bool, error)
-	NewCSRF(cookie *Utils2.Defense) (string, error)
-	GetIdByCookie(cookie *Utils2.Defense) (int, error)
 }
 
 type Uploader interface {
@@ -102,3 +146,5 @@ type WrapperOrder interface {
 	UpdateStatusOrder(id int, status int) error
 	CheckRun(id int) (bool, error)
 }
+
+

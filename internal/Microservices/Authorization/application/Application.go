@@ -14,6 +14,7 @@ type AuthorizationManager struct {
 }
 
 func (am *AuthorizationManager) CheckAccessUser(ctx context.Context, cookie *proto.Defense) (*proto.CheckAccess, error) {
+	// TODO: add convert func
 	status, err := am.DB.CheckAccess(cookie)
 	if err != nil {
 		return nil, err
@@ -22,6 +23,7 @@ func (am *AuthorizationManager) CheckAccessUser(ctx context.Context, cookie *pro
 }
 
 func (am *AuthorizationManager) NewCSRFUser(ctx context.Context, cookie *proto.Defense) (*proto.CSRFResponse, error) {
+	// TODO: add convert func
 	csrf, err := am.DB.NewCSRF(cookie)
 	if err != nil {
 		return nil, err
@@ -30,6 +32,7 @@ func (am *AuthorizationManager) NewCSRFUser(ctx context.Context, cookie *proto.D
 }
 
 func (am *AuthorizationManager) GetIdByCookie(ctx context.Context, cookie *proto.Defense) (*proto.IdClientResponse, error) {
+	// TODO: add convert func
 	byCookie, err := am.DB.GetIdByCookie(cookie)
 	if err != nil {
 		return nil, err
@@ -38,6 +41,7 @@ func (am *AuthorizationManager) GetIdByCookie(ctx context.Context, cookie *proto
 }
 
 func (am *AuthorizationManager) SignUp(ctx context.Context, signup *proto.RegistrationRequest) (*proto.DefenseResponse, error) {
+	// TODO: add convert func
 	var cookie *Util.Defense
 	var err error
 	newCookie := am.DB.NewDefense()
@@ -66,6 +70,7 @@ func (am *AuthorizationManager) SignUp(ctx context.Context, signup *proto.Regist
 }
 
 func (am *AuthorizationManager) Login(ctx context.Context, login *proto.Authorization) (*proto.DefenseResponse, error) {
+	// TODO: add convert func
 	var userId int
 	var err error
 	switch {
@@ -98,6 +103,7 @@ func (am *AuthorizationManager) Login(ctx context.Context, login *proto.Authoriz
 }
 
 func (am *AuthorizationManager) Logout(ctx context.Context, CSRF *proto.CSRF) (*proto.CSRFResponse, error) {
+	// TODO: add convert func
 	cookie, err := am.DB.DeleteCookie(CSRF.XCsrfToken)
 	if err != nil {
 		return nil, err

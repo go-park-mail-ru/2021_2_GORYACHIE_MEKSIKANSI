@@ -2,7 +2,7 @@ package application
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Restaurant/Interface"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Restaurant/proto"
+	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Restaurant/proto"
 	restaurant "2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant"
 	"context"
 )
@@ -12,6 +12,7 @@ type RestaurantManager struct {
 }
 
 func (rm *RestaurantManager) AllRestaurants(ctx context.Context, _ *resProto.Empty) (*resProto.Restaurants, error) {
+	// TODO: add convert func
 	var a resProto.Restaurants
 	result, err := rm.DB.GetRestaurants()
 	if err != nil {
@@ -30,6 +31,7 @@ func (rm *RestaurantManager) AllRestaurants(ctx context.Context, _ *resProto.Emp
 }
 
 func (rm *RestaurantManager) GetRestaurant(ctx context.Context, id *resProto.RestaurantId) (*resProto.RestaurantInfo, error) {
+	// TODO: add convert func
 	restInfo, err := rm.DB.GetRestaurant(int(id.Id))
 	if err != nil {
 		return nil, err
@@ -65,7 +67,7 @@ func (rm *RestaurantManager) GetRestaurant(ctx context.Context, id *resProto.Res
 		}
 	}
 	for _, m := range restInfo.Tags {
-		var c *resProto.Tag
+		var c *resProto.Tags
 		c.Name = m.Name
 		c.Id = int64(m.Id)
 		a.Tags = append(a.Tags, c)
@@ -74,6 +76,7 @@ func (rm *RestaurantManager) GetRestaurant(ctx context.Context, id *resProto.Res
 }
 
 func (rm *RestaurantManager) RestaurantDishes(ctx context.Context, id *resProto.DishInfo) (*resProto.Dishes, error) {
+	// TODO: add convert func
 	var c resProto.Dishes
 	dishes, err := rm.DB.GetDishes(int(id.RestaurantId), int(id.DishId))
 	if err != nil {
@@ -113,6 +116,7 @@ func (rm *RestaurantManager) RestaurantDishes(ctx context.Context, id *resProto.
 }
 
 func (rm *RestaurantManager) CreateReview(ctx context.Context, rev *resProto.NewReview) (*resProto.Error, error) {
+	// TODO: add convert func
 	var r restaurant.RestaurantId
 	r.Id = int(rev.Restaurant.Id)
 	err := rm.DB.CreateReview(int(rev.Id), restaurant.NewReview{Rate: int(rev.Rate),
@@ -124,6 +128,7 @@ func (rm *RestaurantManager) CreateReview(ctx context.Context, rev *resProto.New
 }
 
 func (rm *RestaurantManager) GetReview(ctx context.Context, id *resProto.RestaurantId) (*resProto.ResReview, error) {
+	// TODO: add convert func
 	var review restaurant.ResReview
 	reviewInfo, err := rm.DB.GetReview(int(id.Id))
 	if err != nil {
@@ -161,9 +166,9 @@ func (rm *RestaurantManager) GetReview(ctx context.Context, id *resProto.Restaur
 	}
 	end.Review = a
 
-	var b []*resProto.Tag
+	var b []*resProto.Tags
 	for _, r := range review.Tags {
-		var rev *resProto.Tag
+		var rev *resProto.Tags
 		rev.Id = int64(r.Id)
 		rev.Name = r.Name
 	}
@@ -177,6 +182,7 @@ func (rm *RestaurantManager) GetReview(ctx context.Context, id *resProto.Restaur
 }
 
 func (rm *RestaurantManager) SearchRestaurant(ctx context.Context, search *resProto.SearchRestaurantText) (*resProto.Restaurants, error) {
+	// TODO: add convert func
 	result, err := rm.DB.SearchCategory(search.Text)
 	if err != nil {
 		return nil, err

@@ -15,6 +15,7 @@ type CartManager struct {
 }
 
 func (cm *CartManager) CalculatePriceDelivery(ctx context.Context, id *proto.CalculatePriceDeliveryId) (*proto.CalculatePriceDeliveryResponse, error) {
+	// TODO: add convert func
 	delivery, err := cm.DB.GetPriceDelivery(int(id.Id))
 	if err != nil {
 		return nil, err
@@ -23,6 +24,7 @@ func (cm *CartManager) CalculatePriceDelivery(ctx context.Context, id *proto.Cal
 }
 
 func (cm *CartManager) CalculateCost(result *Cart2.ResponseCartErrors, rest *Utils2.RestaurantId) (*Cart2.CostCartResponse, error) {
+	// TODO: add convert func
 	var cost Cart2.CostCartResponse
 	sumCost := 0
 	for i, dish := range result.Dishes {
@@ -53,6 +55,7 @@ func (cm *CartManager) CalculateCost(result *Cart2.ResponseCartErrors, rest *Uti
 }
 
 func (cm *CartManager) GetCart(ctx context.Context, id *proto.CartId) (*proto.ResponseCartErrors, error) {
+	// TODO: add convert func
 	result, errorDishes, err := cm.DB.GetCart(int(id.Id))
 	if err != nil {
 		return nil, err
@@ -110,6 +113,7 @@ func (cm *CartManager) GetCart(ctx context.Context, id *proto.CartId) (*proto.Re
 }
 
 func (cm *CartManager) UpdateCart(ctx context.Context, id *proto.RequestCartDefault) (*proto.ResponseCartErrors, error) {
+	// TODO: add convert func
 	result, errorDishes, err := cm.DB.GetCart(int(id.ClientId))
 	if err != nil {
 		return nil, err
@@ -167,6 +171,7 @@ func (cm *CartManager) UpdateCart(ctx context.Context, id *proto.RequestCartDefa
 }
 
 func (cm *CartManager) DeleteCart(ctx context.Context, id *proto.DeleteCartId) (*proto.DeleteCartResponse, error) {
+	// TODO: add convert func
 	err := cm.DB.DeleteCart(int(id.Id))
 	if err != nil {
 		return nil, err

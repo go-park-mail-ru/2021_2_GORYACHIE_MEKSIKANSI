@@ -2,340 +2,101 @@ package Orm
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization/Application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
+	authProto "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Authorization/proto"
+	Utils2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"context"
-	"github.com/jackc/pgx/v4"
-	"strconv"
-	"strings"
-)
-
-const (
-	PhoneLen = 11
 )
 
 type Wrapper struct {
-	Conn Interface.ConnectionInterface
+	Conn Interface.ConnectAuthService
+	Ctx context.Context
 }
 
-func (db *Wrapper) NewDefense() *Util.Defense {
-	var tmp Util.Defense
-	return tmp.GenerateNew()
-}
-
-func (db *Wrapper) generalSignUp(signup *Authorization.RegistrationRequest, transaction Interface.TransactionInterface, contextTransaction context.Context) (int, error) {
-	var userId int
-
-	salt := Util.RandString(Application.LenSalt)
-
-	Util.Sanitize(signup.Phone)
-	if _, err := strconv.Atoi(signup.Phone); err != nil || len(signup.Phone) != PhoneLen {
-		return 0, &errPkg.Errors{
-			Alias: errPkg.AGeneralSignUpIncorrectPhoneFormat,
-		}
-	}
-
-	s := []rune(signup.Phone)
-	s[0] = '8'
-	phone := string(s)
-
-	err := transaction.QueryRow(contextTransaction,
-		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-		Util.Sanitize(signup.Name), Util.Sanitize(signup.Email),
-		phone, Util.HashPassword(signup.Password, salt), salt).Scan(&userId)
-
-	if err != nil {
-		errorText := err.Error()
-		if strings.Contains(errorText, "duplicate key") {
-			return 0, &errPkg.Errors{
-				Alias: errPkg.AGeneralSignUpLoginNotUnique,
-			}
-		}
-		return 0, &errPkg.Errors{
-			Alias: errPkg.AGeneralSignUpNotInsert,
-		}
-	}
-	return userId, nil
-}
-
-func (db *Wrapper) SignupHost(signup *Authorization.RegistrationRequest, cookie *Util.Defense) (*Util.Defense, error) {
-	contextTransaction := context.Background()
-	tx, err := db.Conn.Begin(contextTransaction)
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignupHostTransactionNotCreate,
-		}
-	}
-
-	defer tx.Rollback(contextTransaction)
-
-	userId, err := db.generalSignUp(signup, tx, contextTransaction)
+func (w *Wrapper) SignUp(signup *Authorization.RegistrationRequest) (*Utils2.Defense, error) {
+	// TODO: add convert func
+	var a authProto.RegistrationRequest
+	a.TypeUser = signup.TypeUser
+	a.Name = signup.Name
+	a.Phone = signup.Phone
+	a.Email = signup.Email
+	a.Password = signup.Password
+	result, err := w.Conn.SignUp(w.Ctx, &a)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.addTransactionCookie(cookie, tx, userId, contextTransaction)
+	var res Utils2.Defense
+	res.SessionId = result.Defense.SessionId
+	res.CsrfToken = result.Defense.XCsrfToken
+	//res.DateLife = result.Defense.DateLife
+	return &res, nil
+}
+
+func (w *Wrapper) Login(login *Authorization.Authorization) (*Utils2.Defense, error) {
+	// TODO: add convert func
+	var a authProto.Authorization
+	a.Phone = login.Phone
+	a.Email = login.Email
+	a.Password = login.Password
+	response, err := w.Conn.Login(w.Ctx, &a)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO host (client_id) VALUES ($1)", userId)
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignUpHostHostNotInsert,
-		}
-	}
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignUpHostNotCommit,
-		}
-	}
-	return cookie, nil
+	var cookie Utils2.Defense
+	cookie.SessionId = response.Defense.SessionId
+	cookie.CsrfToken = response.Defense.XCsrfToken
+	//cookie.DateLife = response.Defense.DateLife
+	return &cookie, nil
 }
 
-func (db *Wrapper) SignupCourier(signup *Authorization.RegistrationRequest, cookie *Util.Defense) (*Util.Defense, error) {
-	contextTransaction := context.Background()
-	tx, err := db.Conn.Begin(contextTransaction)
+func (w *Wrapper) Logout(CSRF string) (string, error) {
+	// TODO: add convert func
+	var csrfToken authProto.CSRF
+	csrfToken.XCsrfToken = CSRF
+	logout, err := w.Conn.Logout(w.Ctx, &csrfToken)
 	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignupCourierTransactionNotCreate,
-		}
+		return "", err
 	}
-
-	defer tx.Rollback(contextTransaction)
-
-	userId, err := db.generalSignUp(signup, tx, contextTransaction)
-	if err != nil {
-		return nil, err
-	}
-
-	err = db.addTransactionCookie(cookie, tx, userId, contextTransaction)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO courier (client_id) VALUES ($1)", userId, contextTransaction)
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignUpCourierCourierNotInsert,
-		}
-	}
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignUpCourierNotCommit,
-		}
-	}
-
-	return cookie, err
+	return logout.XCsrfToken.XCsrfToken, nil
 }
 
-func (db *Wrapper) SignupClient(signup *Authorization.RegistrationRequest, cookie *Util.Defense) (*Util.Defense, error) {
-	contextTransaction := context.Background()
-	tx, err := db.Conn.Begin(contextTransaction)
+func (w *Wrapper) CheckAccess(cookie *Utils2.Defense) (bool, error) {
+	// TODO: add convert func
+	var send authProto.Defense
+	//send.DateLife = cookie.DateLife
+	send.XCsrfToken = cookie.CsrfToken
+	send.SessionId = cookie.SessionId
+	user, err := w.Conn.CheckAccessUser(w.Ctx, &send)
 	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignupClientTransactionNotCreate,
-		}
+		return false, err
 	}
-
-	defer tx.Rollback(contextTransaction)
-
-	userId, err := db.generalSignUp(signup, tx, contextTransaction)
-	if err != nil {
-		return nil, err
-	}
-
-	err = db.addTransactionCookie(cookie, tx, userId, contextTransaction)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO client (client_id) VALUES ($1)", userId)
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignUpClientClientNotInsert,
-		}
-	}
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignUpClientNotCommit,
-		}
-	}
-
-	return cookie, nil
+	return user.CheckResult, nil
 }
 
-func (db *Wrapper) addTransactionCookie(cookie *Util.Defense, Transaction Interface.TransactionInterface, id int, contextTransaction context.Context) error {
-	_, err := Transaction.Exec(contextTransaction,
-		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
-		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
+func (w *Wrapper) NewCSRF(cookie *Utils2.Defense) (string, error){
+	// TODO: add convert func
+	var send authProto.Defense
+	//send.DateLife = cookie.DateLife
+	send.XCsrfToken = cookie.CsrfToken
+	send.SessionId = cookie.SessionId
+	user, err := w.Conn.NewCSRFUser(w.Ctx, &send)
 	if err != nil {
-		return &errPkg.Errors{
-			Alias: errPkg.AAddTransactionCookieNotInsert,
-		}
+		return "", err
 	}
-
-	return nil
+	return user.XCsrfToken.XCsrfToken, nil
 }
 
-func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
-	contextTransaction := context.Background()
-	tx, err := db.Conn.Begin(contextTransaction)
+func (w *Wrapper) GetIdByCookie(cookie *Utils2.Defense) (int, error){
+	// TODO: add convert func
+	var send authProto.Defense
+	//send.DateLife = cookie.DateLife
+	send.XCsrfToken = cookie.CsrfToken
+	send.SessionId = cookie.SessionId
+	byCookie, err := w.Conn.GetIdByCookie(w.Ctx, &send)
 	if err != nil {
-		return 0, &errPkg.Errors{
-			Alias: errPkg.ALoginByEmailTransactionNotCreate,
-		}
+		return 0, err
 	}
-
-	defer tx.Rollback(contextTransaction)
-
-	var userId int
-	var salt string
-
-	err = tx.QueryRow(contextTransaction,
-		"SELECT salt FROM general_user_info WHERE email = $1",
-		email).Scan(&salt)
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return 0, &errPkg.Errors{
-				Alias: errPkg.ALoginNotFound,
-			}
-		}
-		return 0, &errPkg.Errors{
-			Alias: errPkg.ASaltNotSelect,
-		}
-	}
-
-	err = tx.QueryRow(contextTransaction,
-		"SELECT id FROM general_user_info WHERE email = $1 AND password = $2",
-		email, Util.HashPassword(password, salt)).Scan(&userId)
-	if err != nil {
-		return 0, &errPkg.Errors{
-			Alias: errPkg.ALoginOrPasswordIncorrect,
-		}
-	}
-
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return 0, &errPkg.Errors{
-			Alias: errPkg.ALoginByEmailNotCommit,
-		}
-	}
-
-	return userId, nil
-}
-
-func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
-	contextTransaction := context.Background()
-	tx, err := db.Conn.Begin(contextTransaction)
-	if err != nil {
-		return 0, &errPkg.Errors{
-			Alias: errPkg.ALoginByPhoneTransactionNotCreate,
-		}
-	}
-
-	defer tx.Rollback(contextTransaction)
-
-	var userId int
-	var salt string
-
-	err = tx.QueryRow(contextTransaction,
-		"SELECT salt FROM general_user_info WHERE phone = $1",
-		phone).Scan(&salt)
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return 0, &errPkg.Errors{
-				Alias: errPkg.ALoginNotFound,
-			}
-		}
-		return 0, &errPkg.Errors{
-			Alias: errPkg.ASaltNotSelect,
-		}
-	}
-
-	err = tx.QueryRow(contextTransaction,
-		"SELECT id FROM general_user_info WHERE phone = $1 AND password = $2",
-		phone, Util.HashPassword(password, salt)).Scan(&userId)
-	if err != nil {
-		return 0, &errPkg.Errors{
-			Alias: errPkg.ALoginOrPasswordIncorrect,
-		}
-	}
-
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return 0, &errPkg.Errors{
-			Alias: errPkg.ALoginByPhoneNotCommit,
-		}
-	}
-
-	return userId, nil
-}
-
-func (db *Wrapper) DeleteCookie(CSRF string) (string, error) {
-	contextTransaction := context.Background()
-	tx, err := db.Conn.Begin(contextTransaction)
-	if err != nil {
-		return "", &errPkg.Errors{
-			Alias: errPkg.ADeleteCookieTransactionNotCreate,
-		}
-	}
-
-	defer tx.Rollback(contextTransaction)
-
-	var sessionId *string
-	err = tx.QueryRow(contextTransaction,
-		"DELETE FROM cookie WHERE csrf_token = $1 RETURNING session_id", CSRF).Scan(&sessionId)
-
-	if err != nil {
-		return "", &errPkg.Errors{
-			Alias: errPkg.ADeleteCookieCookieNotDelete,
-		}
-	}
-
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return "", &errPkg.Errors{
-			Alias: errPkg.ADeleteCookieNotCommit,
-		}
-	}
-	return *sessionId, nil
-}
-
-func (db *Wrapper) AddCookie(cookie *Util.Defense, id int) error {
-	contextTransaction := context.Background()
-	tx, err := db.Conn.Begin(contextTransaction)
-	if err != nil {
-		return &errPkg.Errors{
-			Alias: errPkg.AAddCookieTransactionNotCreate,
-		}
-	}
-
-	defer tx.Rollback(contextTransaction)
-
-	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
-		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
-	if err != nil {
-		return &errPkg.Errors{
-			Alias: errPkg.AAddCookieCookieNotInsert,
-		}
-	}
-
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return &errPkg.Errors{
-			Alias: errPkg.AAddCookieNotCommit,
-		}
-	}
-
-	return nil
+	return int(byCookie.IdUser), nil
 }

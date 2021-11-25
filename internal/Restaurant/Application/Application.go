@@ -6,55 +6,19 @@ import (
 )
 
 type Restaurant struct {
-	DB Interface.WrapperRestaurant
+	DB Interface.WrapperRestaurantServer
 }
 
 func (r *Restaurant) AllRestaurants() ([]restaurant.Restaurants, error) {
-	result, err := r.DB.GetRestaurants()
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
+	return r.DB.AllRestaurants()
 }
 
 func (r *Restaurant) GetRestaurant(id int) (*restaurant.RestaurantId, error) {
-	restInfo, err := r.DB.GetRestaurant(id)
-	if err != nil {
-		return nil, err
-	}
-
-	tags, err := r.DB.GetTagsRestaurant(id)
-	if err != nil {
-		return nil, err
-	}
-
-	dishes, err := r.DB.GetMenu(id)
-	if err != nil {
-		return nil, err
-	}
-
-	restInfo.Menu = dishes
-	restInfo.Tags = tags
-	return restInfo, nil
+	return r.DB.GetRestaurant(id)
 }
 
 func (r *Restaurant) RestaurantDishes(restId int, dishId int) (*restaurant.Dishes, error) {
-	dishes, err := r.DB.GetDishes(restId, dishId)
-	if err != nil {
-		return nil, err
-	}
-
-	dishes.Ingredient, err = r.DB.GetStructDishes(dishId)
-	if err != nil {
-		return nil, err
-	}
-
-	dishes.Radios, err = r.DB.GetRadios(dishId)
-	if err != nil {
-		return nil, err
-	}
-
-	return dishes, nil
+	return r.DB.RestaurantDishes(restId, dishId)
 }
 
 func (r *Restaurant) CreateReview(id int, review restaurant.NewReview) error {
@@ -62,49 +26,9 @@ func (r *Restaurant) CreateReview(id int, review restaurant.NewReview) error {
 }
 
 func (r *Restaurant) GetReview(id int) (*restaurant.ResReview, error) {
-	var review restaurant.ResReview
-	reviewInfo, err := r.DB.GetReview(id)
-	if err != nil {
-		return nil, err
-	}
-
-	restInfo, err := r.DB.GetRestaurant(id)
-	if err != nil {
-		return nil, err
-	}
-
-	tags, err := r.DB.GetTagsRestaurant(id)
-	if err != nil {
-		return nil, err
-	}
-	restInfo.Tags = tags
-
-	review.CastFromRestaurantId(*restInfo)
-	review.Tags = tags
-	review.Reviews = reviewInfo
-	return &review, nil
+	return r.DB.GetReview(id)
 }
 
 func (r *Restaurant) SearchRestaurant(search string) ([]restaurant.Restaurants, error) {
-	result, err := r.DB.SearchCategory(search)
-	if err != nil {
-		return nil, err
-	}
-
-	if result == nil {
-		result, err = r.DB.SearchRestaurant(search)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	var searchResult []restaurant.Restaurants
-	for _, id := range result {
-		restaurantInfo, err := r.DB.GetGeneralInfoRestaurant(id)
-		if err != nil {
-			return nil, err
-		}
-		searchResult = append(searchResult, *restaurantInfo)
-	}
-	return searchResult, nil
+	return r.DB.SearchRestaurant(search)
 }
