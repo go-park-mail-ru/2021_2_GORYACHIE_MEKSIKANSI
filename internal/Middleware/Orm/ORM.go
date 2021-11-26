@@ -4,130 +4,45 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util/Cast"
+
 	"context"
-	"github.com/jackc/pgx/v4"
-	"strings"
-	"time"
 )
 
 type Wrapper struct {
-	Conn Interface.ConnectionInterface
+	Conn Interface.ConnectionMiddleware
+	Ctx  context.Context
 }
 
-func (db *Wrapper) CheckAccess(cookie *Util.Defense) (bool, error) {
-	contextTransaction := context.Background()
-	tx, err := db.Conn.Begin(contextTransaction)
+func (w *Wrapper) CheckAccess(cookie *Util.Defense) (bool, error) {
+	user, err := w.Conn.CheckAccessUser(w.Ctx, cast.CastDefenseToDefenseProto(cookie))
 	if err != nil {
-		return false, &errPkg.Errors{
-			Alias: errPkg.MCheckAccessTransactionNotCreate,
-		}
+		return false, err
 	}
-
-	defer tx.Rollback(contextTransaction)
-
-	var timeLiveCookie time.Time
-	var id int
-	err = tx.QueryRow(contextTransaction,
-		"SELECT client_id, date_life FROM cookie WHERE session_id = $1 AND csrf_token = $2",
-		cookie.SessionId, cookie.CsrfToken).Scan(&id, &timeLiveCookie)
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return false, &errPkg.Errors{
-				Alias: errPkg.MCheckAccessCookieNotFound,
-			}
-		}
-		return false, &errPkg.Errors{
-			Alias: errPkg.MCheckAccessCookieNotScan,
-		}
+	if user.Error != "" {
+		return false, &errPkg.Errors{Alias: user.Error}
 	}
-
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return false, &errPkg.Errors{
-			Alias: errPkg.MCheckAccessNotCommit,
-		}
-	}
-
-	if time.Now().Before(timeLiveCookie) {
-		return true, nil
-	}
-
-	return false, nil
+	return user.CheckResult, nil
 }
 
-func (db *Wrapper) NewCSRF(cookie *Util.Defense) (string, error) {
-	contextTransaction := context.Background()
-	tx, err := db.Conn.Begin(contextTransaction)
+func (w *Wrapper) NewCSRF(cookie *Util.Defense) (string, error) {
+	user, err := w.Conn.NewCSRFUser(w.Ctx, cast.CastDefenseToDefenseProto(cookie))
 	if err != nil {
-		return "", &errPkg.Errors{
-			Alias: errPkg.MNewCSRFCSRFTransactionNotCreate,
-		}
+		return "", err
 	}
-
-	defer tx.Rollback(contextTransaction)
-
-	csrfToken := Util.RandString(5)
-	_, err = tx.Exec(contextTransaction,
-		"UPDATE cookie SET csrf_token = $1 WHERE session_id = $2",
-		csrfToken, cookie.SessionId)
-	if err != nil {
-		return "", &errPkg.Errors{
-			Alias: errPkg.MNewCSRFCSRFNotUpdate,
-		}
+	if user.Error != "" {
+		return "", &errPkg.Errors{Alias: user.Error}
 	}
-
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return "", &errPkg.Errors{
-			Alias: errPkg.MNewCSRFCSRFNotCommit,
-		}
-	}
-
-	return csrfToken, nil
+	return user.XCsrfToken.XCsrfToken, nil
 }
 
-func (db *Wrapper) GetIdByCookie(cookie *Util.Defense) (int, error) {
-	contextTransaction := context.Background()
-	tx, err := db.Conn.Begin(contextTransaction)
+func (w *Wrapper) GetIdByCookie(cookie *Util.Defense) (int, error) {
+	byCookie, err := w.Conn.GetIdByCookie(w.Ctx, cast.CastDefenseToDefenseProto(cookie))
 	if err != nil {
-		return 0, &errPkg.Errors{
-			Alias: errPkg.MGetIdByCookieTransactionNotCreate,
-		}
+		return 0, err
 	}
-
-	defer tx.Rollback(contextTransaction)
-
-	var timeLiveCookie time.Time
-	var id int
-	err = db.Conn.QueryRow(contextTransaction,
-		"SELECT client_id, date_life FROM cookie WHERE session_id = $1",
-		cookie.SessionId).Scan(&id, &timeLiveCookie)
-	if err != nil {
-		errorText := err.Error()
-		if strings.Contains(errorText, "no rows") {
-			return 0, &errPkg.Errors{
-				Alias: errPkg.MGetIdByCookieCookieNotFound,
-			}
-		}
-		return 0, &errPkg.Errors{
-			Alias: errPkg.MGetIdByCookieCookieNotScan,
-		}
+	if byCookie.Error != "" {
+		return 0, &errPkg.Errors{Alias: byCookie.Error}
 	}
-
-	realTime := time.Now()
-
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return 0, &errPkg.Errors{
-			Alias: errPkg.MGetIdByCookieNotCommit,
-		}
-	}
-
-	if realTime.Before(timeLiveCookie) {
-		return id, nil
-	}
-
-	return 0, &errPkg.Errors{
-		Alias: errPkg.MGetIdByCookieCookieExpired,
-	}
+	return int(byCookie.IdUser), nil
 }

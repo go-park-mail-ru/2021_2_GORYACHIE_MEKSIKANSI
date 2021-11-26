@@ -116,6 +116,7 @@ message ResReview {
   float rating = 7;
   repeated Review review = 8;
   repeated Tags tags = 9;
+  string error = 10;
 }
 
 

@@ -7,9 +7,9 @@ import (
 )
 
 type Order struct {
-	DB           Interface.WrapperOrder
+	DB Interface.WrapperOrder
 	//DBCart       Interface.WrapperCartOld
-	DBProfile    Interface.WrapperProfile
+	DBProfile Interface.WrapperProfile
 	//DBRestaurant Interface.WrapperRestaurant
 }
 
@@ -32,7 +32,6 @@ func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) error {
 	}
 
 	courierId := 1
-
 
 	addressId, err := o.DBProfile.AddAddress(id, createOrder.Address)
 	if err != nil {

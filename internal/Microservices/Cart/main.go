@@ -54,7 +54,7 @@ func main() {
 
 	cartWrapper := ormCart.Wrapper{Conn: connectDB}
 	cartApp := appCart.Cart{
-		DB:    &cartWrapper,
+		DB: &cartWrapper,
 	}
 	cartManager := Service.CartManager{Application: &cartApp}
 	proto.RegisterCartServiceServer(server, &cartManager)

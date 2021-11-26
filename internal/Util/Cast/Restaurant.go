@@ -21,6 +21,7 @@ func CastTagsToTagsProto(tags []restaurant.Tag) []*resProto.Tags {
 	var p []*resProto.Tags
 	for _, tag := range tags {
 		var rev *resProto.Tags
+		rev = &resProto.Tags{}
 		rev.Id = int64(tag.Id)
 		rev.Name = tag.Name
 		p = append(p, rev)
@@ -37,6 +38,7 @@ func CastResReviewToResReviewProto(review *restaurant.ResReview) *resProto.ResRe
 	var protoReview []*resProto.Review
 	for _, r := range review.Reviews {
 		var rev *resProto.Review
+		rev = &resProto.Review{}
 		rev.Time = r.Time
 		rev.Text = r.Text
 		rev.Name = r.Name
@@ -59,10 +61,12 @@ func CastRadiosToRadiosProto(radios []restaurant.Radios) []*resProto.Radios {
 	var p []*resProto.Radios
 	for _, i := range radios {
 		var protoRadios *resProto.Radios
+		protoRadios = &resProto.Radios{}
 		protoRadios.Id = int64(i.Id)
 		protoRadios.Name = i.Title
 		for _, element := range i.Rows {
 			var protoRadiosElement *resProto.CheckboxesRows
+			protoRadiosElement = &resProto.CheckboxesRows{}
 			protoRadiosElement.Id = int64(element.Id)
 			protoRadiosElement.Name = element.Name
 			protoRadios.Rows = append(protoRadios.Rows, protoRadiosElement)
@@ -76,6 +80,7 @@ func CastIngredientsToIngredientsProto(ingredients []restaurant.Ingredients) []*
 	var p []*resProto.Ingredients
 	for _, i := range ingredients {
 		var ingredient *resProto.Ingredients
+		ingredient = &resProto.Ingredients{}
 		ingredient.Cost = int64(i.Cost)
 		ingredient.Id = int64(i.Id)
 		ingredient.Name = i.Title
@@ -97,9 +102,11 @@ func CastMenuToMenuProto(menu []restaurant.Menu) []*resProto.Menu {
 	var p []*resProto.Menu
 	for i, m := range menu {
 		var protoMenu *resProto.Menu
+		protoMenu = &resProto.Menu{}
 		protoMenu.Name = m.Name
 		for _, me := range menu[i].DishesMenu {
 			var elementMenu *resProto.DishesMenu
+			elementMenu = &resProto.DishesMenu{}
 			elementMenu.Id = int64(me.Id)
 			elementMenu.Ccal = int64(me.Kilocalorie)
 			elementMenu.Cost = int64(me.Cost)
@@ -114,9 +121,11 @@ func CastMenuToMenuProto(menu []restaurant.Menu) []*resProto.Menu {
 
 func CastRestaurantsToRestaurantsProto(restaurants []restaurant.Restaurants) *resProto.Restaurants {
 	var p *resProto.Restaurants
+	p = &resProto.Restaurants{}
 	var protoRestaurants []*resProto.Restaurant
 	for _, restaurant := range restaurants {
 		var res *resProto.Restaurant
+		res = &resProto.Restaurant{}
 		res.Id = int64(restaurant.Id)
 		res.Img = restaurant.Img
 		res.MaxDelivery = int64(restaurant.MaxDelivery)
@@ -164,6 +173,8 @@ func CastRestaurantsProtoToRestaurants(restaurants []*resProto.Restaurant) []res
 
 func CastRestaurantInfoToRestaurantIdProto(restInfo *resProto.RestaurantInfo) *restaurant.RestaurantId {
 	var p *restaurant.RestaurantId
+	p = &restaurant.RestaurantId{}
+	p.Id = int(restInfo.Id)
 	p.Name = restInfo.Name
 	p.Img = restInfo.Img
 	p.Rating = restInfo.Rating
@@ -217,7 +228,6 @@ func CastDishesProtoToDishes(d *resProto.Dishes) *restaurant.Dishes {
 	return &r
 }
 
-
 func CastRadiosProtoToRadios(radios []*resProto.Radios) []restaurant.Radios {
 	var p []restaurant.Radios
 	for _, i := range radios {
@@ -247,9 +257,9 @@ func CastIngredientsProtoToIngredients(ingredients []*resProto.Ingredients) []re
 	return p
 }
 
-
 func CastNewReviewToNewReviewProto(review restaurant.NewReview, id int) *resProto.NewReview {
 	var p *resProto.NewReview
+	p = &resProto.NewReview{}
 	p.Text = review.Text
 	p.Rate = int64(review.Rate)
 	p.Id = int64(id)
@@ -259,6 +269,8 @@ func CastNewReviewToNewReviewProto(review restaurant.NewReview, id int) *resProt
 
 func CastRestaurantIdToRestaurantInfoProto(restInfo *restaurant.RestaurantId) *resProto.RestaurantInfo {
 	var p *resProto.RestaurantInfo
+	p = &resProto.RestaurantInfo{}
+	p.Id = int64(restInfo.Id)
 	p.Name = restInfo.Name
 	p.Img = restInfo.Img
 	p.Rating = restInfo.Rating
@@ -297,4 +309,3 @@ func CastResReviewProtoToResReview(review *resProto.ResReview) *restaurant.ResRe
 	resReview.Img = review.Img
 	return &resReview
 }
-

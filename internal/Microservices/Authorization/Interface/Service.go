@@ -1,7 +1,8 @@
 package Interface
-import(
-	"context"
+
+import (
 	authProto "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Authorization/proto"
+	"context"
 )
 
 type AuthorizationService interface {

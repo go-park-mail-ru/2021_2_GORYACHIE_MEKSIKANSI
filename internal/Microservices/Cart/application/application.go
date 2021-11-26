@@ -7,7 +7,7 @@ import (
 )
 
 type Cart struct {
-	DB    Interface.WrapperCart
+	DB Interface.WrapperCart
 }
 
 func (c *Cart) CalculatePriceDelivery(id int) (int, error) {

@@ -48,12 +48,11 @@ func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger
 	grpcConnAuth, errDial := grpc.Dial(
 		"127.0.0.1:8081",
 		grpc.WithInsecure(),
-		)
+	)
 	if errDial != nil {
 		println("GG")
 		return nil
 	}
-	defer grpcConnAuth.Close()
 
 	authManager := authProto.NewAuthorizationServiceClient(grpcConnAuth)
 
@@ -79,7 +78,7 @@ func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger
 	}
 	var _ Interface.ProfileAPI = &profileInfo
 
-	midWrapper := Orm3.Wrapper{Conn: connectionDB}
+	midWrapper := Orm3.Wrapper{Conn: authManager, Ctx: authCtx}
 	midApp := Application3.Middleware{DB: &midWrapper}
 	infoMiddleware := Api3.InfoMiddleware{
 		Application: &midApp,
@@ -88,14 +87,13 @@ func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger
 	var _ Interface.MiddlewareAPI = &infoMiddleware
 
 	grpcConnRes, errDial := grpc.Dial(
-		"127.0.0.1:8081",
+		"127.0.0.1:8084",
 		grpc.WithInsecure(),
 	)
 	if errDial != nil {
 		println("GG")
 		return nil
 	}
-	defer grpcConnRes.Close()
 
 	resManager := resPoroto.NewRestaurantServiceClient(grpcConnRes)
 
@@ -117,12 +115,10 @@ func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger
 		println("GG")
 		return nil
 	}
-	defer grpcConnCart.Close()
 
 	cartManager := cartProto.NewCartServiceClient(grpcConnCart)
 
 	cartCtx := context.Background()
-
 
 	cartWrapper := Orm2.Wrapper{Conn: cartManager, Ctx: cartCtx}
 	cartApp := Application2.Cart{DB: &cartWrapper}
@@ -136,9 +132,9 @@ func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger
 
 	orderWrapper := Orm4.Wrapper{Conn: connectionDB, ConnService: cartManager, Ctx: cartCtx}
 	orderApp := Application4.Order{
-		DB:           &orderWrapper,
+		DB: &orderWrapper,
 		//DBCart:       &cartWrapperOld,
-		DBProfile:    &profileWrapper,
+		DBProfile: &profileWrapper,
 		//DBRestaurant: &restWrapper,
 	}
 	orderInfo := Api4.InfoOrder{

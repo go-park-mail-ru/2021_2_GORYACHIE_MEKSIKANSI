@@ -32,9 +32,42 @@ func CastRequestCartDefaultProtoToRequestCartDefault(cart *proto.RequestCartDefa
 	return &protoCart
 }
 
+func CastRequestCartDefaultToRequestCartDefaultProto(cart *Cart2.RequestCartDefault) *proto.RequestCartDefault {
+	var protoCart proto.RequestCartDefault
+	protoCart.Restaurant = &proto.RestaurantRequest{}
+	protoCart.Restaurant.Id = int64(cart.Restaurant.Id)
+
+	var dishes []*proto.DishesRequest
+	for i, dish := range cart.Dishes {
+		var newDish *proto.DishesRequest
+		newDish = &proto.DishesRequest{}
+		newDish.Id = int64(dish.Id)
+		newDish.ItemNumber = int64(dish.ItemNumber)
+		newDish.Count = int64(dish.Count)
+		for _, id := range cart.Dishes[i].Ingredients {
+			var ingredient *proto.IngredientsCartRequest
+			ingredient = &proto.IngredientsCartRequest{}
+			ingredient.Id = int64(id.Id)
+			newDish.Ingredients = append(newDish.Ingredients, ingredient)
+		}
+		for _, id := range cart.Dishes[i].Radios {
+			var radios *proto.RadiosCartRequest
+			radios = &proto.RadiosCartRequest{}
+			radios.Id = int64(id.Id)
+			radios.RadiosId = int64(id.RadiosId)
+			newDish.Radios = append(newDish.Radios, radios)
+		}
+		dishes = append(dishes, newDish)
+	}
+	protoCart.Dishes = dishes
+	return &protoCart
+}
+
 func CastResponseCartErrorsToResponseCartErrorsProto(result *Cart2.ResponseCartErrors) *proto.ResponseCartErrors {
 	var end *proto.ResponseCartErrors
-	dishes := &proto.DishesCartResponse{}
+	end = &proto.ResponseCartErrors{}
+	end.Restaurant = &proto.RestaurantIdCastResponse{}
+	end.Cost = &proto.CostCartResponse{}
 	end.Cost.DeliveryCost = int64(result.Cost.DCost)
 	end.Cost.SumCost = int64(result.Cost.SumCost)
 	end.Restaurant.Id = int64(result.Restaurant.Id)
@@ -45,6 +78,7 @@ func CastResponseCartErrorsToResponseCartErrorsProto(result *Cart2.ResponseCartE
 	end.Restaurant.Rating = result.Restaurant.Rating
 	end.Restaurant.CostForFreeDelivery = int64(result.Restaurant.CostForFreeDelivery)
 	for _, dish := range result.Dishes {
+		dishes := &proto.DishesCartResponse{}
 		var ingredient []*proto.IngredientCartResponse
 		var radios []*proto.RadiosCartResponse
 		for _, ing := range dish.IngredientCart {
@@ -69,6 +103,7 @@ func CastResponseCartErrorsToResponseCartErrorsProto(result *Cart2.ResponseCartE
 	}
 	for _, errDish := range result.DishErr {
 		var dish *proto.CastDishesErrs
+		dish = &proto.CastDishesErrs{}
 		dish.NameDish = errDish.NameDish
 		dish.ItemNumber = int64(errDish.ItemNumber)
 		dish.CountAvail = int64(errDish.CountAvail)
@@ -78,6 +113,7 @@ func CastResponseCartErrorsToResponseCartErrorsProto(result *Cart2.ResponseCartE
 
 func CastResponseCartErrorsProtoToResponseCartErrors(result *proto.ResponseCartErrors) *Cart2.ResponseCartErrors {
 	var end *Cart2.ResponseCartErrors
+	end = &Cart2.ResponseCartErrors{}
 	end.Cost.DCost = int(result.Cost.DeliveryCost)
 	end.Cost.SumCost = int(result.Cost.SumCost)
 	end.Restaurant.Id = int(result.Restaurant.Id)
@@ -119,4 +155,3 @@ func CastResponseCartErrorsProtoToResponseCartErrors(result *proto.ResponseCartE
 	}
 	return end
 }
-

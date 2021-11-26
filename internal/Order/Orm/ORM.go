@@ -16,8 +16,8 @@ import (
 
 type Wrapper struct {
 	ConnService Interface.ConnectCartService
-	Ctx context.Context
-	Conn Interface.ConnectionInterface
+	Ctx         context.Context
+	Conn        Interface.ConnectionInterface
 }
 
 func (db *Wrapper) CreateOrder(id int, createOrder Order.CreateOrder, addressId int, cart Cart.ResponseCartErrors, courierId int) error {
@@ -475,10 +475,11 @@ func (db *Wrapper) CheckRun(id int) (bool, error) {
 
 func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, error) {
 	var cartId *cartProto.CartId
+	cartId = &cartProto.CartId{}
 	cartId.Id = int64(id)
 	receivedCart, err := db.ConnService.GetCart(db.Ctx, cartId)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	cart := cast.CastResponseCartErrorsProtoToResponseCartErrors(receivedCart)
 

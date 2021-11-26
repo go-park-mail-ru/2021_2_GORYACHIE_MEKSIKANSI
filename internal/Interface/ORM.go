@@ -73,7 +73,6 @@ type WrapperRestaurant interface {
 	GetGeneralInfoRestaurant(id int) (*Restaurant.Restaurants, error)
 }
 
-
 type WrapperProfile interface {
 	GetRoleById(id int) (string, error)
 	GetProfileClient(id int) (*Profile.Profile, error)
@@ -91,9 +90,6 @@ type WrapperProfile interface {
 }
 
 type ConnectAuthService interface {
-	CheckAccessUser(ctx context.Context, in *authProto.Defense, opts ...grpc.CallOption) (*authProto.CheckAccess, error)
-	NewCSRFUser(ctx context.Context, in *authProto.Defense, opts ...grpc.CallOption) (*authProto.CSRFResponse, error)
-	GetIdByCookie(ctx context.Context, in *authProto.Defense, opts ...grpc.CallOption) (*authProto.IdClientResponse, error)
 	SignUp(ctx context.Context, in *authProto.RegistrationRequest, opts ...grpc.CallOption) (*authProto.DefenseResponse, error)
 	Login(ctx context.Context, in *authProto.Authorization, opts ...grpc.CallOption) (*authProto.DefenseResponse, error)
 	Logout(ctx context.Context, in *authProto.CSRF, opts ...grpc.CallOption) (*authProto.CSRFResponse, error)
@@ -103,9 +99,6 @@ type WrapperAuthorization interface {
 	SignUp(signup *Authorization.RegistrationRequest) (*Utils2.Defense, error)
 	Login(login *Authorization.Authorization) (*Utils2.Defense, error)
 	Logout(CSRF string) (string, error)
-	CheckAccess(cookie *Utils2.Defense) (bool, error)
-	NewCSRF(cookie *Utils2.Defense) (string, error)
-	GetIdByCookie(cookie *Utils2.Defense) (int, error)
 }
 
 type ConnectCartService interface {
@@ -119,7 +112,9 @@ type WrapperCartServer interface {
 }
 
 type ConnectionMiddleware interface {
-
+	CheckAccessUser(ctx context.Context, in *authProto.Defense, opts ...grpc.CallOption) (*authProto.CheckAccess, error)
+	NewCSRFUser(ctx context.Context, in *authProto.Defense, opts ...grpc.CallOption) (*authProto.CSRFResponse, error)
+	GetIdByCookie(ctx context.Context, in *authProto.Defense, opts ...grpc.CallOption) (*authProto.IdClientResponse, error)
 }
 
 type WrapperMiddleware interface {
@@ -149,5 +144,3 @@ type WrapperOrder interface {
 	GetCart(id int) (*Cart.ResponseCartErrors, error)
 	GetRestaurant(id int) (*Restaurant.RestaurantId, error)
 }
-
-

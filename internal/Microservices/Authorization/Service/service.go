@@ -9,13 +9,14 @@ import (
 
 type AuthorizationManager struct {
 	Application Interface.AuthorizationApplication
-
 }
 
 func (am *AuthorizationManager) CheckAccessUser(ctx context.Context, cookie *authProto.Defense) (*authProto.CheckAccess, error) {
 	status, err := am.Application.CheckAccess(cast.CastDefenseProtoToDefense(cookie))
 	if err != nil {
-		return nil, err
+		return &authProto.CheckAccess{
+			Error: err.Error(),
+		}, nil
 	}
 
 	return &authProto.CheckAccess{
@@ -26,7 +27,9 @@ func (am *AuthorizationManager) CheckAccessUser(ctx context.Context, cookie *aut
 func (am *AuthorizationManager) NewCSRFUser(ctx context.Context, cookie *authProto.Defense) (*authProto.CSRFResponse, error) {
 	csrf, err := am.Application.NewCSRF(cast.CastDefenseProtoToDefense(cookie))
 	if err != nil {
-		return nil, err
+		return &authProto.CSRFResponse{
+			Error: err.Error(),
+		}, nil
 	}
 
 	return &authProto.CSRFResponse{
@@ -39,7 +42,9 @@ func (am *AuthorizationManager) NewCSRFUser(ctx context.Context, cookie *authPro
 func (am *AuthorizationManager) GetIdByCookie(ctx context.Context, cookie *authProto.Defense) (*authProto.IdClientResponse, error) {
 	csrf, err := am.Application.GetIdByCookie(cast.CastDefenseProtoToDefense(cookie))
 	if err != nil {
-		return nil, err
+		return &authProto.IdClientResponse{
+			Error: err.Error(),
+		}, nil
 	}
 	return &authProto.IdClientResponse{
 		IdUser: int64(csrf),
@@ -49,7 +54,9 @@ func (am *AuthorizationManager) GetIdByCookie(ctx context.Context, cookie *authP
 func (am *AuthorizationManager) SignUp(ctx context.Context, signup *authProto.RegistrationRequest) (*authProto.DefenseResponse, error) {
 	cookie, err := am.Application.SignUp(cast.CastRegistrationRequestProtoToRegistrationRequest(signup))
 	if err != nil {
-		return nil, err
+		return &authProto.DefenseResponse{
+			Error: err.Error(),
+		}, nil
 	}
 
 	return &authProto.DefenseResponse{
@@ -60,7 +67,9 @@ func (am *AuthorizationManager) SignUp(ctx context.Context, signup *authProto.Re
 func (am *AuthorizationManager) Login(ctx context.Context, login *authProto.Authorization) (*authProto.DefenseResponse, error) {
 	csrf, err := am.Application.Login(cast.CastAuthorizationProtoToAuthorization(login))
 	if err != nil {
-		return nil, err
+		return &authProto.DefenseResponse{
+			Error: err.Error(),
+		}, nil
 	}
 
 	return &authProto.DefenseResponse{
@@ -71,8 +80,13 @@ func (am *AuthorizationManager) Login(ctx context.Context, login *authProto.Auth
 func (am *AuthorizationManager) Logout(ctx context.Context, CSRF *authProto.CSRF) (*authProto.CSRFResponse, error) {
 	cookie, err := am.Application.Logout(CSRF.XCsrfToken)
 	if err != nil {
-		return nil, err
+		return &authProto.CSRFResponse{
+			Error: err.Error(),
+		}, nil
 	}
 
-	return &authProto.CSRFResponse{XCsrfToken: &authProto.CSRF{XCsrfToken: cookie}}, nil
+	return &authProto.CSRFResponse{XCsrfToken: &authProto.CSRF{
+		XCsrfToken: cookie,
+	},
+	}, nil
 }
