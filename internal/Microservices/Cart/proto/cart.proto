@@ -4,16 +4,6 @@ package proto;
 
 option go_package = "./";
 
-
-message CalculatePriceDeliveryId {
-  int64 id = 1;
-}
-
-message CalculatePriceDeliveryResponse {
-  int64 id = 1;
-  string error = 2;
-}
-
 message CartErrors {
   RestaurantIdCastResponse restaurant = 1;
   repeated DishesCartResponse dishes = 2;
@@ -124,8 +114,9 @@ message RestaurantRequest {
 message DishesRequest {
   int64 id = 1;
   int64 item_number = 2;
-  repeated RadiosCartRequest radios = 3;
-  repeated IngredientsCartRequest ingredients = 4;
+  int64 count = 3;
+  repeated RadiosCartRequest radios = 4;
+  repeated IngredientsCartRequest ingredients = 5;
 }
 
 message RadiosCartRequest {
@@ -136,16 +127,8 @@ message RadiosCartRequest {
 message IngredientsCartRequest {
   int64 id = 1;
 }
-message DeleteCartId {
-  int64 id = 1;
-}
-message DeleteCartResponse {
-  string error = 1;
-}
 
 service CartService {
-  rpc CalculatePriceDelivery(CalculatePriceDeliveryId) returns (CalculatePriceDeliveryResponse);
   rpc GetCart(CartId) returns (ResponseCartErrors);
   rpc UpdateCart(RequestCartDefault) returns (ResponseCartErrors);
-  rpc DeleteCart(DeleteCartId) returns (DeleteCartResponse);
 }

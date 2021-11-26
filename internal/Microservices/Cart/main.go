@@ -3,9 +3,9 @@ package main
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
 	ormCart "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Cart/Orm"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Cart/Service"
 	appCart "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Cart/application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Cart/proto"
-	ormRes "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Restaurant/Orm"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/build"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
@@ -53,11 +53,10 @@ func main() {
 	}
 
 	cartWrapper := ormCart.Wrapper{Conn: connectDB}
-	resWrapper := ormRes.Wrapper{Conn: connectDB}
-	cartManager := appCart.CartManager{
+	cartApp := appCart.Cart{
 		DB:    &cartWrapper,
-		DBRes: &resWrapper,
 	}
+	cartManager := Service.CartManager{Application: &cartApp}
 	proto.RegisterCartServiceServer(server, &cartManager)
 
 	logger.Log.Infof("Listen in 127.0.0.1%s", Port)

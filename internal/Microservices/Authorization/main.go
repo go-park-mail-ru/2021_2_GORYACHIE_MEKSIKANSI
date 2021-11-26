@@ -3,6 +3,7 @@ package main
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
 	orm "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Authorization/Orm"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Authorization/Service"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Authorization/application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Authorization/proto"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/build"
@@ -52,8 +53,10 @@ func main() {
 	}
 
 	authWrapper := orm.Wrapper{Conn: connectDB}
-	authorizationManager := Application.AuthorizationManager{DB: &authWrapper}
-	proto.RegisterAuthorizationServiceServer(server, &authorizationManager)
+	authorizationManager := Application.AuthorizationApplication{DB: &authWrapper}
+	authInfo := Service.AuthorizationManager{Application: &authorizationManager}
+
+	proto.RegisterAuthorizationServiceServer(server, &authInfo)
 
 	logger.Log.Infof("Listen in 127.0.0.1%s", Port)
 	errServ := server.Serve(listen)

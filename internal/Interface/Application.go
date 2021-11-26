@@ -16,10 +16,8 @@ type AuthorizationApplication interface {
 }
 
 type CartApplication interface {
-	CalculatePriceDelivery(id int) (int, error)
 	GetCart(id int) (*Cart.ResponseCartErrors, error)
 	UpdateCart(dishes Cart.RequestCartDefault, clientId int) (*Cart.ResponseCartErrors, error)
-	DeleteCart(id int) error
 }
 
 type ProfileApplication interface {

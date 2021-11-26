@@ -5,6 +5,7 @@ import (
 	ormRes "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Restaurant/Orm"
 	appRes "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Restaurant/application"
 	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Restaurant/proto"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Restaurant/service"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/build"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
@@ -15,7 +16,7 @@ import (
 )
 
 const (
-	Port    = ":8083"
+	Port    = ":8084"
 	Network = "tcp"
 )
 
@@ -52,9 +53,11 @@ func main() {
 	}
 
 	resWrapper := ormRes.Wrapper{Conn: connectDB}
-	restaurantManager := appRes.RestaurantManager{
+	restaurantApp := appRes.Restaurant{
 		DB: &resWrapper,
 	}
+	restaurantManager := service.RestaurantManager{Application: &restaurantApp}
+
 	resProto.RegisterRestaurantServiceServer(server, &restaurantManager)
 
 	logger.Log.Infof("Listen in 127.0.0.1%s", Port)

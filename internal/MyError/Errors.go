@@ -262,4 +262,5 @@ const (
 	OUpdateStatusOrderTransactionNotCreate   = "transaction update status not create" // TODO: add in checkErrors
 	OUpdateStatusOrderNotUpdate              = "order not update"                     // TODO: add in checkErrors
 	OUpdateStatusOrderNotCommit              = "transaction update status not commit" // TODO: add in checkErrors
+	OGetCartCartNoActual                     = "cart not valid"                       // TODO: add in checkErrors
 )

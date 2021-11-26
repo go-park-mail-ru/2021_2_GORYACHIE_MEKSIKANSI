@@ -5,6 +5,7 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	authProto "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Authorization/proto"
 	Utils2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
+	cast "2021_2_GORYACHIE_MEKSIKANSI/internal/Util/Cast"
 	"context"
 )
 
@@ -14,45 +15,22 @@ type Wrapper struct {
 }
 
 func (w *Wrapper) SignUp(signup *Authorization.RegistrationRequest) (*Utils2.Defense, error) {
-	// TODO: add convert func
-	var a authProto.RegistrationRequest
-	a.TypeUser = signup.TypeUser
-	a.Name = signup.Name
-	a.Phone = signup.Phone
-	a.Email = signup.Email
-	a.Password = signup.Password
-	result, err := w.Conn.SignUp(w.Ctx, &a)
+	result, err := w.Conn.SignUp(w.Ctx, cast.CastRegistrationRequestToRegistrationRequestProto(signup))
 	if err != nil {
 		return nil, err
 	}
-
-	var res Utils2.Defense
-	res.SessionId = result.Defense.SessionId
-	res.CsrfToken = result.Defense.XCsrfToken
-	//res.DateLife = result.Defense.DateLife
-	return &res, nil
+	return cast.CastDefenseResponseProtoToDefense(result), nil
 }
 
 func (w *Wrapper) Login(login *Authorization.Authorization) (*Utils2.Defense, error) {
-	// TODO: add convert func
-	var a authProto.Authorization
-	a.Phone = login.Phone
-	a.Email = login.Email
-	a.Password = login.Password
-	response, err := w.Conn.Login(w.Ctx, &a)
+	response, err := w.Conn.Login(w.Ctx, cast.CastAuthorizationToAuthorizationProto(login))
 	if err != nil {
 		return nil, err
 	}
-
-	var cookie Utils2.Defense
-	cookie.SessionId = response.Defense.SessionId
-	cookie.CsrfToken = response.Defense.XCsrfToken
-	//cookie.DateLife = response.Defense.DateLife
-	return &cookie, nil
+	return cast.CastDefenseResponseProtoToDefense(response), nil
 }
 
 func (w *Wrapper) Logout(CSRF string) (string, error) {
-	// TODO: add convert func
 	var csrfToken authProto.CSRF
 	csrfToken.XCsrfToken = CSRF
 	logout, err := w.Conn.Logout(w.Ctx, &csrfToken)
@@ -63,12 +41,7 @@ func (w *Wrapper) Logout(CSRF string) (string, error) {
 }
 
 func (w *Wrapper) CheckAccess(cookie *Utils2.Defense) (bool, error) {
-	// TODO: add convert func
-	var send authProto.Defense
-	//send.DateLife = cookie.DateLife
-	send.XCsrfToken = cookie.CsrfToken
-	send.SessionId = cookie.SessionId
-	user, err := w.Conn.CheckAccessUser(w.Ctx, &send)
+	user, err := w.Conn.CheckAccessUser(w.Ctx, cast.CastDefenseToDefenseProto(cookie))
 	if err != nil {
 		return false, err
 	}
@@ -76,12 +49,7 @@ func (w *Wrapper) CheckAccess(cookie *Utils2.Defense) (bool, error) {
 }
 
 func (w *Wrapper) NewCSRF(cookie *Utils2.Defense) (string, error){
-	// TODO: add convert func
-	var send authProto.Defense
-	//send.DateLife = cookie.DateLife
-	send.XCsrfToken = cookie.CsrfToken
-	send.SessionId = cookie.SessionId
-	user, err := w.Conn.NewCSRFUser(w.Ctx, &send)
+	user, err := w.Conn.NewCSRFUser(w.Ctx, cast.CastDefenseToDefenseProto(cookie))
 	if err != nil {
 		return "", err
 	}
@@ -89,12 +57,7 @@ func (w *Wrapper) NewCSRF(cookie *Utils2.Defense) (string, error){
 }
 
 func (w *Wrapper) GetIdByCookie(cookie *Utils2.Defense) (int, error){
-	// TODO: add convert func
-	var send authProto.Defense
-	//send.DateLife = cookie.DateLife
-	send.XCsrfToken = cookie.CsrfToken
-	send.SessionId = cookie.SessionId
-	byCookie, err := w.Conn.GetIdByCookie(w.Ctx, &send)
+	byCookie, err := w.Conn.GetIdByCookie(w.Ctx, cast.CastDefenseToDefenseProto(cookie))
 	if err != nil {
 		return 0, err
 	}

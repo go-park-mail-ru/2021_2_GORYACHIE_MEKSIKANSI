@@ -4,6 +4,7 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Cart"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
 	"context"
 	"github.com/jackc/pgx/v4"
@@ -339,4 +340,36 @@ func (db *Wrapper) GetPriceDelivery(id int) (int, error) {
 	}
 
 	return price, nil
+}
+
+func (db *Wrapper) GetRestaurant(id int) (*Restaurant.RestaurantId, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetRestaurantTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	var restaurant Restaurant.RestaurantId
+	err = tx.QueryRow(contextTransaction,
+		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant WHERE id = $1", id).Scan(
+		&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery, &restaurant.MinDelivery,
+		&restaurant.MaxDelivery, &restaurant.Rating)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetRestaurantRestaurantNotFound,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetRestaurantNotCommit,
+		}
+	}
+
+	return &restaurant, nil
 }

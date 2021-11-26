@@ -9,6 +9,9 @@ import (
 	Application2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Cart/Application"
 	Orm2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Cart/Orm"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	authProto "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Authorization/proto"
+	cartProto "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Cart/proto"
+	resPoroto "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Restaurant/proto"
 	Api3 "2021_2_GORYACHIE_MEKSIKANSI/internal/Middleware/Api"
 	Application3 "2021_2_GORYACHIE_MEKSIKANSI/internal/Middleware/Application"
 	Orm3 "2021_2_GORYACHIE_MEKSIKANSI/internal/Middleware/Orm"
@@ -22,11 +25,13 @@ import (
 	Api6 "2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant/Api"
 	Application6 "2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant/Application"
 	Orm6 "2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant/Orm"
+	"context"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/spf13/viper"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -40,7 +45,21 @@ const (
 func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger,
 	uploader *s3manager.Uploader, nameBucket string) []interface{} {
 
-	authWrapper := Orm.Wrapper{Conn: connectionDB}
+	grpcConnAuth, errDial := grpc.Dial(
+		"127.0.0.1:8081",
+		grpc.WithInsecure(),
+		)
+	if errDial != nil {
+		println("GG")
+		return nil
+	}
+	defer grpcConnAuth.Close()
+
+	authManager := authProto.NewAuthorizationServiceClient(grpcConnAuth)
+
+	authCtx := context.Background()
+
+	authWrapper := Orm.Wrapper{Conn: authManager, Ctx: authCtx}
 	authApp := Application.Authorization{DB: &authWrapper}
 	userInfo := Api.UserInfo{
 		Application: &authApp,
@@ -68,7 +87,21 @@ func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger
 	}
 	var _ Interface.MiddlewareAPI = &infoMiddleware
 
-	restWrapper := Orm6.Wrapper{Conn: connectionDB}
+	grpcConnRes, errDial := grpc.Dial(
+		"127.0.0.1:8081",
+		grpc.WithInsecure(),
+	)
+	if errDial != nil {
+		println("GG")
+		return nil
+	}
+	defer grpcConnRes.Close()
+
+	resManager := resPoroto.NewRestaurantServiceClient(grpcConnRes)
+
+	resCtx := context.Background()
+
+	restWrapper := Orm6.Wrapper{Conn: resManager, Ctx: resCtx}
 	restApp := Application6.Restaurant{DB: &restWrapper}
 	restaurantInfo := Api6.InfoRestaurant{
 		Application: &restApp,
@@ -76,20 +109,37 @@ func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger
 	}
 	var _ Interface.RestaurantAPI = &restaurantInfo
 
-	cartWrapper := Orm2.Wrapper{Conn: connectionDB}
-	cartApp := Application2.Cart{DB: &cartWrapper, DBRestaurant: &restWrapper}
+	grpcConnCart, errDial := grpc.Dial(
+		"127.0.0.1:8082",
+		grpc.WithInsecure(),
+	)
+	if errDial != nil {
+		println("GG")
+		return nil
+	}
+	defer grpcConnCart.Close()
+
+	cartManager := cartProto.NewCartServiceClient(grpcConnCart)
+
+	cartCtx := context.Background()
+
+
+	cartWrapper := Orm2.Wrapper{Conn: cartManager, Ctx: cartCtx}
+	cartApp := Application2.Cart{DB: &cartWrapper}
 	cartInfo := Api2.InfoCart{
 		Application: &cartApp,
 		Logger:      logger,
 	}
 	var _ Interface.CartApi = &cartInfo
 
-	orderWrapper := Orm4.Wrapper{Conn: connectionDB}
+	//cartWrapperOld := Orm2.Wrapper{}
+
+	orderWrapper := Orm4.Wrapper{Conn: connectionDB, ConnService: cartManager, Ctx: cartCtx}
 	orderApp := Application4.Order{
 		DB:           &orderWrapper,
-		DBCart:       &cartWrapper,
+		//DBCart:       &cartWrapperOld,
 		DBProfile:    &profileWrapper,
-		DBRestaurant: &restWrapper,
+		//DBRestaurant: &restWrapper,
 	}
 	orderInfo := Api4.InfoOrder{
 		Application: &orderApp,

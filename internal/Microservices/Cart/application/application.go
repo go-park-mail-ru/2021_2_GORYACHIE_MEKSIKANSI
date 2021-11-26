@@ -3,28 +3,18 @@ package application
 import (
 	Cart2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Cart"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Cart/Interface"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Cart/proto"
-	resInterface "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Restaurant/Interface"
-	Utils2 "2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant"
-	"context"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant"
 )
 
-type CartManager struct {
+type Cart struct {
 	DB    Interface.WrapperCart
-	DBRes resInterface.WrapperRestaurant
 }
 
-func (cm *CartManager) CalculatePriceDelivery(ctx context.Context, id *proto.CalculatePriceDeliveryId) (*proto.CalculatePriceDeliveryResponse, error) {
-	// TODO: add convert func
-	delivery, err := cm.DB.GetPriceDelivery(int(id.Id))
-	if err != nil {
-		return nil, err
-	}
-	return &proto.CalculatePriceDeliveryResponse{Id: int64(delivery)}, nil
+func (c *Cart) CalculatePriceDelivery(id int) (int, error) {
+	return c.DB.GetPriceDelivery(id)
 }
 
-func (cm *CartManager) CalculateCost(result *Cart2.ResponseCartErrors, rest *Utils2.RestaurantId) (*Cart2.CostCartResponse, error) {
-	// TODO: add convert func
+func (c *Cart) CalculateCost(result *Cart2.ResponseCartErrors, rest *Restaurant.RestaurantId) (*Cart2.CostCartResponse, error) {
 	var cost Cart2.CostCartResponse
 	sumCost := 0
 	for i, dish := range result.Dishes {
@@ -37,15 +27,11 @@ func (cm *CartManager) CalculateCost(result *Cart2.ResponseCartErrors, rest *Uti
 		result.Dishes[i].Cost = dishCost
 	}
 	cost.SumCost = sumCost
-	if sumCost >= int(rest.CostForFreeDelivery) {
+	if sumCost >= rest.CostForFreeDelivery {
 		cost.DCost = 0
 	} else {
 		var err error
-		var price *proto.CalculatePriceDeliveryResponse
-		var cast *proto.CalculatePriceDeliveryId
-		cast.Id = int64(rest.Id)
-		price, err = cm.CalculatePriceDelivery(context.Background(), cast)
-		cost.DCost = int(price.Id)
+		cost.DCost, err = c.CalculatePriceDelivery(rest.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -54,127 +40,59 @@ func (cm *CartManager) CalculateCost(result *Cart2.ResponseCartErrors, rest *Uti
 	return &cost, nil
 }
 
-func (cm *CartManager) GetCart(ctx context.Context, id *proto.CartId) (*proto.ResponseCartErrors, error) {
-	// TODO: add convert func
-	result, errorDishes, err := cm.DB.GetCart(int(id.Id))
+func (c *Cart) GetCart(id int) (*Cart2.ResponseCartErrors, error) {
+	result, errorDishes, err := c.DB.GetCart(id)
 	if err != nil {
 		return nil, err
 	}
 
-	rest, err := cm.DBRes.GetRestaurant(result.Restaurant.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	result.CastFromRestaurantId(*rest)
-
-	cost, err := cm.CalculateCost(result, rest)
-	if err != nil {
-		return nil, err
-	}
-	result.Cost = *cost
-	result.DishErr = errorDishes
-
-	var end *proto.ResponseCartErrors
-	dishes := &proto.DishesCartResponse{}
-	end.Cost.DeliveryCost = int64(result.Cost.DCost)
-	end.Cost.SumCost = int64(result.Cost.SumCost)
-	end.Restaurant.Id = int64(result.Restaurant.Id)
-	end.Restaurant.MaxDelivery = int64(result.Restaurant.MaxDelivery)
-	end.Restaurant.MinDelivery = int64(result.Restaurant.MinDelivery)
-	end.Restaurant.Name = result.Restaurant.Name
-	end.Restaurant.Img = result.Restaurant.Img
-	end.Restaurant.Rating = result.Restaurant.Rating
-	end.Restaurant.CostForFreeDelivery = int64(result.Restaurant.CostForFreeDelivery)
-	for _, dish := range result.Dishes {
-		var ingredient []*proto.IngredientCartResponse
-		var radios []*proto.RadiosCartResponse
-		for _, ing := range dish.IngredientCart {
-			ingredient = append(ingredient, &proto.IngredientCartResponse{Id: int64(ing.Id), Name: ing.Name, Cost: int64(ing.Cost)})
-		}
-
-		for _, rad := range dish.RadiosCart {
-			radios = append(radios, &proto.RadiosCartResponse{Id: int64(rad.Id), Name: rad.Name, RadiosId: int64(rad.RadiosId)})
-		}
-		dishes.Id = int64(dish.Id)
-		dishes.Radios = radios
-		dishes.Name = dish.Name
-		dishes.Cost = int64(dish.Cost)
-		dishes.Ingredients = ingredient
-		dishes.Weight = int64(dish.Weight)
-		dishes.Count = int64(dish.Count)
-		dishes.ItemNumber = int64(dish.ItemNumber)
-		dishes.Description = dish.Description
-		dishes.Ccal = int64(dish.Kilocalorie)
-		dishes.Img = dish.Img
-		end.Dishes = append(end.Dishes, dishes)
-	}
-	return end, nil
-}
-
-func (cm *CartManager) UpdateCart(ctx context.Context, id *proto.RequestCartDefault) (*proto.ResponseCartErrors, error) {
-	// TODO: add convert func
-	result, errorDishes, err := cm.DB.GetCart(int(id.ClientId))
-	if err != nil {
-		return nil, err
-	}
-
-	rest, err := cm.DBRes.GetRestaurant(result.Restaurant.Id)
+	rest, err := c.DB.GetRestaurant(result.Restaurant.Id)
 	if err != nil {
 		return nil, err
 	}
 
 	result.CastFromRestaurantId(*rest)
 
-	cost, err := cm.CalculateCost(result, rest)
+	cost, err := c.CalculateCost(result, rest)
 	if err != nil {
 		return nil, err
 	}
 	result.Cost = *cost
 	result.DishErr = errorDishes
 
-	var end *proto.ResponseCartErrors
-	dishes := &proto.DishesCartResponse{}
-	end.Cost.DeliveryCost = int64(result.Cost.DCost)
-	end.Cost.SumCost = int64(result.Cost.SumCost)
-	end.Restaurant.Id = int64(result.Restaurant.Id)
-	end.Restaurant.MaxDelivery = int64(result.Restaurant.MaxDelivery)
-	end.Restaurant.MinDelivery = int64(result.Restaurant.MinDelivery)
-	end.Restaurant.Name = result.Restaurant.Name
-	end.Restaurant.Img = result.Restaurant.Img
-	end.Restaurant.Rating = result.Restaurant.Rating
-	end.Restaurant.CostForFreeDelivery = int64(result.Restaurant.CostForFreeDelivery)
-	for _, dish := range result.Dishes {
-		var ingredient []*proto.IngredientCartResponse
-		var radios []*proto.RadiosCartResponse
-		for _, ing := range dish.IngredientCart {
-			ingredient = append(ingredient, &proto.IngredientCartResponse{Id: int64(ing.Id), Name: ing.Name, Cost: int64(ing.Cost)})
-		}
-
-		for _, rad := range dish.RadiosCart {
-			radios = append(radios, &proto.RadiosCartResponse{Id: int64(rad.Id), Name: rad.Name, RadiosId: int64(rad.RadiosId)})
-		}
-		dishes.Id = int64(dish.Id)
-		dishes.Radios = radios
-		dishes.Name = dish.Name
-		dishes.Cost = int64(dish.Cost)
-		dishes.Ingredients = ingredient
-		dishes.Weight = int64(dish.Weight)
-		dishes.Count = int64(dish.Count)
-		dishes.ItemNumber = int64(dish.ItemNumber)
-		dishes.Description = dish.Description
-		dishes.Ccal = int64(dish.Kilocalorie)
-		dishes.Img = dish.Img
-		end.Dishes = append(end.Dishes, dishes)
-	}
-	return end, nil
+	return result, nil
 }
 
-func (cm *CartManager) DeleteCart(ctx context.Context, id *proto.DeleteCartId) (*proto.DeleteCartResponse, error) {
-	// TODO: add convert func
-	err := cm.DB.DeleteCart(int(id.Id))
+func (c *Cart) UpdateCart(dishes Cart2.RequestCartDefault, clientId int) (*Cart2.ResponseCartErrors, error) {
+	if dishes.Restaurant.Id == -1 {
+		return nil, c.DB.DeleteCart(clientId)
+	}
+
+	err := c.DB.DeleteCart(clientId)
 	if err != nil {
 		return nil, err
 	}
-	return &proto.DeleteCartResponse{Error: ""}, nil
+
+	result, errorDishes, err := c.DB.UpdateCart(dishes, clientId)
+	if err != nil {
+		return nil, err
+	}
+
+	rest, err := c.DB.GetRestaurant(dishes.Restaurant.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	result.CastFromRestaurantId(*rest)
+
+	result.CastFromRequestCartDefault(dishes)
+
+	cost, err := c.CalculateCost(result, rest)
+	if err != nil {
+		return nil, err
+	}
+	result.Cost = *cost
+	result.DishErr = errorDishes
+
+	return result, nil
 }

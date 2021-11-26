@@ -3,15 +3,20 @@ package Orm
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Cart"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	cartProto "2021_2_GORYACHIE_MEKSIKANSI/internal/Microservices/Cart/proto"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Order"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Profile"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
+	cast "2021_2_GORYACHIE_MEKSIKANSI/internal/Util/Cast"
 	"context"
 	"time"
 )
 
 type Wrapper struct {
+	ConnService Interface.ConnectCartService
+	Ctx context.Context
 	Conn Interface.ConnectionInterface
 }
 
@@ -466,4 +471,82 @@ func (db *Wrapper) CheckRun(id int) (bool, error) {
 	}
 
 	return check, nil
+}
+
+func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, error) {
+	var cartId *cartProto.CartId
+	cartId.Id = int64(id)
+	receivedCart, err := db.ConnService.GetCart(db.Ctx, cartId)
+	if err != nil {
+		return nil,err
+	}
+	cart := cast.CastResponseCartErrorsProtoToResponseCartErrors(receivedCart)
+
+	if cart.DishErr != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.OGetCartCartNoActual,
+		}
+	}
+
+	return cart, nil
+}
+
+func (db *Wrapper) GetRestaurant(id int) (*Restaurant.RestaurantId, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetRestaurantTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	var restaurant Restaurant.RestaurantId
+	err = tx.QueryRow(contextTransaction,
+		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant WHERE id = $1", id).Scan(
+		&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery, &restaurant.MinDelivery,
+		&restaurant.MaxDelivery, &restaurant.Rating)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetRestaurantRestaurantNotFound,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetRestaurantNotCommit,
+		}
+	}
+
+	return &restaurant, nil
+}
+
+func (db *Wrapper) DeleteCart(id int) error {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.CDeleteCartTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	_, err = tx.Exec(contextTransaction,
+		"DELETE FROM cart_food CASCADE WHERE client_id = $1", id)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.CDeleteCartCartNotDelete,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.CDeleteCartNotCommit,
+		}
+	}
+	return nil
 }

@@ -109,17 +109,17 @@ type WrapperAuthorization interface {
 }
 
 type ConnectCartService interface {
-	CalculatePriceDelivery(ctx context.Context, in *cartProto.CalculatePriceDeliveryId, opts ...grpc.CallOption) (*cartProto.CalculatePriceDeliveryResponse, error)
 	GetCart(ctx context.Context, in *cartProto.CartId, opts ...grpc.CallOption) (*cartProto.ResponseCartErrors, error)
 	UpdateCart(ctx context.Context, in *cartProto.RequestCartDefault, opts ...grpc.CallOption) (*cartProto.ResponseCartErrors, error)
-	DeleteCart(ctx context.Context, in *cartProto.DeleteCartId, opts ...grpc.CallOption) (*cartProto.DeleteCartResponse, error)
 }
 
 type WrapperCartServer interface {
-	CalculatePriceDelivery(id int) (int, error)
 	GetCart(id int) (*Cart.ResponseCartErrors, error)
 	UpdateCart(dishes Cart.RequestCartDefault, clientId int) (*Cart.ResponseCartErrors, error)
-	DeleteCart(id int) error
+}
+
+type ConnectionMiddleware interface {
+
 }
 
 type WrapperMiddleware interface {
@@ -145,6 +145,9 @@ type WrapperOrder interface {
 	GetOrder(idClient int, idOrder int) (*Order.ActiveOrder, error)
 	UpdateStatusOrder(id int, status int) error
 	CheckRun(id int) (bool, error)
+	DeleteCart(id int) error
+	GetCart(id int) (*Cart.ResponseCartErrors, error)
+	GetRestaurant(id int) (*Restaurant.RestaurantId, error)
 }
 
 
