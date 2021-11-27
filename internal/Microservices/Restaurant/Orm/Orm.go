@@ -447,7 +447,7 @@ func (db *Wrapper) SearchCategory(name string) ([]int, error) {
 	defer tx.Rollback(contextTransaction)
 
 	rows, err := tx.Query(contextTransaction,
-		"SELECT id FROM restaurant_category WHERE fts @@ to_tsquery($1)",
+		"SELECT restaurant FROM restaurant_category WHERE fts @@ to_tsquery($1)",
 		name)
 	if err != nil {
 		return nil, &errPkg.Errors{

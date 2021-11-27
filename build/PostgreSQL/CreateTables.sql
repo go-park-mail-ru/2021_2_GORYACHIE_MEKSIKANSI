@@ -239,7 +239,7 @@ CREATE TABLE IF NOT EXISTS order_user (
     FOREIGN KEY (restaurant_id) REFERENCES restaurant (id) ON DELETE CASCADE,
     FOREIGN KEY (promocode_id) REFERENCES promocode (id) ON DELETE CASCADE,
     comment text DEFAULT '' NOT NULL,
-    status int DEFAULT 0 NOT NULL,
+    status int DEFAULT 1 NOT NULL,
     method_pay text NOT NULL,
     date_order timestamp DEFAULT NOW(),
     dCost int,

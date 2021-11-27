@@ -31,6 +31,5 @@ func (c *CartManager) UpdateCart(ctx context.Context, dishes *proto.RequestCartD
 	}
 
 	sendCart := cast.CastResponseCartErrorsToResponseCartErrorsProto(cart)
-	sendCart.Error = err.Error()
 	return sendCart, nil
 }

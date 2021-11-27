@@ -272,6 +272,11 @@ func (db *Wrapper) GetOrders(id int) (*Order.HistoryOrderArray, error) {
 		}
 	}
 
+	if result.Orders == nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.OGetOrdersOrdersIsVoid,
+		}
+	}
 	return &result, nil
 }
 
@@ -399,6 +404,12 @@ func (db *Wrapper) GetOrder(idClient int, idOrder int) (*Order.ActiveOrder, erro
 		order.Cart.Dishes = append(order.Cart.Dishes, dish)
 	}
 
+	if order.Id == 0 {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.OGetOrderNotExist,
+		}
+	}
+
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
@@ -480,6 +491,11 @@ func (db *Wrapper) GetCart(id int) (*Cart.ResponseCartErrors, error) {
 	receivedCart, err := db.ConnService.GetCart(db.Ctx, cartId)
 	if err != nil {
 		return nil, err
+	}
+	if receivedCart.Error!= "" {
+		return nil, &errPkg.Errors{
+			Alias: receivedCart.Error,
+		}
 	}
 	cart := cast.CastResponseCartErrorsProtoToResponseCartErrors(receivedCart)
 

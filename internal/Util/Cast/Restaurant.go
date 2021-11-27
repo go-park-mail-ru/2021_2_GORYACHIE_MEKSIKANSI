@@ -92,6 +92,7 @@ func CastIngredientsToIngredientsProto(ingredients []restaurant.Ingredients) []*
 func CastDishesToDishesProto(d *restaurant.Dishes) *resProto.Dishes {
 	var p resProto.Dishes
 	p.Cost = int64(d.Cost)
+	p.Name = d.Title
 	p.Id = int64(d.Id)
 	p.Img = d.Img
 	p.Ccal = int64(d.Ccal)
@@ -220,6 +221,7 @@ func CastMenuProtoToMenu(protoMenu []*resProto.Menu) []restaurant.Menu {
 func CastDishesProtoToDishes(d *resProto.Dishes) *restaurant.Dishes {
 	var r restaurant.Dishes
 	r.Cost = int(d.Cost)
+	r.Title = d.Name
 	r.Id = int(d.Id)
 	r.Img = d.Img
 	r.Ccal = int(d.Ccal)

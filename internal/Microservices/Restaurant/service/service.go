@@ -71,6 +71,7 @@ func (r *RestaurantManager) SearchRestaurant(ctx context.Context, search *resPro
 		return &resProto.Restaurants{Error: err.Error()}, nil
 	}
 	var searchResult *resProto.Restaurants
+	searchResult = &resProto.Restaurants{}
 	for _, restaurantInfo := range searchRestaurant {
 		searchResult.Restaurants = append(searchResult.Restaurants, cast.CastRestaurantsToRestaurantProto(&restaurantInfo))
 	}

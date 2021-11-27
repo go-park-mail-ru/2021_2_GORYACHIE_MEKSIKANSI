@@ -39,6 +39,11 @@ const (
 	ErrAuth            = "Вы не авторизированны"
 	IntNil             = 0
 	ErrCartNull        = "Ваша корзина пустая"
+	ErrReviewNull      = "Отзывы не найдены"
+	ErrSearchRes       = "Рестораны не найдены"
+	ErrGerOrderNull    = "Заказов не  найдено"
+	ErrOrderNull       = "Нечего создавать: корзина пустая"
+	OrderNotExist      = "Заказ не существует"
 	ErrNotSearchAvatar = "Поле avatar не было найдено"
 )
 
@@ -252,7 +257,7 @@ const (
 	OCreateOrderOrderListNotInsert           = "not insert in order_list"             // TODO: add in checkErrors
 	OCreateOrderCountNotUpdate               = "count dish not update"                // TODO: add in checkErrors
 	OCreateOrderCountNotCorrect              = "dishes not enough"                    // TODO: add in checkErrors
-	OCreateOrderCartIsVoid                   = "cart is void"                         // TODO: add in checkErrors
+	OGetOrdersOrdersIsVoid                   = "orders is void"                         // TODO: add in checkErrors
 	OGetOrdersNotSelect                      = "orders not selected"                  // TODO: add in checkErrors
 	OGetOrdersNotScan                        = "orders not scan"                      // TODO: add in checkErrors
 	OGetOrderTransactionNotCreate            = "transaction get order not create"     // TODO: add in checkErrors
@@ -263,4 +268,5 @@ const (
 	OUpdateStatusOrderNotUpdate              = "order not update"                     // TODO: add in checkErrors
 	OUpdateStatusOrderNotCommit              = "transaction update status not commit" // TODO: add in checkErrors
 	OGetCartCartNoActual                     = "cart not valid"                       // TODO: add in checkErrors
+	OGetOrderNotExist                        = "order not exist"                      // TODO: add in checkErrors
 )
