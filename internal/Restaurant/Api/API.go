@@ -302,6 +302,7 @@ func (r *InfoRestaurant) SearchRestaurantHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		r.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	checkError := &errPkg.CheckError{
@@ -309,16 +310,9 @@ func (r *InfoRestaurant) SearchRestaurantHandler(ctx *fasthttp.RequestCtx) {
 		RequestId: reqId,
 	}
 
-	searchRes := Restaurant.SearchRestaurant{}
-	err := json.Unmarshal(ctx.Request.Body(), &searchRes)
-	if err != nil {
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
-		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
-		return
-	}
+	searchText := string(ctx.FormValue("searchText"))
 
-	restaurant, err := r.Application.SearchRestaurant(searchRes.SearchText)
+	restaurant, err := r.Application.SearchRestaurant(searchText)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorSearchRes(err)
 	if errOut != nil {
 		switch errOut.Error() {
