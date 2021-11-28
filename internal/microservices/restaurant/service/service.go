@@ -1,15 +1,24 @@
 package service
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/interface"
+	appPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/application"
 	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/proto"
-	restaurant "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
-	cast "2021_2_GORYACHIE_MEKSIKANSI/internal/util/cast"
+	resPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
+	castPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/util/cast"
 	"context"
 )
 
+type RestaurantManagerInterface interface {
+	AllRestaurants(ctx context.Context, _ *resProto.Empty) (*resProto.Restaurants, error)
+	GetRestaurant(ctx context.Context, id *resProto.RestaurantId) (*resProto.RestaurantInfo, error)
+	RestaurantDishes(ctx context.Context, id *resProto.DishInfo) (*resProto.Dishes, error)
+	CreateReview(ctx context.Context, rev *resProto.NewReview) (*resProto.Error, error)
+	GetReview(ctx context.Context, id *resProto.RestaurantId) (*resProto.ResReview, error)
+	SearchRestaurant(ctx context.Context, search *resProto.SearchRestaurantText) (*resProto.Restaurants, error)
+}
+
 type RestaurantManager struct {
-	Application _interface.RestaurantApplication
+	Application appPkg.RestaurantApplicationInterface
 }
 
 func (r *RestaurantManager) AllRestaurants(ctx context.Context, _ *resProto.Empty) (*resProto.Restaurants, error) {
@@ -17,7 +26,7 @@ func (r *RestaurantManager) AllRestaurants(ctx context.Context, _ *resProto.Empt
 	if err != nil {
 		return &resProto.Restaurants{Error: err.Error()}, nil
 	}
-	sendRestaurant := cast.CastRestaurantsToRestaurantsProto(restaurants)
+	sendRestaurant := castPkg.CastRestaurantsToRestaurantsProto(restaurants)
 	return sendRestaurant, nil
 }
 
@@ -26,7 +35,7 @@ func (r *RestaurantManager) GetRestaurant(ctx context.Context, id *resProto.Rest
 	if err != nil {
 		return &resProto.RestaurantInfo{Error: err.Error()}, nil
 	}
-	sendRestaurant := cast.CastRestaurantIdToRestaurantInfoProto(restaurant)
+	sendRestaurant := castPkg.CastRestaurantIdToRestaurantInfoProto(restaurant)
 	return sendRestaurant, nil
 }
 
@@ -35,16 +44,16 @@ func (r *RestaurantManager) RestaurantDishes(ctx context.Context, id *resProto.D
 	if err != nil {
 		return &resProto.Dishes{Error: err.Error()}, nil
 	}
-	dish := cast.CastDishesToDishesProto(dishes)
-	dish.Ingredients = cast.CastIngredientsToIngredientsProto(dishes.Ingredient)
-	dish.Radios = cast.CastRadiosToRadiosProto(dishes.Radios)
+	dish := castPkg.CastDishesToDishesProto(dishes)
+	dish.Ingredients = castPkg.CastIngredientsToIngredientsProto(dishes.Ingredient)
+	dish.Radios = castPkg.CastRadiosToRadiosProto(dishes.Radios)
 	return dish, nil
 }
 
 func (r *RestaurantManager) CreateReview(ctx context.Context, rev *resProto.NewReview) (*resProto.Error, error) {
-	var rest restaurant.RestaurantId
+	var rest resPkg.RestaurantId
 	rest.Id = int(rev.Restaurant.Id)
-	err := r.Application.CreateReview(int(rev.Id), restaurant.NewReview{
+	err := r.Application.CreateReview(int(rev.Id), resPkg.NewReview{
 		Rate:       int(rev.Rate),
 		Restaurant: rest,
 		Text:       rev.Text,
@@ -61,7 +70,7 @@ func (r *RestaurantManager) GetReview(ctx context.Context, id *resProto.Restaura
 		return &resProto.ResReview{Error: err.Error()}, nil
 	}
 
-	sendReview := cast.CastResReviewToResReviewProto(review)
+	sendReview := castPkg.CastResReviewToResReviewProto(review)
 	return sendReview, nil
 }
 
@@ -73,7 +82,7 @@ func (r *RestaurantManager) SearchRestaurant(ctx context.Context, search *resPro
 	var searchResult *resProto.Restaurants
 	searchResult = &resProto.Restaurants{}
 	for _, restaurantInfo := range searchRestaurant {
-		searchResult.Restaurants = append(searchResult.Restaurants, cast.CastRestaurantsToRestaurantProto(&restaurantInfo))
+		searchResult.Restaurants = append(searchResult.Restaurants, castPkg.CastRestaurantsToRestaurantProto(&restaurantInfo))
 	}
 	return searchResult, nil
 }

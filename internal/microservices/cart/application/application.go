@@ -2,12 +2,19 @@ package application
 
 import (
 	Cart2 "2021_2_GORYACHIE_MEKSIKANSI/internal/cart"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart/Interface"
+	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart/orm"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
 )
 
+type CartInterface interface {
+	CalculatePriceDelivery(id int) (int, error)
+	CalculateCost(result *Cart2.ResponseCartErrors, rest *restaurant.RestaurantId) (*Cart2.CostCartResponse, error)
+	GetCart(id int) (*Cart2.ResponseCartErrors, error)
+	UpdateCart(dishes Cart2.RequestCartDefault, clientId int) (*Cart2.ResponseCartErrors, error)
+}
+
 type Cart struct {
-	DB Interface.WrapperCart
+	DB ormPkg.WrapperCartInterface
 }
 
 func (c *Cart) CalculatePriceDelivery(id int) (int, error) {

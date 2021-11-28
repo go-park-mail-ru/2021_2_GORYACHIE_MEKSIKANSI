@@ -1,16 +1,22 @@
 package application
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	Order2 "2021_2_GORYACHIE_MEKSIKANSI/internal/order"
+	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/order/orm"
+	profileOrmPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/profile/orm"
 	"time"
 )
 
+type OrderApplicationInterface interface {
+	CreateOrder(id int, createOrder Order2.CreateOrder) error
+	GetOrders(id int) (*Order2.HistoryOrderArray, error)
+	GetActiveOrder(idClient int, idOrder int) (*Order2.ActiveOrder, error)
+	UpdateStatusOrder(id int, status int) error
+}
+
 type Order struct {
-	DB Interface.WrapperOrder
-	//DBCart       interface.WrapperCartOld
-	DBProfile Interface.WrapperProfile
-	//DBRestaurant interface.WrapperRestaurant
+	DB ormPkg.WrapperOrderInterface
+	DBProfile profileOrmPkg.WrapperProfileInterface
 }
 
 func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) error {

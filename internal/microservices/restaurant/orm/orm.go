@@ -1,17 +1,39 @@
 package orm
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	resPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"context"
+	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"time"
 )
 
+type WrapperRestaurantInterface interface {
+	GetRestaurants() ([]resPkg.Restaurants, error)
+	GetStructDishes(dishesId int) ([]resPkg.Ingredients, error)
+	GetRadios(dishesId int) ([]resPkg.Radios, error)
+	GetDishes(restId int, dishesId int) (*resPkg.Dishes, error)
+	GetRestaurant(id int) (*resPkg.RestaurantId, error)
+	GetMenu(id int) ([]resPkg.Menu, error)
+	GetTagsRestaurant(id int) ([]resPkg.Tag, error)
+	GetReview(id int) ([]resPkg.Review, error)
+	CreateReview(id int, review resPkg.NewReview) error
+	SearchCategory(name string) ([]int, error)
+	SearchRestaurant(name string) ([]int, error)
+	GetGeneralInfoRestaurant(id int) (*resPkg.Restaurants, error)
+}
+
+type ConnectionInterface interface {
+	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
+	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
+	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
+	Begin(ctx context.Context) (pgx.Tx, error)
+}
+
 type Wrapper struct {
-	Conn Interface.ConnectionInterface
+	Conn ConnectionInterface
 }
 
 func (db *Wrapper) GetRestaurants() ([]resPkg.Restaurants, error) {

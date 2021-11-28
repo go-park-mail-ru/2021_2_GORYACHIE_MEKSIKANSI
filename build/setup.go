@@ -3,26 +3,32 @@ package build
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/api"
+	authApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/api"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/orm"
 	Api2 "2021_2_GORYACHIE_MEKSIKANSI/internal/cart/api"
+	cartApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/cart/api"
 	Application2 "2021_2_GORYACHIE_MEKSIKANSI/internal/cart/application"
 	Orm2 "2021_2_GORYACHIE_MEKSIKANSI/internal/cart/orm"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	authProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/authorization/proto"
 	cartProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart/proto"
-	resPoroto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/proto"
+	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/proto"
 	Api3 "2021_2_GORYACHIE_MEKSIKANSI/internal/middleware/api"
+	midlApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/middleware/api"
 	Application3 "2021_2_GORYACHIE_MEKSIKANSI/internal/middleware/application"
 	Orm3 "2021_2_GORYACHIE_MEKSIKANSI/internal/middleware/orm"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	Api4 "2021_2_GORYACHIE_MEKSIKANSI/internal/order/api"
+	orderApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/order/api"
 	Application4 "2021_2_GORYACHIE_MEKSIKANSI/internal/order/application"
 	Orm4 "2021_2_GORYACHIE_MEKSIKANSI/internal/order/orm"
 	Api5 "2021_2_GORYACHIE_MEKSIKANSI/internal/profile/api"
+	profileApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/profile/api"
 	Application5 "2021_2_GORYACHIE_MEKSIKANSI/internal/profile/application"
 	Orm5 "2021_2_GORYACHIE_MEKSIKANSI/internal/profile/orm"
+	profileOrmPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/profile/orm"
 	Api6 "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant/api"
+	resApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant/api"
 	Application6 "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant/application"
 	Orm6 "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant/orm"
 	"context"
@@ -42,7 +48,7 @@ const (
 	ConfPath       = "./config/"
 )
 
-func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger,
+func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLogger,
 	uploader *s3manager.Uploader, nameBucket string) []interface{} {
 
 	grpcConnAuth, errDial := grpc.Dial(
@@ -64,7 +70,7 @@ func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger
 		Application: &authApp,
 		Logger:      logger,
 	}
-	var _ Interface.AuthorizationAPI = &userInfo
+	var _ authApiPkg.AuthorizationApiInterface = &userInfo
 
 	profileWrapper := Orm5.Wrapper{
 		Conn:       connectionDB,
@@ -76,7 +82,7 @@ func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger
 		Application: &profileApp,
 		Logger:      logger,
 	}
-	var _ Interface.ProfileAPI = &profileInfo
+	var _ profileApiPkg.ProfileApiInterface = &profileInfo
 
 	midWrapper := Orm3.Wrapper{Conn: authManager, Ctx: authCtx}
 	midApp := Application3.Middleware{DB: &midWrapper}
@@ -84,7 +90,7 @@ func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger
 		Application: &midApp,
 		Logger:      logger,
 	}
-	var _ Interface.MiddlewareAPI = &infoMiddleware
+	var _ midlApiPkg.MiddlewareApiInterface = &infoMiddleware
 
 	grpcConnRes, errDial := grpc.Dial(
 		"127.0.0.1:8084",
@@ -95,7 +101,7 @@ func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger
 		return nil
 	}
 
-	resManager := resPoroto.NewRestaurantServiceClient(grpcConnRes)
+	resManager := resProto.NewRestaurantServiceClient(grpcConnRes)
 
 	resCtx := context.Background()
 
@@ -105,7 +111,7 @@ func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger
 		Application: &restApp,
 		Logger:      logger,
 	}
-	var _ Interface.RestaurantAPI = &restaurantInfo
+	var _ resApiPkg.RestaurantApiInterface = &restaurantInfo
 
 	grpcConnCart, errDial := grpc.Dial(
 		"127.0.0.1:8082",
@@ -126,22 +132,19 @@ func SetUp(connectionDB Interface.ConnectionInterface, logger errPkg.MultiLogger
 		Application: &cartApp,
 		Logger:      logger,
 	}
-	var _ Interface.CartApi = &cartInfo
+	var _ cartApiPkg.CartApiInterface = &cartInfo
 
-	//cartWrapperOld := Orm2.Wrapper{}
 
 	orderWrapper := Orm4.Wrapper{Conn: connectionDB, ConnService: cartManager, Ctx: cartCtx}
 	orderApp := Application4.Order{
 		DB: &orderWrapper,
-		//DBCart:       &cartWrapperOld,
 		DBProfile: &profileWrapper,
-		//DBRestaurant: &restWrapper,
 	}
 	orderInfo := Api4.InfoOrder{
 		Application: &orderApp,
 		Logger:      logger,
 	}
-	var _ Interface.OrderAPI = &orderInfo
+	var _ orderApiPkg.OrderApiInterface = &orderInfo
 
 	var result []interface{}
 	result = append(result, userInfo)

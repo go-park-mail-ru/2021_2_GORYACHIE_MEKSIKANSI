@@ -1,18 +1,24 @@
 package api
 
 import (
-	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	resPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
+	appPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant/application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"encoding/json"
 	"github.com/valyala/fasthttp"
 	"net/http"
 )
 
+type RestaurantApiInterface interface {
+	RestaurantHandler(ctx *fasthttp.RequestCtx)
+	RestaurantIdHandler(ctx *fasthttp.RequestCtx)
+	RestaurantDishesHandler(ctx *fasthttp.RequestCtx)
+}
+
 type InfoRestaurant struct {
-	Application interfaces.RestaurantApplication
+	Application appPkg.RestaurantApplicationInterface
 	Logger      errPkg.MultiLogger
 }
 

@@ -1,12 +1,18 @@
 package application
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/middleware/orm"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 )
 
+type MiddlewareApplicationInterface interface {
+	CheckAccess(cookie *utils.Defense) (bool, error)
+	NewCSRF(cookie *utils.Defense) (string, error)
+	GetIdByCookie(cookie *utils.Defense) (int, error)
+}
+
 type Middleware struct {
-	DB Interface.WrapperMiddleware
+	DB ormPkg.WrapperMiddlewareInterface
 }
 
 func (m *Middleware) CheckAccess(cookie *utils.Defense) (bool, error) {

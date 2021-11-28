@@ -1,22 +1,65 @@
 package orm
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/profile"
 	Utils2 "2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"context"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"strconv"
 	"strings"
 	"time"
 )
 
+type WrapperProfileInterface interface {
+	GetRoleById(id int) (string, error)
+	GetProfileClient(id int) (*profile.Profile, error)
+	GetProfileHost(id int) (*profile.Profile, error)
+	GetProfileCourier(id int) (*profile.Profile, error)
+	UpdateName(id int, newName string) error
+	UpdateEmail(id int, newEmail string) error
+	UpdatePassword(id int, newPassword string) error
+	UpdatePhone(id int, newPhone string) error
+	UpdateAvatar(id int, newAvatar *profile.UpdateAvatar, newFileName string) error
+	UpdateBirthday(id int, newBirthday string) error
+	UpdateAddress(id int, newAddress profile.AddressCoordinates) error
+	AddAddress(id int, newAddress profile.AddressCoordinates) (int, error)
+	DeleteAddress(id int, addressId int) error
+}
+
+type ConnectionInterface interface {
+	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
+	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
+	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
+	Begin(ctx context.Context) (pgx.Tx, error)
+}
+
+type UploaderInterface interface {
+	Upload(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
+}
+
+type TransactionInterface interface {
+	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
+	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
+	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
+	Begin(ctx context.Context) (pgx.Tx, error)
+	BeginFunc(ctx context.Context, f func(pgx.Tx) error) error
+	Commit(ctx context.Context) error
+	Rollback(ctx context.Context) error
+	CopyFrom(ctx context.Context, tableName pgx.Identifier, columnNames []string, rowSrc pgx.CopyFromSource) (int64, error)
+	SendBatch(ctx context.Context, b *pgx.Batch) pgx.BatchResults
+	LargeObjects() pgx.LargeObjects
+	Prepare(ctx context.Context, name, sql string) (*pgconn.StatementDescription, error)
+	QueryFunc(ctx context.Context, sql string, args []interface{}, scans []interface{}, f func(pgx.QueryFuncRow) error) (pgconn.CommandTag, error)
+	Conn() *pgx.Conn
+}
+
 type Wrapper struct {
-	Conn       Interface.ConnectionInterface
-	Uploader   Interface.Uploader
+	Conn       ConnectionInterface
+	Uploader   UploaderInterface
 	NameBucket string
 }
 
@@ -159,7 +202,7 @@ func (db *Wrapper) GetProfileCourier(id int) (*profile.Profile, error) {
 		}
 	}
 
-	defer func(tx Interface.TransactionInterface) {
+	defer func(tx TransactionInterface) {
 		tx.Rollback(contextTransaction)
 	}(tx)
 

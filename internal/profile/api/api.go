@@ -1,18 +1,29 @@
 package api
 
 import (
-	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/profile"
+	appPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/profile/application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"encoding/json"
 	"github.com/valyala/fasthttp"
 	"net/http"
 )
 
+type ProfileApiInterface interface {
+	ProfileHandler(ctx *fasthttp.RequestCtx)
+	UpdateUserName(ctx *fasthttp.RequestCtx)
+	UpdateUserEmail(ctx *fasthttp.RequestCtx)
+	UpdateUserPassword(ctx *fasthttp.RequestCtx)
+	UpdateUserPhone(ctx *fasthttp.RequestCtx)
+	UpdateUserAvatar(ctx *fasthttp.RequestCtx)
+	UpdateUserBirthday(ctx *fasthttp.RequestCtx)
+	UpdateUserAddress(ctx *fasthttp.RequestCtx)
+}
+
 type InfoProfile struct {
-	Application interfaces.ProfileApplication
+	Application appPkg.ProfileApplicationInterface
 	Logger      errPkg.MultiLogger
 }
 

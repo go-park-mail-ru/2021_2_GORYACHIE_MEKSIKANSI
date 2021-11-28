@@ -2,8 +2,8 @@ package main
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/build"
 	appRes "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/application"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/build"
 	ormRes "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/orm"
 	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/proto"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/service"

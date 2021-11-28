@@ -2,7 +2,7 @@ package api
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization"
-	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	appPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/application"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 
@@ -12,8 +12,15 @@ import (
 	"time"
 )
 
+type AuthorizationApiInterface interface {
+	SignUpHandler(ctx *fasthttp.RequestCtx)
+	LoginHandler(ctx *fasthttp.RequestCtx)
+	LogoutHandler(ctx *fasthttp.RequestCtx)
+	PayHandler(ctx *fasthttp.RequestCtx)
+}
+
 type UserInfo struct {
-	Application interfaces.AuthorizationApplication
+	Application appPkg.AuthorizationApplicationInterface
 	Logger      errPkg.MultiLogger
 }
 

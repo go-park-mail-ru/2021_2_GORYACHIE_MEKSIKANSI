@@ -2,11 +2,11 @@ package main
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
-	orm "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/authorization/orm"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/authorization/service"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/authorization/application"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/authorization/proto"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/build"
+	appCart "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart/application"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart/build"
+	ormCart "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart/orm"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart/proto"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart/service"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"go.uber.org/zap"
@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	Port    = ":8081"
+	Port    = ":8082"
 	Network = "tcp"
 )
 
@@ -52,11 +52,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	authWrapper := orm.Wrapper{Conn: connectDB}
-	authorizationManager := Application.AuthorizationApplication{DB: &authWrapper}
-	authInfo := service.AuthorizationManager{Application: &authorizationManager}
-
-	proto.RegisterAuthorizationServiceServer(server, &authInfo)
+	cartWrapper := ormCart.Wrapper{Conn: connectDB}
+	cartApp := appCart.Cart{
+		DB: &cartWrapper,
+	}
+	cartManager := service.CartManager{Application: &cartApp}
+	proto.RegisterCartServiceServer(server, &cartManager)
 
 	logger.Log.Infof("Listen in 127.0.0.1%s", Port)
 	errServ := server.Serve(listen)

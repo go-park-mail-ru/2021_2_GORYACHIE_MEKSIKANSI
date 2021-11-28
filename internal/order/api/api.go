@@ -2,17 +2,22 @@ package api
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization"
-	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/order"
+	appPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/order/application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"encoding/json"
 	"github.com/valyala/fasthttp"
 	"net/http"
 )
 
+type OrderApiInterface interface {
+	CreateOrderHandler(ctx *fasthttp.RequestCtx)
+	GetOrdersHandler(ctx *fasthttp.RequestCtx)
+}
+
 type InfoOrder struct {
-	Application interfaces.OrderApplication
+	Application appPkg.OrderApplicationInterface
 	Logger      errPkg.MultiLogger
 }
 

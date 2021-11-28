@@ -2,16 +2,28 @@ package orm
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	authProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/authorization/proto"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	Utils2 "2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	cast "2021_2_GORYACHIE_MEKSIKANSI/internal/util/cast"
 	"context"
+	"google.golang.org/grpc"
 )
 
+type WrapperAuthorizationInterface interface {
+	SignUp(signup *authorization.RegistrationRequest) (*Utils2.Defense, error)
+	Login(login *authorization.Authorization) (*Utils2.Defense, error)
+	Logout(CSRF string) (string, error)
+}
+
+type ConnectAuthServiceInterface interface {
+	SignUp(ctx context.Context, in *authProto.RegistrationRequest, opts ...grpc.CallOption) (*authProto.DefenseResponse, error)
+	Login(ctx context.Context, in *authProto.Authorization, opts ...grpc.CallOption) (*authProto.DefenseResponse, error)
+	Logout(ctx context.Context, in *authProto.CSRF, opts ...grpc.CallOption) (*authProto.CSRFResponse, error)
+}
+
 type Wrapper struct {
-	Conn Interface.ConnectAuthService
+	Conn ConnectAuthServiceInterface
 	Ctx  context.Context
 }
 

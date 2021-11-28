@@ -3,10 +3,10 @@ package orm
 import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/internal/authorization"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/application"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"context"
+	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"strconv"
 	"strings"
@@ -17,8 +17,45 @@ const (
 	PhoneLen = 11
 )
 
+type WrapperAuthorization interface {
+	SignupClient(signup *auth.RegistrationRequest, cookie *util.Defense) (*util.Defense, error)
+	SignupCourier(signup *auth.RegistrationRequest, cookie *util.Defense) (*util.Defense, error)
+	SignupHost(signup *auth.RegistrationRequest, cookie *util.Defense) (*util.Defense, error)
+	LoginByEmail(email string, password string) (int, error)
+	LoginByPhone(phone string, password string) (int, error)
+	DeleteCookie(CSRF string) (string, error)
+	NewDefense() *util.Defense
+	AddCookie(cookie *util.Defense, id int) error
+	CheckAccess(cookie *util.Defense) (bool, error)
+	NewCSRF(cookie *util.Defense) (string, error)
+	GetIdByCookie(cookie *util.Defense) (int, error)
+}
+
+type ConnectionInterface interface {
+	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
+	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
+	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
+	Begin(ctx context.Context) (pgx.Tx, error)
+}
+
+type TransactionInterface interface {
+	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
+	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
+	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
+	Begin(ctx context.Context) (pgx.Tx, error)
+	BeginFunc(ctx context.Context, f func(pgx.Tx) error) error
+	Commit(ctx context.Context) error
+	Rollback(ctx context.Context) error
+	CopyFrom(ctx context.Context, tableName pgx.Identifier, columnNames []string, rowSrc pgx.CopyFromSource) (int64, error)
+	SendBatch(ctx context.Context, b *pgx.Batch) pgx.BatchResults
+	LargeObjects() pgx.LargeObjects
+	Prepare(ctx context.Context, name, sql string) (*pgconn.StatementDescription, error)
+	QueryFunc(ctx context.Context, sql string, args []interface{}, scans []interface{}, f func(pgx.QueryFuncRow) error) (pgconn.CommandTag, error)
+	Conn() *pgx.Conn
+}
+
 type Wrapper struct {
-	Conn Interface.ConnectionInterface
+	Conn ConnectionInterface
 }
 
 func (db *Wrapper) NewDefense() *util.Defense {
@@ -26,7 +63,7 @@ func (db *Wrapper) NewDefense() *util.Defense {
 	return tmp.GenerateNew()
 }
 
-func (db *Wrapper) generalSignUp(signup *auth.RegistrationRequest, transaction Interface.TransactionInterface, contextTransaction context.Context) (int, error) {
+func (db *Wrapper) generalSignUp(signup *auth.RegistrationRequest, transaction TransactionInterface, contextTransaction context.Context) (int, error) {
 	var userId int
 
 	salt := util.RandString(application.LenSalt)
@@ -174,7 +211,7 @@ func (db *Wrapper) SignupClient(signup *auth.RegistrationRequest, cookie *util.D
 	return cookie, nil
 }
 
-func (db *Wrapper) addTransactionCookie(cookie *util.Defense, Transaction Interface.TransactionInterface, id int, contextTransaction context.Context) error {
+func (db *Wrapper) addTransactionCookie(cookie *util.Defense, Transaction TransactionInterface, id int, contextTransaction context.Context) error {
 	_, err := Transaction.Exec(contextTransaction,
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)

@@ -1,15 +1,24 @@
 package application
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/interface"
-	restaurant "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
+	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/orm"
+	resPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
 )
 
-type Restaurant struct {
-	DB _interface.WrapperRestaurant
+type RestaurantApplicationInterface interface {
+	AllRestaurants() ([]resPkg.Restaurants, error)
+	GetRestaurant(id int) (*resPkg.RestaurantId, error)
+	RestaurantDishes(restId int, dishId int) (*resPkg.Dishes, error)
+	CreateReview(id int, review resPkg.NewReview) error
+	GetReview(id int) (*resPkg.ResReview, error)
+	SearchRestaurant(search string) ([]resPkg.Restaurants, error)
 }
 
-func (r *Restaurant) AllRestaurants() ([]restaurant.Restaurants, error) {
+type Restaurant struct {
+	DB ormPkg.WrapperRestaurantInterface
+}
+
+func (r *Restaurant) AllRestaurants() ([]resPkg.Restaurants, error) {
 	result, err := r.DB.GetRestaurants()
 	if err != nil {
 		return nil, err
@@ -17,7 +26,7 @@ func (r *Restaurant) AllRestaurants() ([]restaurant.Restaurants, error) {
 	return result, nil
 }
 
-func (r *Restaurant) GetRestaurant(id int) (*restaurant.RestaurantId, error) {
+func (r *Restaurant) GetRestaurant(id int) (*resPkg.RestaurantId, error) {
 	restInfo, err := r.DB.GetRestaurant(id)
 	if err != nil {
 		return nil, err
@@ -38,7 +47,7 @@ func (r *Restaurant) GetRestaurant(id int) (*restaurant.RestaurantId, error) {
 	return restInfo, nil
 }
 
-func (r *Restaurant) RestaurantDishes(restId int, dishId int) (*restaurant.Dishes, error) {
+func (r *Restaurant) RestaurantDishes(restId int, dishId int) (*resPkg.Dishes, error) {
 	dishes, err := r.DB.GetDishes(restId, dishId)
 	if err != nil {
 		return nil, err
@@ -57,7 +66,7 @@ func (r *Restaurant) RestaurantDishes(restId int, dishId int) (*restaurant.Dishe
 	return dishes, nil
 }
 
-func (r *Restaurant) CreateReview(id int, review restaurant.NewReview) error {
+func (r *Restaurant) CreateReview(id int, review resPkg.NewReview) error {
 	err := r.DB.CreateReview(id, review)
 	if err != nil {
 		return err
@@ -66,8 +75,8 @@ func (r *Restaurant) CreateReview(id int, review restaurant.NewReview) error {
 
 }
 
-func (r *Restaurant) GetReview(id int) (*restaurant.ResReview, error) {
-	var review restaurant.ResReview
+func (r *Restaurant) GetReview(id int) (*resPkg.ResReview, error) {
+	var review resPkg.ResReview
 	reviewInfo, err := r.DB.GetReview(id)
 	if err != nil {
 		return nil, err
@@ -92,7 +101,7 @@ func (r *Restaurant) GetReview(id int) (*restaurant.ResReview, error) {
 
 }
 
-func (r *Restaurant) SearchRestaurant(search string) ([]restaurant.Restaurants, error) {
+func (r *Restaurant) SearchRestaurant(search string) ([]resPkg.Restaurants, error) {
 	result, err := r.DB.SearchCategory(search)
 	if err != nil {
 		return nil, err
@@ -105,7 +114,7 @@ func (r *Restaurant) SearchRestaurant(search string) ([]restaurant.Restaurants, 
 		}
 	}
 
-	var searchResult []restaurant.Restaurants
+	var searchResult []resPkg.Restaurants
 	for _, id := range result {
 		restaurantInfo, err := r.DB.GetGeneralInfoRestaurant(id)
 		if err != nil {

@@ -1,7 +1,7 @@
 package api
 
 import (
-	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	appPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/middleware/application"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"github.com/valyala/fasthttp"
@@ -9,8 +9,14 @@ import (
 	"net/http"
 )
 
+type MiddlewareApiInterface interface {
+	LogURL(h fasthttp.RequestHandler) fasthttp.RequestHandler
+	GetIdClient(h fasthttp.RequestHandler) fasthttp.RequestHandler
+	CheckClient(h fasthttp.RequestHandler) fasthttp.RequestHandler
+}
+
 type InfoMiddleware struct {
-	Application interfaces.MiddlewareApplication
+	Application appPkg.MiddlewareApplicationInterface
 	Logger      errPkg.MultiLogger
 	ReqId       int
 }

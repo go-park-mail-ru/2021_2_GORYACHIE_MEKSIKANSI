@@ -1,8 +1,8 @@
 package orm
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/cart"
+	cartOrmPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/cart/orm"
 	cartProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart/proto"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	orderPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/order"
@@ -11,13 +11,33 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util/cast"
 	"context"
+	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v4"
 	"time"
 )
 
+type WrapperOrderInterface interface {
+	CreateOrder(id int, createOrder orderPkg.CreateOrder, addressId int, cart cart.ResponseCartErrors, courierId int) error
+	GetOrders(id int) (*orderPkg.HistoryOrderArray, error)
+	GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, error)
+	UpdateStatusOrder(id int, status int) error
+	CheckRun(id int) (bool, error)
+	DeleteCart(id int) error
+	GetCart(id int) (*cart.ResponseCartErrors, error)
+	GetRestaurant(id int) (*restaurant.RestaurantId, error)
+}
+
+type ConnectionInterface interface {
+	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
+	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
+	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
+	Begin(ctx context.Context) (pgx.Tx, error)
+}
+
 type Wrapper struct {
-	ConnService Interface.ConnectCartService
+	ConnService cartOrmPkg.ConnectCartServiceInterface
 	Ctx         context.Context
-	Conn        Interface.ConnectionInterface
+	Conn        ConnectionInterface
 }
 
 func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, addressId int, cart cart.ResponseCartErrors, courierId int) error {

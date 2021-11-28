@@ -2,13 +2,22 @@ package Application
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/authorization/Interface"
+	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/authorization/orm"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 )
 
+type AuthorizationInterface interface {
+	SignUp(signup *authorization.RegistrationRequest) (*util.Defense, error)
+	Login(login *authorization.Authorization) (*util.Defense, error)
+	Logout(CSRF string) (string, error)
+	CheckAccess(cookie *util.Defense) (bool, error)
+	NewCSRF(cookie *util.Defense) (string, error)
+	GetIdByCookie(cookie *util.Defense) (int, error)
+}
+
 type AuthorizationApplication struct {
-	DB Interface.WrapperAuthorization
+	DB ormPkg.WrapperAuthorization
 }
 
 func (ap *AuthorizationApplication) SignUp(signup *authorization.RegistrationRequest) (*util.Defense, error) {

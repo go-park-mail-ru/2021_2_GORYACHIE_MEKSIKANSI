@@ -2,15 +2,26 @@ package orm
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/cart"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	cartProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart/proto"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	cast "2021_2_GORYACHIE_MEKSIKANSI/internal/util/cast"
 	"context"
+	"google.golang.org/grpc"
 )
 
+type WrapperCartServerInterface interface {
+	GetCart(id int) (*cart.ResponseCartErrors, error)
+	UpdateCart(dishes cart.RequestCartDefault, clientId int) (*cart.ResponseCartErrors, error)
+}
+
+type ConnectCartServiceInterface interface {
+	GetCart(ctx context.Context, in *cartProto.CartId, opts ...grpc.CallOption) (*cartProto.ResponseCartErrors, error)
+	UpdateCart(ctx context.Context, in *cartProto.RequestCartDefault, opts ...grpc.CallOption) (*cartProto.ResponseCartErrors, error)
+}
+
+
 type Wrapper struct {
-	Conn Interface.ConnectCartService
+	Conn ConnectCartServiceInterface
 	Ctx  context.Context
 }
 

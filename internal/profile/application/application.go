@@ -1,17 +1,30 @@
 package application
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	Profile2 "2021_2_GORYACHIE_MEKSIKANSI/internal/profile"
+	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/profile/orm"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"math"
 	"strconv"
 	"strings"
 )
 
+type ProfileApplicationInterface interface {
+	GetProfile(id int) (*Profile2.Profile, error)
+	UpdateName(id int, newName string) error
+	UpdateEmail(id int, newEmail string) error
+	UpdatePassword(id int, newPassword string) error
+	UpdatePhone(id int, newPhone string) error
+	UpdateAvatar(id int, newAvatar *Profile2.UpdateAvatar) error
+	UpdateBirthday(id int, newBirthday string) error
+	UpdateAddress(id int, newAddress Profile2.AddressCoordinates) error
+	AddAddress(id int, newAddress Profile2.AddressCoordinates) (int, error)
+	DeleteAddress(id int, addressId int) error
+}
+
 type Profile struct {
-	DB Interface.WrapperProfile
+	DB ormPkg.WrapperProfileInterface
 }
 
 func (p *Profile) GetProfile(id int) (*Profile2.Profile, error) {

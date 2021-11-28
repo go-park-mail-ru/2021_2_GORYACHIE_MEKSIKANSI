@@ -3,7 +3,7 @@ package api
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/cart"
-	interfaces "2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	appPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/cart/application"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"encoding/json"
@@ -11,8 +11,13 @@ import (
 	"net/http"
 )
 
+type CartApiInterface interface {
+	GetCartHandler(ctx *fasthttp.RequestCtx)
+	UpdateCartHandler(ctx *fasthttp.RequestCtx)
+}
+
 type InfoCart struct {
-	Application interfaces.CartApplication
+	Application appPkg.CartApplicationInterface
 	Logger      errPkg.MultiLogger
 }
 

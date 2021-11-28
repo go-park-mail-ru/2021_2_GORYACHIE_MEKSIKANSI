@@ -1,17 +1,48 @@
 package orm
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	cartPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/cart"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"context"
+	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 )
 
+type WrapperCartInterface interface {
+	GetCart(id int) (*cartPkg.ResponseCartErrors, []cartPkg.CastDishesErrs, error)
+	UpdateCart(dishes cartPkg.RequestCartDefault, clientId int) (*cartPkg.ResponseCartErrors, []cartPkg.CastDishesErrs, error)
+	DeleteCart(id int) error
+	GetPriceDelivery(id int) (int, error)
+	GetRestaurant(id int) (*restaurant.RestaurantId, error)
+}
+
+type ConnectionInterface interface {
+	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
+	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
+	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
+	Begin(ctx context.Context) (pgx.Tx, error)
+}
+
+type TransactionInterface interface {
+	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
+	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
+	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
+	Begin(ctx context.Context) (pgx.Tx, error)
+	BeginFunc(ctx context.Context, f func(pgx.Tx) error) error
+	Commit(ctx context.Context) error
+	Rollback(ctx context.Context) error
+	CopyFrom(ctx context.Context, tableName pgx.Identifier, columnNames []string, rowSrc pgx.CopyFromSource) (int64, error)
+	SendBatch(ctx context.Context, b *pgx.Batch) pgx.BatchResults
+	LargeObjects() pgx.LargeObjects
+	Prepare(ctx context.Context, name, sql string) (*pgconn.StatementDescription, error)
+	QueryFunc(ctx context.Context, sql string, args []interface{}, scans []interface{}, f func(pgx.QueryFuncRow) error) (pgconn.CommandTag, error)
+	Conn() *pgx.Conn
+}
+
 type Wrapper struct {
-	Conn Interface.ConnectionInterface
+	Conn ConnectionInterface
 }
 
 func (db *Wrapper) GetCart(id int) (*cartPkg.ResponseCartErrors, []cartPkg.CastDishesErrs, error) {
@@ -171,7 +202,7 @@ func (db *Wrapper) DeleteCart(id int) error {
 	return nil
 }
 
-func (db *Wrapper) updateCartStructFood(ingredients []cartPkg.IngredientsCartRequest, clientId int, cartId int, place int, tx Interface.TransactionInterface, contextTransaction context.Context) ([]cartPkg.IngredientCartResponse, error) {
+func (db *Wrapper) updateCartStructFood(ingredients []cartPkg.IngredientsCartRequest, clientId int, cartId int, place int, tx TransactionInterface, contextTransaction context.Context) ([]cartPkg.IngredientCartResponse, error) {
 	var result []cartPkg.IngredientCartResponse
 	for _, ingredient := range ingredients {
 		var checkedIngredient cartPkg.IngredientCartResponse
@@ -199,7 +230,7 @@ func (db *Wrapper) updateCartStructFood(ingredients []cartPkg.IngredientsCartReq
 	return result, nil
 }
 
-func (db *Wrapper) updateCartRadios(radios []cartPkg.RadiosCartRequest, clientId int, cartId int, tx Interface.TransactionInterface, contextTransaction context.Context) ([]cartPkg.RadiosCartResponse, int, error) {
+func (db *Wrapper) updateCartRadios(radios []cartPkg.RadiosCartRequest, clientId int, cartId int, tx TransactionInterface, contextTransaction context.Context) ([]cartPkg.RadiosCartResponse, int, error) {
 	var result []cartPkg.RadiosCartResponse
 	radiosPlace := 0
 	for _, radio := range radios {

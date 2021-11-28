@@ -2,13 +2,13 @@ package build
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/orm"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"context"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-func CreateDb(configDB config.Database) (Interface.ConnectionInterface, error) {
+func CreateDb(configDB config.Database) (ormPkg.ConnectionInterface, error) {
 	var err error
 	conn, err := pgxpool.Connect(context.Background(),
 		"postgres://"+configDB.UserName+":"+configDB.Password+

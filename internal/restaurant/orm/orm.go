@@ -1,16 +1,34 @@
 package orm
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
 	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/proto"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
 	cast "2021_2_GORYACHIE_MEKSIKANSI/internal/util/cast"
 	"context"
+	"google.golang.org/grpc"
 )
 
+type WrapperRestaurantServerInterface interface {
+	AllRestaurants() ([]restaurant.Restaurants, error)
+	GetRestaurant(id int) (*restaurant.RestaurantId, error)
+	RestaurantDishes(restId int, dishId int) (*restaurant.Dishes, error)
+	CreateReview(id int, review restaurant.NewReview) error
+	GetReview(id int) (*restaurant.ResReview, error)
+	SearchRestaurant(search string) ([]restaurant.Restaurants, error)
+}
+
+type ConnectRestaurantServiceInterface interface {
+	AllRestaurants(ctx context.Context, in *resProto.Empty, opts ...grpc.CallOption) (*resProto.Restaurants, error)
+	GetRestaurant(ctx context.Context, in *resProto.RestaurantId, opts ...grpc.CallOption) (*resProto.RestaurantInfo, error)
+	RestaurantDishes(ctx context.Context, in *resProto.DishInfo, opts ...grpc.CallOption) (*resProto.Dishes, error)
+	CreateReview(ctx context.Context, in *resProto.NewReview, opts ...grpc.CallOption) (*resProto.Error, error)
+	GetReview(ctx context.Context, in *resProto.RestaurantId, opts ...grpc.CallOption) (*resProto.ResReview, error)
+	SearchRestaurant(ctx context.Context, in *resProto.SearchRestaurantText, opts ...grpc.CallOption) (*resProto.Restaurants, error)
+}
+
 type Wrapper struct {
-	Conn Interface.ConnectRestaurantService
+	Conn ConnectRestaurantServiceInterface
 	Ctx  context.Context
 }
 

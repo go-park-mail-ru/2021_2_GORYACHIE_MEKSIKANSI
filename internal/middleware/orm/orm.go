@@ -1,16 +1,29 @@
 package orm
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/Interface"
+	authProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/authorization/proto"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util/cast"
+	"google.golang.org/grpc"
 
 	"context"
 )
 
+type WrapperMiddlewareInterface interface {
+	CheckAccess(cookie *util.Defense) (bool, error)
+	NewCSRF(cookie *util.Defense) (string, error)
+	GetIdByCookie(cookie *util.Defense) (int, error)
+}
+
+type ConnectionMiddlewareInterface interface {
+	CheckAccessUser(ctx context.Context, in *authProto.Defense, opts ...grpc.CallOption) (*authProto.CheckAccess, error)
+	NewCSRFUser(ctx context.Context, in *authProto.Defense, opts ...grpc.CallOption) (*authProto.CSRFResponse, error)
+	GetIdByCookie(ctx context.Context, in *authProto.Defense, opts ...grpc.CallOption) (*authProto.IdClientResponse, error)
+}
+
 type Wrapper struct {
-	Conn Interface.ConnectionMiddleware
+	Conn ConnectionMiddlewareInterface
 	Ctx  context.Context
 }
 
