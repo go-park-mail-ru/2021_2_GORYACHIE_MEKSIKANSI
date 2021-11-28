@@ -1,10 +1,8 @@
 package orm
 
 import (
-	auth "2021_2_GORYACHIE_MEKSIKANSI/internal/authorization"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/application"
+	authPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/authorization"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"context"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
@@ -18,17 +16,17 @@ const (
 )
 
 type WrapperAuthorization interface {
-	SignupClient(signup *auth.RegistrationRequest, cookie *util.Defense) (*util.Defense, error)
-	SignupCourier(signup *auth.RegistrationRequest, cookie *util.Defense) (*util.Defense, error)
-	SignupHost(signup *auth.RegistrationRequest, cookie *util.Defense) (*util.Defense, error)
+	SignupClient(signup *authPkg.RegistrationRequest, cookie *authPkg.Defense) (*authPkg.Defense, error)
+	SignupCourier(signup *authPkg.RegistrationRequest, cookie *authPkg.Defense) (*authPkg.Defense, error)
+	SignupHost(signup *authPkg.RegistrationRequest, cookie *authPkg.Defense) (*authPkg.Defense, error)
 	LoginByEmail(email string, password string) (int, error)
 	LoginByPhone(phone string, password string) (int, error)
 	DeleteCookie(CSRF string) (string, error)
-	NewDefense() *util.Defense
-	AddCookie(cookie *util.Defense, id int) error
-	CheckAccess(cookie *util.Defense) (bool, error)
-	NewCSRF(cookie *util.Defense) (string, error)
-	GetIdByCookie(cookie *util.Defense) (int, error)
+	NewDefense() *authPkg.Defense
+	AddCookie(cookie *authPkg.Defense, id int) error
+	CheckAccess(cookie *authPkg.Defense) (bool, error)
+	NewCSRF(cookie *authPkg.Defense) (string, error)
+	GetIdByCookie(cookie *authPkg.Defense) (int, error)
 }
 
 type ConnectionInterface interface {
@@ -58,17 +56,17 @@ type Wrapper struct {
 	Conn ConnectionInterface
 }
 
-func (db *Wrapper) NewDefense() *util.Defense {
-	var tmp util.Defense
+func (db *Wrapper) NewDefense() *authPkg.Defense {
+	var tmp authPkg.Defense
 	return tmp.GenerateNew()
 }
 
-func (db *Wrapper) generalSignUp(signup *auth.RegistrationRequest, transaction TransactionInterface, contextTransaction context.Context) (int, error) {
+func (db *Wrapper) generalSignUp(signup *authPkg.RegistrationRequest, transaction TransactionInterface, contextTransaction context.Context) (int, error) {
 	var userId int
 
-	salt := util.RandString(application.LenSalt)
+	salt := authPkg.RandString(authPkg.LenSalt)
 
-	util.Sanitize(signup.Phone)
+	Sanitize(signup.Phone)
 	if _, err := strconv.Atoi(signup.Phone); err != nil || len(signup.Phone) != PhoneLen {
 		return 0, &errPkg.Errors{
 			Alias: errPkg.AGeneralSignUpIncorrectPhoneFormat,
@@ -81,8 +79,8 @@ func (db *Wrapper) generalSignUp(signup *auth.RegistrationRequest, transaction T
 
 	err := transaction.QueryRow(contextTransaction,
 		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-		util.Sanitize(signup.Name), util.Sanitize(signup.Email),
-		phone, util.HashPassword(signup.Password, salt), salt).Scan(&userId)
+		Sanitize(signup.Name), Sanitize(signup.Email),
+		phone, HashPassword(signup.Password, salt), salt).Scan(&userId)
 
 	if err != nil {
 		errorText := err.Error()
@@ -98,7 +96,7 @@ func (db *Wrapper) generalSignUp(signup *auth.RegistrationRequest, transaction T
 	return userId, nil
 }
 
-func (db *Wrapper) SignupHost(signup *auth.RegistrationRequest, cookie *util.Defense) (*util.Defense, error) {
+func (db *Wrapper) SignupHost(signup *authPkg.RegistrationRequest, cookie *authPkg.Defense) (*authPkg.Defense, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
@@ -135,7 +133,7 @@ func (db *Wrapper) SignupHost(signup *auth.RegistrationRequest, cookie *util.Def
 	return cookie, nil
 }
 
-func (db *Wrapper) SignupCourier(signup *auth.RegistrationRequest, cookie *util.Defense) (*util.Defense, error) {
+func (db *Wrapper) SignupCourier(signup *authPkg.RegistrationRequest, cookie *authPkg.Defense) (*authPkg.Defense, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
@@ -173,7 +171,7 @@ func (db *Wrapper) SignupCourier(signup *auth.RegistrationRequest, cookie *util.
 	return cookie, err
 }
 
-func (db *Wrapper) SignupClient(signup *auth.RegistrationRequest, cookie *util.Defense) (*util.Defense, error) {
+func (db *Wrapper) SignupClient(signup *authPkg.RegistrationRequest, cookie *authPkg.Defense) (*authPkg.Defense, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
@@ -211,7 +209,7 @@ func (db *Wrapper) SignupClient(signup *auth.RegistrationRequest, cookie *util.D
 	return cookie, nil
 }
 
-func (db *Wrapper) addTransactionCookie(cookie *util.Defense, Transaction TransactionInterface, id int, contextTransaction context.Context) error {
+func (db *Wrapper) addTransactionCookie(cookie *authPkg.Defense, Transaction TransactionInterface, id int, contextTransaction context.Context) error {
 	_, err := Transaction.Exec(contextTransaction,
 		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
@@ -254,7 +252,7 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 
 	err = tx.QueryRow(contextTransaction,
 		"SELECT id FROM general_user_info WHERE email = $1 AND password = $2",
-		email, util.HashPassword(password, salt)).Scan(&userId)
+		email, HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
 		return 0, &errPkg.Errors{
 			Alias: errPkg.ALoginOrPasswordIncorrect,
@@ -301,7 +299,7 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 
 	err = tx.QueryRow(contextTransaction,
 		"SELECT id FROM general_user_info WHERE phone = $1 AND password = $2",
-		phone, util.HashPassword(password, salt)).Scan(&userId)
+		phone, HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
 		return 0, &errPkg.Errors{
 			Alias: errPkg.ALoginOrPasswordIncorrect,
@@ -348,7 +346,7 @@ func (db *Wrapper) DeleteCookie(CSRF string) (string, error) {
 	return *sessionId, nil
 }
 
-func (db *Wrapper) AddCookie(cookie *util.Defense, id int) error {
+func (db *Wrapper) AddCookie(cookie *authPkg.Defense, id int) error {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
@@ -378,7 +376,7 @@ func (db *Wrapper) AddCookie(cookie *util.Defense, id int) error {
 	return nil
 }
 
-func (db *Wrapper) CheckAccess(cookie *util.Defense) (bool, error) {
+func (db *Wrapper) CheckAccess(cookie *authPkg.Defense) (bool, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
@@ -419,7 +417,7 @@ func (db *Wrapper) CheckAccess(cookie *util.Defense) (bool, error) {
 	return false, nil
 }
 
-func (db *Wrapper) NewCSRF(cookie *util.Defense) (string, error) {
+func (db *Wrapper) NewCSRF(cookie *authPkg.Defense) (string, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
@@ -430,7 +428,7 @@ func (db *Wrapper) NewCSRF(cookie *util.Defense) (string, error) {
 
 	defer tx.Rollback(contextTransaction)
 
-	csrfToken := util.RandString(5)
+	csrfToken := authPkg.RandString(5)
 	_, err = tx.Exec(contextTransaction,
 		"UPDATE cookie SET csrf_token = $1 WHERE session_id = $2",
 		csrfToken, cookie.SessionId)
@@ -450,7 +448,7 @@ func (db *Wrapper) NewCSRF(cookie *util.Defense) (string, error) {
 	return csrfToken, nil
 }
 
-func (db *Wrapper) GetIdByCookie(cookie *util.Defense) (int, error) {
+func (db *Wrapper) GetIdByCookie(cookie *authPkg.Defense) (int, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {

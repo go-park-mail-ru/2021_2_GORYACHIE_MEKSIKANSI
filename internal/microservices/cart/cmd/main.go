@@ -8,7 +8,6 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart/proto"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart/service"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
-	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"net"
@@ -21,8 +20,8 @@ const (
 )
 
 func main() {
-	var logger utils.Logger
-	logger.Log = utils.NewLogger("./logs.txt")
+	var logger Logger
+	logger.Log = NewLogger("./logs.txt")
 
 	defer func(loggerErrWarn errPkg.MultiLogger) {
 		errLogger := loggerErrWarn.Sync()

@@ -12,8 +12,6 @@ const (
 	ConfPath   = "./config/"
 )
 
-
-
 func InitConfig() (error, []interface{}) {
 	viper.AddConfigPath(ConfPath)
 	viper.SetConfigType(ConfType)

@@ -1,9 +1,8 @@
 package orm
 
 import (
+	resPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
-	resPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"context"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
@@ -407,7 +406,7 @@ func (db *Wrapper) GetReview(id int) ([]resPkg.Review, error) {
 				Alias: errPkg.RGetReviewNotScan,
 			}
 		}
-		review.Date, review.Time = util.FormatDate(date)
+		review.Date, review.Time = FormatDate(date)
 		result = append(result, review)
 	}
 

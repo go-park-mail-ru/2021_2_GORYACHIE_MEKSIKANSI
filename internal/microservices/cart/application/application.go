@@ -1,16 +1,15 @@
 package application
 
 import (
-	Cart2 "2021_2_GORYACHIE_MEKSIKANSI/internal/cart"
+	cartPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart"
 	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart/orm"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
 )
 
 type CartInterface interface {
 	CalculatePriceDelivery(id int) (int, error)
-	CalculateCost(result *Cart2.ResponseCartErrors, rest *restaurant.RestaurantId) (*Cart2.CostCartResponse, error)
-	GetCart(id int) (*Cart2.ResponseCartErrors, error)
-	UpdateCart(dishes Cart2.RequestCartDefault, clientId int) (*Cart2.ResponseCartErrors, error)
+	CalculateCost(result *cartPkg.ResponseCartErrors, rest *cartPkg.RestaurantId) (*cartPkg.CostCartResponse, error)
+	GetCart(id int) (*cartPkg.ResponseCartErrors, error)
+	UpdateCart(dishes cartPkg.RequestCartDefault, clientId int) (*cartPkg.ResponseCartErrors, error)
 }
 
 type Cart struct {
@@ -21,8 +20,8 @@ func (c *Cart) CalculatePriceDelivery(id int) (int, error) {
 	return c.DB.GetPriceDelivery(id)
 }
 
-func (c *Cart) CalculateCost(result *Cart2.ResponseCartErrors, rest *restaurant.RestaurantId) (*Cart2.CostCartResponse, error) {
-	var cost Cart2.CostCartResponse
+func (c *Cart) CalculateCost(result *cartPkg.ResponseCartErrors, rest *cartPkg.RestaurantId) (*cartPkg.CostCartResponse, error) {
+	var cost cartPkg.CostCartResponse
 	sumCost := 0
 	for i, dish := range result.Dishes {
 		ingredientCost := 0
@@ -47,7 +46,7 @@ func (c *Cart) CalculateCost(result *Cart2.ResponseCartErrors, rest *restaurant.
 	return &cost, nil
 }
 
-func (c *Cart) GetCart(id int) (*Cart2.ResponseCartErrors, error) {
+func (c *Cart) GetCart(id int) (*cartPkg.ResponseCartErrors, error) {
 	result, errorDishes, err := c.DB.GetCart(id)
 	if err != nil {
 		return nil, err
@@ -70,7 +69,7 @@ func (c *Cart) GetCart(id int) (*Cart2.ResponseCartErrors, error) {
 	return result, nil
 }
 
-func (c *Cart) UpdateCart(dishes Cart2.RequestCartDefault, clientId int) (*Cart2.ResponseCartErrors, error) {
+func (c *Cart) UpdateCart(dishes cartPkg.RequestCartDefault, clientId int) (*cartPkg.ResponseCartErrors, error) {
 	if dishes.Restaurant.Id == -1 {
 		return nil, c.DB.DeleteCart(clientId)
 	}

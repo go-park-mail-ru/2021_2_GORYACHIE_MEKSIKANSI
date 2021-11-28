@@ -1,8 +1,8 @@
 package application
 
 import (
+	resPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant"
 	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/orm"
-	resPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
 )
 
 type RestaurantApplicationInterface interface {

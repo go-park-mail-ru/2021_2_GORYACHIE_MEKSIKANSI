@@ -1,10 +1,8 @@
 package orm
 
 import (
-	cartPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/cart"
+	cartPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"context"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
@@ -15,7 +13,7 @@ type WrapperCartInterface interface {
 	UpdateCart(dishes cartPkg.RequestCartDefault, clientId int) (*cartPkg.ResponseCartErrors, []cartPkg.CastDishesErrs, error)
 	DeleteCart(id int) error
 	GetPriceDelivery(id int) (int, error)
-	GetRestaurant(id int) (*restaurant.RestaurantId, error)
+	GetRestaurant(id int) (*cartPkg.RestaurantId, error)
 }
 
 type ConnectionInterface interface {
@@ -97,9 +95,9 @@ func (db *Wrapper) GetCart(id int) (*cartPkg.ResponseCartErrors, []cartPkg.CastD
 			}
 		}
 
-		placeDishes := util.ConvertInt32ToInt(getPlaceDishes)
-		placeRadios := util.ConvertInt32ToInt(getPlaceRadios)
-		placeIngredient := util.ConvertInt32ToInt(getPlaceIngredient)
+		placeDishes := ConvertInt32ToInt(getPlaceDishes)
+		placeRadios := ConvertInt32ToInt(getPlaceRadios)
+		placeIngredient := ConvertInt32ToInt(getPlaceIngredient)
 
 		var radios cartPkg.RadiosCartResponse
 		if radiosName != nil {
@@ -293,7 +291,7 @@ func (db *Wrapper) UpdateCart(newCart cartPkg.RequestCartDefault, clientId int) 
 
 		dishes.Count = dish.Count
 
-		if dish.Count > count && count != util.UnlimitedCount {
+		if dish.Count > count && count != UnlimitedCount {
 			var dishesError cartPkg.CastDishesErrs
 			dishesError.ItemNumber = dish.ItemNumber
 			dishesError.NameDish = dishes.Name
@@ -373,7 +371,7 @@ func (db *Wrapper) GetPriceDelivery(id int) (int, error) {
 	return price, nil
 }
 
-func (db *Wrapper) GetRestaurant(id int) (*restaurant.RestaurantId, error) {
+func (db *Wrapper) GetRestaurant(id int) (*cartPkg.RestaurantId, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
@@ -384,7 +382,7 @@ func (db *Wrapper) GetRestaurant(id int) (*restaurant.RestaurantId, error) {
 
 	defer tx.Rollback(contextTransaction)
 
-	var restaurant restaurant.RestaurantId
+	var restaurant cartPkg.RestaurantId
 	err = tx.QueryRow(contextTransaction,
 		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant WHERE id = $1", id).Scan(
 		&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery, &restaurant.MinDelivery,

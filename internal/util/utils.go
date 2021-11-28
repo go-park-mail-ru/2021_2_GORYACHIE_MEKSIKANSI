@@ -77,7 +77,6 @@ func InterfaceConvertInt(value interface{}) (int, error) {
 			Alias: errors.ErrNotStringAndInt,
 		}
 	}
-
 }
 
 func InterfaceConvertString(value interface{}) (string, error) {

@@ -1,27 +1,26 @@
 package Application
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization"
+	authPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/authorization"
 	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/authorization/orm"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 )
 
 type AuthorizationInterface interface {
-	SignUp(signup *authorization.RegistrationRequest) (*util.Defense, error)
-	Login(login *authorization.Authorization) (*util.Defense, error)
+	SignUp(signup *authPkg.RegistrationRequest) (*authPkg.Defense, error)
+	Login(login *authPkg.Authorization) (*authPkg.Defense, error)
 	Logout(CSRF string) (string, error)
-	CheckAccess(cookie *util.Defense) (bool, error)
-	NewCSRF(cookie *util.Defense) (string, error)
-	GetIdByCookie(cookie *util.Defense) (int, error)
+	CheckAccess(cookie *authPkg.Defense) (bool, error)
+	NewCSRF(cookie *authPkg.Defense) (string, error)
+	GetIdByCookie(cookie *authPkg.Defense) (int, error)
 }
 
 type AuthorizationApplication struct {
 	DB ormPkg.WrapperAuthorization
 }
 
-func (ap *AuthorizationApplication) SignUp(signup *authorization.RegistrationRequest) (*util.Defense, error) {
-	var cookie *util.Defense
+func (ap *AuthorizationApplication) SignUp(signup *authPkg.RegistrationRequest) (*authPkg.Defense, error) {
+	var cookie *authPkg.Defense
 	var err error
 	newCookie := ap.DB.NewDefense()
 	switch signup.TypeUser {
@@ -44,7 +43,7 @@ func (ap *AuthorizationApplication) SignUp(signup *authorization.RegistrationReq
 	return cookie, nil
 }
 
-func (ap *AuthorizationApplication) Login(login *authorization.Authorization) (*util.Defense, error) {
+func (ap *AuthorizationApplication) Login(login *authPkg.Authorization) (*authPkg.Defense, error) {
 	var userId int
 	var err error
 	switch {
@@ -80,7 +79,7 @@ func (ap *AuthorizationApplication) Logout(CSRF string) (string, error) {
 	return cookie, nil
 }
 
-func (ap *AuthorizationApplication) CheckAccess(cookie *util.Defense) (bool, error) {
+func (ap *AuthorizationApplication) CheckAccess(cookie *authPkg.Defense) (bool, error) {
 	status, err := ap.DB.CheckAccess(cookie)
 	if err != nil {
 		return false, err
@@ -88,7 +87,7 @@ func (ap *AuthorizationApplication) CheckAccess(cookie *util.Defense) (bool, err
 	return status, nil
 }
 
-func (ap *AuthorizationApplication) NewCSRF(cookie *util.Defense) (string, error) {
+func (ap *AuthorizationApplication) NewCSRF(cookie *authPkg.Defense) (string, error) {
 	csrf, err := ap.DB.NewCSRF(cookie)
 	if err != nil {
 		return "", err
@@ -96,7 +95,7 @@ func (ap *AuthorizationApplication) NewCSRF(cookie *util.Defense) (string, error
 	return csrf, nil
 }
 
-func (ap *AuthorizationApplication) GetIdByCookie(cookie *util.Defense) (int, error) {
+func (ap *AuthorizationApplication) GetIdByCookie(cookie *authPkg.Defense) (int, error) {
 	byCookie, err := ap.DB.GetIdByCookie(cookie)
 	if err != nil {
 		return 0, err

@@ -3,7 +3,6 @@ package service
 import (
 	appPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/authorization/application"
 	authProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/authorization/proto"
-	castPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/util/cast"
 	"context"
 )
 
@@ -21,7 +20,7 @@ type AuthorizationManager struct {
 }
 
 func (am *AuthorizationManager) CheckAccessUser(ctx context.Context, cookie *authProto.Defense) (*authProto.CheckAccess, error) {
-	status, err := am.Application.CheckAccess(castPkg.CastDefenseProtoToDefense(cookie))
+	status, err := am.Application.CheckAccess(CastDefenseProtoToDefense(cookie))
 	if err != nil {
 		return &authProto.CheckAccess{
 			Error: err.Error(),
@@ -34,7 +33,7 @@ func (am *AuthorizationManager) CheckAccessUser(ctx context.Context, cookie *aut
 }
 
 func (am *AuthorizationManager) NewCSRFUser(ctx context.Context, cookie *authProto.Defense) (*authProto.CSRFResponse, error) {
-	csrf, err := am.Application.NewCSRF(castPkg.CastDefenseProtoToDefense(cookie))
+	csrf, err := am.Application.NewCSRF(CastDefenseProtoToDefense(cookie))
 	if err != nil {
 		return &authProto.CSRFResponse{
 			Error: err.Error(),
@@ -49,7 +48,7 @@ func (am *AuthorizationManager) NewCSRFUser(ctx context.Context, cookie *authPro
 }
 
 func (am *AuthorizationManager) GetIdByCookie(ctx context.Context, cookie *authProto.Defense) (*authProto.IdClientResponse, error) {
-	csrf, err := am.Application.GetIdByCookie(castPkg.CastDefenseProtoToDefense(cookie))
+	csrf, err := am.Application.GetIdByCookie(CastDefenseProtoToDefense(cookie))
 	if err != nil {
 		return &authProto.IdClientResponse{
 			Error: err.Error(),
@@ -61,7 +60,7 @@ func (am *AuthorizationManager) GetIdByCookie(ctx context.Context, cookie *authP
 }
 
 func (am *AuthorizationManager) SignUp(ctx context.Context, signup *authProto.RegistrationRequest) (*authProto.DefenseResponse, error) {
-	cookie, err := am.Application.SignUp(castPkg.CastRegistrationRequestProtoToRegistrationRequest(signup))
+	cookie, err := am.Application.SignUp(CastRegistrationRequestProtoToRegistrationRequest(signup))
 	if err != nil {
 		return &authProto.DefenseResponse{
 			Error: err.Error(),
@@ -69,12 +68,12 @@ func (am *AuthorizationManager) SignUp(ctx context.Context, signup *authProto.Re
 	}
 
 	return &authProto.DefenseResponse{
-		Defense: castPkg.CastDefenseToDefenseProto(cookie),
+		Defense: CastDefenseToDefenseProto(cookie),
 	}, nil
 }
 
 func (am *AuthorizationManager) Login(ctx context.Context, login *authProto.Authorization) (*authProto.DefenseResponse, error) {
-	csrf, err := am.Application.Login(castPkg.CastAuthorizationProtoToAuthorization(login))
+	csrf, err := am.Application.Login(CastAuthorizationProtoToAuthorization(login))
 	if err != nil {
 		return &authProto.DefenseResponse{
 			Error: err.Error(),
@@ -82,7 +81,7 @@ func (am *AuthorizationManager) Login(ctx context.Context, login *authProto.Auth
 	}
 
 	return &authProto.DefenseResponse{
-		Defense: castPkg.CastDefenseToDefenseProto(csrf),
+		Defense: CastDefenseToDefenseProto(csrf),
 	}, nil
 }
 

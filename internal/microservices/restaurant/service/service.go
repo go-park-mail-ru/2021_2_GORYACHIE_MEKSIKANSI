@@ -1,10 +1,9 @@
 package service
 
 import (
+	resPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant"
 	appPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/application"
 	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/proto"
-	resPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
-	castPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/util/cast"
 	"context"
 )
 
@@ -26,7 +25,7 @@ func (r *RestaurantManager) AllRestaurants(ctx context.Context, _ *resProto.Empt
 	if err != nil {
 		return &resProto.Restaurants{Error: err.Error()}, nil
 	}
-	sendRestaurant := castPkg.CastRestaurantsToRestaurantsProto(restaurants)
+	sendRestaurant := CastRestaurantsToRestaurantsProto(restaurants)
 	return sendRestaurant, nil
 }
 
@@ -35,7 +34,7 @@ func (r *RestaurantManager) GetRestaurant(ctx context.Context, id *resProto.Rest
 	if err != nil {
 		return &resProto.RestaurantInfo{Error: err.Error()}, nil
 	}
-	sendRestaurant := castPkg.CastRestaurantIdToRestaurantInfoProto(restaurant)
+	sendRestaurant := CastRestaurantIdToRestaurantInfoProto(restaurant)
 	return sendRestaurant, nil
 }
 
@@ -44,9 +43,9 @@ func (r *RestaurantManager) RestaurantDishes(ctx context.Context, id *resProto.D
 	if err != nil {
 		return &resProto.Dishes{Error: err.Error()}, nil
 	}
-	dish := castPkg.CastDishesToDishesProto(dishes)
-	dish.Ingredients = castPkg.CastIngredientsToIngredientsProto(dishes.Ingredient)
-	dish.Radios = castPkg.CastRadiosToRadiosProto(dishes.Radios)
+	dish := CastDishesToDishesProto(dishes)
+	dish.Ingredients = CastIngredientsToIngredientsProto(dishes.Ingredient)
+	dish.Radios = CastRadiosToRadiosProto(dishes.Radios)
 	return dish, nil
 }
 
@@ -70,7 +69,7 @@ func (r *RestaurantManager) GetReview(ctx context.Context, id *resProto.Restaura
 		return &resProto.ResReview{Error: err.Error()}, nil
 	}
 
-	sendReview := castPkg.CastResReviewToResReviewProto(review)
+	sendReview := CastResReviewToResReviewProto(review)
 	return sendReview, nil
 }
 
@@ -82,7 +81,7 @@ func (r *RestaurantManager) SearchRestaurant(ctx context.Context, search *resPro
 	var searchResult *resProto.Restaurants
 	searchResult = &resProto.Restaurants{}
 	for _, restaurantInfo := range searchRestaurant {
-		searchResult.Restaurants = append(searchResult.Restaurants, castPkg.CastRestaurantsToRestaurantProto(&restaurantInfo))
+		searchResult.Restaurants = append(searchResult.Restaurants, CastRestaurantsToRestaurantProto(&restaurantInfo))
 	}
 	return searchResult, nil
 }

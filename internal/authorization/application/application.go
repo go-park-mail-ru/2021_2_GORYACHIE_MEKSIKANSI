@@ -6,8 +6,6 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 )
 
-const LenSalt = 5
-
 type AuthorizationApplicationInterface interface {
 	SignUp(signup *Authorization2.RegistrationRequest) (*util.Defense, error)
 	Login(login *Authorization2.Authorization) (*util.Defense, error)
