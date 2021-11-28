@@ -3,13 +3,7 @@ package main
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/build"
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
-	auth "2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/api"
-	cart "2021_2_GORYACHIE_MEKSIKANSI/internal/cart/api"
-	mid "2021_2_GORYACHIE_MEKSIKANSI/internal/middleware/api"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
-	order "2021_2_GORYACHIE_MEKSIKANSI/internal/order/api"
-	profile "2021_2_GORYACHIE_MEKSIKANSI/internal/profile/api"
-	restaurant "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant/api"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	cors "github.com/AdhityaRamadhanus/fasthttpcors"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
@@ -58,12 +52,12 @@ func runServer() {
 
 	startStructure := build.SetUp(connectionPostgres, logger.Log, uploader, nameBucket, microserviceConfig)
 
-	userInfo := startStructure[0].(auth.UserInfo)
-	cartInfo := startStructure[1].(cart.InfoCart)
-	profileInfo := startStructure[2].(profile.InfoProfile)
-	infoMid := startStructure[3].(mid.InfoMiddleware)
-	restaurantInfo := startStructure[4].(restaurant.InfoRestaurant)
-	orderInfo := startStructure[5].(order.InfoOrder)
+	userInfo := startStructure.User
+	cartInfo := startStructure.Cart
+	profileInfo := startStructure.Profile
+	infoMid := startStructure.Midle
+	restaurantInfo := startStructure.Restaraunt
+	orderInfo := startStructure.Order
 
 	myRouter := router.New()
 	apiGroup := myRouter.Group("/api")
@@ -102,8 +96,9 @@ func runServer() {
 
 	printURL := infoMid.LogURL(myRouter.Handler)
 
+	addressAllowedCors := appConfig.Cors.Host + ":" + appConfig.Cors.Port
 	withCors := cors.NewCorsHandler(cors.Options{
-		AllowedOrigins: []string{appConfig.Cors.Host + ":" + appConfig.Cors.Port},
+		AllowedOrigins: []string{addressAllowedCors},
 		AllowedHeaders: []string{"access-control-allow-origin", "content-type",
 			"x-csrf-token", "access-control-expose-headers"},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS", "PUT"},

@@ -49,8 +49,17 @@ const (
 	ConfPath       = "./config/"
 )
 
+type installSetUp struct {
+	User api.UserInfo
+	Profile Api5.InfoProfile
+	Midle Api3.InfoMiddleware
+	Restaraunt Api6.InfoRestaurant
+	Cart Api2.InfoCart
+	Order Api4.InfoOrder
+}
+
 func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLogger,
-	uploader *s3manager.Uploader, nameBucket string, microserviceConfig config.MicroserviceConfig) []interface{} {
+	uploader *s3manager.Uploader, nameBucket string, microserviceConfig config.MicroserviceConfig) *installSetUp {
 
 	addressAuth := microserviceConfig.Authorization.Host + ":" + microserviceConfig.Authorization.Port
 	grpcConnAuth, errDialAuth := grpc.Dial(
@@ -144,15 +153,15 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 	}
 	var _ orderApiPkg.OrderApiInterface = &orderInfo
 
-	var result []interface{}
-	result = append(result, userInfo)
-	result = append(result, cartInfo)
-	result = append(result, profileInfo)
-	result = append(result, infoMiddleware)
-	result = append(result, restaurantInfo)
-	result = append(result, orderInfo)
+	var result installSetUp
+	result.User = userInfo
+	result.Cart = cartInfo
+	result.Profile = profileInfo
+	result.Midle = infoMiddleware
+	result.Restaraunt = restaurantInfo
+	result.Order = orderInfo
 
-	return result
+	return &result
 }
 
 func ConnectAws(config config.AwsBucket) (error, *session.Session) {
