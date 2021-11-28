@@ -51,8 +51,7 @@ func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 func (c *CheckError) CheckErrorUpdateCart(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case CDeleteCartCartNotDelete, CDeleteCartStructureFoodNotDelete, CDeleteCartRadiosFoodNotDelete,
-			CUpdateCartCartNotInsert, CUpdateCartStructFoodStructureFoodNotInsert, CUpdateCartRadiosRadiosNotInsert,
+		case CUpdateCartCartNotInsert, CUpdateCartStructFoodStructureFoodNotInsert, CUpdateCartRadiosRadiosNotInsert,
 			CGetPriceDeliveryPriceNotFound, CGetPriceDeliveryPriceNotScan, CUpdateCartCartNotFound,
 			CUpdateCartCartNotScan, CUpdateCartStructureFoodStructureFoodNotSelect,
 			CUpdateCartStructRadiosStructRadiosNotSelect, CUpdateCartTransactionNotCreate, CUpdateCartNotCommit:

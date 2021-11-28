@@ -2,7 +2,7 @@ package cast
 
 import (
 	Cart2 "2021_2_GORYACHIE_MEKSIKANSI/internal/cart"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart/proto"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/proto"
 )
 
 func CastRequestCartDefaultToRequestCartDefaultProto(cart *Cart2.RequestCartDefault) *proto.RequestCartDefault {

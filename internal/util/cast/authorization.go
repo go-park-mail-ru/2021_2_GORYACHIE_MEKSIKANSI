@@ -2,7 +2,7 @@ package cast
 
 import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/internal/authorization"
-	authProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/authorization/proto"
+	authProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/proto"
 	Utils2 "2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )

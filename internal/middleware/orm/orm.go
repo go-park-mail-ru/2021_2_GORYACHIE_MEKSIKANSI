@@ -1,7 +1,7 @@
 package orm
 
 import (
-	authProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/authorization/proto"
+	authProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/proto"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util/cast"

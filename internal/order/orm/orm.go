@@ -3,7 +3,7 @@ package orm
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/cart"
 	cartOrmPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/cart/orm"
-	cartProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart/proto"
+	cartProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/proto"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	orderPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/order"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/profile"

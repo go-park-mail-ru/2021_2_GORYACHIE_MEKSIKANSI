@@ -1,7 +1,7 @@
 package cast
 
 import (
-	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/proto"
+	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/proto"
 	restaurant "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
 )
 

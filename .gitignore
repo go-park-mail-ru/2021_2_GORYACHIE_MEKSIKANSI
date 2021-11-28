@@ -26,5 +26,5 @@
 go.sum
 
 # configs
-/*.env
-/config/*.yml
+**/*.env
+**/*.yml

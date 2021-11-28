@@ -84,7 +84,6 @@ const (
 	MCheckAccessCookieNotScan          = "cookie not scan"
 	MGetIdByCookieCookieNotScan        = "cookie not scan"
 	MCheckAccessCookieNotFound         = "cookie not found"
-	MNewCSRFCSRFNotUpdate              = "csrf not updated"
 	MGetIdByCookieCookieExpired        = "cookie expired"
 	MGetIdByCookieCookieNotFound       = "cookie not found"
 	MCheckAccessTransactionNotCreate   = "transaction check access not create" // TODO: add in checkErrors
@@ -169,11 +168,8 @@ const (
 	RGetRestaurantsRestaurantsNotSelect    = "restaurants not select"
 	RGetRestaurantRestaurantNotFound       = "restaurant not found"
 	RGetTagsRestaurantRestaurantNotScan    = "category restaurants scan error"
-	RGetMenuDishesNotSelect                = "dishes not select"
-	RGetDishesRestaurantDishesNotScan      = "dishes not scan"
 	RGetMenuDishesNotFound                 = "dishes not found"
 	RGetDishesDishesNotFound               = "dishes not found"
-	RGetDishesDishesNotScan                = "dishes not scan"
 	RGetStructDishesStructDishesNotSelect  = "struct dishes not select"
 	RGetStructDishesStructDishesNotScan    = "dishes not scan"
 	RGetRadiosRadiosNotScan                = "radios not scan"
@@ -221,8 +217,6 @@ const (
 const (
 	CGetCartDishesNotFound                         = "dishes not found"
 	CDeleteCartCartNotDelete                       = "cart not delete"
-	CDeleteCartStructureFoodNotDelete              = "food not delete"
-	CDeleteCartRadiosFoodNotDelete                 = "radios not delete"
 	CUpdateCartCartNotInsert                       = "cart not insert"
 	CUpdateCartCartNotFound                        = "dish not found"
 	CUpdateCartStructFoodStructureFoodNotInsert    = "structure food not insert"
@@ -234,10 +228,6 @@ const (
 	CUpdateCartStructRadiosStructRadiosNotSelect   = "structure radios not select"
 	CUpdateCartTransactionNotCreate                = "transaction not create"
 	CUpdateCartNotCommit                           = "update cart not commit"
-	CGetCartTransactionNotCreate                   = "transaction get not create"
-	CGetCartNotSelect                              = "cart not select"
-	CGetCartNotCommit                              = "transaction get not commit"
-	CGetCartNotScan                                = "cart not scan"
 	CGetCartCartNotFound                           = "cart is void"                              // TODO: add in checkErrors
 	CDeleteCartTransactionNotCreate                = "transaction delete cart not create"        // TODO: add in checkErrors
 	CDeleteCartNotCommit                           = "transaction delete cart not commit"        // TODO: add in checkErrors
@@ -257,7 +247,7 @@ const (
 	OCreateOrderOrderListNotInsert           = "not insert in order_list"             // TODO: add in checkErrors
 	OCreateOrderCountNotUpdate               = "count dish not update"                // TODO: add in checkErrors
 	OCreateOrderCountNotCorrect              = "dishes not enough"                    // TODO: add in checkErrors
-	OGetOrdersOrdersIsVoid                   = "orders is void"                         // TODO: add in checkErrors
+	OGetOrdersOrdersIsVoid                   = "orders is void"                       // TODO: add in checkErrors
 	OGetOrdersNotSelect                      = "orders not selected"                  // TODO: add in checkErrors
 	OGetOrdersNotScan                        = "orders not scan"                      // TODO: add in checkErrors
 	OGetOrderTransactionNotCreate            = "transaction get order not create"     // TODO: add in checkErrors

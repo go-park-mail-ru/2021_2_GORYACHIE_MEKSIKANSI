@@ -2,7 +2,7 @@ package orm
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/cart"
-	cartProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/cart/proto"
+	cartProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/proto"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	cast "2021_2_GORYACHIE_MEKSIKANSI/internal/util/cast"
 	"context"

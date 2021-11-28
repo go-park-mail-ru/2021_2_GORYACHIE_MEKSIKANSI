@@ -1,7 +1,7 @@
 package orm
 
 import (
-	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservices/restaurant/proto"
+	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/proto"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
 	cast "2021_2_GORYACHIE_MEKSIKANSI/internal/util/cast"
