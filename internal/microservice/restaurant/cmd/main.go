@@ -1,9 +1,9 @@
 package main
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/config"
 	appRes "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/build"
+	confPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/config"
 	ormRes "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/orm"
 	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/proto"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/service"
@@ -12,11 +12,6 @@ import (
 	"google.golang.org/grpc"
 	"net"
 	"os"
-)
-
-const (
-	Port    = ":8084"
-	Network = "tcp"
 )
 
 func main() {
@@ -31,19 +26,22 @@ func main() {
 		}
 	}(logger.Log)
 
-	listen, errListen := net.Listen(Network, Port)
-	if errListen != nil {
-		logger.Log.Errorf("%s", errListen.Error())
-		os.Exit(1)
-	}
-	server := grpc.NewServer()
-
 	errConf, configRes := build.InitConfig()
 	if errConf != nil {
 		logger.Log.Errorf("%s", errConf.Error())
 		os.Exit(1)
 	}
-	configDB := configRes[0].(config.DBConfig)
+	configDB := configRes[0].(confPkg.DBConfig)
+	configApp := configRes[1].(confPkg.AppConfig)
+
+	address := configApp.Primary.Host  + ":" + configApp.Primary.Port
+
+	listen, errListen := net.Listen(configApp.Primary.Network, address)
+	if errListen != nil {
+		logger.Log.Errorf("%s", errListen.Error())
+		os.Exit(1)
+	}
+	server := grpc.NewServer()
 
 	connectDB, errDb := build.CreateDb(configDB.Db)
 	if errDb != nil {
@@ -59,7 +57,7 @@ func main() {
 
 	resProto.RegisterRestaurantServiceServer(server, &restaurantManager)
 
-	logger.Log.Infof("Listen in 127.0.0.1%s", Port)
+	logger.Log.Infof("Listen in %s", address)
 	errServ := server.Serve(listen)
 	if errServ != nil {
 		logger.Log.Errorf("%s", errServ.Error())

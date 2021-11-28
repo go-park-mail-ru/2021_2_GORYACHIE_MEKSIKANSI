@@ -19,7 +19,7 @@ import (
 	"os"
 )
 
-func runServer(port string) {
+func runServer() {
 	var logger utils.Logger
 	logger.Log = utils.NewLogger("./logs.txt")
 
@@ -39,6 +39,7 @@ func runServer(port string) {
 	appConfig := configStructure[0].(config.AppConfig)
 	dbConfig := configStructure[1].(config.DBConfig)
 	awsConfig := configStructure[2].(config.AwsConfig)
+	microserviceConfig := configStructure[3].(config.MicroserviceConfig)
 
 	connectionPostgres, err := build.CreateDb(dbConfig.Db, appConfig.Primary.Debug)
 	defer connectionPostgres.Close()
@@ -55,7 +56,7 @@ func runServer(port string) {
 	uploader := s3manager.NewUploader(sess)
 	nameBucket := awsConfig.Aws.Name
 
-	startStructure := build.SetUp(connectionPostgres, logger.Log, uploader, nameBucket)
+	startStructure := build.SetUp(connectionPostgres, logger.Log, uploader, nameBucket, microserviceConfig)
 
 	userInfo := startStructure[0].(auth.UserInfo)
 	cartInfo := startStructure[1].(cart.InfoCart)
@@ -111,7 +112,7 @@ func runServer(port string) {
 		AllowMaxAge:      5600,
 		Debug:            true,
 	})
-
+	port := ":" + appConfig.Port
 	err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(printURL))
 	if err != nil {
 		logger.Log.Errorf("Listen and server error: %v", err)
@@ -120,5 +121,5 @@ func runServer(port string) {
 }
 
 func main() {
-	runServer(":5000")
+	runServer()
 }

@@ -44,24 +44,24 @@ const (
 	ConfNameMain   = "main"
 	ConfNameDB     = "database"
 	ConfNameBucket = "bucket"
+	ConfNameMicroservice   = "microservice"
 	ConfType       = "yml"
 	ConfPath       = "./config/"
 )
 
 func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLogger,
-	uploader *s3manager.Uploader, nameBucket string) []interface{} {
+	uploader *s3manager.Uploader, nameBucket string, microserviceConfig config.MicroserviceConfig) []interface{} {
 
-	grpcConnAuth, errDial := grpc.Dial(
-		"127.0.0.1:8081",
+	addressAuth := microserviceConfig.Authorization.Host + ":" + microserviceConfig.Authorization.Port
+	grpcConnAuth, errDialAuth := grpc.Dial(
+		addressAuth,
 		grpc.WithInsecure(),
 	)
-	if errDial != nil {
-		println("GG")
+	if errDialAuth != nil {
+		logger.Errorf("Not connect %s , %s", addressAuth, errDialAuth.Error())
 		return nil
 	}
-
 	authManager := authProto.NewAuthorizationServiceClient(grpcConnAuth)
-
 	authCtx := context.Background()
 
 	authWrapper := orm.Wrapper{Conn: authManager, Ctx: authCtx}
@@ -92,17 +92,16 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 	}
 	var _ midlApiPkg.MiddlewareApiInterface = &infoMiddleware
 
-	grpcConnRes, errDial := grpc.Dial(
-		"127.0.0.1:8084",
+	addressRes := microserviceConfig.Restaurant.Host + ":" + microserviceConfig.Restaurant.Port
+	grpcConnRes, errDialRes := grpc.Dial(
+		addressRes,
 		grpc.WithInsecure(),
 	)
-	if errDial != nil {
-		println("GG")
+	if errDialRes != nil {
+		logger.Errorf("Not connect %s , %s", addressRes, errDialRes.Error())
 		return nil
 	}
-
 	resManager := resProto.NewRestaurantServiceClient(grpcConnRes)
-
 	resCtx := context.Background()
 
 	restWrapper := Orm6.Wrapper{Conn: resManager, Ctx: resCtx}
@@ -113,17 +112,16 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 	}
 	var _ resApiPkg.RestaurantApiInterface = &restaurantInfo
 
-	grpcConnCart, errDial := grpc.Dial(
-		"127.0.0.1:8082",
+	addressCart := microserviceConfig.Cart.Host + ":" + microserviceConfig.Cart.Port
+	grpcConnCart, errDialCart := grpc.Dial(
+		addressCart,
 		grpc.WithInsecure(),
 	)
-	if errDial != nil {
-		println("GG")
+	if errDialCart != nil {
+		logger.Errorf("Not connect %s , %s", addressCart, errDialCart.Error())
 		return nil
 	}
-
 	cartManager := cartProto.NewCartServiceClient(grpcConnCart)
-
 	cartCtx := context.Background()
 
 	cartWrapper := Orm2.Wrapper{Conn: cartManager, Ctx: cartCtx}
@@ -195,6 +193,21 @@ func InitConfig() (error, []interface{}) {
 		}, nil
 	}
 
+	viper.SetConfigName(ConfNameMicroservice)
+	errRead = viper.ReadInConfig()
+	if errRead != nil {
+		return &errPkg.Errors{
+			Alias: errRead.Error(),
+		}, nil
+	}
+	microserviceConfig := config.MicroserviceConfig{}
+	errUnmarshal = viper.Unmarshal(&microserviceConfig)
+	if errUnmarshal != nil {
+		return &errPkg.Errors{
+			Alias: errUnmarshal.Error(),
+		}, nil
+	}
+
 	viper.SetConfigName(ConfNameDB)
 	errRead = viper.ReadInConfig()
 	if errRead != nil {
@@ -229,6 +242,7 @@ func InitConfig() (error, []interface{}) {
 	result = append(result, appConfig)
 	result = append(result, dbConfig)
 	result = append(result, awsConfig)
+	result = append(result, microserviceConfig)
 
 	return nil, result
 }

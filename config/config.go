@@ -39,3 +39,29 @@ type AwsBucket struct {
 type AwsConfig struct {
 	Aws AwsBucket `mapstructure:"aws"`
 }
+
+type MicroserviceConfig struct {
+	Authorization AuthorizationMicroservice `mapstructure:"authorization"`
+	Cart CartMicroservice `mapstructure:"cart"`
+	Restaurant RestaurantMicroservice `mapstructure:"restaurant"`
+}
+
+type AuthorizationMicroservice struct {
+	Host      string
+	Port      string
+	Network   string
+}
+
+type CartMicroservice struct {
+	Host      string
+	Port      string
+	Network   string
+}
+
+type RestaurantMicroservice struct {
+	Host      string
+	Port      string
+	Network   string
+}
+
+

@@ -1,7 +1,7 @@
 package build
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/config"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/config"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/myerror"
 	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/orm"
 	"context"

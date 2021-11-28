@@ -1,9 +1,9 @@
 package main
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/config"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/build"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/config"
 	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/orm"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/proto"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/service"
@@ -12,11 +12,6 @@ import (
 	"google.golang.org/grpc"
 	"net"
 	"os"
-)
-
-const (
-	Port    = ":8081"
-	Network = "tcp"
 )
 
 func main() {
@@ -31,19 +26,22 @@ func main() {
 		}
 	}(logger.Log)
 
-	listen, errListen := net.Listen(Network, Port)
-	if errListen != nil {
-		logger.Log.Errorf("%s", errListen.Error())
-		os.Exit(1)
-	}
-	server := grpc.NewServer()
-
 	errConf, configRes := build.InitConfig()
 	if errConf != nil {
 		logger.Log.Errorf("%s", errConf.Error())
 		os.Exit(1)
 	}
 	configDB := configRes[0].(config.DBConfig)
+	configApp := configRes[1].(config.AppConfig)
+
+	address := configApp.Primary.Host  + ":" + configApp.Primary.Port
+
+	listen, errListen := net.Listen(configApp.Primary.Network, address)
+	if errListen != nil {
+		logger.Log.Errorf("%s", errListen.Error())
+		os.Exit(1)
+	}
+	server := grpc.NewServer()
 
 	connectDB, errDb := build.CreateDb(configDB.Db)
 	if errDb != nil {
@@ -57,7 +55,7 @@ func main() {
 
 	proto.RegisterAuthorizationServiceServer(server, &authInfo)
 
-	logger.Log.Infof("Listen in 127.0.0.1%s", Port)
+	logger.Log.Infof("Listen in %s", address)
 	errServ := server.Serve(listen)
 	if errServ != nil {
 		logger.Log.Errorf("%s", errServ.Error())
