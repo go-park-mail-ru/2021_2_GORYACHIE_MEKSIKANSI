@@ -8,7 +8,7 @@ import (
 )
 
 type OrderApplicationInterface interface {
-	CreateOrder(id int, createOrder Order2.CreateOrder) error
+	CreateOrder(id int, createOrder Order2.CreateOrder) (int, error)
 	GetOrders(id int) (*Order2.HistoryOrderArray, error)
 	GetActiveOrder(idClient int, idOrder int) (*Order2.ActiveOrder, error)
 	UpdateStatusOrder(id int, status int) error
@@ -19,34 +19,34 @@ type Order struct {
 	DBProfile profileOrmPkg.WrapperProfileInterface
 }
 
-func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) error {
+func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) (int, error) {
 	cart, err := o.DB.GetCart(id)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	rest, err := o.DB.GetRestaurant(cart.Restaurant.Id)
 	if err != nil {
-		return err
+		return 0,  err
 	}
 
 	cart.CastFromRestaurantId(*rest)
 
 	err = o.DB.DeleteCart(id)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	courierId := 1
 
 	addressId, err := o.DBProfile.AddAddress(id, createOrder.Address)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	err = o.DBProfile.DeleteAddress(id, addressId)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	return o.DB.CreateOrder(id, createOrder, addressId, *cart, courierId)

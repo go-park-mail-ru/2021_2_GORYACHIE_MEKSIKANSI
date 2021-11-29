@@ -58,7 +58,7 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		return
 	}
-	err = u.Application.CreateOrder(id, createOrder)
+	idOrder, err := u.Application.CreateOrder(id, createOrder)
 
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorCreateOrder(err)
 	if errOut != nil {
@@ -74,9 +74,10 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&util.ResponseStatus{
-		StatusHTTP: http.StatusOK,
-	})
+	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+		Status: http.StatusOK,
+		Body: order.ConvertCreateOrderIdToOrderResponse(idOrder),
+		})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))

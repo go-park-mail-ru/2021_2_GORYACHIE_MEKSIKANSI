@@ -5,10 +5,18 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/profile"
 )
 
+type ResponseOrder struct {
+	Order interface{} `json:"order"`
+}
+
 type CreateOrder struct {
 	MethodPay string                     `json:"methodPay"`
 	Address   profile.AddressCoordinates `json:"address"`
 	Comment   string                     `json:"comment"`
+}
+
+type CreateOrderId struct {
+	Id int `json:"id"`
 }
 
 type HistoryOrderArray struct {
@@ -45,4 +53,8 @@ type ActiveOrder struct {
 	Address    profile.AddressCoordinates `json:"address"`
 	Restaurant HistoryResOrder            `json:"restaurant"`
 	Cart       ResponseCartOrder          `json:"cart"`
+}
+
+func ConvertCreateOrderIdToOrderResponse(id int) ResponseOrder {
+	return ResponseOrder{Order: CreateOrderId{Id: id}}
 }

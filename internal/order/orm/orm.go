@@ -17,7 +17,7 @@ import (
 )
 
 type WrapperOrderInterface interface {
-	CreateOrder(id int, createOrder orderPkg.CreateOrder, addressId int, cart cart.ResponseCartErrors, courierId int) error
+	CreateOrder(id int, createOrder orderPkg.CreateOrder, addressId int, cart cart.ResponseCartErrors, courierId int) (int, error)
 	GetOrders(id int) (*orderPkg.HistoryOrderArray, error)
 	GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, error)
 	UpdateStatusOrder(id int, status int) error
@@ -40,11 +40,11 @@ type Wrapper struct {
 	Conn        ConnectionInterface
 }
 
-func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, addressId int, cart cart.ResponseCartErrors, courierId int) error {
+func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, addressId int, cart cart.ResponseCartErrors, courierId int) (int, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
-		return &errPkg.Errors{
+		return 0,  &errPkg.Errors{
 			Alias: errPkg.OCreateOrderTransactionNotCreate,
 		}
 	}
@@ -59,7 +59,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 		id, courierId, addressId, cart.Restaurant.Id, 1, createOrder.Comment, createOrder.MethodPay,
 		cart.Cost.DCost, cart.Cost.SumCost).Scan(&orderId)
 	if err != nil {
-		return &errPkg.Errors{
+		return 0, &errPkg.Errors{
 			Alias: errPkg.OCreateOrderOrderUserNotInsert,
 		}
 	}
@@ -72,7 +72,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 			"INSERT INTO order_list (order_id, food, count_dishes, item_number, place) VALUES ($1, $2, $3, $4, $5) RETURNING id",
 			orderId, dish.Id, dish.Count, dish.ItemNumber, dishPlace).Scan(&listId)
 		if err != nil {
-			return &errPkg.Errors{
+			return 0, &errPkg.Errors{
 				Alias: errPkg.OCreateOrderOrderListNotInsert,
 			}
 		}
@@ -83,7 +83,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 					"INSERT INTO order_radios_list (order_id, radios_id, radios, food, list_id, place) VALUES ($1, $2, $3, $4, $5, $6)",
 					orderId, radios.RadiosId, radios.Id, cart.Dishes[i].Id, listId, elementPlace)
 				if err != nil {
-					return &errPkg.Errors{
+					return 0, &errPkg.Errors{
 						Alias: errPkg.OCreateOrderOrderRadiosListUserNotInsert,
 					}
 				}
@@ -96,7 +96,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 					"INSERT INTO order_structure_list (order_id, food, structure_food, list_id, place) VALUES ($1, $2, $3, $4, $5)",
 					orderId, dish.Id, ingredient.Id, listId, elementPlace)
 				if err != nil {
-					return &errPkg.Errors{
+					return 0, &errPkg.Errors{
 						Alias: errPkg.OCreateOrderOrderStructureListNotInsert,
 					}
 				}
@@ -109,13 +109,13 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 			"UPDATE dishes SET count = count - $1 WHERE id = $2 RETURNING count",
 			dish.Count, dish.Id).Scan(&newCount)
 		if err != nil {
-			return &errPkg.Errors{
+			return 0, &errPkg.Errors{
 				Alias: errPkg.OCreateOrderCountNotUpdate,
 			}
 		}
 
 		if newCount < 0 && newCount != util.UnlimitedCount-dish.Count {
-			return &errPkg.Errors{
+			return 0, &errPkg.Errors{
 				Alias: errPkg.OCreateOrderCountNotCorrect,
 			}
 		}
@@ -125,12 +125,12 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
-		return &errPkg.Errors{
+		return 0, &errPkg.Errors{
 			Alias: errPkg.OCreateOrderNotCommit,
 		}
 	}
 
-	return nil
+	return orderId, nil
 }
 
 func (db *Wrapper) GetOrders(id int) (*orderPkg.HistoryOrderArray, error) {
