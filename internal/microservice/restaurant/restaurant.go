@@ -94,7 +94,6 @@ type Review struct {
 	Rate int    `json:"rate"`
 }
 
-
 func (r *ResReview) CastFromRestaurantId(rest RestaurantId) {
 	r.Id = rest.Id
 	r.Img = rest.Img

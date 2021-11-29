@@ -287,11 +287,11 @@ func (r *InfoRestaurant) GetReviewHandler(ctx *fasthttp.RequestCtx) {
 
 	if restaurant.Reviews == nil {
 		err = json.NewEncoder(ctx).Encode(&errPkg.ResultErrorMulti{
-			Status: http.StatusNotFound,
+			Status:  http.StatusNotFound,
 			Explain: errPkg.RGetReviewEmpty,
 			Body: &resPkg.RestaurantsResponse{
-						RestaurantsGet: restaurant,
-					},
+				RestaurantsGet: restaurant,
+			},
 		})
 		if err != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)

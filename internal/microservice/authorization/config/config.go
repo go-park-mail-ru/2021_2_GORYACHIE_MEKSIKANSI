@@ -5,9 +5,9 @@ type AppConfig struct {
 }
 
 type PrimaryConfig struct {
-	Host      string
-	Port      string
-	Network   string
+	Host    string
+	Port    string
+	Network string
 }
 
 type Database struct {

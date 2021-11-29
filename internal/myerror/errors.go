@@ -14,9 +14,9 @@ type ResultError struct {
 }
 
 type ResultErrorMulti struct {
-	Status  int    `json:"status"`
-	Explain string `json:"explain,omitempty"`
-	Body interface{} `json:"body"`
+	Status  int         `json:"status"`
+	Explain string      `json:"explain,omitempty"`
+	Body    interface{} `json:"body"`
 }
 
 type Errors struct {

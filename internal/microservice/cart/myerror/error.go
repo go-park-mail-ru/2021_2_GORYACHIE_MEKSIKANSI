@@ -24,14 +24,14 @@ func (e *Errors) Error() string {
 
 // Error of main
 const (
-	MCreateDBNotConnect         = "db not connect"
+	MCreateDBNotConnect = "db not connect"
 )
 
 // Error of restaurant
 const (
-	RGetRestaurantRestaurantNotFound       = "restaurant not found"
-	RGetRestaurantTransactionNotCreate     = "transaction get restaurant not create"
-	RGetRestaurantNotCommit                = "get restaurant not commit"
+	RGetRestaurantRestaurantNotFound   = "restaurant not found"
+	RGetRestaurantTransactionNotCreate = "transaction get restaurant not create"
+	RGetRestaurantNotCommit            = "get restaurant not commit"
 )
 
 // Error of cart

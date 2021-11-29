@@ -10,13 +10,13 @@ import (
 )
 
 const (
-	ConfNameMain   = "main"
-	ConfNameDB = "database"
-	ConfType   = "yml"
-	ConfPath   = "./internal/microservice/restaurant/config/"
+	ConfNameMain = "main"
+	ConfNameDB   = "database"
+	ConfType     = "yml"
+	ConfPath     = "./internal/microservice/restaurant/config/"
 )
 
-func SetUp (connectionDB ormPkg.ConnectionInterface) servicePkg.RestaurantManager {
+func SetUp(connectionDB ormPkg.ConnectionInterface) servicePkg.RestaurantManager {
 	authWrapper := ormPkg.Wrapper{Conn: connectionDB}
 	authorizationManager := Application.Restaurant{DB: &authWrapper}
 	authInfo := servicePkg.RestaurantManager{Application: &authorizationManager}

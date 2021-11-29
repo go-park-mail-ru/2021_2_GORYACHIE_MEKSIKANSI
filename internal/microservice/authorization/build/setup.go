@@ -10,13 +10,13 @@ import (
 )
 
 const (
-	ConfNameMain   = "main"
-	ConfNameDB = "database"
-	ConfType   = "yml"
-	ConfPath   = "./internal/microservice/authorization/config/"
+	ConfNameMain = "main"
+	ConfNameDB   = "database"
+	ConfType     = "yml"
+	ConfPath     = "./internal/microservice/authorization/config/"
 )
 
-func SetUp (connectionDB ormPkg.ConnectionInterface) servicePkg.AuthorizationManager {
+func SetUp(connectionDB ormPkg.ConnectionInterface) servicePkg.AuthorizationManager {
 	authWrapper := ormPkg.Wrapper{Conn: connectionDB}
 	authorizationManager := Application.AuthorizationApplication{DB: &authWrapper}
 	authInfo := servicePkg.AuthorizationManager{Application: &authorizationManager}

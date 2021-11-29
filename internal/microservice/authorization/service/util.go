@@ -6,7 +6,6 @@ import (
 	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
-
 func CastDefenseToDefenseProto(d *authPkg.Defense) *authProto.Defense {
 	var p authProto.Defense
 	p.DateLife = timestamp.New(d.DateLife)

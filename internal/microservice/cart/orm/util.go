@@ -1,7 +1,7 @@
 package orm
 
 const (
-	UnlimitedCount     = -1
+	UnlimitedCount = -1
 )
 
 func ConvertInt32ToInt(i *int32) int {

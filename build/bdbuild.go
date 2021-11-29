@@ -12,7 +12,7 @@ import (
 
 const (
 	Restaurants = 53
-	Categorys   = 3
+	Categories  = 3
 )
 
 type Dish struct {
@@ -62,8 +62,8 @@ type RadiosElement struct {
 
 func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 	var err error
-	addressPostgres := "postgres://"+configDB.UserName+":"+configDB.Password+
-		"@"+configDB.Host+":"+configDB.Port+"/"+configDB.SchemaName
+	addressPostgres := "postgres://" + configDB.UserName + ":" + configDB.Password +
+		"@" + configDB.Host + ":" + configDB.Port + "/" + configDB.SchemaName
 
 	conn, err := pgxpool.Connect(context.Background(), addressPostgres)
 	if err != nil {
@@ -327,8 +327,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://traveltimes.ru/wp-content/uploads/2021/08/kofe-caska-penka-scaled.jpg",
 				PlaceCategory:      2,
 				Place:              1,
-				Ingredient:  nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Fanta",
@@ -345,8 +345,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://traveltimes.ru/wp-content/uploads/2021/08/kofe-caska-penka-scaled.jpg",
 				PlaceCategory:      2,
 				Place:              2,
-				Ingredient:  nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Sprite",
@@ -363,8 +363,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://traveltimes.ru/wp-content/uploads/2021/08/kofe-caska-penka-scaled.jpg",
 				PlaceCategory:      2,
 				Place:              3,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Картошка Фри",
@@ -629,7 +629,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 		var dishId int
 		var radiosId int
 		for i := 2; i <= Restaurants; i++ {
-			for j := 0; j < Categorys; j++ {
+			for j := 0; j < Categories; j++ {
 				_, err = conn.Exec(context.Background(), requestsCategory[0], i, categorys[util.RandomInteger(0, len(categorys))], j)
 				if err != nil {
 					return nil, &errPkg.Errors{

@@ -10,8 +10,8 @@ import (
 
 func CreateDb(configDB config.Database) (ormPkg.ConnectionInterface, error) {
 	var err error
-	addressPostgres := "postgres://"+configDB.UserName+":"+configDB.Password+
-		"@"+configDB.Host+":"+configDB.Port+"/"+configDB.SchemaName
+	addressPostgres := "postgres://" + configDB.UserName + ":" + configDB.Password +
+		"@" + configDB.Host + ":" + configDB.Port + "/" + configDB.SchemaName
 
 	conn, err := pgxpool.Connect(context.Background(), addressPostgres)
 	if err != nil {

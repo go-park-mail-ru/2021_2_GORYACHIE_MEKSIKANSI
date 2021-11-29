@@ -44,7 +44,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
-		return 0,  &errPkg.Errors{
+		return 0, &errPkg.Errors{
 			Alias: errPkg.OCreateOrderTransactionNotCreate,
 		}
 	}
@@ -512,7 +512,7 @@ func (db *Wrapper) GetCart(id int) (*cart.ResponseCartErrors, error) {
 	if err != nil {
 		return nil, err
 	}
-	if receivedCart.Error!= "" {
+	if receivedCart.Error != "" {
 		return nil, &errPkg.Errors{
 			Alias: receivedCart.Error,
 		}

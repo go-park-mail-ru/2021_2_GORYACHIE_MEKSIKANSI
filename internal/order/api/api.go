@@ -76,8 +76,8 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 
 	err = json.NewEncoder(ctx).Encode(&authorization.Result{
 		Status: http.StatusOK,
-		Body: order.ConvertCreateOrderIdToOrderResponse(idOrder),
-		})
+		Body:   order.ConvertCreateOrderIdToOrderResponse(idOrder),
+	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))

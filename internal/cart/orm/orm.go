@@ -19,7 +19,6 @@ type ConnectCartServiceInterface interface {
 	UpdateCart(ctx context.Context, in *cartProto.RequestCartDefault, opts ...grpc.CallOption) (*cartProto.ResponseCartErrors, error)
 }
 
-
 type Wrapper struct {
 	Conn ConnectCartServiceInterface
 	Ctx  context.Context

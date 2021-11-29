@@ -470,11 +470,11 @@ func TestOrmUpdateCartRadios(t *testing.T) {
 
 var OrmUpdateCart = []struct {
 	testName                    string
-	inputClientId int
-	inputCart     cart.RequestCartDefault
-	outOne        *cart.ResponseCartErrors
-	outTwo        []cart.CastDishesErrs
-	outErr        string
+	inputClientId               int
+	inputCart                   cart.RequestCartDefault
+	outOne                      *cart.ResponseCartErrors
+	outTwo                      []cart.CastDishesErrs
+	outErr                      string
 	inputInsertClientId         int
 	inputInsertFood             int
 	inputInsertCountFood        int

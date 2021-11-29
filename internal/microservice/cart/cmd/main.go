@@ -31,7 +31,7 @@ func main() {
 	configDB := configRes[0].(confPkg.DBConfig)
 	configApp := configRes[1].(confPkg.AppConfig)
 
-	address := configApp.Primary.Host  + ":" + configApp.Primary.Port
+	address := configApp.Primary.Host + ":" + configApp.Primary.Port
 
 	listen, errListen := net.Listen(configApp.Primary.Network, address)
 	if errListen != nil {

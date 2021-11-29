@@ -86,7 +86,6 @@ func (c *CheckError) CheckErrorGetOrders(err error) (error, []byte, int) {
 				result, http.StatusInternalServerError
 		}
 
-
 	}
 	return nil, nil, IntNil
 }

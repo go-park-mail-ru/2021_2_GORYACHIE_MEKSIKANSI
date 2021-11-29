@@ -1,6 +1,5 @@
 package service
 
-
 import (
 	resPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant"
 	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/proto"
@@ -140,7 +139,6 @@ func CastRestaurantsToRestaurantsProto(restaurants []resPkg.Restaurants) *resPro
 	p.Restaurants = protoRestaurants
 	return p
 }
-
 
 func CastRestaurantIdToRestaurantInfoProto(restInfo *resPkg.RestaurantId) *resProto.RestaurantInfo {
 	var p *resProto.RestaurantInfo

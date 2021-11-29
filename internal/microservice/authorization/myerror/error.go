@@ -77,5 +77,5 @@ const (
 
 // Error of main
 const (
-	MCreateDBNotConnect         = "db not connect"
+	MCreateDBNotConnect = "db not connect"
 )

@@ -11,7 +11,7 @@ const (
 	DayLiveCookie = 5
 	LenSessionId  = 92
 	LenCsrfToken  = 92
-	LenSalt = 5
+	LenSalt       = 5
 )
 
 type Defense struct {

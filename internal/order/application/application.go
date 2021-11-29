@@ -15,7 +15,7 @@ type OrderApplicationInterface interface {
 }
 
 type Order struct {
-	DB ormPkg.WrapperOrderInterface
+	DB        ormPkg.WrapperOrderInterface
 	DBProfile profileOrmPkg.WrapperProfileInterface
 }
 
@@ -27,7 +27,7 @@ func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) (int, error)
 
 	rest, err := o.DB.GetRestaurant(cart.Restaurant.Id)
 	if err != nil {
-		return 0,  err
+		return 0, err
 	}
 
 	cart.CastFromRestaurantId(*rest)

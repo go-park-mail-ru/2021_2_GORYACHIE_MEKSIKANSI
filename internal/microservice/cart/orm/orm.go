@@ -1,8 +1,8 @@
 package orm
 
 import (
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/myerror"
 	cartPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/myerror"
 	"context"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"

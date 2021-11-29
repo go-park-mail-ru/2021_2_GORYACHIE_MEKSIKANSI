@@ -24,7 +24,7 @@ func (e *Errors) Error() string {
 
 // Error of main
 const (
-	MCreateDBNotConnect         = "db not connect"
+	MCreateDBNotConnect = "db not connect"
 )
 
 // Error of restaurant

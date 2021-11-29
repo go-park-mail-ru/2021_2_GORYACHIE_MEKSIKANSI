@@ -41,21 +41,21 @@ import (
 )
 
 const (
-	ConfNameMain   = "main"
-	ConfNameDB     = "database"
-	ConfNameBucket = "bucket"
-	ConfNameMicroservice   = "microservice"
-	ConfType       = "yml"
-	ConfPath       = "./config/"
+	ConfNameMain         = "main"
+	ConfNameDB           = "database"
+	ConfNameBucket       = "bucket"
+	ConfNameMicroservice = "microservice"
+	ConfType             = "yml"
+	ConfPath             = "./config/"
 )
 
 type installSetUp struct {
-	User api.UserInfo
-	Profile Api5.InfoProfile
-	Midle Api3.InfoMiddleware
+	User       api.UserInfo
+	Profile    Api5.InfoProfile
+	Midle      Api3.InfoMiddleware
 	Restaraunt Api6.InfoRestaurant
-	Cart Api2.InfoCart
-	Order Api4.InfoOrder
+	Cart       Api2.InfoCart
+	Order      Api4.InfoOrder
 }
 
 func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLogger,
@@ -141,10 +141,9 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 	}
 	var _ cartApiPkg.CartApiInterface = &cartInfo
 
-
 	orderWrapper := Orm4.Wrapper{Conn: connectionDB, ConnService: cartManager, Ctx: cartCtx}
 	orderApp := Application4.Order{
-		DB: &orderWrapper,
+		DB:        &orderWrapper,
 		DBProfile: &profileWrapper,
 	}
 	orderInfo := Api4.InfoOrder{

@@ -10,13 +10,13 @@ import (
 )
 
 const (
-	ConfNameMain   = "main"
-	ConfNameDB = "database"
-	ConfType   = "yml"
-	ConfPath   = "./internal/microservice/cart/config/"
+	ConfNameMain = "main"
+	ConfNameDB   = "database"
+	ConfType     = "yml"
+	ConfPath     = "./internal/microservice/cart/config/"
 )
 
-func SetUp (connectionDB ormPkg.ConnectionInterface) servicePkg.CartManager {
+func SetUp(connectionDB ormPkg.ConnectionInterface) servicePkg.CartManager {
 	authWrapper := ormPkg.Wrapper{Conn: connectionDB}
 	authorizationManager := Application.Cart{DB: &authWrapper}
 	authInfo := servicePkg.CartManager{Application: &authorizationManager}
