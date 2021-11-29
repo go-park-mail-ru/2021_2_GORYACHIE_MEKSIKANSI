@@ -124,24 +124,6 @@ func (c *CheckError) CheckErrorCreateReview(err error) (error, []byte, int) {
 func (c *CheckError) CheckErrorGetReview(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
-		case RGetReviewEmpty:
-			result, errMarshal := json.Marshal(ResultError{
-				Status:  http.StatusNotFound,
-				Explain: ErrReviewNull,
-			})
-			if errMarshal != nil {
-				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
-				return &Errors{
-						Alias: ErrMarshal,
-					},
-					nil, http.StatusInternalServerError
-			}
-			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
-			return &Errors{
-					Alias: ErrCheck,
-				},
-				result, http.StatusOK
-
 		default:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,

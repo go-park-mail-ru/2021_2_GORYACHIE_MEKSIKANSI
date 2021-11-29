@@ -99,7 +99,7 @@ type ResReview struct {
 	MaxDelivery         int      `json:"maxDTime"`
 	Rating              float32  `json:"rate"`
 	Tags                []Tag    `json:"tags"`
-	Reviews             []Review `json:"reviews"`
+	Reviews             []Review `json:"reviews,omitempty"`
 }
 
 type Review struct {

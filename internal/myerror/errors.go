@@ -13,6 +13,12 @@ type ResultError struct {
 	Explain string `json:"explain,omitempty"`
 }
 
+type ResultErrorMulti struct {
+	Status  int    `json:"status"`
+	Explain string `json:"explain,omitempty"`
+	Body interface{} `json:"body"`
+}
+
 type Errors struct {
 	Alias string
 	Text  string

@@ -64,7 +64,6 @@ const (
 	RGetReviewNotSelect                    = "get get review not select"
 	RGetReviewNotScan                      = "get get review not scan"
 	RCreateReviewNotInsert                 = "get get review not insert"
-	RGetReviewEmpty                        = "review is empty"
 	RSearchCategoryTransactionNotCreate    = "transaction search category not create"
 	RSearchCategoryNotSelect               = "search category not select"
 	RSearchCategoryNotScan                 = "search category not scan"

@@ -410,12 +410,6 @@ func (db *Wrapper) GetReview(id int) ([]resPkg.Review, error) {
 		result = append(result, review)
 	}
 
-	if result == nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetReviewEmpty,
-		}
-	}
-
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
