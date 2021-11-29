@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "./";
+import "google/protobuf/timestamp.proto";
+
+//message ExampleArray {
+//  int64 id_client = 1;
+//  repeated string Error = 2;
+//}
+
+message RegistrationRequest {
+ string type_user = 1;
+ string name = 2;
+ string email = 3;
+ string phone = 4;
+ string password = 5;
+}
+
+message DefenseResponse {
+  Defense defense = 1;
+  string error = 2;
+}
+
+message Authorization {
+  string email = 1;
+  string phone = 2;
+  string password = 3;
+}
+
+message CSRF {
+  string x_csrf_token = 1;
+}
+
+message CSRFResponse {
+  CSRF x_csrf_token = 1;
+  string error = 2;
+}
+
+message CheckAccess {
+  bool check_result = 1;
+  string error = 2;
+}
+
+message IdClientResponse {
+  int64 id_user = 1;
+  string error = 2;
+}
+
+message Defense {
+  google.protobuf.Timestamp date_life = 1;
+  string session_id = 2;
+  string x_csrf_token = 3;
+}
+
+
+service AuthorizationService {
+  rpc CheckAccessUser(Defense) returns (CheckAccess);
+  rpc NewCSRFUser(Defense) returns (CSRFResponse);
+  rpc GetIdByCookie(Defense) returns (IdClientResponse);
+  rpc SignUp(RegistrationRequest) returns (DefenseResponse);
+  rpc Login(Authorization) returns (DefenseResponse);
+  rpc Logout(CSRF) returns (CSRFResponse);
+}
