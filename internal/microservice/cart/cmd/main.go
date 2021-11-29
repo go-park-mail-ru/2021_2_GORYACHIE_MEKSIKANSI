@@ -1,12 +1,9 @@
 package main
 
 import (
-	appCart "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/build"
 	confPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/config"
-	ormCart "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/orm"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/proto"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/service"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -49,11 +46,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	cartWrapper := ormCart.Wrapper{Conn: connectDB}
-	cartApp := appCart.Cart{
-		DB: &cartWrapper,
-	}
-	cartManager := service.CartManager{Application: &cartApp}
+	cartManager := build.SetUp(connectDB)
+
 	proto.RegisterCartServiceServer(server, &cartManager)
 
 	logger.Log.Infof("Listen in %s", address)

@@ -2,8 +2,8 @@ package build
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"context"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"io/ioutil"
@@ -62,9 +62,10 @@ type RadiosElement struct {
 
 func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 	var err error
-	conn, err := pgxpool.Connect(context.Background(),
-		"postgres://"+configDB.UserName+":"+configDB.Password+
-			"@"+configDB.Host+":"+configDB.Port+"/"+configDB.SchemaName)
+	addressPostgres := "postgres://"+configDB.UserName+":"+configDB.Password+
+		"@"+configDB.Host+":"+configDB.Port+"/"+configDB.SchemaName
+
+	conn, err := pgxpool.Connect(context.Background(), addressPostgres)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.MCreateDBNotConnect,
@@ -72,7 +73,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 	}
 
 	if debug {
-		file, err := ioutil.ReadFile("build/postgresql/deletetables.sql")
+		file, err := ioutil.ReadFile("./build/postgresql/deletetables.sql")
 		if err != nil {
 			return nil, &errPkg.Errors{
 				Alias: errPkg.MCreateDBDeleteFileNotFound,
@@ -90,7 +91,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 		}
 	}
 
-	file, err := ioutil.ReadFile("build/postgresql/createtables.sql")
+	file, err := ioutil.ReadFile("./build/postgresql/createtables.sql")
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.MCreateDBCreateFileNotFound,
@@ -108,7 +109,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 	}
 
 	if debug {
-		file, err := ioutil.ReadFile("build/postgresql/fill.sql")
+		file, err := ioutil.ReadFile("./build/postgresql/fill.sql")
 		if err != nil {
 			return nil, &errPkg.Errors{
 				Alias: errPkg.MCreateDBFillFileNotFound,
@@ -125,7 +126,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 			}
 		}
 
-		fileDishes, err := ioutil.ReadFile("build/postgresql/filldishes.sql")
+		fileDishes, err := ioutil.ReadFile("./build/postgresql/filldishes.sql")
 		if err != nil {
 			return nil, &errPkg.Errors{
 				Alias: errPkg.MCreateDBFillFileNotFound,
@@ -134,7 +135,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 
 		requestsDishes := strings.Split(string(fileDishes), ";")
 
-		fileCategory, err := ioutil.ReadFile("build/postgresql/fillcategory.sql")
+		fileCategory, err := ioutil.ReadFile("./build/postgresql/fillcategory.sql")
 		if err != nil {
 			return nil, &errPkg.Errors{
 				Alias: errPkg.MCreateDBFillFileNotFound,
@@ -196,12 +197,12 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Kilocalorie:        126,
 				Carbohydrates:      1,
 				CategoryDishes:     "К чаю",
-				CategoryRestaurant: "К чаю",
+				CategoryRestaurant: "Снеки",
 				Count:              1000,
 				Weight:             70,
 				Avatar:             "https://s3.amazonaws.com/images.ecwid.com/images/38011115/2135671623.jpg",
-				PlaceCategory:      1,
-				Place:              0,
+				PlaceCategory:      0,
+				Place:              1,
 				Ingredient:         nil,
 				Radios:             nil,
 			},
@@ -219,7 +220,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Weight:             220,
 				Avatar:             "https://meat-pepper.ru/image/cache/catalog/products/burgers/kotlety-dly-burgerov-black-angus-3-800x667.jpg",
 				PlaceCategory:      0,
-				Place:              1,
+				Place:              2,
 				Ingredient:         nil,
 				Radios:             nil,
 			},
@@ -236,7 +237,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Count:              1000,
 				Weight:             600,
 				Avatar:             "https://www.koolinar.ru/all_image/recipes/156/156543/recipe_7b4bb7f7-1d42-428a-bb0a-3db8df03093a.jpg",
-				PlaceCategory:      2,
+				PlaceCategory:      1,
 				Place:              0,
 				Ingredient: []Ingredient{
 					{
@@ -295,7 +296,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Count:              1000,
 				Weight:             100,
 				Avatar:             "https://traveltimes.ru/wp-content/uploads/2021/08/kofe-caska-penka-scaled.jpg",
-				PlaceCategory:      3,
+				PlaceCategory:      2,
 				Place:              0,
 				Ingredient: []Ingredient{
 					{
@@ -312,6 +313,60 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Radios: nil,
 			},
 			{
+				Name:               "Coca-cola",
+				Cost:               65,
+				Description:        "Горячий, ароматный кофе",
+				Protein:            1,
+				Falt:               1,
+				Kilocalorie:        230,
+				Carbohydrates:      1,
+				CategoryDishes:     "Универсальное",
+				CategoryRestaurant: "Напитки",
+				Count:              1000,
+				Weight:             500,
+				Avatar:             "https://traveltimes.ru/wp-content/uploads/2021/08/kofe-caska-penka-scaled.jpg",
+				PlaceCategory:      2,
+				Place:              1,
+				Ingredient:  nil,
+				Radios: nil,
+			},
+			{
+				Name:               "Fanta",
+				Cost:               60,
+				Description:        "Горячий, ароматный кофе",
+				Protein:            1,
+				Falt:               1,
+				Kilocalorie:        225,
+				Carbohydrates:      1,
+				CategoryDishes:     "Универсальное",
+				CategoryRestaurant: "Напитки",
+				Count:              1000,
+				Weight:             500,
+				Avatar:             "https://traveltimes.ru/wp-content/uploads/2021/08/kofe-caska-penka-scaled.jpg",
+				PlaceCategory:      2,
+				Place:              2,
+				Ingredient:  nil,
+				Radios: nil,
+			},
+			{
+				Name:               "Sprite",
+				Cost:               65,
+				Description:        "Горячий, ароматный кофе",
+				Protein:            1,
+				Falt:               1,
+				Kilocalorie:        215,
+				Carbohydrates:      1,
+				CategoryDishes:     "Универсальное",
+				CategoryRestaurant: "Напитки",
+				Count:              1000,
+				Weight:             500,
+				Avatar:             "https://traveltimes.ru/wp-content/uploads/2021/08/kofe-caska-penka-scaled.jpg",
+				PlaceCategory:      2,
+				Place:              3,
+				Ingredient: nil,
+				Radios: nil,
+			},
+			{
 				Name:               "Картошка Фри",
 				Cost:               60,
 				Description:        "Классический картофель фри",
@@ -325,7 +380,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Weight:             120,
 				Avatar:             "https://вести35.рф/images/2020/07/06/5f2775ffddc94d76a57605479b3f02e0.jpg",
 				PlaceCategory:      0,
-				Place:              2,
+				Place:              3,
 				Ingredient:         nil,
 				Radios:             nil,
 			},
@@ -343,7 +398,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Weight:             130,
 				Avatar:             "https://cherkessk.crazybrothers.ru/wp-content/uploads/Kartofel-po-derevenski.jpg",
 				PlaceCategory:      0,
-				Place:              3,
+				Place:              4,
 				Ingredient:         nil,
 				Radios:             nil,
 			},
@@ -360,7 +415,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Count:              1000,
 				Weight:             400,
 				Avatar:             "https://www.islandresortandcasino.com/sites/default/wp/blog/wp-content/uploads/2015/02/DSC_2162.jpg",
-				PlaceCategory:      4,
+				PlaceCategory:      3,
 				Place:              0,
 				Ingredient:         nil,
 				Radios: []Radios{
@@ -415,7 +470,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Count:              1,
 				Weight:             5,
 				Avatar:             "http://www.t-h.ru/photomenu/public/img/c/c6dc9d517433930dddcbb26e4824382c.jpg",
-				PlaceCategory:      4,
+				PlaceCategory:      3,
 				Place:              1,
 				Ingredient:         nil,
 				Radios: []Radios{
@@ -448,7 +503,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Count:              1,
 				Weight:             5,
 				Avatar:             "https://pizza-house18.ru/wp-content/uploads/2021/01/IMG_9061.jpg",
-				PlaceCategory:      4,
+				PlaceCategory:      3,
 				Place:              2,
 				Ingredient:         nil,
 				Radios: []Radios{
@@ -481,7 +536,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Count:              1000,
 				Weight:             1000,
 				Avatar:             "http://eday-cafe.ru/wp-content/uploads/2020/03/Бефстроганов-с-грибами-и-толченым-картофелем.jpg",
-				PlaceCategory:      4,
+				PlaceCategory:      3,
 				Place:              3,
 				Ingredient:         nil,
 				Radios: []Radios{

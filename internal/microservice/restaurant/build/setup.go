@@ -1,8 +1,11 @@
 package build
 
 import (
+	Application "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/application"
 	confPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/config"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/myerror"
+	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/orm"
+	servicePkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/service"
 	"github.com/spf13/viper"
 )
 
@@ -12,6 +15,16 @@ const (
 	ConfType   = "yml"
 	ConfPath   = "./internal/microservice/restaurant/config/"
 )
+
+func SetUp (connectionDB ormPkg.ConnectionInterface) servicePkg.RestaurantManager {
+	authWrapper := ormPkg.Wrapper{Conn: connectionDB}
+	authorizationManager := Application.Restaurant{DB: &authWrapper}
+	authInfo := servicePkg.RestaurantManager{Application: &authorizationManager}
+
+	var _ servicePkg.RestaurantManagerInterface = &authInfo
+
+	return authInfo
+}
 
 func InitConfig() (error, []interface{}) {
 	viper.AddConfigPath(ConfPath)

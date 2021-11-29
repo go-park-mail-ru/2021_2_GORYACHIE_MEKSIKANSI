@@ -1,8 +1,11 @@
 package build
 
 import (
+	Application "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/application"
 	confPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/config"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/myerror"
+	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/orm"
+	servicePkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/service"
 	"github.com/spf13/viper"
 )
 
@@ -12,6 +15,16 @@ const (
 	ConfType   = "yml"
 	ConfPath   = "./internal/microservice/authorization/config/"
 )
+
+func SetUp (connectionDB ormPkg.ConnectionInterface) servicePkg.AuthorizationManager {
+	authWrapper := ormPkg.Wrapper{Conn: connectionDB}
+	authorizationManager := Application.AuthorizationApplication{DB: &authWrapper}
+	authInfo := servicePkg.AuthorizationManager{Application: &authorizationManager}
+
+	var _ servicePkg.AuthorizationManagerInterface = &authInfo
+
+	return authInfo
+}
 
 func InitConfig() (error, []interface{}) {
 	viper.AddConfigPath(ConfPath)

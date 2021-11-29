@@ -1,12 +1,9 @@
 package main
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/build"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/config"
-	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/orm"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/proto"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/service"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -49,9 +46,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	authWrapper := ormPkg.Wrapper{Conn: connectDB}
-	authorizationManager := Application.AuthorizationApplication{DB: &authWrapper}
-	authInfo := service.AuthorizationManager{Application: &authorizationManager}
+	authInfo := build.SetUp(connectDB)
 
 	proto.RegisterAuthorizationServiceServer(server, &authInfo)
 

@@ -1,12 +1,9 @@
 package main
 
 import (
-	appRes "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/build"
 	confPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/config"
-	ormRes "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/orm"
 	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/proto"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/service"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -49,11 +46,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	resWrapper := ormRes.Wrapper{Conn: connectDB}
-	restaurantApp := appRes.Restaurant{
-		DB: &resWrapper,
-	}
-	restaurantManager := service.RestaurantManager{Application: &restaurantApp}
+	restaurantManager := build.SetUp(connectDB)
 
 	resProto.RegisterRestaurantServiceServer(server, &restaurantManager)
 

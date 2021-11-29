@@ -21,14 +21,14 @@ func runServer() {
 		errLogger := loggerErrWarn.Sync()
 		if errLogger != nil {
 			zap.S().Errorf("LoggerErrWarn the buffer could not be cleared %v", errLogger)
-			os.Exit(1)
+			os.Exit(2)
 		}
 	}(logger.Log)
 
 	errConfig, configStructure := build.InitConfig()
 	if errConfig != nil {
 		logger.Log.Errorf("%s", errConfig.Error())
-		return
+		os.Exit(2)
 	}
 	appConfig := configStructure[0].(config.AppConfig)
 	dbConfig := configStructure[1].(config.DBConfig)
@@ -39,13 +39,13 @@ func runServer() {
 	defer connectionPostgres.Close()
 	if err != nil {
 		logger.Log.Errorf("Unable to connect to database: %s", err.Error())
-		os.Exit(1)
+		os.Exit(2)
 	}
 
 	errAws, sess := build.ConnectAws(awsConfig.Aws)
 	if errAws != nil {
 		logger.Log.Errorf("AWS: %s", errAws.Error())
-		return
+		os.Exit(2)
 	}
 	uploader := s3manager.NewUploader(sess)
 	nameBucket := awsConfig.Aws.Name
@@ -108,11 +108,13 @@ func runServer() {
 		Debug:            true,
 	})
 	port := ":" + appConfig.Port
+	logger.Log.Infof("Listen in 127:0.0.1%s", port)
 	err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(printURL))
 	if err != nil {
 		logger.Log.Errorf("Listen and server error: %v", err)
-		os.Exit(1)
+		os.Exit(2)
 	}
+
 }
 
 func main() {

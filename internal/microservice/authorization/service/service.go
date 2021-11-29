@@ -6,7 +6,7 @@ import (
 	"context"
 )
 
-type AuthorizationService interface {
+type AuthorizationManagerInterface interface {
 	CheckAccessUser(ctx context.Context, cookie *authProto.Defense) (*authProto.CheckAccess, error)
 	NewCSRFUser(ctx context.Context, cookie *authProto.Defense) (*authProto.CSRFResponse, error)
 	GetIdByCookie(ctx context.Context, cookie *authProto.Defense) (*authProto.IdClientResponse, error)
