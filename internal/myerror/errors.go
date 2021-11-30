@@ -102,13 +102,15 @@ const (
 
 // Error of main
 const (
-	MCreateDBNotConnect         = "db not connect"
-	MCreateDBCreateFileNotFound = "createtables.sql not found"
-	MCreateDBDeleteFileNotFound = "deletetables.sql not found"
-	MCreateDBFillFileNotFound   = "fill.sql not found"
-	MCreateDBNotCreateTables    = "table not create"
-	MCreateDBNotDeleteTables    = "table not delete"
-	MCreateDBNotFillTables      = "table not fill"
+	MCreateDBNotConnect           = "db not connect"
+	MCreateDBCreateFileNotFound   = "createtables.sql not found"
+	MCreateDBDeleteFileNotFound   = "deletetables.sql not found"
+	MCreateDBFillFileNotFound     = "fill.sql not found"
+	MCreateDBNotCreateTables      = "table not create"
+	MCreateDBNotDeleteTables      = "table not delete"
+	MCreateDBNotFillTables        = "table not fill"
+	MCreateDBTransactionNotCreate = "transaction setup not create" // TODO: add in checkErrors
+	MCreateDBNotCommit            = "transaction setup not commit" // TODO: add in checkErrors
 )
 
 // Error of profile

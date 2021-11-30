@@ -72,6 +72,16 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 		}
 	}
 
+	contextTransaction := context.Background()
+	tx, err := conn.Begin(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.MCreateDBTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
 	if debug {
 		file, err := ioutil.ReadFile("./build/postgresql/deletetables.sql")
 		if err != nil {
@@ -82,7 +92,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 
 		requests := strings.Split(string(file), ";")
 		for _, request := range requests {
-			_, err = conn.Exec(context.Background(), request)
+			_, err = tx.Exec(context.Background(), request)
 			if err != nil {
 				return nil, &errPkg.Errors{
 					Alias: errPkg.MCreateDBNotDeleteTables,
@@ -100,7 +110,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 
 	requests := strings.Split(string(file), ";")
 	for _, request := range requests {
-		_, err = conn.Exec(context.Background(), request)
+		_, err = tx.Exec(context.Background(), request)
 		if err != nil {
 			return nil, &errPkg.Errors{
 				Alias: errPkg.MCreateDBNotCreateTables,
@@ -118,7 +128,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 
 		requests := strings.Split(string(file), ";")
 		for _, request := range requests {
-			_, err = conn.Exec(context.Background(), request)
+			_, err = tx.Exec(context.Background(), request)
 			if err != nil {
 				return nil, &errPkg.Errors{
 					Alias: errPkg.MCreateDBNotFillTables,
@@ -582,8 +592,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/66145/330128168_m650.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              1,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Шашлык из куриного филе",
@@ -600,8 +610,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/66145/330128165_m650.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              2,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Люля-кебаб из курицы",
@@ -618,8 +628,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/66145/330128170_m650.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              3,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Овощи на мангале",
@@ -665,8 +675,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/66145/330128176_m650.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              1,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Грибы на мангале",
@@ -683,8 +693,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/66145/330128175_m650.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              2,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Лимонад Натахтари дюшес",
@@ -701,8 +711,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/66145/330128181_m650.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      2,
 				Place:              0,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Coca-cola",
@@ -776,7 +786,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/47930/321238599_m650_539e946ca3db2be5c8b8c4cfc4cd7e660d8fb2cc656d9989f2e03f7cdcae2f47.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              4,
-				Ingredient: nil,
+				Ingredient:         nil,
 				Radios: []Radios{
 					{
 						Name:  "Начинка",
@@ -817,8 +827,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/47930/321238601_m650_82bba223f554acff5d6d25e34ad2c05fe11061526ae33fe2c82a1277d4c24e59.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              0,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Крабик Hot запеченный мини ролл",
@@ -835,8 +845,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/47930/329243615_m650_0b4299dcb2bee58f6a558507b8d399f110ec93bbed2364c5b1e8074dbba76621.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              1,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Лосось унаги",
@@ -853,8 +863,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/42724/333341614_m650_338bc009c123947c0255f084732dc5d0f20788defdceb1f19466b68e847bcc55.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              2,
-				Ingredient:  nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Ролл Аяши запеченный",
@@ -871,8 +881,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/58031/325617533_m650_ef7f0e290bf43bd2c56361ea2f21b4effd8b982af3bea6688f97cc43f26bc3dd.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              3,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Ролл Горячий лосось запеченный",
@@ -889,8 +899,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/58031/325617534_m650_5e8c0c911604f1979a58f9f1ff212e2a65d441eac2bb3345ad689fbb355a6e4b.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webpg",
 				PlaceCategory:      0,
 				Place:              4,
-				Ingredient: nil,
-				Radios:  nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Вегетарианский Вок",
@@ -907,8 +917,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/58031/325617539_m650_6108902391e58c4d936e0771259fa5b3743896743d46308420939712614e79c0.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              0,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Классический Вок",
@@ -925,8 +935,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/58031/325617540_m650_9599e2bb080be811e6962884e2ec472d13837dad14510384911025404d8398bc.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              1,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Сытный Вок",
@@ -943,8 +953,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/58031/325617545_m650_d8d9c479220ab8fef7171d9a681a7fb366691be1ac77d1aa8a69491a2e8bd17d.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              2,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "По-Китайский Вок",
@@ -961,8 +971,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/47930/329243629_m650_1c44e5dad116160d9b0aaa9a8239520d054b5d575f5524d6e66397ad095d169f.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              3,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "BonAqua",
@@ -979,8 +989,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/56933/325153171_m650_a62beee592242eea4214fb25420b3f171a55ecfac517d3752f174cd989554891.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      2,
 				Place:              0,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Coca-cola",
@@ -1054,8 +1064,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://s1.eda.ru/StaticContent/Photos/120131085053/171027192707/p_O.jpg",
 				PlaceCategory:      0,
 				Place:              4,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Пицца Ассорти",
@@ -1072,8 +1082,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://sp-ao.shortpixel.ai/client/q_lossless,ret_img/https://cookery.site/wp-content/uploads/2019/09/photo_92647025-1-678x381.jpg",
 				PlaceCategory:      0,
 				Place:              0,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Пицца Морская",
@@ -1090,8 +1100,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://pizzarini.info/wp-content/uploads/2018/03/pitstsa-morskaya-1-1.jpg",
 				PlaceCategory:      0,
 				Place:              1,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Пицца Карбонара",
@@ -1108,8 +1118,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://static.1000.menu/img/content/13174/picca-karbonara_1432215044_0_max.jpg",
 				PlaceCategory:      0,
 				Place:              2,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Пицца Карначина",
@@ -1126,8 +1136,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://cdnn21.img.ria.ru/images/98976/61/989766135_0:100:2000:1233_1920x0_80_0_0_4a3e7af4d4ab43307a68343c059cc57d.jpg",
 				PlaceCategory:      0,
 				Place:              3,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Пицца 4 сезона",
@@ -1144,8 +1154,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.citypizza.ru/upload/img/shop/pizza/BORT/resize/4-%D1%81%D0%B5%D0%B7%D0%BE%D0%BD%D0%B0-%D0%B1%D0%BE%D1%80%D1%82-listThumb.jpg",
 				PlaceCategory:      0,
 				Place:              4,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Ролл с угрем",
@@ -1162,8 +1172,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://lh3.googleusercontent.com/proxy/uqHy2GczztN6r4P_eH2lySHzJWY57YsPW-vhEuU9GF46-i2_mf8qBESx4VDgPk4Vck5v7HTfIzpS13PG3puLRnbGfCMw-z4qYPFkKjiNMLiabJhV-7R9ncW31eb2X9gCBeywUfBvapgC9v8KGkNYQakwrbPtaiMZb8__LAvccU9bbP7NoV2zFMDuvM8ZDr9FXqP5wlQHHqDOngrSSISAbFkg8I2uIeBsYggTPQayCdO6D5NhwNf9I8w6-ZLnpLRvTScL5Hg4ifyw_7ARlpDmw2yfx0Ypjw",
 				PlaceCategory:      1,
 				Place:              0,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Дыхание дракона",
@@ -1180,8 +1190,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/52007/323011355_m650.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              1,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Горячий краб",
@@ -1198,8 +1208,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/52007/323011356_m650.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              2,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Запеченный угорь",
@@ -1216,8 +1226,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/52007/323011359_m650.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              3,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Сок в ассортименте",
@@ -1234,8 +1244,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/52007/323664250_m650.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      2,
 				Place:              0,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Coca-cola",
@@ -1309,8 +1319,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.gastronom.ru/binfiles/images/20151221/b3c8862d.jpg",
 				PlaceCategory:      0,
 				Place:              4,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Блинчики с икрой",
@@ -1327,8 +1337,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/13698/336390947_m650_60910237c1eb8bd3ef90a2d181c4d679663e37c1358fd4586a0e77c75e217acf.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              0,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Имбирно-медовый пряник",
@@ -1345,8 +1355,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/13698/336391648_m650_ad26bba2487253cb6864ab0b3d1d8f3108088a1de250d4ac93e732148cbd2f5f.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              1,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Какао пряничное",
@@ -1363,8 +1373,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/13698/336391796_m650_24b78286ca08ad2c2f1f1ed3bcc700d3435092f87021c4fb31d2f8b74da8af37.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              2,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Сельдь под шубой",
@@ -1381,8 +1391,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/13698/336391001_m650_f1c5402c3ed4959fa51d2b82cc7b3538ee70353e835047281033d8cefa75f18b.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              3,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Капучино",
@@ -1399,8 +1409,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/13698/333490930_m650_784d4b2dc50340e78aae44f47337985ea28f166ff5a26aa5b32fd7d0e494cc21.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              4,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Ролл Цезарь",
@@ -1417,8 +1427,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/13698/333490974_m650_a97f85e487af6dffb2a2af88f7fdc71d2d9ee2354ec24601c56a58c0e9540b71.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              0,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Ролл Филадельфия",
@@ -1435,8 +1445,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/13698/329263431_m650.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              1,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Ролл с ростбифом",
@@ -1453,8 +1463,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/15838/334459325_m650_7388a0b3c360c2df62ce1525a0053de791fd4cfb1aa70726fa0ea2724839c8ca.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              2,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Клаб-сэндвич",
@@ -1471,8 +1481,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/13698/333490973_m650_ef5daba5a610ee2eabd16c6b8668295390ff4a214e1ffc78a1cc1bfba492097e.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              3,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Мохито",
@@ -1489,8 +1499,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/13698/333490992_m650_e3496f99e11ebf227a739e1b89926dc31cfe30495eeedf9424d7919963dbc982.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      2,
 				Place:              0,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Лимонад Домашний",
@@ -1564,8 +1574,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/15838/328171056_m650_cfcbfe9ab6ebf66ca620792736fc485d3c0a91072b9143258e3c902a05717650.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              4,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Салат Крабовичок",
@@ -1582,8 +1592,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.povarenok.ru/data/cache/2013oct/16/04/532964_47569-710x550x.jpg",
 				PlaceCategory:      0,
 				Place:              0,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Теплый салат с говядиной",
@@ -1600,8 +1610,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/71395/333128256_m650_6e077ea0614f7ec1c092b0f4c6c912d55e03bda63aca0631901ba57af37dc1c2.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              1,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Салат Бригантина",
@@ -1618,8 +1628,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/71395/333128256_m650_6e077ea0614f7ec1c092b0f4c6c912d55e03bda63aca0631901ba57af37dc1c2.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              2,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Цезарь с креветками",
@@ -1636,8 +1646,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://2d-recept.com/wp-content/uploads/2019/05/salat-cezar-s-krevetkami-foto.jpg",
 				PlaceCategory:      0,
 				Place:              3,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Салат Винегрет",
@@ -1654,8 +1664,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://upload.wikimedia.org/wikipedia/commons/a/a7/Vinegret_cleaned.jpg",
 				PlaceCategory:      0,
 				Place:              4,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Борщ",
@@ -1672,8 +1682,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/71395/333128261_m650_c4d2c43bb3f55ec4004d87459556a79120b53b6e2528c352a439cd282ae22f0e.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              0,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Сборная солянка мясная",
@@ -1690,8 +1700,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/71395/333128262_m650_2c8a69834bd188549d9dad91e69845b4a67c58a2ca50f19d755ca9a191cd1299.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              1,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Суп-лапша домашняя",
@@ -1708,8 +1718,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.maggi.ru/data/images/recept/img640x500/recept_4495_czgj.jpg",
 				PlaceCategory:      1,
 				Place:              2,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Картофельный суп",
@@ -1726,8 +1736,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://s1.eda.ru/StaticContent/Photos/120131084848/120213174933/p_O.jpg",
 				PlaceCategory:      1,
 				Place:              3,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Синнабон",
@@ -1744,8 +1754,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/71395/334172939_m650_02814baf09423cd3bd412593eb3dfab2ecd2316537045b96989be181002b2ae9.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      2,
 				Place:              0,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Трайфл Сникерс",
@@ -1819,8 +1829,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/67635/334542260_m650_b2b212d56f1bc91abe68636af87f1e185e719dfdd01409b7888c3c2884e71d04.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              2,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Шаурма с тунцом",
@@ -1837,8 +1847,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/67635/334542767_m650_9321049bda74a7ef4ad30c7d93ccaf8b8ef4fceb3ce09e67b57e9bf5d42bc897.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              0,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Бургер с куриной котлетой",
@@ -1855,7 +1865,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/67635/335894906_m650_e5d32a976fbbc466608c4a9625ec1d73e9034b37d6e9611f2bc4a5eaa427e36f.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      0,
 				Place:              1,
-				Ingredient: nil,
+				Ingredient:         nil,
 			},
 			{
 				Name:               "Американо",
@@ -1872,8 +1882,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/13698/329263353_m650_f4265fc18ab291c9b77d274364519df8c59d3c398facdc47eaf993cc74f32994.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              0,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Капучино",
@@ -1890,8 +1900,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/13698/333490930_m650_784d4b2dc50340e78aae44f47337985ea28f166ff5a26aa5b32fd7d0e494cc21.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              1,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Латте",
@@ -1908,8 +1918,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/13698/333490932_m650_cb85b5a866a3afaa2c1f08b52b425f6e78fb0891ee033676524d6d90b4c6b2fd.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              2,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Фильтр-кофе",
@@ -1926,8 +1936,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/13698/329263356_m650_750ecfdcd43338312299910b4a7777c0466586c170bdef71faa0be4dce816437.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      1,
 				Place:              3,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Блин Ватрушка",
@@ -1944,8 +1954,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 				Avatar:             "https://www.delivery-club.ru/media/cms/relation_product/32049/328485249_m650_861f7ff88a9073dfcb8fec2d28d8bc72ea710f7caa343417ae6667a1e516630d.jpg?resize=fit&width=1300&height=544&gravity=ce&out=webp",
 				PlaceCategory:      2,
 				Place:              0,
-				Ingredient: nil,
-				Radios: nil,
+				Ingredient:         nil,
+				Radios:             nil,
 			},
 			{
 				Name:               "Блин с сахаром",
@@ -2034,14 +2044,14 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 		var radiosId int
 		for i := 1; i <= Restaurants; i++ {
 			for j := 0; j < Categories; j++ {
-				_, err = conn.Exec(context.Background(), requestsCategory[0], i, categorys[util.RandomInteger(0, len(categorys))], j)
+				_, err = tx.Exec(context.Background(), requestsCategory[0], i, categorys[util.RandomInteger(0, len(categorys))], j)
 				if err != nil {
 					return nil, &errPkg.Errors{
 						Alias: errPkg.MCreateDBNotFillTables,
 					}
 				}
 			}
-			_, err = conn.Exec(context.Background(), requestsCategory[1])
+			_, err = tx.Exec(context.Background(), requestsCategory[1])
 			if err != nil {
 				return nil, &errPkg.Errors{
 					Alias: errPkg.MCreateDBNotFillTables,
@@ -2049,7 +2059,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 			}
 
 			for _, dish := range dishesSetups[util.RandomInteger(0, len(dishesSetups))].Setup {
-				err = conn.QueryRow(context.Background(), requestsDishes[0],
+				err = tx.QueryRow(context.Background(), requestsDishes[0],
 					dish.Name, dish.Cost, i, dish.Description,
 					dish.Protein, dish.Falt, dish.Kilocalorie, dish.Carbohydrates,
 					dish.CategoryDishes, dish.CategoryRestaurant, dish.Count, dish.Weight,
@@ -2062,7 +2072,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 
 				if dish.Ingredient != nil {
 					for _, ingredient := range dish.Ingredient {
-						_, err = conn.Exec(context.Background(), requestsDishes[1],
+						_, err = tx.Exec(context.Background(), requestsDishes[1],
 							ingredient.Name, dishId, ingredient.Cost, ingredient.Protein,
 							ingredient.Falt, ingredient.Carbohydrates, ingredient.Kilocalorie,
 							ingredient.CountElement, ingredient.Place)
@@ -2076,7 +2086,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 
 				if dish.Radios != nil {
 					for _, radios := range dish.Radios {
-						err = conn.QueryRow(context.Background(), requestsDishes[2],
+						err = tx.QueryRow(context.Background(), requestsDishes[2],
 							radios.Name, dishId, radios.Place).Scan(&radiosId)
 						if err != nil {
 							return nil, &errPkg.Errors{
@@ -2085,7 +2095,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 						}
 
 						for _, elementRadios := range radios.RadiosElement {
-							_, err = conn.Exec(context.Background(), requestsDishes[3],
+							_, err = tx.Exec(context.Background(), requestsDishes[3],
 								elementRadios.Name, radiosId, elementRadios.Protein,
 								elementRadios.Falt, elementRadios.Carbohydrates, elementRadios.Kilocalorie,
 								elementRadios.Place)
@@ -2098,6 +2108,12 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 					}
 				}
 			}
+		}
+	}
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.MCreateDBNotCommit,
 		}
 	}
 	return conn, nil

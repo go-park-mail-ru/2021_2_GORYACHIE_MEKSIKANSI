@@ -126,3 +126,6 @@ VALUES (1, 'Мой дом', 'Есть злая собака', 'Москва', '�
 
 INSERT INTO promocode (restaurant, name, end_date)
 VALUES (1, 'Бесплатно всё', NOW());
+
+INSERT INTO favorite_restaurant (restaurant, client)
+VALUES (1, 1);

@@ -49,7 +49,16 @@ func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) (int, error)
 		return 0, err
 	}
 
-	return o.DB.CreateOrder(id, createOrder, addressId, *cart, courierId)
+	order, err := o.DB.CreateOrder(id, createOrder, addressId, *cart, courierId)
+	if err != nil {
+		return 0, err
+	}
+	check, _ := o.DB.CheckRun(order)
+	if check {
+		go o.UpdateStatusOrder(order, 4)
+	}
+
+	return order, nil
 }
 
 func (o *Order) GetOrders(id int) (*Order2.HistoryOrderArray, error) {
@@ -61,11 +70,6 @@ func (o *Order) GetActiveOrder(idClient int, idOrder int) (*Order2.ActiveOrder, 
 	if err != nil {
 		return nil, err
 	}
-	check, _ := o.DB.CheckRun(idOrder)
-	if check {
-		go o.UpdateStatusOrder(idOrder, 4)
-	}
-
 	return order, nil
 }
 

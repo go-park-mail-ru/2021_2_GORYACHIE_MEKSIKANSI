@@ -114,9 +114,9 @@ CREATE TABLE IF NOT EXISTS review (
 
 CREATE TABLE IF NOT EXISTS favorite_restaurant (
     id serial PRIMARY KEY,
-    author int,
+    client int,
     restaurant int,
-    FOREIGN KEY (author) REFERENCES general_user_info (id) ON DELETE CASCADE,
+    FOREIGN KEY (client) REFERENCES general_user_info (id) ON DELETE CASCADE,
     FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE
 );
 

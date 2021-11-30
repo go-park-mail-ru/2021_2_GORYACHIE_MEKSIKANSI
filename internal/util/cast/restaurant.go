@@ -80,6 +80,7 @@ func CastRestaurantInfoToRestaurantIdProto(restInfo *resProto.RestaurantInfo) *r
 	p.CostForFreeDelivery = int(restInfo.CostForFreeDelivery)
 	p.MinDelivery = int(restInfo.MinDelivery)
 	p.MaxDelivery = int(restInfo.MaxDelivery)
+	p.Favourite = restInfo.Favourite
 
 	p.Menu = CastMenuProtoToMenu(restInfo.Menu)
 	p.Tags = CastTagsProtoToTags(restInfo.Tags)
@@ -177,7 +178,6 @@ func CastRestaurantIdToRestaurantInfoProto(restInfo *restaurant.RestaurantId) *r
 	p.CostForFreeDelivery = int64(restInfo.CostForFreeDelivery)
 	p.MinDelivery = int64(restInfo.MinDelivery)
 	p.MaxDelivery = int64(restInfo.MaxDelivery)
-
 	p.Menu = CastMenuToMenuProto(restInfo.Menu)
 	p.Tags = CastTagsToTagsProto(restInfo.Tags)
 	return p

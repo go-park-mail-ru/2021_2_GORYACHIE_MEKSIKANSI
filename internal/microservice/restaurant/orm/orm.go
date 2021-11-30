@@ -95,14 +95,22 @@ func (db *Wrapper) GetRestaurant(id int) (*resPkg.RestaurantId, error) {
 	defer tx.Rollback(contextTransaction)
 
 	var restaurant resPkg.RestaurantId
+	var isFavorite *int32
 	err = tx.QueryRow(contextTransaction,
-		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant WHERE id = $1", id).Scan(
+		"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating, fr.restaurant FROM restaurant r"+
+			" LEFT JOIN favorite_restaurant fr ON fr.restaurant = r.id WHERE r.id = $1", id).Scan(
 		&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery, &restaurant.MinDelivery,
-		&restaurant.MaxDelivery, &restaurant.Rating)
+		&restaurant.MaxDelivery, &restaurant.Rating, &isFavorite)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.RGetRestaurantRestaurantNotFound,
 		}
+	}
+
+	if isFavorite != nil {
+		restaurant.Favourite = true
+	} else {
+		restaurant.Favourite = false
 	}
 
 	err = tx.Commit(contextTransaction)

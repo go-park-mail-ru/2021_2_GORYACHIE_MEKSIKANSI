@@ -18,6 +18,7 @@ type RestaurantId struct {
 	MinDelivery         int     `json:"minDTime"`
 	MaxDelivery         int     `json:"maxDTime"`
 	Rating              float32 `json:"rating"`
+	Favourite           bool    `json:"favourite"`
 	Tags                []Tag   `json:"tags"`
 	Menu                []Menu  `json:"menu"`
 }
@@ -92,6 +93,14 @@ type Review struct {
 	Date string `json:"date"`
 	Time string `json:"time"`
 	Rate int    `json:"rate"`
+}
+
+type ResFavouriteNew struct {
+	Id int `json:"id"`
+}
+
+type ResFavouriteStatus struct {
+	Status bool `json:"status"`
 }
 
 func (r *ResReview) CastFromRestaurantId(rest RestaurantId) {
