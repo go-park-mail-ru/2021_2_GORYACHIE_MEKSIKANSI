@@ -5,59 +5,59 @@ INSERT INTO client (client_id, date_birthday) VALUES (1, NOW());
 
 INSERT INTO restaurant (owner, name, description, price_delivery, min_delivery_time, max_delivery_time, city,
                         street, house, floor, rating, latitude, longitude, avatar) VALUES
-      (1, 'Атмосфера', 'description', 250, 15, 90, 'city', 'street', 'house', 100, 5, 1, 1, 'https://img01.rl0.ru/afisha/o/www.afisha.ru/uploads/images/0/c5/0c562e8d522a4e11998692015d184789.jpg'),
-      (1, 'Shokolaat', 'description', 10, 25, 65, 'city', 'street', 'house', 100, 3, 1, 1, 'https://media-cdn.tripadvisor.com/media/photo-s/1a/20/47/aa/roof-gastro-bar.jpg'),
-      (1, 'Gordon Biersch', 'description', 15, 35, 40, 'city', 'street', 'house', 100, 4, 1, 1, 'https://e-kazan.ru/upload/redactor/images/6e53fa627dd67f3e799d4b840506af55.jpg'),
-      (1, 'Crepevine', 'description', 350, 22, 30, 'city', 'street', 'house', 100, 2, 1, 1, 'https://avatars.mds.yandex.net/get-altay/1981910/2a0000016f2eb47cc2b7d68bdc0e5f647348/XXL'),
-      (1, 'Creamery', 'description', 250, 10, 55, 'city', 'street', 'house', 100, 1, 1, 1, 'https://avatars.mds.yandex.net/get-altay/1583511/2a0000016f2eb4101852518618c8bb2471ec/XXL'),
-      (1, 'Old Pro', 'description', 100, 31, 32, 'city', 'street', 'house', 100, 2.5, 1, 1, 'https://media-cdn.tripadvisor.com/media/photo-s/11/e7/e2/97/view-from-terrace.jpg'),
-      (1, 'Дом вкуснятины', 'description', 53, 15, 30, 'city', 'street', 'house', 100, 4.5, 1, 1, 'https://roomester.ru/wp-content/uploads/2019/06/dizajn-restorana1.jpg'),
-      (1, 'Продуктовая печь', 'description', 220, 45, 60, 'city', 'street', 'house', 100, 5, 1, 1, 'https://komod-kiev.com/wp-content/uploads/rest-catch-5-1201x800.jpg'),
-      (1, 'La Strada', 'description', 121, 17, 20, 'city', 'street', 'house', 100, 3.4, 1, 1, 'https://his.ua/img/articles/P2zlzJUplx.jpg'),
-      (1, 'Buca di Beppo', 'description', 150, 15, 45, 'city', 'street', 'house', 100, 2.1, 1, 1, 'https://tomato.ua/image/resize/storage/restaurants/5a75b217e26d5d00431d8ecc/15433380355bfd7833789d8_5bfd782fbcbe68.58579386.jpeg?w=1200&h=1200'),
-      (1, 'Мадам Там', 'description', 200, 20, 30, 'city', 'street', 'house', 100, 1.6, 1, 1, 'https://images.restoclub.ru/uploads/article/3/0/d/1/30d10ce7078246f6d9c4487641da10ff_w828_h552--big.jpg'),
-      (1, 'Спрут кафе', 'description', 250, 22, 37, 'city', 'street', 'house', 100, 2.3, 1, 1, 'https://peterburg.guide/wp-content/uploads/2019/07/a9LrzH0m.png'),
-      (1, 'Bistro Maxine', 'description', 300, 15, 46, 'city', 'street', 'house', 100, 3.1, 1, 1, 'https://www.sobaka.ru/images/image/00/93/54/41/_normal.jpg'),
-      (1, 'Три сезона', 'description', 350, 16, 50, 'city', 'street', 'house', 100, 2.7, 1, 1, 'https://100dorog.ru/upload/contents/432/2016/6924462-TOP10_Luchshikh_priv01502302.jpg?width=795&scale=both'),
-      (1, 'Спокойствие', 'description', 400, 15, 30, 'city', 'street', 'house', 100, 4.9, 1, 1, 'http://voyagist.ru/wp-content/uploads/2016/12/restoran-evropa-v-sankt-peterburge.jpg'),
-      (1, 'Siam Royal', 'description', 450, 25, 44, 'city', 'street', 'house', 100, 3.9, 1, 1, 'https://www.1000ideas.ru/upload/iblock/f55/nPm4YlFbb94.jpg'),
-      (1, 'Krung Siam', 'description', 0, 13, 55, 'city', 'street', 'house', 100, 2.31, 1, 1, 'https://img04.rl0.ru/afisha/o/www.afisha.ru/uploads/images/f/90/f90b076437f349aebd57d8a15cf48286.jpg'),
-      (1, 'Тайфун', 'description', 0, 20, 56, 'city', 'street', 'house', 100, 1.2, 1, 1, 'https://media-cdn.tripadvisor.com/media/photo-s/12/3c/b5/14/getlstd-property-photo.jpg'),
-      (1, 'Tamarine', 'description', 0, 10, 44, 'city', 'street', 'house', 100, 3.4, 1, 1, 'https://b1.m24.ru/c/1168064.jpg'),
-      (1, 'Joya', 'description', 0, 19, 33, 'city', 'street', 'house', 100, 2.6, 1, 1, 'https://avatars.mds.yandex.net/get-altay/2776464/2a00000170e89d7d4ffaea7485fe8c72c1e5/XXL'),
-      (1, 'Колокольчик', 'description', 499, 16, 47, 'city', 'street', 'house', 100, 4.7, 1, 1, 'https://media-cdn.tripadvisor.com/media/photo-s/19/a3/45/67/caption.jpg'),
-      (1, 'Evvia', 'description', 449, 30, 39, 'city', 'street', 'house', 100, 0.5, 1, 1, 'https://media-cdn.tripadvisor.com/media/photo-s/10/38/3b/d0/caption.jpg'),
-      (1, 'Кафе 220', 'description', 399, 40, 50, 'city', 'street', 'house', 100, 0.8, 1, 1, 'https://avatars.mds.yandex.net/get-altay/1871013/2a0000016d970de1ac02fd1bab0d585c3d38/XXL'),
-      (1, 'Кафе Ренессанс', 'description', 349, 11, 55, 'city', 'street', 'house', 100, 0.1, 1, 1, 'https://salon.ru/storage/thumbs/gallery/525/524912/835_3500_s219.jpg'),
-      (1, 'Kan Zeman', 'description', 299, 40, 45, 'city', 'street', 'house', 100, 0.75, 1, 1, 'https://restolife.kz/upload/information_system_5/2/2/9/item_22980/information_items_property_27178.jpg'),
-      (1, 'Кафе Манго', 'description', 249, 30, 40, 'city', 'street', 'house', 100, 1.3, 1, 1, 'https://aroma-profi.ru/upload/medialibrary/shop/12po.jpg'),
-      (1, 'Балаклава', 'description', 199, 24, 53, 'city', 'street', 'house', 100, 2.34, 1, 1, 'https://www.bankfax.ru/files/_thumbs/resize/files/images/news/2021/10/2021102105_0x700_1634795582.jpg'),
-      (1, 'Иностранный гурман', 'description', 149, 18, 32, 'city', 'street', 'house', 100, 1.23, 1, 1, 'https://img.the-village.ru/pOGVpe0KPe1QKnX5TSS1Oq9gJRZsVa6-0-DHmUQbbTw/rs:fill:940:630/q:88/plain/2020/08/31/KKS_0520_1597225612117_rkqgE5c4Zfv.jpg'),
-      (1, 'Частичка Бангкока', 'description', 99, 19, 50, 'city', 'street', 'house', 100, 4.1, 1, 1, 'https://robb.report/upload/custom/87a/87aaad790f174c8e07962279f6df7597.jpg'),
-      (1, 'Darbar', 'description', 0, 24, 54, 'city', 'street', 'house', 100, 5, 1, 1, 'https://media-cdn.tripadvisor.com/media/photo-s/17/c0/08/c7/caption.jpg'),
-      (1, 'Mantra', 'description', 0, 23, 44, 'city', 'street', 'house', 100, 5, 1, 1, 'https://vipdivani.ru/upload/images/restoran-ampir.jpg'),
-      (1, 'Janta', 'description', 0, 19, 23, 'city', 'street', 'house', 100, 5, 1, 1, 'https://cdnimg.rg.ru/img/content/181/83/43/01_d_850.jpg'),
-      (1, 'Hyderabad', 'description', 0, 25, 50, 'city', 'street', 'house', 100, 5, 1, 1, 'https://cdn.the-village.ru/the-village.ru/post_image-image/EXs8hyK8HWMLPGN8a-YK7w.jpg'),
-      (1, 'Кофейня Джека', 'description', 0, 26, 52, 'city', 'street', 'house', 100, 5, 1, 1, 'https://static.ngs.ru/news/2020/99/preview/9fb93df42dde394bf24fab1529978ca81454b591a_599_399_c.jpg'),
-      (1, 'Coop кофейня', 'description', 0, 15, 45, 'city', 'street', 'house', 100, 5, 1, 1, 'https://bering-spb.ru/assets/cache_image/photo/main/about/021A6262_1920x0_96c.jpg'),
-      (1, 'Lytton Coffee', 'description', 0, 16, 48, 'city', 'street', 'house', 100, 5, 1, 1, 'https://mziurirest.ru/wp-content/uploads/2021/03/DSC_6799-1.jpg'),
-      (1, 'Il Fornaio', 'description', 0, 17, 51, 'city', 'street', 'house', 100, 4.5, 1, 1, 'https://brsg.ru/assets/gallery/591.jpg'),
-      (1, 'Lavanda', 'description', 0, 18, 54, 'city', 'street', 'house', 100, 3.5, 1, 1, 'https://n1s1.elle.ru/6a/5e/b4/6a5eb4c6039a86a9e0944d83d18c3bd5/728x546_1_249b28fed25c22fdcbacf0314406ba13@1880x1409_0xac120003_7646892161567585889.jpg'),
-      (1, 'MacArthur', 'description', 0, 19, 57, 'city', 'street', 'house', 100, 2.5, 1, 1, 'https://topspb.tv/media/768x432/news_covers/vlcsnap-2021-08-02-19h55m22s330e73moay.png'),
-      (1, 'Osteria', 'description', 399, 20, 34, 'city', 'street', 'house', 100, 1.5, 1, 1, 'https://lh3.googleusercontent.com/proxy/GdiOjjIJPf-yc-GdAcYy8CS1UUfP95EVYa4cqvioR-RvaqY3HL70wwNdJjl6qthJh3ZXz84H8PNs9KhX6S12HxG8uCABTklxN4g1ffT99nPxrO38heSo3qawvJH8BrfTMgQSBpAh_hPGAE3aHBdipQ'),
-      (1, 'Vero', 'description', 499, 20, 40, 'city', 'street', 'house', 100, 0.5, 1, 1, 'https://roomester.ru/wp-content/uploads/2019/06/dizajn-restorana3.jpg'),
-      (1, 'Renzo', 'description', 299, 21, 42, 'city', 'street', 'house', 100, 0.4, 1, 1, 'https://drivenew.ru/upload/resize_cache/iblock/1dc/944_629_2/1dc8467631871f72f9e5cdf0f2f185f0.jpg'),
-      (1, 'Miyake', 'description', 249, 22, 44, 'city', 'street', 'house', 100, 0.3, 1, 1, 'https://мойбизнес.рф/upload/iblock/fc7/027e015f43ec06fa514ef7554bbde3c8[1].png'),
-      (1, 'Tomo', 'description', 199, 23, 46, 'city', 'street', 'house', 100, 0.2, 1, 1, 'https://s3.eu-central-1.amazonaws.com/cdn-eu.jowi.club/jowi.club/ckeditor_assets/pictures/296/content_7.jpg'),
-      (1, 'Kanpai', 'description', 149, 24, 36, 'city', 'street', 'house', 100, 0.1, 1, 1, 'https://piteronline.tv/images/2019/07/09/kvartira-kosti-krojtsa_dc4ac.webp'),
-      (1, 'Любовь моей жизни', 'description', 266, 30, 45, 'city', 'street', 'house', 100, 5, 1, 1, 'https://restoran-kuvshin.ru/wp-content/uploads/2016/07/3int.jpg'),
-      (1, 'Новая пицца', 'description', 233, 31, 46, 'city', 'street', 'house', 100, 4, 1, 1, 'https://n1s1.hsmedia.ru/6f/b5/a0/6fb5a0f016591b1b99b3d595d9543354/728x485_1_43154b801b639f404bcf90a90c8c1023@2880x1920_0xac120003_6030516551597998814.jpeg'),
-      (1, 'Калифорнийская кухня', 'description', 150, 23, 32, 'city', 'street', 'house', 100, 3, 1, 1, 'https://restoran-kuvshin.ru/wp-content/uploads/wp-responsive-images-thumbnail-slider/Kuvshin-145cc97388478b4.jpg'),
-      (1, 'Круглый стол', 'description', 175, 17, 37, 'city', 'street', 'house', 100, 2, 1, 1, 'https://cdnn21.img.ria.ru/images/144726/45/1447264552_0:498:5616:3657_1920x0_80_0_0_66aa2d824e34eb8bc06049fea22942fd.jpg'),
-      (1, 'Любимая шляпа', 'description', 250, 16, 36, 'city', 'street', 'house', 100, 1, 1, 1, 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D1%8C%D0%B5%D1%80_%D1%80%D0%B5%D1%81%D1%82%D0%BE%D1%80%D0%B0%D0%BD%D0%B0_White_Rabbit.jpg/1200px-%D0%98%D0%BD%D1%82%D0%B5%D1%80%D1%8C%D0%B5%D1%80_%D1%80%D0%B5%D1%81%D1%82%D0%BE%D1%80%D0%B0%D0%BD%D0%B0_White_Rabbit.jpg'),
-      (1, 'Garden Fresh', 'description', 300, 16, 46, 'city', 'street', 'house', 100, 3.2, 1, 1, 'https://n1s1.elle.ru/c1/41/cd/c141cdcca9b54270b6a51f86f5072cff/728x485_1_d5081d5daee74fa9dd6c6924b9d5d1c1@1880x1253_0xac120003_12637632411579102325.jpg'),
-      (1, 'Epi', 'description', 150, 16, 56, 'city', 'street', 'house', 100, 2.1, 1, 1, 'https://a-a-ah-ru.s3.amazonaws.com/uploads/items/9414/24911/large_Panoramnye-restorany-Moskvy-TOP-luchshih.jpeg'),
-      (1, 'Валентино', 'description', 100, 15, 55, 'city', 'street', 'house', 100, 4.2, 1, 1, 'https://www.gastronom.ru/binfiles/images/20170913/b0d48eb7.jpg')
+      (1, 'Атмосфера', 'description', 250, 15, 90, 'city', 'street', 'house', 100, 5, 1, 1, 'https://www.delivery-club.ru/naturmort/6000027_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Shokolaat', 'description', 10, 25, 65, 'city', 'street', 'house', 100, 3, 1, 1, 'https://www.delivery-club.ru/naturmort/5000052_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Gordon Biersch', 'description', 15, 35, 40, 'city', 'street', 'house', 100, 4, 1, 1, 'https://www.delivery-club.ru/naturmort/44000095_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Crepevine', 'description', 350, 22, 30, 'city', 'street', 'house', 100, 2, 1, 1, 'https://www.delivery-club.ru/naturmort/6000035_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Creamery', 'description', 250, 10, 55, 'city', 'street', 'house', 100, 1, 1, 1, 'https://www.delivery-club.ru/naturmort/27000060_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Old Pro', 'description', 100, 31, 32, 'city', 'street', 'house', 100, 2.5, 1, 1, 'https://www.delivery-club.ru/naturmort/5f59d56754805_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Дом вкуснятины', 'description', 53, 15, 30, 'city', 'street', 'house', 100, 4.5, 1, 1, 'https://www.delivery-club.ru/naturmort/5f4a59b84ad69_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Продуктовая печь', 'description', 220, 45, 60, 'city', 'street', 'house', 100, 5, 1, 1, 'https://www.delivery-club.ru/naturmort/26000199_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'La Strada', 'description', 121, 17, 20, 'city', 'street', 'house', 100, 3.4, 1, 1, 'https://www.delivery-club.ru/naturmort/5f62243740d71_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Buca di Beppo', 'description', 150, 15, 45, 'city', 'street', 'house', 100, 2.1, 1, 1, 'https://www.delivery-club.ru/naturmort/1000026_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Мадам Там', 'description', 200, 20, 30, 'city', 'street', 'house', 100, 1.6, 1, 1, 'https://www.delivery-club.ru/naturmort/19000230_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Спрут кафе', 'description', 250, 22, 37, 'city', 'street', 'house', 100, 2.3, 1, 1, 'https://www.delivery-club.ru/naturmort/43000086_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Bistro Maxine', 'description', 300, 15, 46, 'city', 'street', 'house', 100, 3.1, 1, 1, 'https://www.delivery-club.ru/naturmort/61864cc9d00ea_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Три сезона', 'description', 350, 16, 50, 'city', 'street', 'house', 100, 2.7, 1, 1, 'https://www.delivery-club.ru/naturmort/26000199_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Спокойствие', 'description', 400, 15, 30, 'city', 'street', 'house', 100, 4.9, 1, 1, 'https://www.delivery-club.ru/naturmort/5edb9be4ddeba_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Siam Royal', 'description', 450, 25, 44, 'city', 'street', 'house', 100, 3.9, 1, 1, 'https://www.delivery-club.ru/naturmort/5f22cd5325126_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Krung Siam', 'description', 0, 13, 55, 'city', 'street', 'house', 100, 2.31, 1, 1, 'https://www.delivery-club.ru/naturmort/60df0e2fec006_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Тайфун', 'description', 0, 20, 56, 'city', 'street', 'house', 100, 1.2, 1, 1, 'https://www.delivery-club.ru/naturmort/61027eda0d4c0_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Tamarine', 'description', 0, 10, 44, 'city', 'street', 'house', 100, 3.4, 1, 1, 'https://www.delivery-club.ru/naturmort/1000039_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Joya', 'description', 0, 19, 33, 'city', 'street', 'house', 100, 2.6, 1, 1, 'https://www.delivery-club.ru/naturmort/60df0e2fec006_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Колокольчик', 'description', 499, 16, 47, 'city', 'street', 'house', 100, 4.7, 1, 1, 'https://www.delivery-club.ru/naturmort/61780d63510c1_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Evvia', 'description', 449, 30, 39, 'city', 'street', 'house', 100, 0.5, 1, 1, 'https://www.delivery-club.ru/naturmort/60d201e011fd4_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Кафе 220', 'description', 399, 40, 50, 'city', 'street', 'house', 100, 0.8, 1, 1, 'https://mywowo.net/media/images/cache/tokyo_meraviglie_tavola_01_introduzione_jpg_1200_630_cover_85.jpg'),
+      (1, 'Кафе Ренессанс', 'description', 349, 11, 55, 'city', 'street', 'house', 100, 0.1, 1, 1, 'https://www.delivery-club.ru/naturmort/48000050_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Kan Zeman', 'description', 299, 40, 45, 'city', 'street', 'house', 100, 0.75, 1, 1, 'https://www.delivery-club.ru/naturmort/2000031_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Кафе Манго', 'description', 249, 30, 40, 'city', 'street', 'house', 100, 1.3, 1, 1, 'https://www.delivery-club.ru/naturmort/25000109_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Балаклава', 'description', 199, 24, 53, 'city', 'street', 'house', 100, 2.34, 1, 1, 'https://www.delivery-club.ru/naturmort/61864cc9d00ea_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Иностранный гурман', 'description', 149, 18, 32, 'city', 'street', 'house', 100, 1.23, 1, 1, 'https://www.delivery-club.ru/naturmort/5ec2443197ff3_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
+      (1, 'Частичка Бангкока', 'description', 99, 19, 50, 'city', 'street', 'house', 100, 4.1, 1, 1, 'https://incrussia.ru/wp-content/uploads/2018/10/iStock-694189032.jpg'),
+      (1, 'Darbar', 'description', 0, 24, 54, 'city', 'street', 'house', 100, 5, 1, 1, 'https://sovkusom.ru/wp-content/uploads/blog/v/vrednaya-eda/1.jpg'),
+      (1, 'Mantra', 'description', 0, 23, 44, 'city', 'street', 'house', 100, 5, 1, 1, 'https://naked-science.ru/wp-content/uploads/2020/12/fast-fud-pitstsa-burger-chipsy-lukovye-koltsa-kartofel-fri.jpg'),
+      (1, 'Janta', 'description', 0, 19, 23, 'city', 'street', 'house', 100, 5, 1, 1, 'https://static.tildacdn.com/tild6561-6165-4337-b835-316638666562/20-05-20.jpg'),
+      (1, 'Hyderabad', 'description', 0, 25, 50, 'city', 'street', 'house', 100, 5, 1, 1, 'https://www.kamis-pripravy.ru/upload/medialibrary/907/9073bb8cc5579504bd22a62e5c1fe0e0.jpg'),
+      (1, 'Кофейня Джека', 'description', 0, 26, 52, 'city', 'street', 'house', 100, 5, 1, 1, 'https://images.aif.by/007/433/e73337ac5677e37f8baa002e41232ed4.jpg'),
+      (1, 'Coop кофейня', 'description', 0, 15, 45, 'city', 'street', 'house', 100, 5, 1, 1, 'https://img.gazeta.ru/files3/829/13377829/Depositphotos_412834214_xl-2015-pic905-895x505-19117.jpg'),
+      (1, 'Lytton Coffee', 'description', 0, 16, 48, 'city', 'street', 'house', 100, 5, 1, 1, 'https://cdnmyslo.ru/Photogallery/99/1d/991dffc2-ea20-483e-9352-88cd8e2aa751_b.jpg'),
+      (1, 'Il Fornaio', 'description', 0, 17, 51, 'city', 'street', 'house', 100, 4.5, 1, 1, 'https://images.ua.prom.st/3125534192_w600_h600_eda-na-vynos.jpg'),
+      (1, 'Lavanda', 'description', 0, 18, 54, 'city', 'street', 'house', 100, 3.5, 1, 1, 'https://incrussia.ru/wp-content/uploads/2020/11/iStock-1175505781.jpg'),
+      (1, 'MacArthur', 'description', 0, 19, 57, 'city', 'street', 'house', 100, 2.5, 1, 1, 'https://kidpassage.com/images/publications/eda-sankt-peterburge-chto-poprobovat-skolko-stoit/cover_original.jpg'),
+      (1, 'Osteria', 'description', 399, 20, 34, 'city', 'street', 'house', 100, 1.5, 1, 1, 'https://cdn.fishki.net/upload/post/2017/01/30/2205250/2-1485519719-1.jpg'),
+      (1, 'Vero', 'description', 499, 20, 40, 'city', 'street', 'house', 100, 0.5, 1, 1, 'https://www.learnathome.ru/files/media/food.jpg'),
+      (1, 'Renzo', 'description', 299, 21, 42, 'city', 'street', 'house', 100, 0.4, 1, 1, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTvLJHAw98D_0U8xi8fjAN573FWUX42sltrRp2-CkVtQOKUrmoIBP1XyLO5RE_fITY1KQ&usqp=CAU'),
+      (1, 'Miyake', 'description', 249, 22, 44, 'city', 'street', 'house', 100, 0.3, 1, 1, 'https://interesnyefakty.org/wp-content/uploads/Interesnye-fakty-o-ede-v-raznyh-stranah.jpg'),
+      (1, 'Tomo', 'description', 199, 23, 46, 'city', 'street', 'house', 100, 0.2, 1, 1, 'https://billionnews.ru/timthumb/timthumb.php?src=http://billionnews.ru/uploads/posts/2017-01/thumbs/1485519719_1.jpg&w=940&h=600&zc=1'),
+      (1, 'Kanpai', 'description', 149, 24, 36, 'city', 'street', 'house', 100, 0.1, 1, 1, 'https://gorobzor.ru/content/news/2018/06/chto_iz_edy_poprobovat_v_sochi_image_5b2cf79b7278f1.83210187.jpg'),
+      (1, 'Любовь моей жизни', 'description', 266, 30, 45, 'city', 'street', 'house', 100, 5, 1, 1, 'https://kidpassage.com/images/publications/eda-sohi-hto-poprobovat-skolko-stoit/cover_original.jpg'),
+      (1, 'Новая пицца', 'description', 233, 31, 46, 'city', 'street', 'house', 100, 4, 1, 1, 'https://www.oum.ru/upload/iblock/4a6/4a689562637ffe31a94e1770388395f8.jpg'),
+      (1, 'Калифорнийская кухня', 'description', 150, 23, 32, 'city', 'street', 'house', 100, 3, 1, 1, 'https://cs1.livemaster.ru/storage/15/98/6a9751d56360234808ec8ac68anj--kukly-i-igrushki-eda-dlya-kukol-eda-dlya-barbi-kukolnaya-eda-.jpg'),
+      (1, 'Круглый стол', 'description', 175, 17, 37, 'city', 'street', 'house', 100, 2, 1, 1, 'https://lh3.googleusercontent.com/proxy/HgfW931vlU8WqU-KdGv8doKW5Re0c1qU6t-EkRfRzehj0c1-eEbSMgbSIZe4e7wVyGOGUNFzGWwaTFZwDkD_bu75cIZm4PhFxJj4WI-S-xXWtwhozr8U'),
+      (1, 'Любимая шляпа', 'description', 250, 16, 36, 'city', 'street', 'house', 100, 1, 1, 1, 'https://img.the-village.me/the-village.me/post-cover/-k0NDtajdfoONfacIAqvoA-default.jpg'),
+      (1, 'Garden Fresh', 'description', 300, 16, 46, 'city', 'street', 'house', 100, 3.2, 1, 1, 'https://tomato.ua/blog/wp-content/uploads/2019/03/000-39-1-1440x961.jpg'),
+      (1, 'Epi', 'description', 150, 16, 56, 'city', 'street', 'house', 100, 2.1, 1, 1, 'https://avatars.mds.yandex.net/get-altay/2960979/2a0000017260a9d9f85eb44d3ab634dd7d7f/XXL'),
+      (1, 'Валентино', 'description', 100, 15, 55, 'city', 'street', 'house', 100, 4.2, 1, 1, 'https://i1.wp.com/www.agoda.com/wp-content/uploads/2018/07/Experience-Tokyo_food-and-drink_Featured-image-1200x350_sushi-tray_Tokyo.jpg?fit=1200%2C350&ssl=1')
 ;
 
 UPDATE restaurant
@@ -80,7 +80,7 @@ INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1'
 --     ('Аппетитное комбо', 150, 1, '', 1, 1, 3575, 1, 'Горячее', 'Комбо', 1000, 1, 'https://www.iphones.ru/wp-content/plugins/wonderm00ns-simple-facebook-open-graph-tags/fbimg.php?img=https%3A%2F%2Fwww.iphones.ru%2Fwp-content%2Fuploads%2F2018%2F08%2FBurgerN.jpg', 4, 2),
 --     ('Универсальное комбо', 100, 1, '', 1, 1, 1500, 1, 'Горячее', 'Комбо', 1000, 1, 'https://eda.yandex.ru/images/3667559/9724883e03ae48c2b6a1e28c5b9ea111-680x500.jpeg', 4, 3)
 --     ;
-
+--
 -- INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element, place) VALUES
 --     ('Кетчуп', 1, 5, 1, 1, 1, 1, 5, 0),
 --     ('Горчица', 1, 5, 1, 1, 1, 1, 5, 1),
@@ -91,14 +91,14 @@ INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1'
 --     ('Сахар', 5, 5, 1, 1, 1, 1, 5, 0),
 --     ('Кетчап', 1, 5, 1, 1, 1, 1, 5, 2)
 --     ;
-
+--
 -- INSERT INTO radios (name, food, place) VALUES
 --     ('МакКомбо', 8, 0),
 --     ('Утреннее комбо', 9, 0),
 --     ('Аппетитное комбо', 10, 0),
 --     ('Универсальное комбо', 11, 0)
 --     ;
-
+--
 -- INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie, place) VALUES
 --     ('Картофель Фри', 1, 1, 1, 1, 1, 0),
 --     ('Картофель по деревенски', 1, 1, 1, 1, 1, 1),
@@ -110,7 +110,7 @@ INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1'
 --     ('Сырный соус', 4, 1, 1, 1, 1, 0),
 --     ('Чесночный соус', 4, 1, 1, 1, 1, 1)
 --     ;
-
+--
 -- INSERT INTO restaurant_category (restaurant, category, place)
 -- VALUES
 -- (1, 'Кафе', 0),

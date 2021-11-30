@@ -49,7 +49,7 @@ func (db *Wrapper) GetRestaurants() ([]resPkg.Restaurants, error) {
 	defer tx.Rollback(contextTransaction)
 
 	row, err := tx.Query(contextTransaction,
-		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant ORDER BY random() LIMIT 50")
+		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant ORDER BY random() LIMIT 51")
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.RGetRestaurantsRestaurantsNotSelect,
