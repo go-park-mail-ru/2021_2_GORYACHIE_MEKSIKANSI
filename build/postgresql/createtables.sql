@@ -1,5 +1,6 @@
 DROP INDEX IF EXISTS
     restaurant_fts, restaurant_category_fts;
+
 CREATE TABLE IF NOT EXISTS general_user_info
 (
     id SERIAL PRIMARY KEY,
@@ -56,7 +57,8 @@ CREATE TABLE IF NOT EXISTS cookie (
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
     session_id varchar(92) NOT NULL,
     date_life timestamp NOT NULL,
-    csrf_token varchar(92) NOT NULL
+    csrf_token varchar(92) NOT NULL,
+    websocket varchar(36)
 );
 
 CREATE TABLE IF NOT EXISTS host (
@@ -116,6 +118,7 @@ CREATE TABLE IF NOT EXISTS favorite_restaurant (
     id serial PRIMARY KEY,
     client int,
     restaurant int,
+    position int,
     FOREIGN KEY (client) REFERENCES general_user_info (id) ON DELETE CASCADE,
     FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE
 );

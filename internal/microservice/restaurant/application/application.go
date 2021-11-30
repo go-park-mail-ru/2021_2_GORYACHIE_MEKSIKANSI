@@ -12,6 +12,8 @@ type RestaurantApplicationInterface interface {
 	CreateReview(id int, review resPkg.NewReview) error
 	GetReview(id int) (*resPkg.ResReview, error)
 	SearchRestaurant(search string) ([]resPkg.Restaurants, error)
+	GetFavouriteRestaurants(id int) ([]resPkg.Restaurants, error)
+	AddRestaurantInFavourite(idRestaurant int, idClient int) (bool, error)
 }
 
 type Restaurant struct {
@@ -124,4 +126,12 @@ func (r *Restaurant) SearchRestaurant(search string) ([]resPkg.Restaurants, erro
 	}
 	return searchResult, nil
 
+}
+
+func (r *Restaurant) GetFavouriteRestaurants(id int) ([]resPkg.Restaurants, error) {
+	return r.DB.GetFavouriteRestaurants(id)
+}
+
+func (r *Restaurant) AddRestaurantInFavourite(idRestaurants int, idClient int) (bool, error) {
+	return r.DB.AddRestaurantInFavourite(idRestaurants, idClient)
 }

@@ -219,6 +219,14 @@ const (
 	RGetGeneralInfoTransactionNotCreate    = "transaction get general info not create"   // TODO: add in checkErrors
 	RGetGeneralInfoNotScan                 = "get general info not scan"                 // TODO: add in checkErrors
 	RGetGeneralInfoNotCommit               = "get general info not commit"               // TODO: add in checkErrors
+	RGetFavouriteRestaurantsTransactionNotCreate = "transaction get favourite restaurants not create"               // TODO: add in checkErrors
+	RGetFavouriteRestaurantsRestaurantsNotSelect = "favourite restaurants not select"               // TODO: add in checkErrors
+	RGetFavouriteRestaurantsRestaurantsNotScan = "transaction get favourite restaurants not create"               // TODO: add in checkErrors
+	RGetFavouriteRestaurantsInfoNotCommit = "transaction get favourite restaurants not create"               // TODO: add in checkErrors
+	RAddRestaurantInFavouriteTransactionNotCreate = "transaction get favourite restaurants not create"               // TODO: add in checkErrors
+	RAddRestaurantInFavouriteRestaurantsNotSelect = "favourite restaurants not select"               // TODO: add in checkErrors
+	RAddRestaurantInFavouriteRestaurantsNotScan = "favourite restaurants not scan"               // TODO: add in checkErrors
+	RAddRestaurantInFavouriteInfoNotCommit = "transaction get favourite restaurants not commmit"               // TODO: add in checkErrors
 )
 
 // Error of cart

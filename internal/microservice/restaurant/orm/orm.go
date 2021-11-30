@@ -22,6 +22,8 @@ type WrapperRestaurantInterface interface {
 	SearchCategory(name string) ([]int, error)
 	SearchRestaurant(name string) ([]int, error)
 	GetGeneralInfoRestaurant(id int) (*resPkg.Restaurants, error)
+	GetFavouriteRestaurants(id int) ([]resPkg.Restaurants, error)
+	AddRestaurantInFavourite(idRestaurant int, idClient int) (bool, error)
 }
 
 type ConnectionInterface interface {
@@ -578,4 +580,103 @@ func (db *Wrapper) GetGeneralInfoRestaurant(id int) (*resPkg.Restaurants, error)
 	}
 
 	return &restaurant, nil
+}
+
+func (db *Wrapper) GetFavouriteRestaurants(id int) ([]resPkg.Restaurants, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetFavouriteRestaurantsTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	rows, err := tx.Query(contextTransaction,
+		"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating, fr.position" +
+		" FROM restaurant r RIGHT JOIN favorite_restaurant fr ON fr.restaurant = r.id WHERE fr.client = $1",
+		id)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetFavouriteRestaurantsRestaurantsNotSelect,
+		}
+	}
+
+	var restaurants []resPkg.Restaurants
+	mapRestaurants := make(map[int]resPkg.Restaurants)
+
+	for rows.Next() {
+		var position *int32
+		var restaurant resPkg.Restaurants
+		err := rows.Scan(&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery,
+			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating, &position)
+		if err != nil {
+			return nil, &errPkg.Errors{
+				Alias: errPkg.RGetFavouriteRestaurantsRestaurantsNotScan,
+			}
+		}
+
+		mapRestaurants[int(*position)] = restaurant
+	}
+
+	for i := 0; i < len(mapRestaurants); i++ {
+		restaurants = append(restaurants, mapRestaurants[i])
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetFavouriteRestaurantsInfoNotCommit,
+		}
+	}
+
+	return restaurants, nil
+}
+
+
+func (db *Wrapper) AddRestaurantInFavourite(idRestaurant int, idClient int) (bool, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.RAddRestaurantInFavouriteTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	var positionRestaurants *int32
+	err = tx.QueryRow(contextTransaction,
+		"SELECT MAX(position) FROM favorite_restaurant WHERE client = $1", idClient).Scan(&positionRestaurants)
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.RAddRestaurantInFavouriteRestaurantsNotSelect,
+		}
+	}
+
+	var pos int
+	if positionRestaurants == nil {
+		pos = 0
+	} else {
+		pos = int(*positionRestaurants) + 1
+	}
+
+	_, err = tx.Exec(contextTransaction,
+		"INSERT INTO favorite_restaurant (client, restaurant, position) INTO ($1, $2, $3)",
+		idClient, idRestaurant, pos)
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.RAddRestaurantInFavouriteRestaurantsNotScan,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.RAddRestaurantInFavouriteInfoNotCommit,
+		}
+	}
+
+	return true, nil
 }

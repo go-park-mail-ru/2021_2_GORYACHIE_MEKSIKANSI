@@ -120,13 +120,26 @@ message ResReview {
   string error = 10;
 }
 
-
 message Review {
   string name = 1;
   string text = 2;
   string date = 3;
   string time = 4;
   int64 rate = 5;
+}
+
+message UserId {
+  int64 id = 1;
+}
+
+message AddRestaurantInFavouriteRequest {
+  int64 id_restaurant = 1;
+  int64 id_client = 2;
+}
+
+message ResponseAddRestaurantInFavourite {
+  bool status = 1;
+  string error = 2;
 }
 
 service RestaurantService {
@@ -136,4 +149,6 @@ service RestaurantService {
   rpc CreateReview(NewReview) returns (Error);
   rpc GetReview(RestaurantId) returns (ResReview);
   rpc SearchRestaurant(SearchRestaurantText) returns (Restaurants);
+  rpc GetFavouriteRestaurants(UserId) returns (Restaurants);
+  rpc AddRestaurantInFavourite(AddRestaurantInFavouriteRequest) returns (ResponseAddRestaurantInFavourite);
 }

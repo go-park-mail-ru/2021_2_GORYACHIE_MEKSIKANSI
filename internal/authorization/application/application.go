@@ -10,6 +10,7 @@ type AuthorizationApplicationInterface interface {
 	SignUp(signup *Authorization2.RegistrationRequest) (*util.Defense, error)
 	Login(login *Authorization2.Authorization) (*util.Defense, error)
 	Logout(CSRF string) (string, error)
+	NewCSRFWebsocket(id int) (string, error)
 }
 
 type Authorization struct {
@@ -26,4 +27,8 @@ func (a *Authorization) Login(login *Authorization2.Authorization) (*util.Defens
 
 func (a *Authorization) Logout(CSRF string) (string, error) {
 	return a.DB.Logout(CSRF)
+}
+
+func (m *Authorization) NewCSRFWebsocket(id int) (string, error) {
+	return m.DB.NewCSRFWebsocket(id)
 }

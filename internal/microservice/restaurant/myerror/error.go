@@ -76,4 +76,12 @@ const (
 	RGetGeneralInfoTransactionNotCreate    = "transaction get general info not create"
 	RGetGeneralInfoNotScan                 = "get general info not scan"
 	RGetGeneralInfoNotCommit               = "get general info not commit"
+	RGetFavouriteRestaurantsTransactionNotCreate = "transaction get favourite restaurants not create"
+	RGetFavouriteRestaurantsRestaurantsNotSelect = "transaction get favourite restaurants not create"
+	RGetFavouriteRestaurantsRestaurantsNotScan = "transaction get favourite restaurants not create"
+	RGetFavouriteRestaurantsInfoNotCommit = "transaction get favourite restaurants not create"
+	RAddRestaurantInFavouriteTransactionNotCreate = "transaction get favourite restaurants not create"
+	RAddRestaurantInFavouriteRestaurantsNotSelect = "favourite restaurants not select"
+	RAddRestaurantInFavouriteRestaurantsNotScan = "favourite restaurants not scan"
+	RAddRestaurantInFavouriteInfoNotCommit = "transaction get favourite restaurants not commmit"               // TODO: add in checkErrors
 )

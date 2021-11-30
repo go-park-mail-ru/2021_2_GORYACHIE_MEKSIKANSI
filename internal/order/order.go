@@ -50,6 +50,7 @@ type ActiveOrder struct {
 	Status     int                        `json:"status"`
 	Date       string                     `json:"date"`
 	Time       string                     `json:"time"`
+	TimeDelivery string                   `json:"time_delivery"`
 	Address    profile.AddressCoordinates `json:"address"`
 	Restaurant HistoryResOrder            `json:"restaurant"`
 	Cart       ResponseCartOrder          `json:"cart"`

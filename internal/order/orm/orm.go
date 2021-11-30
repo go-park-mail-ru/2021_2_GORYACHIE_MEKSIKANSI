@@ -317,7 +317,7 @@ func (db *Wrapper) GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, e
 			" au.longitude, d.id, d.avatar, d.name, ol.count_dishes, "+
 			"d.cost, d.kilocalorie, d.weight, d.description, sr.name, "+
 			"sr.radios, sr.id, sd.name, sd.id, sd.cost, restaurant_id, r.name, r.avatar, r.city, r.street,"+
-			" r.house, r.floor, r.latitude, r.longitude, dCost, sumCost, ol.place, orl.place, osl.place "+
+			" r.house, r.floor, r.latitude, r.longitude, dCost, sumCost, ol.place, orl.place, osl.place, r.max_delivery_time "+
 			"FROM order_user"+
 			" LEFT JOIN address_user au ON au.id = order_user.address_id"+
 			" LEFT JOIN order_list ol ON ol.order_id = order_user.id"+
@@ -337,6 +337,7 @@ func (db *Wrapper) GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, e
 	infoDishes := make(map[int]cart.DishesCartResponse)
 
 	var order orderPkg.ActiveOrder
+	var deliveryTime int32
 
 	for row.Next() {
 		var address profile.AddressCoordinates
@@ -356,7 +357,8 @@ func (db *Wrapper) GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, e
 			&srId, &sdName, &sdId, &sdCost, &restaurant.Id, &restaurant.Name, &restaurant.Img,
 			&restaurant.Address.City, &restaurant.Address.Street, &restaurant.Address.House,
 			&restaurant.Address.Floor, &restaurant.Address.Coordinates.Latitude, &restaurant.Address.Coordinates.Longitude,
-			&order.Cart.Cost.DCost, &order.Cart.Cost.SumCost, &getPlaceDishes, &getPlaceRadios, &getPlaceIngredient)
+			&order.Cart.Cost.DCost, &order.Cart.Cost.SumCost, &getPlaceDishes, &getPlaceRadios, &getPlaceIngredient,
+			&deliveryTime)
 
 		if err != nil {
 			return nil, &errPkg.Errors{
@@ -423,6 +425,9 @@ func (db *Wrapper) GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, e
 		}
 		order.Cart.Dishes = append(order.Cart.Dishes, dish)
 	}
+
+	_, receivedTime := util.FormatDate(time.Now().Add(time.Duration(deliveryTime) * time.Minute))
+	order.TimeDelivery = receivedTime
 
 	if order.Id == 0 {
 		return nil, &errPkg.Errors{
