@@ -14,8 +14,8 @@ type RestaurantManagerInterface interface {
 	CreateReview(ctx context.Context, rev *resProto.NewReview) (*resProto.Error, error)
 	GetReview(ctx context.Context, id *resProto.RestaurantId) (*resProto.ResReview, error)
 	SearchRestaurant(ctx context.Context, search *resProto.SearchRestaurantText) (*resProto.Restaurants, error)
-	GetFavouriteRestaurants(ctx context.Context, id *resProto.UserId) (*resProto.Restaurants, error)
-	AddRestaurantInFavourite(ctx context.Context, ids *resProto.AddRestaurantInFavouriteRequest) (*resProto.ResponseAddRestaurantInFavourite, error)
+	GetFavoriteRestaurants(ctx context.Context, id *resProto.UserId) (*resProto.Restaurants, error)
+	EditRestaurantInFavorite(ctx context.Context, ids *resProto.EditRestaurantInFavoriteRequest) (*resProto.ResponseEditRestaurantInFavorite, error)
 }
 
 type RestaurantManager struct {
@@ -88,20 +88,20 @@ func (r *RestaurantManager) SearchRestaurant(ctx context.Context, search *resPro
 	return searchResult, nil
 }
 
-func (r *RestaurantManager) GetFavouriteRestaurants(ctx context.Context, clientId *resProto.UserId) (*resProto.Restaurants, error) {
-	restaurants, err := r.Application.GetFavouriteRestaurants(int(clientId.Id))
+func (r *RestaurantManager) GetFavoriteRestaurants(ctx context.Context, clientId *resProto.UserId) (*resProto.Restaurants, error) {
+	restaurants, err := r.Application.GetFavoriteRestaurants(int(clientId.Id))
 	if err != nil {
 		return &resProto.Restaurants{Error: err.Error()}, nil
 	}
 	return CastRestaurantsToRestaurantsProto(restaurants), nil
 }
 
-func (r *RestaurantManager) AddRestaurantInFavourite(ctx context.Context, restaurant *resProto.AddRestaurantInFavouriteRequest) (*resProto.ResponseAddRestaurantInFavourite, error) {
-	status, err := r.Application.AddRestaurantInFavourite(int(restaurant.IdRestaurant), int(restaurant.IdClient))
+func (r *RestaurantManager) EditRestaurantInFavorite(ctx context.Context, restaurant *resProto.EditRestaurantInFavoriteRequest) (*resProto.ResponseEditRestaurantInFavorite, error) {
+	status, err := r.Application.EditRestaurantInFavorite(int(restaurant.IdRestaurant), int(restaurant.IdClient))
 	if err != nil {
-		return &resProto.ResponseAddRestaurantInFavourite{Error: err.Error()}, nil
+		return &resProto.ResponseEditRestaurantInFavorite{Error: err.Error()}, nil
 	}
-	var result *resProto.ResponseAddRestaurantInFavourite
+	var result resProto.ResponseEditRestaurantInFavorite
 	result.Status = status
-	return result, nil
+	return &result, nil
 }

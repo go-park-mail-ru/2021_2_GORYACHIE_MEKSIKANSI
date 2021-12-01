@@ -83,5 +83,12 @@ func (o *Order) UpdateStatusOrder(id int, status int) error {
 	}
 	time.Sleep(time.Second * 15)
 	o.IntCh <- authPkg.WebSocketOrder{Id: id, Status: status}
+
+	//for i := 1; i <= 4; i++ {
+	//	time.Sleep(time.Second * 5)
+	//	o.IntCh <- authPkg.WebSocketOrder{Id: id, Status: i}
+	//	o.DB.UpdateStatusOrder(id, i)
+	//}
+
 	return o.DB.UpdateStatusOrder(id, status)
 }

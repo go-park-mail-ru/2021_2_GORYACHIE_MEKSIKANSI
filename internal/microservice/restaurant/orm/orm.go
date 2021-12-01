@@ -22,8 +22,8 @@ type WrapperRestaurantInterface interface {
 	SearchCategory(name string) ([]int, error)
 	SearchRestaurant(name string) ([]int, error)
 	GetGeneralInfoRestaurant(id int) (*resPkg.Restaurants, error)
-	GetFavouriteRestaurants(id int) ([]resPkg.Restaurants, error)
-	AddRestaurantInFavourite(idRestaurant int, idClient int) (bool, error)
+	GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error)
+	EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error)
 }
 
 type ConnectionInterface interface {
@@ -582,12 +582,12 @@ func (db *Wrapper) GetGeneralInfoRestaurant(id int) (*resPkg.Restaurants, error)
 	return &restaurant, nil
 }
 
-func (db *Wrapper) GetFavouriteRestaurants(id int) ([]resPkg.Restaurants, error) {
+func (db *Wrapper) GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetFavouriteRestaurantsTransactionNotCreate,
+			Alias: errPkg.RGetFavoriteRestaurantsTransactionNotCreate,
 		}
 	}
 
@@ -599,7 +599,7 @@ func (db *Wrapper) GetFavouriteRestaurants(id int) ([]resPkg.Restaurants, error)
 		id)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetFavouriteRestaurantsRestaurantsNotSelect,
+			Alias: errPkg.RGetFavoriteRestaurantsRestaurantsNotSelect,
 		}
 	}
 
@@ -613,7 +613,7 @@ func (db *Wrapper) GetFavouriteRestaurants(id int) ([]resPkg.Restaurants, error)
 			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating, &position)
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.RGetFavouriteRestaurantsRestaurantsNotScan,
+				Alias: errPkg.RGetFavoriteRestaurantsRestaurantsNotScan,
 			}
 		}
 
@@ -624,33 +624,59 @@ func (db *Wrapper) GetFavouriteRestaurants(id int) ([]resPkg.Restaurants, error)
 		restaurants = append(restaurants, mapRestaurants[i])
 	}
 
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetFavoriteRestaurantsRestaurantsNotExist,
+		}
+	}
+
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetFavouriteRestaurantsInfoNotCommit,
+			Alias: errPkg.RGetFavoriteRestaurantsInfoNotCommit,
 		}
 	}
 
 	return restaurants, nil
 }
 
-func (db *Wrapper) AddRestaurantInFavourite(idRestaurant int, idClient int) (bool, error) {
+func (db *Wrapper) EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.RAddRestaurantInFavouriteTransactionNotCreate,
+			Alias: errPkg.REditRestaurantInFavoriteTransactionNotCreate,
 		}
 	}
 
 	defer tx.Rollback(contextTransaction)
+
+	var check *int32
+	err = tx.QueryRow(contextTransaction,
+		"DELETE FROM favorite_restaurant WHERE client = $1 AND restaurant = $2 RETURNING id",
+		idClient, idRestaurant).Scan(&check)
+	if err != pgx.ErrNoRows {
+		err = tx.Commit(contextTransaction)
+		if err != nil {
+			return false, &errPkg.Errors{
+				Alias: errPkg.REditRestaurantInFavoriteInfoNotCommit,
+			}
+		}
+		return false, nil
+	}
+
+	if err != nil && err != pgx.ErrNoRows {
+		return false, &errPkg.Errors{
+			Alias: errPkg.REditRestaurantInFavoriteRestaurantsNotDelete,
+		}
+	}
 
 	var positionRestaurants *int32
 	err = tx.QueryRow(contextTransaction,
 		"SELECT MAX(position) FROM favorite_restaurant WHERE client = $1", idClient).Scan(&positionRestaurants)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.RAddRestaurantInFavouriteRestaurantsNotSelect,
+			Alias: errPkg.REditRestaurantInFavoriteRestaurantsNotSelect,
 		}
 	}
 
@@ -662,18 +688,18 @@ func (db *Wrapper) AddRestaurantInFavourite(idRestaurant int, idClient int) (boo
 	}
 
 	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO favorite_restaurant (client, restaurant, position) INTO ($1, $2, $3)",
+		"INSERT INTO favorite_restaurant (client, restaurant, position) VALUES ($1, $2, $3)",
 		idClient, idRestaurant, pos)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.RAddRestaurantInFavouriteRestaurantsNotScan,
+			Alias: errPkg.REditRestaurantInFavoriteRestaurantsNotScan,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.RAddRestaurantInFavouriteInfoNotCommit,
+			Alias: errPkg.REditRestaurantInFavoriteInfoNotCommit,
 		}
 	}
 

@@ -365,3 +365,129 @@ func (r *InfoRestaurant) SearchRestaurantHandler(ctx *fasthttp.RequestCtx) {
 
 	ctx.SetStatusCode(http.StatusOK)
 }
+
+func (r *InfoRestaurant) GetFavouritesHandler(ctx *fasthttp.RequestCtx) {
+	reqIdCtx := ctx.UserValue("reqId")
+	reqId, errConvert := util.InterfaceConvertInt(reqIdCtx)
+	if errConvert != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		r.Logger.Errorf("%s", errConvert.Error())
+		return
+	}
+
+	checkError := &errPkg.CheckError{
+		Logger:    r.Logger,
+		RequestId: reqId,
+	}
+
+	idCtx := ctx.UserValue("id")
+	id, errConvert := util.InterfaceConvertInt(idCtx)
+	if errConvert != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		r.Logger.Errorf("%s", errConvert.Error())
+	}
+
+	restaurant, err := r.Application.GetFavoriteRestaurants(id)
+	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorGetFavorite(err)
+	if errOut != nil {
+		switch errOut.Error() {
+		case errPkg.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errPkg.ErrMarshal))
+			return
+		case errPkg.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOutAccess)
+			return
+		}
+	}
+
+	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+		Status: http.StatusOK,
+		Body: &resPkg.RestaurantsResponse{
+			RestaurantsGet: restaurant,
+		},
+	})
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		return
+	}
+
+	ctx.SetStatusCode(http.StatusOK)
+}
+
+func (r *InfoRestaurant) UpdateFavouritesHandler(ctx *fasthttp.RequestCtx) {
+	reqIdCtx := ctx.UserValue("reqId")
+	reqId, errConvert := util.InterfaceConvertInt(reqIdCtx)
+	if errConvert != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		r.Logger.Errorf("%s", errConvert.Error())
+		return
+	}
+
+	checkError := &errPkg.CheckError{
+		Logger:    r.Logger,
+		RequestId: reqId,
+	}
+
+	idCtx := ctx.UserValue("id")
+	id, errConvert := util.InterfaceConvertInt(idCtx)
+	if errConvert != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		r.Logger.Errorf("%s", errConvert.Error())
+	}
+
+	var userFavourite resPkg.ResFavouriteNew
+	err := json.Unmarshal(ctx.Request.Body(), &userFavourite)
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
+		r.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrUnmarshal, err.Error(), reqId)
+		return
+	}
+
+	tokenContext := ctx.UserValue("X-Csrf-Token")
+	xCsrfToken, errConvert := util.InterfaceConvertString(tokenContext)
+	if errConvert != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		return
+	}
+
+	statusFavourite, err := r.Application.EditRestaurantInFavorite(userFavourite.Id, id)
+	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorUpdateFavorite(err)
+	if errOut != nil {
+		switch errOut.Error() {
+		case errPkg.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errPkg.ErrMarshal))
+			return
+		case errPkg.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOutAccess)
+			return
+		}
+	}
+
+	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+		Status: http.StatusOK,
+		Body: &resPkg.RestaurantsResponse{
+			RestaurantsGet: resPkg.ResFavouriteStatus{Status: statusFavourite},
+		},
+	})
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		return
+	}
+
+	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
+	ctx.SetStatusCode(http.StatusOK)
+}

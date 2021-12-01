@@ -16,8 +16,8 @@ type WrapperRestaurantServerInterface interface {
 	CreateReview(id int, review restaurant.NewReview) error
 	GetReview(id int) (*restaurant.ResReview, error)
 	SearchRestaurant(search string) ([]restaurant.Restaurants, error)
-	GetFavouriteRestaurants(id int) ([]restaurant.Restaurants, error)
-	AddRestaurantInFavourite(idRestaurant int, idClient int) (bool, error)
+	GetFavoriteRestaurants(id int) ([]restaurant.Restaurants, error)
+	EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error)
 }
 
 type ConnectRestaurantServiceInterface interface {
@@ -27,8 +27,8 @@ type ConnectRestaurantServiceInterface interface {
 	CreateReview(ctx context.Context, in *resProto.NewReview, opts ...grpc.CallOption) (*resProto.Error, error)
 	GetReview(ctx context.Context, in *resProto.RestaurantId, opts ...grpc.CallOption) (*resProto.ResReview, error)
 	SearchRestaurant(ctx context.Context, in *resProto.SearchRestaurantText, opts ...grpc.CallOption) (*resProto.Restaurants, error)
-	GetFavouriteRestaurants(ctx context.Context, clientId *resProto.UserId, opts ...grpc.CallOption) (*resProto.Restaurants, error)
-	AddRestaurantInFavourite(ctx context.Context, restaurant *resProto.AddRestaurantInFavouriteRequest, opts ...grpc.CallOption) (*resProto.ResponseAddRestaurantInFavourite, error)
+	GetFavoriteRestaurants(ctx context.Context, clientId *resProto.UserId, opts ...grpc.CallOption) (*resProto.Restaurants, error)
+	EditRestaurantInFavorite(ctx context.Context, restaurant *resProto.EditRestaurantInFavoriteRequest, opts ...grpc.CallOption) (*resProto.ResponseEditRestaurantInFavorite, error)
 }
 
 type Wrapper struct {
@@ -117,8 +117,8 @@ func (r *Wrapper) SearchRestaurant(search string) ([]restaurant.Restaurants, err
 	return cast.CastRestaurantsProtoToRestaurant(rest), nil
 }
 
-func (r *Wrapper) GetFavouriteRestaurants(id int) ([]restaurant.Restaurants, error) {
-	restaurants, err := r.Conn.GetFavouriteRestaurants(r.Ctx, &resProto.UserId{Id: int64(id)})
+func (r *Wrapper) GetFavoriteRestaurants(id int) ([]restaurant.Restaurants, error) {
+	restaurants, err := r.Conn.GetFavoriteRestaurants(r.Ctx, &resProto.UserId{Id: int64(id)})
 	if err != nil {
 		return nil, err
 	}
@@ -128,8 +128,8 @@ func (r *Wrapper) GetFavouriteRestaurants(id int) ([]restaurant.Restaurants, err
 	return cast.CastRestaurantsProtoToRestaurants(restaurants.Restaurants), nil
 }
 
-func (r *Wrapper) AddRestaurantInFavourite(idRestaurant int, idClient int) (bool, error) {
-	restaurants, err := r.Conn.AddRestaurantInFavourite(r.Ctx, &resProto.AddRestaurantInFavouriteRequest{IdRestaurant: int64(idRestaurant), IdClient: int64(idClient)})
+func (r *Wrapper) EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error) {
+	restaurants, err := r.Conn.EditRestaurantInFavorite(r.Ctx, &resProto.EditRestaurantInFavoriteRequest{IdRestaurant: int64(idRestaurant), IdClient: int64(idClient)})
 	if err != nil {
 		return false, err
 	}

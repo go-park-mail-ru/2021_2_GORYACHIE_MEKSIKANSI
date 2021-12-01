@@ -73,6 +73,7 @@ func runServer() {
 	orderGroup := userGroup.Group("/order")
 	webSocketGroup := versionGroup.Group("/ws")
 	userWSGroup := userGroup.Group("/ws")
+	favouriteGroup := userGroup.Group("/restaurant/favourite")
 
 	userGroup.POST("/login", userInfo.LoginHandler)
 	userGroup.POST("/signup", userInfo.SignUpHandler)
@@ -87,6 +88,9 @@ func runServer() {
 	userGroup.PUT("/address", infoMid.CheckClient(infoMid.GetIdClient(profileInfo.UpdateUserAddress)))
 	userGroup.POST("/pay", infoMid.CheckClient(infoMid.GetIdClient(userInfo.PayHandler)))
 	userGroup.POST("/review", infoMid.CheckClient(infoMid.GetIdClient(restaurantInfo.CreateReviewHandler)))
+	favouriteGroup.GET("/", infoMid.GetIdClient(restaurantInfo.GetFavouritesHandler))
+	favouriteGroup.PUT("/", infoMid.CheckClient(infoMid.GetIdClient(restaurantInfo.UpdateFavouritesHandler)))
+
 
 	restaurantGroup.GET("/", restaurantInfo.RestaurantHandler)
 	restaurantGroup.GET("/{idRes}/dish/{idDish}", restaurantInfo.RestaurantDishesHandler)

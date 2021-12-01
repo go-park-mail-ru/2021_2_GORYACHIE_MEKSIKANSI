@@ -32,7 +32,7 @@ message RestaurantInfo {
   int64 min_delivery = 5;
   int64 max_delivery = 6;
   float rating = 7;
-  bool favourite = 8
+  bool favourite = 8;
   repeated Tags tags = 9;
   repeated Menu menu = 10;
   string error = 11;
@@ -132,12 +132,12 @@ message UserId {
   int64 id = 1;
 }
 
-message AddRestaurantInFavouriteRequest {
+message EditRestaurantInFavoriteRequest {
   int64 id_restaurant = 1;
   int64 id_client = 2;
 }
 
-message ResponseAddRestaurantInFavourite {
+message ResponseEditRestaurantInFavorite {
   bool status = 1;
   string error = 2;
 }
@@ -149,6 +149,6 @@ service RestaurantService {
   rpc CreateReview(NewReview) returns (Error);
   rpc GetReview(RestaurantId) returns (ResReview);
   rpc SearchRestaurant(SearchRestaurantText) returns (Restaurants);
-  rpc GetFavouriteRestaurants(UserId) returns (Restaurants);
-  rpc AddRestaurantInFavourite(AddRestaurantInFavouriteRequest) returns (ResponseAddRestaurantInFavourite);
+  rpc GetFavoriteRestaurants(UserId) returns (Restaurants);
+  rpc EditRestaurantInFavorite(EditRestaurantInFavoriteRequest) returns (ResponseEditRestaurantInFavorite);
 }

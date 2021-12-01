@@ -46,6 +46,7 @@ const (
 	IntNil             = 0
 	ErrCartNull        = "Ваша корзина пустая"
 	ErrReviewNull      = "Отзывы не найдены"
+	ErrFavoriteNull    = "избранные рестораны не найдены"
 	ErrSearchRes       = "Рестораны не найдены"
 	ErrGerOrderNull    = "Заказов не  найдено"
 	ErrOrderNull       = "Нечего создавать: корзина пустая"
@@ -219,14 +220,16 @@ const (
 	RGetGeneralInfoTransactionNotCreate           = "transaction get general info not create"           // TODO: add in checkErrors
 	RGetGeneralInfoNotScan                        = "get general info not scan"                         // TODO: add in checkErrors
 	RGetGeneralInfoNotCommit                      = "get general info not commit"                       // TODO: add in checkErrors
-	RGetFavouriteRestaurantsTransactionNotCreate  = "transaction get favourite restaurants not create"  // TODO: add in checkErrors
-	RGetFavouriteRestaurantsRestaurantsNotSelect  = "favourite restaurants not select"                  // TODO: add in checkErrors
-	RGetFavouriteRestaurantsRestaurantsNotScan    = "transaction get favourite restaurants not create"  // TODO: add in checkErrors
-	RGetFavouriteRestaurantsInfoNotCommit         = "transaction get favourite restaurants not create"  // TODO: add in checkErrors
-	RAddRestaurantInFavouriteTransactionNotCreate = "transaction get favourite restaurants not create"  // TODO: add in checkErrors
-	RAddRestaurantInFavouriteRestaurantsNotSelect = "favourite restaurants not select"                  // TODO: add in checkErrors
-	RAddRestaurantInFavouriteRestaurantsNotScan   = "favourite restaurants not scan"                    // TODO: add in checkErrors
-	RAddRestaurantInFavouriteInfoNotCommit        = "transaction get favourite restaurants not commmit" // TODO: add in checkErrors
+	RGetFavoriteRestaurantsTransactionNotCreate  = "transaction get favourite restaurants not create"  // TODO: add in checkErrors
+	RGetFavoriteRestaurantsRestaurantsNotSelect  = "favourite restaurants not select"                  // TODO: add in checkErrors
+	RGetFavoriteRestaurantsRestaurantsNotScan    = "transaction get favourite restaurants not create"  // TODO: add in checkErrors
+	RGetFavoriteRestaurantsInfoNotCommit         = "transaction get favourite restaurants not create"  // TODO: add in checkErrors
+	REditRestaurantInFavoriteTransactionNotCreate = "transaction get favourite restaurants not create"  // TODO: add in checkErrors
+	REditRestaurantInFavoriteRestaurantsNotSelect = "favourite restaurants not select"                  // TODO: add in checkErrors
+	REditRestaurantInFavoriteRestaurantsNotScan   = "favourite restaurants not scan"                    // TODO: add in checkErrors
+	REditRestaurantInFavoriteInfoNotCommit        = "transaction get favourite restaurants not commmit" // TODO: add in checkErrors
+	REditRestaurantInFavoriteRestaurantsNotDelete  = "favorite restaurant not delete"                     // TODO: add in checkErrors
+	RGetFavoriteRestaurantsRestaurantsNotExist    = "restaurant not exist"                              // TODO: add in checkErrors
 )
 
 // Error of cart

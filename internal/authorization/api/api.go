@@ -297,13 +297,13 @@ func (u *UserInfo) UserWebSocket(ctx *fasthttp.RequestCtx) {
 	upgrade := websocket.FastHTTPUpgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
+		CheckOrigin: func(ctx *fasthttp.RequestCtx) bool {
+			return true
+		},
 	}
-	key := string(ctx.Request.Header.Peek("Sec-WebSocket-Key"))
-	_ = key
-	errUpgrade := upgrade.Upgrade(ctx, func(conn *websocket.Conn) {
+	errUpgrade := upgrade.Upgrade( ctx, func(conn *websocket.Conn) {
 		for {
 			statusOrder := <-u.IntCh
-			//fmt.Printf("statusOrder %d, id %d\n", statusOrder.Status, statusOrder.Id)
 
 			messageWS := &authorization.Result{
 				Status: http.StatusOK,
@@ -315,8 +315,15 @@ func (u *UserInfo) UserWebSocket(ctx *fasthttp.RequestCtx) {
 				},
 			}
 
+			err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+			if err != nil {
+				u.IntCh <- statusOrder
+				return
+			}
+
 			errWrite := conn.WriteJSON(messageWS)
 			if errWrite != nil {
+				u.IntCh <- statusOrder
 				u.Logger.Errorf("WriteJSON %s, requestId: %d", errWrite.Error(), reqId)
 				return
 			}

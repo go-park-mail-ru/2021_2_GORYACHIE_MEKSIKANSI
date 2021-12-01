@@ -1332,7 +1332,7 @@ func (x *UserId) GetId() int64 {
 	return 0
 }
 
-type AddRestaurantInFavouriteRequest struct {
+type EditRestaurantInFavoriteRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -1341,8 +1341,8 @@ type AddRestaurantInFavouriteRequest struct {
 	IdClient     int64 `protobuf:"varint,2,opt,name=id_client,json=idClient,proto3" json:"id_client,omitempty"`
 }
 
-func (x *AddRestaurantInFavouriteRequest) Reset() {
-	*x = AddRestaurantInFavouriteRequest{}
+func (x *EditRestaurantInFavoriteRequest) Reset() {
+	*x = EditRestaurantInFavoriteRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_restaurant_proto_msgTypes[19]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1350,13 +1350,13 @@ func (x *AddRestaurantInFavouriteRequest) Reset() {
 	}
 }
 
-func (x *AddRestaurantInFavouriteRequest) String() string {
+func (x *EditRestaurantInFavoriteRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*AddRestaurantInFavouriteRequest) ProtoMessage() {}
+func (*EditRestaurantInFavoriteRequest) ProtoMessage() {}
 
-func (x *AddRestaurantInFavouriteRequest) ProtoReflect() protoreflect.Message {
+func (x *EditRestaurantInFavoriteRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_restaurant_proto_msgTypes[19]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1368,26 +1368,26 @@ func (x *AddRestaurantInFavouriteRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use AddRestaurantInFavouriteRequest.ProtoReflect.Descriptor instead.
-func (*AddRestaurantInFavouriteRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use EditRestaurantInFavoriteRequest.ProtoReflect.Descriptor instead.
+func (*EditRestaurantInFavoriteRequest) Descriptor() ([]byte, []int) {
 	return file_restaurant_proto_rawDescGZIP(), []int{19}
 }
 
-func (x *AddRestaurantInFavouriteRequest) GetIdRestaurant() int64 {
+func (x *EditRestaurantInFavoriteRequest) GetIdRestaurant() int64 {
 	if x != nil {
 		return x.IdRestaurant
 	}
 	return 0
 }
 
-func (x *AddRestaurantInFavouriteRequest) GetIdClient() int64 {
+func (x *EditRestaurantInFavoriteRequest) GetIdClient() int64 {
 	if x != nil {
 		return x.IdClient
 	}
 	return 0
 }
 
-type ResponseAddRestaurantInFavourite struct {
+type ResponseEditRestaurantInFavorite struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -1396,8 +1396,8 @@ type ResponseAddRestaurantInFavourite struct {
 	Error  string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
 }
 
-func (x *ResponseAddRestaurantInFavourite) Reset() {
-	*x = ResponseAddRestaurantInFavourite{}
+func (x *ResponseEditRestaurantInFavorite) Reset() {
+	*x = ResponseEditRestaurantInFavorite{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_restaurant_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1405,13 +1405,13 @@ func (x *ResponseAddRestaurantInFavourite) Reset() {
 	}
 }
 
-func (x *ResponseAddRestaurantInFavourite) String() string {
+func (x *ResponseEditRestaurantInFavorite) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ResponseAddRestaurantInFavourite) ProtoMessage() {}
+func (*ResponseEditRestaurantInFavorite) ProtoMessage() {}
 
-func (x *ResponseAddRestaurantInFavourite) ProtoReflect() protoreflect.Message {
+func (x *ResponseEditRestaurantInFavorite) ProtoReflect() protoreflect.Message {
 	mi := &file_restaurant_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1423,19 +1423,19 @@ func (x *ResponseAddRestaurantInFavourite) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ResponseAddRestaurantInFavourite.ProtoReflect.Descriptor instead.
-func (*ResponseAddRestaurantInFavourite) Descriptor() ([]byte, []int) {
+// Deprecated: Use ResponseEditRestaurantInFavorite.ProtoReflect.Descriptor instead.
+func (*ResponseEditRestaurantInFavorite) Descriptor() ([]byte, []int) {
 	return file_restaurant_proto_rawDescGZIP(), []int{20}
 }
 
-func (x *ResponseAddRestaurantInFavourite) GetStatus() bool {
+func (x *ResponseEditRestaurantInFavorite) GetStatus() bool {
 	if x != nil {
 		return x.Status
 	}
 	return false
 }
 
-func (x *ResponseAddRestaurantInFavourite) GetError() string {
+func (x *ResponseEditRestaurantInFavorite) GetError() string {
 	if x != nil {
 		return x.Error
 	}
@@ -1581,18 +1581,18 @@ var file_restaurant_proto_rawDesc = []byte{
 	0x12, 0x12, 0x0a, 0x04, 0x72, 0x61, 0x74, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x03, 0x52, 0x04,
 	0x72, 0x61, 0x74, 0x65, 0x22, 0x18, 0x0a, 0x06, 0x55, 0x73, 0x65, 0x72, 0x49, 0x64, 0x12, 0x0e,
 	0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x02, 0x69, 0x64, 0x22, 0x63,
-	0x0a, 0x1f, 0x41, 0x64, 0x64, 0x52, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x49,
-	0x6e, 0x46, 0x61, 0x76, 0x6f, 0x75, 0x72, 0x69, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x0a, 0x1f, 0x45, 0x64, 0x69, 0x74, 0x52, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74,
+	0x49, 0x6e, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
 	0x74, 0x12, 0x23, 0x0a, 0x0d, 0x69, 0x64, 0x5f, 0x72, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61,
 	0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0c, 0x69, 0x64, 0x52, 0x65, 0x73, 0x74,
 	0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x12, 0x1b, 0x0a, 0x09, 0x69, 0x64, 0x5f, 0x63, 0x6c, 0x69,
 	0x65, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x08, 0x69, 0x64, 0x43, 0x6c, 0x69,
-	0x65, 0x6e, 0x74, 0x22, 0x50, 0x0a, 0x20, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x41,
-	0x64, 0x64, 0x52, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x49, 0x6e, 0x46, 0x61,
-	0x76, 0x6f, 0x75, 0x72, 0x69, 0x74, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75,
+	0x65, 0x6e, 0x74, 0x22, 0x50, 0x0a, 0x20, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x45,
+	0x64, 0x69, 0x74, 0x52, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x49, 0x6e, 0x46,
+	0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75,
 	0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12,
 	0x14, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05,
-	0x65, 0x72, 0x72, 0x6f, 0x72, 0x32, 0xdc, 0x04, 0x0a, 0x11, 0x52, 0x65, 0x73, 0x74, 0x61, 0x75,
+	0x65, 0x72, 0x72, 0x6f, 0x72, 0x32, 0xdb, 0x04, 0x0a, 0x11, 0x52, 0x65, 0x73, 0x74, 0x61, 0x75,
 	0x72, 0x61, 0x6e, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x3c, 0x0a, 0x0e, 0x41,
 	0x6c, 0x6c, 0x52, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x73, 0x12, 0x11, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79,
@@ -1618,20 +1618,20 @@ var file_restaurant_proto_rawDesc = []byte{
 	0x74, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x52, 0x65,
 	0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x54, 0x65, 0x78, 0x74, 0x1a, 0x17, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x52, 0x65, 0x73, 0x74, 0x61, 0x75,
-	0x72, 0x61, 0x6e, 0x74, 0x73, 0x12, 0x46, 0x0a, 0x17, 0x47, 0x65, 0x74, 0x46, 0x61, 0x76, 0x6f,
-	0x75, 0x72, 0x69, 0x74, 0x65, 0x52, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x73,
-	0x12, 0x12, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x73,
-	0x65, 0x72, 0x49, 0x64, 0x1a, 0x17, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x2e, 0x52, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x73, 0x12, 0x75, 0x0a,
-	0x18, 0x41, 0x64, 0x64, 0x52, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x49, 0x6e,
-	0x46, 0x61, 0x76, 0x6f, 0x75, 0x72, 0x69, 0x74, 0x65, 0x12, 0x2b, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x41, 0x64, 0x64, 0x52, 0x65, 0x73, 0x74, 0x61, 0x75,
-	0x72, 0x61, 0x6e, 0x74, 0x49, 0x6e, 0x46, 0x61, 0x76, 0x6f, 0x75, 0x72, 0x69, 0x74, 0x65, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x41, 0x64, 0x64, 0x52,
-	0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x49, 0x6e, 0x46, 0x61, 0x76, 0x6f, 0x75,
-	0x72, 0x69, 0x74, 0x65, 0x42, 0x04, 0x5a, 0x02, 0x2e, 0x2f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x72, 0x61, 0x6e, 0x74, 0x73, 0x12, 0x45, 0x0a, 0x16, 0x47, 0x65, 0x74, 0x46, 0x61, 0x76, 0x6f,
+	0x72, 0x69, 0x74, 0x65, 0x52, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x73, 0x12,
+	0x12, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x73, 0x65,
+	0x72, 0x49, 0x64, 0x1a, 0x17, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x2e, 0x52, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x73, 0x12, 0x75, 0x0a, 0x18,
+	0x45, 0x64, 0x69, 0x74, 0x52, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x49, 0x6e,
+	0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x12, 0x2b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x45, 0x64, 0x69, 0x74, 0x52, 0x65, 0x73, 0x74, 0x61, 0x75,
+	0x72, 0x61, 0x6e, 0x74, 0x49, 0x6e, 0x46, 0x61, 0x76, 0x6f, 0x72, 0x69, 0x74, 0x65, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x45, 0x64, 0x69, 0x74, 0x52,
+	0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x49, 0x6e, 0x46, 0x61, 0x76, 0x6f, 0x72,
+	0x69, 0x74, 0x65, 0x42, 0x04, 0x5a, 0x02, 0x2e, 0x2f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -1667,8 +1667,8 @@ var file_restaurant_proto_goTypes = []interface{}{
 	(*ResReview)(nil),                        // 16: protoproto.ResReview
 	(*Review)(nil),                           // 17: protoproto.Review
 	(*UserId)(nil),                           // 18: protoproto.UserId
-	(*AddRestaurantInFavouriteRequest)(nil),  // 19: protoproto.AddRestaurantInFavouriteRequest
-	(*ResponseAddRestaurantInFavourite)(nil), // 20: protoproto.ResponseAddRestaurantInFavourite
+	(*EditRestaurantInFavoriteRequest)(nil),  // 19: protoproto.EditRestaurantInFavoriteRequest
+	(*ResponseEditRestaurantInFavorite)(nil), // 20: protoproto.ResponseEditRestaurantInFavorite
 }
 var file_restaurant_proto_depIdxs = []int32{
 	1,  // 0: protoproto.Restaurants.restaurants:type_name -> protoproto.Restaurant
@@ -1687,16 +1687,16 @@ var file_restaurant_proto_depIdxs = []int32{
 	13, // 13: protoproto.RestaurantService.CreateReview:input_type -> protoproto.NewReview
 	2,  // 14: protoproto.RestaurantService.GetReview:input_type -> protoproto.RestaurantId
 	15, // 15: protoproto.RestaurantService.SearchRestaurant:input_type -> protoproto.SearchRestaurantText
-	18, // 16: protoproto.RestaurantService.GetFavouriteRestaurants:input_type -> protoproto.UserId
-	19, // 17: protoproto.RestaurantService.AddRestaurantInFavourite:input_type -> protoproto.AddRestaurantInFavouriteRequest
+	18, // 16: protoproto.RestaurantService.GetFavoriteRestaurants:input_type -> protoproto.UserId
+	19, // 17: protoproto.RestaurantService.EditRestaurantInFavorite:input_type -> protoproto.EditRestaurantInFavoriteRequest
 	0,  // 18: protoproto.RestaurantService.AllRestaurants:output_type -> protoproto.Restaurants
 	3,  // 19: protoproto.RestaurantService.GetRestaurant:output_type -> protoproto.RestaurantInfo
 	9,  // 20: protoproto.RestaurantService.RestaurantDishes:output_type -> protoproto.Dishes
 	14, // 21: protoproto.RestaurantService.CreateReview:output_type -> protoproto.Error
 	16, // 22: protoproto.RestaurantService.GetReview:output_type -> protoproto.ResReview
 	0,  // 23: protoproto.RestaurantService.SearchRestaurant:output_type -> protoproto.Restaurants
-	0,  // 24: protoproto.RestaurantService.GetFavouriteRestaurants:output_type -> protoproto.Restaurants
-	20, // 25: protoproto.RestaurantService.AddRestaurantInFavourite:output_type -> protoproto.ResponseAddRestaurantInFavourite
+	0,  // 24: protoproto.RestaurantService.GetFavoriteRestaurants:output_type -> protoproto.Restaurants
+	20, // 25: protoproto.RestaurantService.EditRestaurantInFavorite:output_type -> protoproto.ResponseEditRestaurantInFavorite
 	18, // [18:26] is the sub-list for method output_type
 	10, // [10:18] is the sub-list for method input_type
 	10, // [10:10] is the sub-list for extension type_name
@@ -1939,7 +1939,7 @@ func file_restaurant_proto_init() {
 			}
 		}
 		file_restaurant_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AddRestaurantInFavouriteRequest); i {
+			switch v := v.(*EditRestaurantInFavoriteRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1951,7 +1951,7 @@ func file_restaurant_proto_init() {
 			}
 		}
 		file_restaurant_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ResponseAddRestaurantInFavourite); i {
+			switch v := v.(*ResponseEditRestaurantInFavorite); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2001,8 +2001,8 @@ type RestaurantServiceClient interface {
 	CreateReview(ctx context.Context, in *NewReview, opts ...grpc.CallOption) (*Error, error)
 	GetReview(ctx context.Context, in *RestaurantId, opts ...grpc.CallOption) (*ResReview, error)
 	SearchRestaurant(ctx context.Context, in *SearchRestaurantText, opts ...grpc.CallOption) (*Restaurants, error)
-	GetFavouriteRestaurants(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Restaurants, error)
-	AddRestaurantInFavourite(ctx context.Context, in *AddRestaurantInFavouriteRequest, opts ...grpc.CallOption) (*ResponseAddRestaurantInFavourite, error)
+	GetFavoriteRestaurants(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Restaurants, error)
+	EditRestaurantInFavorite(ctx context.Context, in *EditRestaurantInFavoriteRequest, opts ...grpc.CallOption) (*ResponseEditRestaurantInFavorite, error)
 }
 
 type restaurantServiceClient struct {
@@ -2067,18 +2067,18 @@ func (c *restaurantServiceClient) SearchRestaurant(ctx context.Context, in *Sear
 	return out, nil
 }
 
-func (c *restaurantServiceClient) GetFavouriteRestaurants(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Restaurants, error) {
+func (c *restaurantServiceClient) GetFavoriteRestaurants(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Restaurants, error) {
 	out := new(Restaurants)
-	err := c.cc.Invoke(ctx, "/protoproto.RestaurantService/GetFavouriteRestaurants", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/protoproto.RestaurantService/GetFavoriteRestaurants", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *restaurantServiceClient) AddRestaurantInFavourite(ctx context.Context, in *AddRestaurantInFavouriteRequest, opts ...grpc.CallOption) (*ResponseAddRestaurantInFavourite, error) {
-	out := new(ResponseAddRestaurantInFavourite)
-	err := c.cc.Invoke(ctx, "/protoproto.RestaurantService/AddRestaurantInFavourite", in, out, opts...)
+func (c *restaurantServiceClient) EditRestaurantInFavorite(ctx context.Context, in *EditRestaurantInFavoriteRequest, opts ...grpc.CallOption) (*ResponseEditRestaurantInFavorite, error) {
+	out := new(ResponseEditRestaurantInFavorite)
+	err := c.cc.Invoke(ctx, "/protoproto.RestaurantService/EditRestaurantInFavorite", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2093,8 +2093,8 @@ type RestaurantServiceServer interface {
 	CreateReview(context.Context, *NewReview) (*Error, error)
 	GetReview(context.Context, *RestaurantId) (*ResReview, error)
 	SearchRestaurant(context.Context, *SearchRestaurantText) (*Restaurants, error)
-	GetFavouriteRestaurants(context.Context, *UserId) (*Restaurants, error)
-	AddRestaurantInFavourite(context.Context, *AddRestaurantInFavouriteRequest) (*ResponseAddRestaurantInFavourite, error)
+	GetFavoriteRestaurants(context.Context, *UserId) (*Restaurants, error)
+	EditRestaurantInFavorite(context.Context, *EditRestaurantInFavoriteRequest) (*ResponseEditRestaurantInFavorite, error)
 }
 
 // UnimplementedRestaurantServiceServer can be embedded to have forward compatible implementations.
@@ -2119,11 +2119,11 @@ func (*UnimplementedRestaurantServiceServer) GetReview(context.Context, *Restaur
 func (*UnimplementedRestaurantServiceServer) SearchRestaurant(context.Context, *SearchRestaurantText) (*Restaurants, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchRestaurant not implemented")
 }
-func (*UnimplementedRestaurantServiceServer) GetFavouriteRestaurants(context.Context, *UserId) (*Restaurants, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetFavouriteRestaurants not implemented")
+func (*UnimplementedRestaurantServiceServer) GetFavoriteRestaurants(context.Context, *UserId) (*Restaurants, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFavoriteRestaurants not implemented")
 }
-func (*UnimplementedRestaurantServiceServer) AddRestaurantInFavourite(context.Context, *AddRestaurantInFavouriteRequest) (*ResponseAddRestaurantInFavourite, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddRestaurantInFavourite not implemented")
+func (*UnimplementedRestaurantServiceServer) EditRestaurantInFavorite(context.Context, *EditRestaurantInFavoriteRequest) (*ResponseEditRestaurantInFavorite, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EditRestaurantInFavorite not implemented")
 }
 
 func RegisterRestaurantServiceServer(s *grpc.Server, srv RestaurantServiceServer) {
@@ -2238,38 +2238,38 @@ func _RestaurantService_SearchRestaurant_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RestaurantService_GetFavouriteRestaurants_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RestaurantService_GetFavoriteRestaurants_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RestaurantServiceServer).GetFavouriteRestaurants(ctx, in)
+		return srv.(RestaurantServiceServer).GetFavoriteRestaurants(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/protoproto.RestaurantService/GetFavouriteRestaurants",
+		FullMethod: "/protoproto.RestaurantService/GetFavoriteRestaurants",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RestaurantServiceServer).GetFavouriteRestaurants(ctx, req.(*UserId))
+		return srv.(RestaurantServiceServer).GetFavoriteRestaurants(ctx, req.(*UserId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RestaurantService_AddRestaurantInFavourite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AddRestaurantInFavouriteRequest)
+func _RestaurantService_EditRestaurantInFavorite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EditRestaurantInFavoriteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RestaurantServiceServer).AddRestaurantInFavourite(ctx, in)
+		return srv.(RestaurantServiceServer).EditRestaurantInFavorite(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/protoproto.RestaurantService/AddRestaurantInFavourite",
+		FullMethod: "/protoproto.RestaurantService/EditRestaurantInFavorite",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RestaurantServiceServer).AddRestaurantInFavourite(ctx, req.(*AddRestaurantInFavouriteRequest))
+		return srv.(RestaurantServiceServer).EditRestaurantInFavorite(ctx, req.(*EditRestaurantInFavoriteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2303,12 +2303,12 @@ var _RestaurantService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _RestaurantService_SearchRestaurant_Handler,
 		},
 		{
-			MethodName: "GetFavouriteRestaurants",
-			Handler:    _RestaurantService_GetFavouriteRestaurants_Handler,
+			MethodName: "GetFavoriteRestaurants",
+			Handler:    _RestaurantService_GetFavoriteRestaurants_Handler,
 		},
 		{
-			MethodName: "AddRestaurantInFavourite",
-			Handler:    _RestaurantService_AddRestaurantInFavourite_Handler,
+			MethodName: "EditRestaurantInFavorite",
+			Handler:    _RestaurantService_EditRestaurantInFavorite_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
