@@ -101,8 +101,7 @@ func runServer() {
 	orderGroup.POST("/", infoMid.CheckClient(infoMid.GetIdClient(orderInfo.CreateOrderHandler)))
 	orderGroup.GET("/{idOrd}/active", infoMid.GetIdClient(orderInfo.GetOrderActiveHandler))
 
-	//webSocketGroup.GET("/", infoMid.GetIdClient(infoMid.CheckWebSocketKey(userInfo.UserWebSocket)))
-	webSocketGroup.GET("/", infoMid.GetIdClient(userInfo.UserWebSocket	))
+	webSocketGroup.GET("/", infoMid.GetIdClient(infoMid.CheckWebSocketKey(userInfo.UserWebSocket)))
 	userWSGroup.GET("/key", infoMid.GetIdClient(userInfo.UserWebSocketNewKey))
 
 
