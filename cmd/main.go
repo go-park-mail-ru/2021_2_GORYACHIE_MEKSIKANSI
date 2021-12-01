@@ -3,13 +3,12 @@ package main
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/build"
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
+	authPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/authorization"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/util"
-	"encoding/json"
 	cors "github.com/AdhityaRamadhanus/fasthttpcors"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/fasthttp/router"
-	"github.com/fasthttp/websocket"
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 	"os"
@@ -52,7 +51,7 @@ func runServer() {
 	uploader := s3manager.NewUploader(sess)
 	nameBucket := awsConfig.Aws.Name
 
-	intCh := make(chan  int , 10)
+	intCh := make(chan authPkg.WebSocketOrder, 10)
 
 	startStructure := build.SetUp(connectionPostgres, logger.Log, uploader, nameBucket, microserviceConfig, intCh)
 
@@ -63,6 +62,7 @@ func runServer() {
 	restaurantInfo := startStructure.Restaraunt
 	orderInfo := startStructure.Order
 
+	userInfo.IntCh = intCh // TODO: сделать нормально все каналы
 
 	myRouter := router.New()
 	apiGroup := myRouter.Group("/api")
@@ -86,6 +86,7 @@ func runServer() {
 	userGroup.PUT("/address", infoMid.CheckClient(infoMid.GetIdClient(profileInfo.UpdateUserAddress)))
 	userGroup.POST("/pay", infoMid.CheckClient(infoMid.GetIdClient(userInfo.PayHandler)))
 	userGroup.POST("/review", infoMid.CheckClient(infoMid.GetIdClient(restaurantInfo.CreateReviewHandler)))
+	userGroup.GET("/ws/key", infoMid.GetIdClient(userInfo.UserWebSocketNewKey))
 
 	restaurantGroup.GET("/", restaurantInfo.RestaurantHandler)
 	restaurantGroup.GET("/{idRes}/dish/{idDish}", restaurantInfo.RestaurantDishesHandler)
@@ -100,46 +101,7 @@ func runServer() {
 	orderGroup.POST("/", infoMid.CheckClient(infoMid.GetIdClient(orderInfo.CreateOrderHandler)))
 	orderGroup.GET("/{idOrd}/active", infoMid.GetIdClient(orderInfo.GetOrderActiveHandler))
 
-
-	//webSocketGroup.GET("/", userInfo.UserWebSocket)
-	webSocketGroup.GET("/", infoMid.GetIdClient(func(ctx *fasthttp.RequestCtx) {
-		upgrade := websocket.FastHTTPUpgrader{
-			ReadBufferSize: 1024,
-			WriteBufferSize: 1024,
-		}
-		//key := string(ctx.Request.Header.Peek("Sec-WebSocket-Key"))
-		err := upgrade.Upgrade(ctx, func(conn *websocket.Conn) {
-			for {
-				status := <- intCh
-				println(status)
-/*				_, msg, errMsg := conn.ReadMessage()
-				if errMsg != nil {
-					println("GG read")
-					return
-				}
-				println(string(msg))
-*/
-				testStructure := errPkg.Errors{Alias: "test"}
-				testJson, errMarshal := json.Marshal(&testStructure)
-				if errMarshal != nil {
-					println("GG marshal")
-					return
-				}
-				//errWrite := conn.WriteMessage(websocket.TextMessage, []byte(strconv.Itoa(status)))
-				errWrite := conn.WriteJSON(testJson)
-				if errWrite != nil {
-					println("GG write")
-					return
-				}
-			}
-		})
-		if err != nil {
-			println("GG")
-			return
-		}
-		//ctx.Response.Header.Set("Sec-WebSocket-Key", key)
-
-	}))
+	webSocketGroup.GET("/", infoMid.GetIdClient(userInfo.UserWebSocket))
 
 	printURL := infoMid.LogURL(myRouter.Handler)
 

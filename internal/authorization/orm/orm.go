@@ -33,9 +33,9 @@ type ConnectAuthServiceInterface interface {
 }
 
 type Wrapper struct {
-	Conn ConnectAuthServiceInterface
+	Conn   ConnectAuthServiceInterface
 	DBConn ConnectionInterface
-	Ctx  context.Context
+	Ctx    context.Context
 }
 
 func (w *Wrapper) SignUp(signup *authorization.RegistrationRequest) (*Utils2.Defense, error) {

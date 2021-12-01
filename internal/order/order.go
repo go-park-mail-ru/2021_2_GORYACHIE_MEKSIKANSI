@@ -46,14 +46,14 @@ type ResponseCartOrder struct {
 }
 
 type ActiveOrder struct {
-	Id         int                        `json:"id"`
-	Status     int                        `json:"status"`
-	Date       string                     `json:"date"`
-	Time       string                     `json:"time"`
-	TimeDelivery string                   `json:"time_delivery"`
-	Address    profile.AddressCoordinates `json:"address"`
-	Restaurant HistoryResOrder            `json:"restaurant"`
-	Cart       ResponseCartOrder          `json:"cart"`
+	Id           int                        `json:"id"`
+	Status       int                        `json:"status"`
+	Date         string                     `json:"date"`
+	Time         string                     `json:"time"`
+	TimeDelivery string                     `json:"time_delivery"`
+	Address      profile.AddressCoordinates `json:"address"`
+	Restaurant   HistoryResOrder            `json:"restaurant"`
+	Cart         ResponseCartOrder          `json:"cart"`
 }
 
 func ConvertCreateOrderIdToOrderResponse(id int) ResponseOrder {

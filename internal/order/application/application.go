@@ -1,6 +1,7 @@
 package application
 
 import (
+	authPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/authorization"
 	Order2 "2021_2_GORYACHIE_MEKSIKANSI/internal/order"
 	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/order/orm"
 	profileOrmPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/profile/orm"
@@ -17,7 +18,7 @@ type OrderApplicationInterface interface {
 type Order struct {
 	DB        ormPkg.WrapperOrderInterface
 	DBProfile profileOrmPkg.WrapperProfileInterface
-	IntCh chan int
+	IntCh     chan authPkg.WebSocketOrder
 }
 
 func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) (int, error) {
@@ -77,10 +78,10 @@ func (o *Order) GetActiveOrder(idClient int, idOrder int) (*Order2.ActiveOrder, 
 func (o *Order) UpdateStatusOrder(id int, status int) error {
 	for i := 1; i <= 3; i++ {
 		time.Sleep(time.Second * 15)
-		o.IntCh <- i
+		o.IntCh <- authPkg.WebSocketOrder{Id: id, Status: i}
 		o.DB.UpdateStatusOrder(id, i)
 	}
 	time.Sleep(time.Second * 15)
-	o.IntCh <- status
+	o.IntCh <- authPkg.WebSocketOrder{Id: id, Status: status}
 	return o.DB.UpdateStatusOrder(id, status)
 }

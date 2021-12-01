@@ -32,11 +32,10 @@ type ConnectionInterface interface {
 	Begin(ctx context.Context) (pgx.Tx, error)
 }
 
-
 type Wrapper struct {
-	Conn ConnectionMiddlewareInterface
+	Conn   ConnectionMiddlewareInterface
 	DBConn ConnectionInterface
-	Ctx  context.Context
+	Ctx    context.Context
 }
 
 func (w *Wrapper) CheckAccess(cookie *util.Defense) (bool, error) {
@@ -85,7 +84,7 @@ func (w *Wrapper) CheckAccessWebsocket(id int, websocket string) (bool, error) {
 
 	var exist *int32
 	err = tx.QueryRow(contextTransaction,
-	"SELECT id FROM cookie WHERE client_id = $1 AND websocket = $2", id, websocket).Scan(&exist)
+		"SELECT id FROM cookie WHERE client_id = $1 AND websocket = $2", id, websocket).Scan(&exist)
 	if err != nil {
 		return false, &errPkg.Errors{
 			Alias: errPkg.OGetOrderNotSelect,

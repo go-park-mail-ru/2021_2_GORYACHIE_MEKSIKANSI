@@ -6,11 +6,11 @@ import (
 )
 
 const (
-	LenFirstField = 8
+	LenFirstField  = 8
 	LenSecondField = 4
-	LenThirdField = 5
+	LenThirdField  = 5
 	LenFourthField = 4
-	LenFifthField = 12
+	LenFifthField  = 12
 )
 
 func RandString(length int) string {

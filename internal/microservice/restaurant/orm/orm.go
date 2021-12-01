@@ -594,8 +594,8 @@ func (db *Wrapper) GetFavouriteRestaurants(id int) ([]resPkg.Restaurants, error)
 	defer tx.Rollback(contextTransaction)
 
 	rows, err := tx.Query(contextTransaction,
-		"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating, fr.position" +
-		" FROM restaurant r RIGHT JOIN favorite_restaurant fr ON fr.restaurant = r.id WHERE fr.client = $1",
+		"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating, fr.position"+
+			" FROM restaurant r RIGHT JOIN favorite_restaurant fr ON fr.restaurant = r.id WHERE fr.client = $1",
 		id)
 	if err != nil {
 		return nil, &errPkg.Errors{
@@ -633,7 +633,6 @@ func (db *Wrapper) GetFavouriteRestaurants(id int) ([]resPkg.Restaurants, error)
 
 	return restaurants, nil
 }
-
 
 func (db *Wrapper) AddRestaurantInFavourite(idRestaurant int, idClient int) (bool, error) {
 	contextTransaction := context.Background()

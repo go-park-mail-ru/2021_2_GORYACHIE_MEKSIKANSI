@@ -30,6 +30,24 @@ type Result struct {
 	Body   interface{} `json:"body,omitempty"`
 }
 
+type WebSocket struct {
+	Socket interface{} `json:"web_socket"`
+}
+
+type KeyWebSocket struct {
+	Key string `json:"key"`
+}
+
+type WebSocketAction struct {
+	Action string         `json:"action"`
+	Order  WebSocketOrder `json:"order"`
+}
+
+type WebSocketOrder struct {
+	Id     int `json:"id"`
+	Status int `json:"status"`
+}
+
 func UserConvertRegistration(signUpAll *RegistrationRequest) *User {
 	user := User{
 		TypeUser: signUpAll.TypeUser,

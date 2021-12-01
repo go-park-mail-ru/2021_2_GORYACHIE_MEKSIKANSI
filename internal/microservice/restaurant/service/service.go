@@ -96,7 +96,6 @@ func (r *RestaurantManager) GetFavouriteRestaurants(ctx context.Context, clientI
 	return CastRestaurantsToRestaurantsProto(restaurants), nil
 }
 
-
 func (r *RestaurantManager) AddRestaurantInFavourite(ctx context.Context, restaurant *resProto.AddRestaurantInFavouriteRequest) (*resProto.ResponseAddRestaurantInFavourite, error) {
 	status, err := r.Application.AddRestaurantInFavourite(int(restaurant.IdRestaurant), int(restaurant.IdClient))
 	if err != nil {

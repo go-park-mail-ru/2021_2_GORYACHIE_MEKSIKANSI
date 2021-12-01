@@ -2,6 +2,7 @@ package build
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
+	authPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/authorization"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/api"
 	authApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/api"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/application"
@@ -59,7 +60,7 @@ type installSetUp struct {
 }
 
 func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLogger,
-	uploader *s3manager.Uploader, nameBucket string, microserviceConfig config.MicroserviceConfig, IntCh chan int) *installSetUp {
+	uploader *s3manager.Uploader, nameBucket string, microserviceConfig config.MicroserviceConfig, IntCh chan authPkg.WebSocketOrder) *installSetUp {
 
 	addressAuth := microserviceConfig.Authorization.Host + ":" + microserviceConfig.Authorization.Port
 	grpcConnAuth, errDialAuth := grpc.Dial(
@@ -145,7 +146,7 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 	orderApp := Application4.Order{
 		DB:        &orderWrapper,
 		DBProfile: &profileWrapper,
-		IntCh: IntCh,
+		IntCh:     IntCh,
 	}
 	orderInfo := Api4.InfoOrder{
 		Application: &orderApp,
