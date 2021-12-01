@@ -270,7 +270,11 @@ func (u *UserInfo) UserWebSocketNewKey(ctx *fasthttp.RequestCtx) {
 
 	err = json.NewEncoder(ctx).Encode(&authorization.Result{
 		Status: http.StatusOK,
-		Body:   &authorization.WebSocket{Socket: authorization.KeyWebSocket{Key: newKey}},
+		Body: &authorization.WebSocket{
+			Socket: authorization.KeyWebSocket{
+				Key: newKey,
+			},
+		},
 	})
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)

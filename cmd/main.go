@@ -72,6 +72,7 @@ func runServer() {
 	cartGroup := userGroup.Group("/cart")
 	orderGroup := userGroup.Group("/order")
 	webSocketGroup := versionGroup.Group("/ws")
+	userWSGroup := userGroup.Group("/ws")
 
 	userGroup.POST("/login", userInfo.LoginHandler)
 	userGroup.POST("/signup", userInfo.SignUpHandler)
@@ -86,7 +87,6 @@ func runServer() {
 	userGroup.PUT("/address", infoMid.CheckClient(infoMid.GetIdClient(profileInfo.UpdateUserAddress)))
 	userGroup.POST("/pay", infoMid.CheckClient(infoMid.GetIdClient(userInfo.PayHandler)))
 	userGroup.POST("/review", infoMid.CheckClient(infoMid.GetIdClient(restaurantInfo.CreateReviewHandler)))
-	userGroup.GET("/ws/key", infoMid.GetIdClient(userInfo.UserWebSocketNewKey))
 
 	restaurantGroup.GET("/", restaurantInfo.RestaurantHandler)
 	restaurantGroup.GET("/{idRes}/dish/{idDish}", restaurantInfo.RestaurantDishesHandler)
@@ -101,7 +101,10 @@ func runServer() {
 	orderGroup.POST("/", infoMid.CheckClient(infoMid.GetIdClient(orderInfo.CreateOrderHandler)))
 	orderGroup.GET("/{idOrd}/active", infoMid.GetIdClient(orderInfo.GetOrderActiveHandler))
 
-	webSocketGroup.GET("/", infoMid.GetIdClient(userInfo.UserWebSocket))
+	//webSocketGroup.GET("/", infoMid.GetIdClient(infoMid.CheckWebSocketKey(userInfo.UserWebSocket)))
+	webSocketGroup.GET("/", infoMid.GetIdClient(userInfo.UserWebSocket	))
+	userWSGroup.GET("/key", infoMid.GetIdClient(userInfo.UserWebSocketNewKey))
+
 
 	printURL := infoMid.LogURL(myRouter.Handler)
 

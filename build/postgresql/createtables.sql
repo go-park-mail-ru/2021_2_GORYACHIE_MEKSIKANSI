@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS cookie (
     session_id varchar(92) NOT NULL,
     date_life timestamp NOT NULL,
     csrf_token varchar(92) NOT NULL,
-    websocket varchar(36)
+    websocket varchar(92)
 );
 
 CREATE TABLE IF NOT EXISTS host (

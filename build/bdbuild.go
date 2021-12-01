@@ -83,8 +83,8 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 	defer tx.Rollback(contextTransaction)
 
 	if debug {
-		file, err := ioutil.ReadFile("./build/postgresql/deletetables.sql")
-		if err != nil {
+		file, errRead := ioutil.ReadFile("./build/postgresql/deletetables.sql")
+		if errRead != nil {
 			return nil, &errPkg.Errors{
 				Alias: errPkg.MCreateDBDeleteFileNotFound,
 			}

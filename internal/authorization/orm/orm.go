@@ -87,7 +87,7 @@ func (w *Wrapper) NewCSRFWebsocket(id int) (string, error) {
 	websocket := generateWebsocket()
 
 	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO cookie (client_id, websocket) VALUES ($1, $2)", id, websocket)
+		"UPDATE cookie SET websocket = $1 WHERE client_id = $2", websocket, id)
 	if err != nil {
 		return "", &errPkg.Errors{
 			Alias: errPkg.OGetOrderNotSelect,

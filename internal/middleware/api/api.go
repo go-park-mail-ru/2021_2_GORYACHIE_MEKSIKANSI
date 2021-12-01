@@ -13,6 +13,7 @@ type MiddlewareApiInterface interface {
 	LogURL(h fasthttp.RequestHandler) fasthttp.RequestHandler
 	GetIdClient(h fasthttp.RequestHandler) fasthttp.RequestHandler
 	CheckClient(h fasthttp.RequestHandler) fasthttp.RequestHandler
+	CheckWebSocketKey(h fasthttp.RequestHandler) fasthttp.RequestHandler
 }
 
 type InfoMiddleware struct {
@@ -108,6 +109,52 @@ func (m *InfoMiddleware) CheckClient(h fasthttp.RequestHandler) fasthttp.Request
 		}
 		ctx.SetUserValue("X-Csrf-Token", cookieDB.CsrfToken)
 		//ctx.Response.Header.SetContentType("application/json")
+
+		h(ctx)
+	})
+}
+
+func (m *InfoMiddleware) CheckWebSocketKey(h fasthttp.RequestHandler) fasthttp.RequestHandler {
+	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
+
+		reqIdCtx := ctx.UserValue("reqId")
+		reqId, errConvert := util.InterfaceConvertInt(reqIdCtx)
+		if errConvert != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errConvert.Error()))
+			m.Logger.Errorf("%s", errConvert.Error())
+		}
+		ctx.SetUserValue("reqId", reqId)
+
+		idCtx := ctx.UserValue("id")
+		id, errConvert := util.InterfaceConvertInt(idCtx)
+		if errConvert != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errConvert.Error()))
+			m.Logger.Errorf("%s", errConvert.Error())
+		}
+
+		checkError := &errPkg.CheckError{
+			Logger:    m.Logger,
+			RequestId: reqId,
+		}
+
+		key := string(ctx.Request.Header.Peek("Sec-WebSocket-Key"))
+
+		_, err := m.Application.CheckAccessWebsocket(id, key)
+		errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorWsKey(err)
+		if errAccess != nil {
+			switch errAccess.Error() {
+			case errPkg.ErrMarshal:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody([]byte(errPkg.ErrMarshal))
+				return
+			case errPkg.ErrCheck:
+				ctx.Response.SetStatusCode(codeHTTP)
+				ctx.Response.SetBody(resultOutAccess)
+				return
+			}
+		}
 
 		h(ctx)
 	})
