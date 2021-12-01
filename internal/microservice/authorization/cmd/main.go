@@ -5,7 +5,9 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/config"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/proto"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
+	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
 	"net"
 	"os"
@@ -57,4 +59,32 @@ func main() {
 		os.Exit(1)
 	}
 
+}
+
+type Logger struct {
+	Log errPkg.MultiLogger
+}
+
+func NewLogger(filePath string) *zap.SugaredLogger {
+	configLog := zap.NewProductionEncoderConfig()
+	configLog.TimeKey = "time_stamp"
+	configLog.LevelKey = "level"
+	configLog.MessageKey = "note"
+	configLog.EncodeTime = zapcore.ISO8601TimeEncoder
+	configLog.EncodeLevel = zapcore.CapitalLevelEncoder
+
+	lumberJackLogger := &lumberjack.Logger{
+		Filename:   filePath,
+		MaxSize:    100,
+		MaxBackups: 5,
+		MaxAge:     60,
+		Compress:   false,
+	}
+	writerSyncer := zapcore.AddSync(lumberJackLogger)
+	encoder := zapcore.NewConsoleEncoder(configLog)
+
+	core := zapcore.NewCore(encoder, writerSyncer, zapcore.InfoLevel)
+	logger := zap.New(core, zap.AddCaller())
+	zapLogger := logger.Sugar()
+	return zapLogger
 }
