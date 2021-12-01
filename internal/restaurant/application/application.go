@@ -10,7 +10,7 @@ type RestaurantApplicationInterface interface {
 	GetRestaurant(id int) (*resPkg.RestaurantId, error)
 	RestaurantDishes(restId int, dishId int) (*resPkg.Dishes, error)
 	CreateReview(id int, review resPkg.NewReview) error
-	GetReview(id int) (*resPkg.ResReview, error)
+	GetReview(idRestaurant int, idClient int) (*resPkg.ResReview, error)
 	SearchRestaurant(search string) ([]resPkg.Restaurants, error)
 	GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error)
 	EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error)
@@ -36,8 +36,8 @@ func (r *Restaurant) CreateReview(id int, review resPkg.NewReview) error {
 	return r.DB.CreateReview(id, review)
 }
 
-func (r *Restaurant) GetReview(id int) (*resPkg.ResReview, error) {
-	return r.DB.GetReview(id)
+func (r *Restaurant) GetReview(idRestaurant int, idClient int) (*resPkg.ResReview, error) {
+	return r.DB.GetReview(idRestaurant, idClient)
 }
 
 func (r *Restaurant) SearchRestaurant(search string) ([]resPkg.Restaurants, error) {

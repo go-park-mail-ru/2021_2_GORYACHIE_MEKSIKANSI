@@ -19,9 +19,13 @@ message Restaurant {
   float rating = 7;
 }
 
-
 message RestaurantId {
   int64 id = 1;
+}
+
+message RestaurantClientId {
+  int64 idRestaurant = 1;
+  int64 idClient = 2;
 }
 
 message RestaurantInfo {
@@ -148,7 +152,7 @@ service RestaurantService {
   rpc GetRestaurant(RestaurantId) returns (RestaurantInfo);
   rpc RestaurantDishes(DishInfo) returns (Dishes);
   rpc CreateReview(NewReview) returns (Error);
-  rpc GetReview(RestaurantId) returns (ResReview);
+  rpc GetReview(RestaurantClientId) returns (ResReview);
   rpc SearchRestaurant(SearchRestaurantText) returns (Restaurants);
   rpc GetFavoriteRestaurants(UserId) returns (Restaurants);
   rpc EditRestaurantInFavorite(EditRestaurantInFavoriteRequest) returns (ResponseEditRestaurantInFavorite);

@@ -270,7 +270,17 @@ func (r *InfoRestaurant) GetReviewHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		r.Logger.Errorf("%s", errConvert.Error())
 	}
-	restaurant, err := r.Application.GetReview(id)
+	var idClient = 0
+	idCleintCtx := ctx.UserValue("id")
+	if idCleintCtx != nil {
+		idClient, errConvert = util.InterfaceConvertInt(idCleintCtx)
+		if errConvert != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errConvert.Error()))
+			r.Logger.Errorf("%s", errConvert.Error())
+		}
+	}
+	restaurant, err := r.Application.GetReview(id, idClient)
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorGetReview(err)
 	if errOut != nil {
 		switch errOut.Error() {

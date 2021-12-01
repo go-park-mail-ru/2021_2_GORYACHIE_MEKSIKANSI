@@ -10,7 +10,7 @@ type RestaurantApplicationInterface interface {
 	GetRestaurant(id int) (*resPkg.RestaurantId, error)
 	RestaurantDishes(restId int, dishId int) (*resPkg.Dishes, error)
 	CreateReview(id int, review resPkg.NewReview) error
-	GetReview(id int) (*resPkg.ResReview, error)
+	GetReview(idRestaurant int, idClient int) (*resPkg.ResReview, error)
 	SearchRestaurant(search string) ([]resPkg.Restaurants, error)
 	GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error)
 	EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error)
@@ -77,21 +77,24 @@ func (r *Restaurant) CreateReview(id int, review resPkg.NewReview) error {
 
 }
 
-func (r *Restaurant) GetReview(id int) (*resPkg.ResReview, error) {
+func (r *Restaurant) GetReview(idRestaurant int, idClient int) (*resPkg.ResReview, error) {
 	var review resPkg.ResReview
-	reviewInfo, status, err := r.DB.GetReview(id)
+	reviewInfo, err := r.DB.GetReview(idRestaurant)
 	if err != nil {
 		return nil, err
 	}
 
-	review.Status = status
-
-	restInfo, err := r.DB.GetRestaurant(id)
+	review.Status, err =  r.DB.GetStatusRestaurant(idClient, idRestaurant)
 	if err != nil {
 		return nil, err
 	}
 
-	tags, err := r.DB.GetTagsRestaurant(id)
+	restInfo, err := r.DB.GetRestaurant(idRestaurant)
+	if err != nil {
+		return nil, err
+	}
+
+	tags, err := r.DB.GetTagsRestaurant(idRestaurant)
 	if err != nil {
 		return nil, err
 	}

@@ -17,13 +17,14 @@ type WrapperRestaurantInterface interface {
 	GetRestaurant(id int) (*resPkg.RestaurantId, error)
 	GetMenu(id int) ([]resPkg.Menu, error)
 	GetTagsRestaurant(id int) ([]resPkg.Tag, error)
-	GetReview(id int) ([]resPkg.Review, bool, error)
+	GetReview(id int) ([]resPkg.Review, error)
 	CreateReview(id int, review resPkg.NewReview) error
 	SearchCategory(name string) ([]int, error)
 	SearchRestaurant(name string) ([]int, error)
 	GetGeneralInfoRestaurant(id int) (*resPkg.Restaurants, error)
 	GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error)
 	EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error)
+	GetStatusRestaurant(idClient int, idRestaurant int) (bool, error)
 }
 
 type ConnectionInterface interface {
@@ -385,11 +386,11 @@ func (db *Wrapper) GetRadios(dishesId int) ([]resPkg.Radios, error) {
 	return radios, nil
 }
 
-func (db *Wrapper) GetReview(id int) ([]resPkg.Review, bool, error) {
+func (db *Wrapper) GetReview(id int) ([]resPkg.Review, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
-		return nil, false, &errPkg.Errors{
+		return nil, &errPkg.Errors{
 			Alias: errPkg.RGetReviewTransactionNotCreate,
 		}
 	}
@@ -397,24 +398,22 @@ func (db *Wrapper) GetReview(id int) ([]resPkg.Review, bool, error) {
 	defer tx.Rollback(contextTransaction)
 
 	rowDishes, err := tx.Query(contextTransaction,
-		"SELECT gn.name, r.text, r.date_create, r.rate, fr.id FROM review r "+
+		"SELECT gn.name, r.text, r.date_create, r.rate FROM review r "+
 			"LEFT JOIN general_user_info gn ON r.author = gn.id " +
-			"LEFT JOIN favorite_restaurant fr ON gn.id = fr.client AND fr.restaurant = r.restaurant "+
 			"WHERE r.restaurant = $1 ORDER BY r.date_create", id)
 	if err != nil {
-		return nil, false, &errPkg.Errors{
+		return nil, &errPkg.Errors{
 			Alias: errPkg.RGetReviewNotSelect,
 		}
 	}
 
 	var result []resPkg.Review
-	var checkFavorite *int32
 	for rowDishes.Next() {
 		var review resPkg.Review
 		var date time.Time
-		err := rowDishes.Scan(&review.Name, &review.Text, &date, &review.Rate, &checkFavorite)
+		err := rowDishes.Scan(&review.Name, &review.Text, &date, &review.Rate)
 		if err != nil {
-			return nil, false, &errPkg.Errors{
+			return nil, &errPkg.Errors{
 				Alias: errPkg.RGetReviewNotScan,
 			}
 		}
@@ -423,21 +422,52 @@ func (db *Wrapper) GetReview(id int) ([]resPkg.Review, bool, error) {
 		result = append(result, review)
 	}
 
-	var status bool
-	if checkFavorite == nil {
-		status = false
-	} else {
-		status = true
-	}
-
 	err = tx.Commit(contextTransaction)
 	if err != nil {
-		return nil, false, &errPkg.Errors{
+		return nil, &errPkg.Errors{
 			Alias: errPkg.RGetReviewNotCommit,
 		}
 	}
 
-	return result, status, nil
+	return result, nil
+}
+// TODO: make error
+func (db *Wrapper) GetStatusRestaurant(idClient int, idRestaurant int) (bool, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.RGetReviewTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	var checkFavorite *int32
+	err = tx.QueryRow(contextTransaction,
+		"SELECT id FROM favorite_restaurant WHERE restaurant = $1 AND client = $2",
+		idClient, idRestaurant).Scan(&checkFavorite)
+	if err == pgx.ErrNoRows {
+		return false, nil
+	}
+
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.RGetReviewNotSelect,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.RGetReviewNotCommit,
+		}
+	}
+
+	if checkFavorite == nil {
+		return false, nil
+	}
+	return true, nil
 }
 
 func (db *Wrapper) CreateReview(id int, review resPkg.NewReview) error {

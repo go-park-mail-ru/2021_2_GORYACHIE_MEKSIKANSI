@@ -95,7 +95,7 @@ func runServer() {
 	restaurantGroup.GET("/", restaurantInfo.RestaurantHandler)
 	restaurantGroup.GET("/{idRes}/dish/{idDish}", restaurantInfo.RestaurantDishesHandler)
 	restaurantGroup.GET("/{idRes}", restaurantInfo.RestaurantIdHandler)
-	restaurantGroup.GET("/{idRes}/review", restaurantInfo.GetReviewHandler)
+	restaurantGroup.GET("/{idRes}/review", infoMid.GetIdClientForReview(restaurantInfo.GetReviewHandler))
 	restaurantGroup.GET("/search", restaurantInfo.SearchRestaurantHandler)
 
 	cartGroup.GET("/", infoMid.GetIdClient(cartInfo.GetCartHandler))

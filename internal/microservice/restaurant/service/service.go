@@ -12,7 +12,7 @@ type RestaurantManagerInterface interface {
 	GetRestaurant(ctx context.Context, id *resProto.RestaurantId) (*resProto.RestaurantInfo, error)
 	RestaurantDishes(ctx context.Context, id *resProto.DishInfo) (*resProto.Dishes, error)
 	CreateReview(ctx context.Context, rev *resProto.NewReview) (*resProto.Error, error)
-	GetReview(ctx context.Context, id *resProto.RestaurantId) (*resProto.ResReview, error)
+	GetReview(ctx context.Context, id *resProto.RestaurantClientId) (*resProto.ResReview, error)
 	SearchRestaurant(ctx context.Context, search *resProto.SearchRestaurantText) (*resProto.Restaurants, error)
 	GetFavoriteRestaurants(ctx context.Context, id *resProto.UserId) (*resProto.Restaurants, error)
 	EditRestaurantInFavorite(ctx context.Context, ids *resProto.EditRestaurantInFavoriteRequest) (*resProto.ResponseEditRestaurantInFavorite, error)
@@ -65,8 +65,8 @@ func (r *RestaurantManager) CreateReview(ctx context.Context, rev *resProto.NewR
 	return &resProto.Error{}, nil
 }
 
-func (r *RestaurantManager) GetReview(ctx context.Context, id *resProto.RestaurantId) (*resProto.ResReview, error) {
-	review, err := r.Application.GetReview(int(id.Id))
+func (r *RestaurantManager) GetReview(ctx context.Context, id *resProto.RestaurantClientId) (*resProto.ResReview, error) {
+	review, err := r.Application.GetReview(int(id.IdRestaurant), int(id.IdClient))
 	if err != nil {
 		return &resProto.ResReview{Error: err.Error()}, nil
 	}

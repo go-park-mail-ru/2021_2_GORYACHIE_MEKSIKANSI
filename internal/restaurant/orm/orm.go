@@ -14,7 +14,7 @@ type WrapperRestaurantServerInterface interface {
 	GetRestaurant(id int) (*restaurant.RestaurantId, error)
 	RestaurantDishes(restId int, dishId int) (*restaurant.Dishes, error)
 	CreateReview(id int, review restaurant.NewReview) error
-	GetReview(id int) (*restaurant.ResReview, error)
+	GetReview(idRestaurant int, idClient int) (*restaurant.ResReview, error)
 	SearchRestaurant(search string) ([]restaurant.Restaurants, error)
 	GetFavoriteRestaurants(id int) ([]restaurant.Restaurants, error)
 	EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error)
@@ -25,7 +25,7 @@ type ConnectRestaurantServiceInterface interface {
 	GetRestaurant(ctx context.Context, in *resProto.RestaurantId, opts ...grpc.CallOption) (*resProto.RestaurantInfo, error)
 	RestaurantDishes(ctx context.Context, in *resProto.DishInfo, opts ...grpc.CallOption) (*resProto.Dishes, error)
 	CreateReview(ctx context.Context, in *resProto.NewReview, opts ...grpc.CallOption) (*resProto.Error, error)
-	GetReview(ctx context.Context, in *resProto.RestaurantId, opts ...grpc.CallOption) (*resProto.ResReview, error)
+	GetReview(ctx context.Context, in *resProto.RestaurantClientId, opts ...grpc.CallOption) (*resProto.ResReview, error)
 	SearchRestaurant(ctx context.Context, in *resProto.SearchRestaurantText, opts ...grpc.CallOption) (*resProto.Restaurants, error)
 	GetFavoriteRestaurants(ctx context.Context, clientId *resProto.UserId, opts ...grpc.CallOption) (*resProto.Restaurants, error)
 	EditRestaurantInFavorite(ctx context.Context, restaurant *resProto.EditRestaurantInFavoriteRequest, opts ...grpc.CallOption) (*resProto.ResponseEditRestaurantInFavorite, error)
@@ -87,10 +87,11 @@ func (r *Wrapper) CreateReview(id int, review restaurant.NewReview) error {
 	return nil
 }
 
-func (r *Wrapper) GetReview(id int) (*restaurant.ResReview, error) {
-	var restId *resProto.RestaurantId
-	restId = &resProto.RestaurantId{}
-	restId.Id = int64(id)
+func (r *Wrapper) GetReview(id int, idClient int) (*restaurant.ResReview, error) {
+	var restId *resProto.RestaurantClientId
+	restId = &resProto.RestaurantClientId{}
+	restId.IdRestaurant = int64(id)
+	restId.IdClient = int64(idClient)
 	review, err := r.Conn.GetReview(r.Ctx, restId)
 	if err != nil {
 		return nil, err
