@@ -126,22 +126,14 @@ func (m *InfoMiddleware) CheckWebSocketKey(h fasthttp.RequestHandler) fasthttp.R
 		}
 		ctx.SetUserValue("reqId", reqId)
 
-		idCtx := ctx.UserValue("id")
-		id, errConvert := util.InterfaceConvertInt(idCtx)
-		if errConvert != nil {
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errConvert.Error()))
-			m.Logger.Errorf("%s", errConvert.Error())
-		}
-
 		checkError := &errPkg.CheckError{
 			Logger:    m.Logger,
 			RequestId: reqId,
 		}
 
-		key := string(ctx.Request.Header.Peek("Sec-WebSocket-Key"))
+		key := string(ctx.FormValue("key"))
 
-		_, err := m.Application.CheckAccessWebsocket(id, key)
+		_, err := m.Application.CheckAccessWebsocket(key)
 		errAccess, resultOutAccess, codeHTTP := checkError.CheckErrorWsKey(err)
 		if errAccess != nil {
 			switch errAccess.Error() {

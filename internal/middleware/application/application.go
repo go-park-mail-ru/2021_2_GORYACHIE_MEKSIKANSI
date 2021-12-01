@@ -9,7 +9,7 @@ type MiddlewareApplicationInterface interface {
 	CheckAccess(cookie *utils.Defense) (bool, error)
 	NewCSRF(cookie *utils.Defense) (string, error)
 	GetIdByCookie(cookie *utils.Defense) (int, error)
-	CheckAccessWebsocket(id int, cookie string) (bool, error)
+	CheckAccessWebsocket(cookie string) (bool, error)
 }
 
 type Middleware struct {
@@ -28,6 +28,6 @@ func (m *Middleware) GetIdByCookie(cookie *utils.Defense) (int, error) {
 	return m.DB.GetIdByCookie(cookie)
 }
 
-func (m *Middleware) CheckAccessWebsocket(id int, cookie string) (bool, error) {
-	return m.DB.CheckAccessWebsocket(id, cookie)
+func (m *Middleware) CheckAccessWebsocket(cookie string) (bool, error) {
+	return m.DB.CheckAccessWebsocket(cookie)
 }

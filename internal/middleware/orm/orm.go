@@ -16,7 +16,7 @@ type WrapperMiddlewareInterface interface {
 	CheckAccess(cookie *util.Defense) (bool, error)
 	NewCSRF(cookie *util.Defense) (string, error)
 	GetIdByCookie(cookie *util.Defense) (int, error)
-	CheckAccessWebsocket(id int, cookie string) (bool, error)
+	CheckAccessWebsocket(cookie string) (bool, error)
 }
 
 type ConnectionMiddlewareInterface interface {
@@ -71,7 +71,7 @@ func (w *Wrapper) GetIdByCookie(cookie *util.Defense) (int, error) {
 	return int(byCookie.IdUser), nil
 }
 
-func (w *Wrapper) CheckAccessWebsocket(id int, websocket string) (bool, error) {
+func (w *Wrapper) CheckAccessWebsocket(websocket string) (bool, error) {
 	contextTransaction := context.Background()
 	tx, err := w.DBConn.Begin(contextTransaction)
 	if err != nil {
@@ -84,7 +84,7 @@ func (w *Wrapper) CheckAccessWebsocket(id int, websocket string) (bool, error) {
 
 	var exist *int32
 	err = tx.QueryRow(contextTransaction,
-		"SELECT id FROM cookie WHERE client_id = $1 AND websocket = $2", id, websocket).Scan(&exist)
+		"SELECT id FROM cookie WHERE websocket = $1", websocket).Scan(&exist)
 	if err != nil {
 		return false, &errPkg.Errors{
 			Alias: errPkg.OGetOrderNotSelect,
