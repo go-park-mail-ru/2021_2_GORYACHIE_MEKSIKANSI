@@ -5,9 +5,11 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/util"
+	"encoding/json"
 	cors "github.com/AdhityaRamadhanus/fasthttpcors"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/fasthttp/router"
+	"github.com/fasthttp/websocket"
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 	"os"
@@ -50,7 +52,9 @@ func runServer() {
 	uploader := s3manager.NewUploader(sess)
 	nameBucket := awsConfig.Aws.Name
 
-	startStructure := build.SetUp(connectionPostgres, logger.Log, uploader, nameBucket, microserviceConfig)
+	intCh := make(chan  int , 10)
+
+	startStructure := build.SetUp(connectionPostgres, logger.Log, uploader, nameBucket, microserviceConfig, intCh)
 
 	userInfo := startStructure.User
 	cartInfo := startStructure.Cart
@@ -59,6 +63,7 @@ func runServer() {
 	restaurantInfo := startStructure.Restaraunt
 	orderInfo := startStructure.Order
 
+
 	myRouter := router.New()
 	apiGroup := myRouter.Group("/api")
 	versionGroup := apiGroup.Group("/v1")
@@ -66,6 +71,7 @@ func runServer() {
 	restaurantGroup := versionGroup.Group("/restaurant")
 	cartGroup := userGroup.Group("/cart")
 	orderGroup := userGroup.Group("/order")
+	webSocketGroup := versionGroup.Group("/ws")
 
 	userGroup.POST("/login", userInfo.LoginHandler)
 	userGroup.POST("/signup", userInfo.SignUpHandler)
@@ -93,6 +99,47 @@ func runServer() {
 	orderGroup.GET("/", infoMid.GetIdClient(orderInfo.GetOrdersHandler))
 	orderGroup.POST("/", infoMid.CheckClient(infoMid.GetIdClient(orderInfo.CreateOrderHandler)))
 	orderGroup.GET("/{idOrd}/active", infoMid.GetIdClient(orderInfo.GetOrderActiveHandler))
+
+
+	//webSocketGroup.GET("/", userInfo.UserWebSocket)
+	webSocketGroup.GET("/", infoMid.GetIdClient(func(ctx *fasthttp.RequestCtx) {
+		upgrade := websocket.FastHTTPUpgrader{
+			ReadBufferSize: 1024,
+			WriteBufferSize: 1024,
+		}
+		//key := string(ctx.Request.Header.Peek("Sec-WebSocket-Key"))
+		err := upgrade.Upgrade(ctx, func(conn *websocket.Conn) {
+			for {
+				status := <- intCh
+				println(status)
+/*				_, msg, errMsg := conn.ReadMessage()
+				if errMsg != nil {
+					println("GG read")
+					return
+				}
+				println(string(msg))
+*/
+				testStructure := errPkg.Errors{Alias: "test"}
+				testJson, errMarshal := json.Marshal(&testStructure)
+				if errMarshal != nil {
+					println("GG marshal")
+					return
+				}
+				//errWrite := conn.WriteMessage(websocket.TextMessage, []byte(strconv.Itoa(status)))
+				errWrite := conn.WriteJSON(testJson)
+				if errWrite != nil {
+					println("GG write")
+					return
+				}
+			}
+		})
+		if err != nil {
+			println("GG")
+			return
+		}
+		//ctx.Response.Header.Set("Sec-WebSocket-Key", key)
+
+	}))
 
 	printURL := infoMid.LogURL(myRouter.Handler)
 

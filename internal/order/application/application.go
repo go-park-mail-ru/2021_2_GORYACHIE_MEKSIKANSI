@@ -17,6 +17,7 @@ type OrderApplicationInterface interface {
 type Order struct {
 	DB        ormPkg.WrapperOrderInterface
 	DBProfile profileOrmPkg.WrapperProfileInterface
+	IntCh chan int
 }
 
 func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) (int, error) {
@@ -74,9 +75,12 @@ func (o *Order) GetActiveOrder(idClient int, idOrder int) (*Order2.ActiveOrder, 
 }
 
 func (o *Order) UpdateStatusOrder(id int, status int) error {
-	for i := 1; i <= 4; i++ {
+	for i := 1; i <= 3; i++ {
 		time.Sleep(time.Second * 15)
+		o.IntCh <- i
 		o.DB.UpdateStatusOrder(id, i)
 	}
+	time.Sleep(time.Second * 15)
+	o.IntCh <- status
 	return o.DB.UpdateStatusOrder(id, status)
 }

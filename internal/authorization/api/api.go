@@ -5,8 +5,8 @@ import (
 	appPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/application"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
-
 	"encoding/json"
+	"github.com/fasthttp/websocket"
 	"github.com/valyala/fasthttp"
 	"net/http"
 	"time"
@@ -17,11 +17,13 @@ type AuthorizationApiInterface interface {
 	LoginHandler(ctx *fasthttp.RequestCtx)
 	LogoutHandler(ctx *fasthttp.RequestCtx)
 	PayHandler(ctx *fasthttp.RequestCtx)
+	UserWebSocket(ctx *fasthttp.RequestCtx)
 }
 
 type UserInfo struct {
 	Application appPkg.AuthorizationApplicationInterface
 	Logger      errPkg.MultiLogger
+	Upgrade websocket.FastHTTPUpgrader
 }
 
 func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
@@ -224,5 +226,56 @@ func (u *UserInfo) PayHandler(ctx *fasthttp.RequestCtx) {
 		return
 	}
 	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
+	ctx.Response.SetStatusCode(http.StatusOK)
+}
+
+func (u *UserInfo) UserWebSocket(ctx *fasthttp.RequestCtx) {
+
+	reqIdCtx := ctx.UserValue("reqId")
+	reqId, errConvert := util.InterfaceConvertInt(reqIdCtx)
+	if errConvert != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		u.Logger.Errorf("%s", errConvert.Error())
+	}
+	//var upgrade = websocket.FastHTTPUpgrader{
+	//	//ReadBufferSize: 1024,
+	//	//WriteBufferSize: 1024,
+	//}
+
+	err := u.Upgrade.Upgrade(ctx, func(conn *websocket.Conn) {
+		for {
+			_, msg, errMsg := conn.ReadMessage()
+			if errMsg != nil {
+
+				if websocket.IsUnexpectedCloseError(errMsg, websocket.CloseGoingAway) {
+					u.Logger.Errorf("ReadMessage: %s, requestId: %d", errMsg.Error(), reqId)
+				}
+
+				return
+			}
+			println(string(msg))
+
+			testStructure := errPkg.Errors{Alias: "test"}
+			testJson, errMarshal := json.Marshal(&testStructure)
+			if errMarshal != nil {
+				u.Logger.Errorf("Marshal: %s, requestId: %d", errMarshal.Error(), reqId)
+				return
+			}
+			//err := conn.WriteMessage(websocket.BinaryMessage, []byte("okey"))
+			errWrite := conn.WriteJSON(testJson)
+			if errWrite != nil {
+				u.Logger.Errorf("WriteJSON: %s, requestId: %d", errWrite.Error(), reqId)
+				return
+			}
+		}
+	})
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		u.Logger.Errorf("Websocket not open: %s, requestId: %d", err.Error(), reqId)
+		return
+	}
+
+
 	ctx.Response.SetStatusCode(http.StatusOK)
 }

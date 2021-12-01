@@ -29,6 +29,6 @@ func (a *Authorization) Logout(CSRF string) (string, error) {
 	return a.DB.Logout(CSRF)
 }
 
-func (m *Authorization) NewCSRFWebsocket(id int) (string, error) {
-	return m.DB.NewCSRFWebsocket(id)
+func (a *Authorization) NewCSRFWebsocket(id int) (string, error) {
+	return a.DB.NewCSRFWebsocket(id)
 }
