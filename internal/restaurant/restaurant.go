@@ -101,6 +101,7 @@ type ResReview struct {
 	Rating              float32  `json:"rate"`
 	Tags                []Tag    `json:"tags"`
 	Reviews             []Review `json:"reviews,omitempty"`
+	Status              bool     `json:"status_favorite"`
 }
 
 type Review struct {

@@ -17,7 +17,7 @@ type WrapperRestaurantInterface interface {
 	GetRestaurant(id int) (*resPkg.RestaurantId, error)
 	GetMenu(id int) ([]resPkg.Menu, error)
 	GetTagsRestaurant(id int) ([]resPkg.Tag, error)
-	GetReview(id int) ([]resPkg.Review, error)
+	GetReview(id int) ([]resPkg.Review, bool, error)
 	CreateReview(id int, review resPkg.NewReview) error
 	SearchCategory(name string) ([]int, error)
 	SearchRestaurant(name string) ([]int, error)
@@ -385,11 +385,11 @@ func (db *Wrapper) GetRadios(dishesId int) ([]resPkg.Radios, error) {
 	return radios, nil
 }
 
-func (db *Wrapper) GetReview(id int) ([]resPkg.Review, error) {
+func (db *Wrapper) GetReview(id int) ([]resPkg.Review, bool, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
-		return nil, &errPkg.Errors{
+		return nil, false, &errPkg.Errors{
 			Alias: errPkg.RGetReviewTransactionNotCreate,
 		}
 	}
@@ -397,37 +397,47 @@ func (db *Wrapper) GetReview(id int) ([]resPkg.Review, error) {
 	defer tx.Rollback(contextTransaction)
 
 	rowDishes, err := tx.Query(contextTransaction,
-		"SELECT gn.name, r.text, r.date_create, r.rate FROM review r "+
-			"LEFT JOIN general_user_info gn ON r.author=gn.id "+
+		"SELECT gn.name, r.text, r.date_create, r.rate, fr.id FROM review r "+
+			"LEFT JOIN general_user_info gn ON r.author = gn.id " +
+			"LEFT JOIN favorite_restaurant fr ON gn.id = fr.client AND fr.restaurant = r.restaurant "+
 			"WHERE r.restaurant = $1 ORDER BY r.date_create", id)
 	if err != nil {
-		return nil, &errPkg.Errors{
+		return nil, false, &errPkg.Errors{
 			Alias: errPkg.RGetReviewNotSelect,
 		}
 	}
 
 	var result []resPkg.Review
+	var checkFavorite *int32
 	for rowDishes.Next() {
 		var review resPkg.Review
 		var date time.Time
-		err := rowDishes.Scan(&review.Name, &review.Text, &date, &review.Rate)
+		err := rowDishes.Scan(&review.Name, &review.Text, &date, &review.Rate, &checkFavorite)
 		if err != nil {
-			return nil, &errPkg.Errors{
+			return nil, false, &errPkg.Errors{
 				Alias: errPkg.RGetReviewNotScan,
 			}
 		}
+
 		review.Date, review.Time = FormatDate(date)
 		result = append(result, review)
 	}
 
+	var status bool
+	if checkFavorite == nil {
+		status = false
+	} else {
+		status = true
+	}
+
 	err = tx.Commit(contextTransaction)
 	if err != nil {
-		return nil, &errPkg.Errors{
+		return nil, false, &errPkg.Errors{
 			Alias: errPkg.RGetReviewNotCommit,
 		}
 	}
 
-	return result, nil
+	return result, status, nil
 }
 
 func (db *Wrapper) CreateReview(id int, review resPkg.NewReview) error {

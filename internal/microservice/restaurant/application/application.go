@@ -79,10 +79,12 @@ func (r *Restaurant) CreateReview(id int, review resPkg.NewReview) error {
 
 func (r *Restaurant) GetReview(id int) (*resPkg.ResReview, error) {
 	var review resPkg.ResReview
-	reviewInfo, err := r.DB.GetReview(id)
+	reviewInfo, status, err := r.DB.GetReview(id)
 	if err != nil {
 		return nil, err
 	}
+
+	review.Status = status
 
 	restInfo, err := r.DB.GetRestaurant(id)
 	if err != nil {

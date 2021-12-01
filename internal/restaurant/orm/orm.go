@@ -84,9 +84,7 @@ func (r *Wrapper) CreateReview(id int, review restaurant.NewReview) error {
 	if createReview.Error != "" {
 		return &errPkg.Errors{Alias: createReview.Error}
 	}
-	return &errPkg.Errors{
-		Alias: createReview.Error,
-	}
+	return nil
 }
 
 func (r *Wrapper) GetReview(id int) (*restaurant.ResReview, error) {

@@ -54,6 +54,7 @@ func CastResReviewToResReviewProto(review *resPkg.ResReview) *resProto.ResReview
 	p.MaxDelivery = int64(review.MaxDelivery)
 	p.CostForFreeDelivery = int64(review.CostForFreeDelivery)
 	p.Img = review.Img
+	p.Status = review.Status
 	return &p
 }
 

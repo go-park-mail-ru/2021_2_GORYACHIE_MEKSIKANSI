@@ -115,9 +115,10 @@ message ResReview {
   int64 min_delivery = 5;
   int64 max_delivery = 6;
   float rating = 7;
-  repeated Review review = 8;
-  repeated Tags tags = 9;
-  string error = 10;
+  bool status = 8;
+  repeated Review review = 9;
+  repeated Tags tags = 10;
+  string error = 11;
 }
 
 message Review {

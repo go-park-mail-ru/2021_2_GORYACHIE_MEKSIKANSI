@@ -207,5 +207,6 @@ func CastResReviewProtoToResReview(review *resProto.ResReview) *restaurant.ResRe
 	resReview.MaxDelivery = int(review.MaxDelivery)
 	resReview.CostForFreeDelivery = int(review.CostForFreeDelivery)
 	resReview.Img = review.Img
+	resReview.Status = review.Status
 	return &resReview
 }
