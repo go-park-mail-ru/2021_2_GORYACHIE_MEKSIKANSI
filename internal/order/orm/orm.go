@@ -326,14 +326,16 @@ func (db *Wrapper) GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, e
 			" LEFT JOIN order_radios_list orl ON orl.order_id = order_user.id and ol.food=orl.food and ol.id=orl.list_id"+
 			" LEFT JOIN structure_radios sr ON sr.id = orl.radios"+
 			" LEFT JOIN structure_dishes sd ON sd.id = osl.structure_food"+
-			" LEFT JOIN restaurant r ON r.id = order_user.restaurant_id WHERE order_user.client_id = $1 AND order_user.id = $2", idClient, idOrder)
+			" LEFT JOIN restaurant r ON r.id = order_user.restaurant_id WHERE order_user.client_id = $1 AND order_user.id = $2",
+		idClient, idOrder)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.OGetOrderNotSelect,
 		}
 	}
 
-	structureDish := make(map[int]map[int]interface{})
+	structureRadios := make(map[int]map[int]cart.RadiosCartResponse)
+	structureIngredient := make(map[int]map[int]cart.IngredientCartResponse)
 	infoDishes := make(map[int]cart.DishesCartResponse)
 
 	var order orderPkg.ActiveOrder
@@ -342,7 +344,7 @@ func (db *Wrapper) GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, e
 	for row.Next() {
 		var address profile.AddressCoordinates
 		var dish cart.DishesCartResponse
-		var restaurant orderPkg.HistoryResOrder
+		var rest orderPkg.HistoryResOrder
 
 		var getPlaceDishes, getPlaceRadios, getPlaceIngredient *int32
 		var srRadios, srId, sdId, sdCost *int32
@@ -354,9 +356,9 @@ func (db *Wrapper) GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, e
 			&address.Floor, &address.Intercom, &address.Comment, &address.Coordinates.Latitude,
 			&address.Coordinates.Longitude, &dish.Id, &dish.Img, &dish.Name, &dish.Count,
 			&dish.Cost, &dish.Kilocalorie, &dish.Weight, &dish.Description, &srName, &srRadios,
-			&srId, &sdName, &sdId, &sdCost, &restaurant.Id, &restaurant.Name, &restaurant.Img,
-			&restaurant.Address.City, &restaurant.Address.Street, &restaurant.Address.House,
-			&restaurant.Address.Floor, &restaurant.Address.Coordinates.Latitude, &restaurant.Address.Coordinates.Longitude,
+			&srId, &sdName, &sdId, &sdCost, &rest.Id, &rest.Name, &rest.Img,
+			&rest.Address.City, &rest.Address.Street, &rest.Address.House,
+			&rest.Address.Floor, &rest.Address.Coordinates.Latitude, &rest.Address.Coordinates.Longitude,
 			&order.Cart.Cost.DCost, &order.Cart.Cost.SumCost, &getPlaceDishes, &getPlaceRadios, &getPlaceIngredient,
 			&deliveryTime)
 
@@ -387,41 +389,38 @@ func (db *Wrapper) GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, e
 		}
 
 		if placeRadios != -1 {
-			if structureDish == nil {
-				structureDish = make(map[int]map[int]interface{})
+			if structureRadios == nil {
+				structureRadios = make(map[int]map[int]cart.RadiosCartResponse)
 			}
-			if structureDish[placeDishes] == nil {
-				structureDish[placeDishes] = make(map[int]interface{})
+			if structureRadios[placeDishes] == nil {
+				structureRadios[placeDishes] = make(map[int]cart.RadiosCartResponse)
 			}
-			structureDish[placeDishes][placeRadios] = radios
+			structureRadios[placeDishes][placeRadios] = radios
 		}
 
 		if placeIngredient != -1 {
-			if structureDish == nil {
-				structureDish = make(map[int]map[int]interface{})
+			if structureIngredient == nil {
+				structureIngredient = make(map[int]map[int]cart.IngredientCartResponse)
 			}
-			if structureDish[placeDishes] == nil {
-				structureDish[placeDishes] = make(map[int]interface{})
+			if structureIngredient[placeDishes] == nil {
+				structureIngredient[placeDishes] = make(map[int]cart.IngredientCartResponse)
 			}
-			structureDish[placeDishes][placeIngredient] = ingredient
+			structureIngredient[placeDishes][placeIngredient] = ingredient
 		}
 
 		infoDishes[placeDishes] = dish
 
 		order.Address = address
-		order.Restaurant = restaurant
+		order.Restaurant = rest
 	}
 
-	for j := 0; j < len(infoDishes); j++ {
-		structDish := structureDish[j]
-		dish := infoDishes[j]
-		for k := 0; k < len(structDish); k++ {
-			switch structDish[k].(type) {
-			case cart.RadiosCartResponse:
-				dish.RadiosCart = append(dish.RadiosCart, structDish[k].(cart.RadiosCartResponse))
-			case cart.IngredientCartResponse:
-				dish.IngredientCart = append(dish.IngredientCart, structDish[k].(cart.IngredientCartResponse))
-			}
+	for i := 0; i < len(infoDishes); i++ {
+		dish := infoDishes[i]
+		for j := 0; j < len(structureRadios[i]); j++ {
+			dish.RadiosCart = append(dish.RadiosCart, structureRadios[i][j])
+		}
+		for j := 0; j < len(structureIngredient[i]); j++ {
+			dish.IngredientCart = append(dish.IngredientCart, structureIngredient[i][j])
 		}
 		order.Cart.Dishes = append(order.Cart.Dishes, dish)
 	}

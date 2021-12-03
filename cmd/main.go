@@ -14,6 +14,10 @@ import (
 	"os"
 )
 
+func main() {
+	runServer()
+}
+
 func runServer() {
 	var logger utils.Logger
 	logger.Log = utils.NewLogger("./logs.txt")
@@ -91,7 +95,6 @@ func runServer() {
 	favouriteGroup.GET("/", infoMid.GetIdClient(restaurantInfo.GetFavouritesHandler))
 	favouriteGroup.PUT("/", infoMid.CheckClient(infoMid.GetIdClient(restaurantInfo.UpdateFavouritesHandler)))
 
-
 	restaurantGroup.GET("/", restaurantInfo.RestaurantHandler)
 	restaurantGroup.GET("/{idRes}/dish/{idDish}", restaurantInfo.RestaurantDishesHandler)
 	restaurantGroup.GET("/{idRes}", restaurantInfo.RestaurantIdHandler)
@@ -107,7 +110,6 @@ func runServer() {
 
 	webSocketGroup.GET("/", infoMid.CheckWebSocketKey(userInfo.UserWebSocket))
 	userWSGroup.GET("/key", infoMid.GetIdClient(userInfo.UserWebSocketNewKey))
-
 
 	printURL := infoMid.LogURL(myRouter.Handler)
 
@@ -130,8 +132,4 @@ func runServer() {
 		os.Exit(2)
 	}
 
-}
-
-func main() {
-	runServer()
 }

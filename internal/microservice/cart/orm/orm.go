@@ -72,7 +72,8 @@ func (db *Wrapper) GetCart(id int) (*cartPkg.ResponseCartErrors, []cartPkg.CastD
 		}
 	}
 
-	place := make(map[int]map[int]interface{})
+	placeIngredients := make(map[int]map[int]cartPkg.IngredientCartResponse)
+	placeRadios := make(map[int]map[int]cartPkg.RadiosCartResponse)
 	infoDishes := make(map[int]cartPkg.DishesCartResponse)
 	var restaurant cartPkg.RestaurantIdCastResponse
 
@@ -96,7 +97,7 @@ func (db *Wrapper) GetCart(id int) (*cartPkg.ResponseCartErrors, []cartPkg.CastD
 		}
 
 		placeDishes := ConvertInt32ToInt(getPlaceDishes)
-		placeRadios := ConvertInt32ToInt(getPlaceRadios)
+		placeRadio := ConvertInt32ToInt(getPlaceRadios)
 		placeIngredient := ConvertInt32ToInt(getPlaceIngredient)
 
 		var radios cartPkg.RadiosCartResponse
@@ -126,40 +127,46 @@ func (db *Wrapper) GetCart(id int) (*cartPkg.ResponseCartErrors, []cartPkg.CastD
 		dish.Weight = dish.Weight * dish.Count
 		dish.Kilocalorie = dish.Kilocalorie * dish.Count
 
-		temp := place[placeDishes]
-		if temp == nil {
-			temp = make(map[int]interface{})
-		}
-
 		if placeIngredient != -1 {
+			temp := placeIngredients[placeDishes]
+			if temp == nil {
+				temp = make(map[int]cartPkg.IngredientCartResponse)
+			}
 			temp[placeIngredient] = ingredient
-		}
-		if placeRadios != -1 {
-			temp[placeRadios] = radios
+			placeIngredients[placeDishes] = temp
 		}
 
-		place[placeDishes] = temp
+		if placeRadio != -1 {
+			temp := placeRadios[placeDishes]
+			if temp == nil {
+				temp = make(map[int]cartPkg.RadiosCartResponse)
+			}
+			temp[placeRadio] = radios
+			placeRadios[placeDishes] = temp
+		}
+
 		infoDishes[placeDishes] = dish
 	}
 
-	for i := 0; i < len(place); i++ {
+	for i := 0; i < len(infoDishes); i++ {
 		dish := infoDishes[i]
-		for j := 0; j < len(place[i]); j++ {
-			switch place[i][j].(type) {
-			case cartPkg.RadiosCartResponse:
-				dish.RadiosCart = append(dish.RadiosCart, place[i][j].(cartPkg.RadiosCartResponse))
-			case cartPkg.IngredientCartResponse:
-				dish.IngredientCart = append(dish.IngredientCart, place[i][j].(cartPkg.IngredientCartResponse))
-			}
+		for j := 0; j < len(placeIngredients[i]); j++ {
+			dish.IngredientCart = append(dish.IngredientCart, placeIngredients[i][j])
 		}
+
+		for j := 0; j < len(placeRadios[i]); j++ {
+			dish.RadiosCart = append(dish.RadiosCart, placeRadios[i][j])
+		}
+
 		result.Dishes = append(result.Dishes, dish)
 	}
 
-	if len(place) == 0 {
+	if len(infoDishes) == 0 {
 		return nil, nil, &errPkg.Errors{
 			Alias: errPkg.CGetCartCartNotFound,
 		}
 	}
+
 	result.Restaurant = restaurant
 
 	err = tx.Commit(contextTransaction)

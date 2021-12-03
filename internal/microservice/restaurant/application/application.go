@@ -54,17 +54,6 @@ func (r *Restaurant) RestaurantDishes(restId int, dishId int) (*resPkg.Dishes, e
 	if err != nil {
 		return nil, err
 	}
-
-	dishes.Ingredient, err = r.DB.GetStructDishes(dishId)
-	if err != nil {
-		return nil, err
-	}
-
-	dishes.Radios, err = r.DB.GetRadios(dishId)
-	if err != nil {
-		return nil, err
-	}
-
 	return dishes, nil
 }
 
@@ -84,7 +73,7 @@ func (r *Restaurant) GetReview(idRestaurant int, idClient int) (*resPkg.ResRevie
 		return nil, err
 	}
 
-	review.Status, err =  r.DB.GetStatusRestaurant(idClient, idRestaurant)
+	review.Status, err = r.DB.GetStatusRestaurant(idClient, idRestaurant)
 	if err != nil {
 		return nil, err
 	}

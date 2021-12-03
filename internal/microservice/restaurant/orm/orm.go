@@ -11,8 +11,6 @@ import (
 
 type WrapperRestaurantInterface interface {
 	GetRestaurants() ([]resPkg.Restaurants, error)
-	GetStructDishes(dishesId int) ([]resPkg.Ingredients, error)
-	GetRadios(dishesId int) ([]resPkg.Radios, error)
 	GetDishes(restId int, dishesId int) (*resPkg.Dishes, error)
 	GetRestaurant(id int) (*resPkg.RestaurantId, error)
 	GetMenu(id int) ([]resPkg.Menu, error)
@@ -50,24 +48,36 @@ func (db *Wrapper) GetRestaurants() ([]resPkg.Restaurants, error) {
 	defer tx.Rollback(contextTransaction)
 
 	row, err := tx.Query(contextTransaction,
-		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant ORDER BY random() LIMIT 51")
+		"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating, rc.category "+
+			"FROM restaurant r "+
+			"LEFT JOIN restaurant_category rc ON rc.restaurant = r.id ORDER BY random() LIMIT 51")
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.RGetRestaurantsRestaurantsNotSelect,
 		}
 	}
 
-	restaurant := resPkg.Restaurants{}
 	var result []resPkg.Restaurants
+	infoRestaurant := make(map[int]resPkg.Restaurants)
 	for row.Next() {
+		var restaurant resPkg.Restaurants
+		var category *string
 		err := row.Scan(&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery,
-			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating)
+			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating, &category)
 		if err != nil {
 			return nil, &errPkg.Errors{
 				Alias: errPkg.RGetRestaurantsRestaurantsNotScan,
 			}
 		}
-		result = append(result, restaurant)
+
+		if _, ok := infoRestaurant[restaurant.Id]; ok {
+			//temp := infoRestaurant[restaurant.Id]
+			//temp.Category = append(temp.Category, category)
+			//infoRestaurant[restaurant.Id] = temp
+		} else {
+			infoRestaurant[restaurant.Id] = restaurant
+			result = append(result, restaurant)
+		}
 	}
 
 	if result == nil {
@@ -239,53 +249,6 @@ func (db *Wrapper) GetMenu(id int) ([]resPkg.Menu, error) {
 	return result, nil
 }
 
-func (db *Wrapper) GetStructDishes(dishesId int) ([]resPkg.Ingredients, error) {
-	contextTransaction := context.Background()
-	tx, err := db.Conn.Begin(contextTransaction)
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetStructDishesTransactionNotCreate,
-		}
-	}
-
-	defer tx.Rollback(contextTransaction)
-
-	var ingredients []resPkg.Ingredients
-	rowDishes, err := tx.Query(contextTransaction,
-		"SELECT id, name, cost, place FROM structure_dishes WHERE food = $1", dishesId)
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetStructDishesStructDishesNotSelect,
-		}
-	}
-
-	place := make(map[int]resPkg.Ingredients)
-	for rowDishes.Next() {
-		var placeDish int
-		var ingredient resPkg.Ingredients
-		err := rowDishes.Scan(&ingredient.Id, &ingredient.Title, &ingredient.Cost, &placeDish)
-		if err != nil {
-			return nil, &errPkg.Errors{
-				Alias: errPkg.RGetStructDishesStructDishesNotScan,
-			}
-		}
-		place[placeDish] = ingredient
-	}
-
-	for i := 0; i < len(place); i++ {
-		ingredients = append(ingredients, place[i])
-	}
-
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetStructDishesNotCommit,
-		}
-	}
-
-	return ingredients, nil
-}
-
 func (db *Wrapper) GetDishes(restId int, dishesId int) (*resPkg.Dishes, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
@@ -297,11 +260,15 @@ func (db *Wrapper) GetDishes(restId int, dishesId int) (*resPkg.Dishes, error) {
 
 	defer tx.Rollback(contextTransaction)
 
-	var dishes resPkg.Dishes
-	err = tx.QueryRow(contextTransaction,
-		"SELECT id, avatar, name, cost, kilocalorie, description FROM dishes WHERE id = $1 AND restaurant = $2",
-		dishesId, restId).Scan(
-		&dishes.Id, &dishes.Img, &dishes.Title, &dishes.Cost, &dishes.Ccal, &dishes.Description)
+	var dish resPkg.Dishes
+	rows, err := tx.Query(contextTransaction,
+		"SELECT d.id, d.avatar, d.name, d.cost, d.kilocalorie, d.description, r.id, r.name, sr.id, sr.name, r.place, "+
+			"sr.place, sd.id, sd.name, sd.cost, sd.place "+
+			"FROM dishes d"+
+			" LEFT JOIN radios r ON d.id=r.food "+
+			"LEFT JOIN structure_radios sr ON sr.radios=r.id "+
+			"LEFT JOIN structure_dishes sd ON sd.food=d.id WHERE d.id = $1 AND restaurant = $2",
+		dishesId, restId)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, &errPkg.Errors{
@@ -312,6 +279,67 @@ func (db *Wrapper) GetDishes(restId int, dishesId int) (*resPkg.Dishes, error) {
 			Alias: errPkg.RGetDishesDishesNotScan,
 		}
 	}
+	radiosInfo := make(map[int]resPkg.Radios)
+	radios := make(map[int]map[int]resPkg.CheckboxesRows)
+	ingredients := make(map[int]resPkg.Ingredients)
+
+	for rows.Next() {
+		var rad resPkg.Radios
+		var ingredient resPkg.Ingredients
+		var elementRadios resPkg.CheckboxesRows
+		var placeRadios, placeElementRadios, placeIngredient *int32
+		var radId, elementRadiosId, ingredientId, ingredientCost *int32
+		var radTitle, elementRadiosName, ingredientTitle *string
+		err := rows.Scan(&dish.Id, &dish.Img, &dish.Title, &dish.Cost, &dish.Ccal, &dish.Description,
+			&radId, &radTitle, &elementRadiosId, &elementRadiosName, &placeRadios, &placeElementRadios,
+			&ingredientId, &ingredientTitle, &ingredientCost, &placeIngredient)
+		if err != nil {
+			return nil, &errPkg.Errors{
+				Alias: errPkg.RGetRadiosRadiosNotScan,
+			}
+		}
+
+		if radId != nil {
+			rad.Id = int(*radId)
+			rad.Title = *radTitle
+			elementRadios.Id = int(*elementRadiosId)
+			elementRadios.Name = *elementRadiosName
+		}
+
+		if ingredientId != nil {
+			ingredient.Id = int(*ingredientId)
+			ingredient.Title = *ingredientTitle
+			ingredient.Cost = int(*ingredientCost)
+		}
+
+		if placeRadios != nil {
+			temp := radios[int(*placeRadios)]
+			if temp == nil {
+				temp = make(map[int]resPkg.CheckboxesRows)
+			}
+			temp[int(*placeElementRadios)] = elementRadios
+			radios[int(*placeRadios)] = temp
+			radiosInfo[int(*placeRadios)] = rad
+		}
+
+		if placeIngredient != nil {
+			ingredients[int(*placeIngredient)] = ingredient
+		}
+
+	}
+
+	for i := 0; i < len(ingredients); i++ {
+		dish.Ingredient = append(dish.Ingredient, ingredients[i])
+	}
+
+	for i := 0; i < len(radiosInfo); i++ {
+		for j := 0; j < len(radios[i]); j++ {
+			temp := radiosInfo[i]
+			temp.Rows = append(temp.Rows, radios[i][j])
+			radiosInfo[i] = temp
+		}
+		dish.Radios = append(dish.Radios, radiosInfo[i])
+	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
@@ -320,70 +348,7 @@ func (db *Wrapper) GetDishes(restId int, dishesId int) (*resPkg.Dishes, error) {
 		}
 	}
 
-	return &dishes, nil
-}
-
-func (db *Wrapper) GetRadios(dishesId int) ([]resPkg.Radios, error) {
-	contextTransaction := context.Background()
-	tx, err := db.Conn.Begin(contextTransaction)
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRadiosTransactionNotCreate,
-		}
-	}
-
-	defer tx.Rollback(contextTransaction)
-
-	rowDishes, err := tx.Query(contextTransaction,
-		"SELECT r.id, r.name, sr.id, sr.name, r.place, sr.place FROM radios r "+
-			"LEFT JOIN structure_radios sr ON sr.radios=r.id WHERE r.food = $1", dishesId)
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRadiosRadiosNotSelect,
-		}
-	}
-
-	var radios []resPkg.Radios
-	place := make(map[int]map[int]resPkg.CheckboxesRows)
-	radiosInfo := make(map[int]resPkg.Radios)
-
-	for rowDishes.Next() {
-		var rad resPkg.Radios
-		var elementRadios resPkg.CheckboxesRows
-		var placeRadios, placeElementRadios int
-		err := rowDishes.Scan(&rad.Id, &rad.Title, &elementRadios.Id, &elementRadios.Name, &placeRadios, &placeElementRadios)
-		if err != nil {
-			return nil, &errPkg.Errors{
-				Alias: errPkg.RGetRadiosRadiosNotScan,
-			}
-		}
-
-		temp := place[placeRadios]
-		if temp == nil {
-			temp = make(map[int]resPkg.CheckboxesRows)
-		}
-		temp[placeElementRadios] = elementRadios
-		place[placeRadios] = temp
-		radiosInfo[placeRadios] = rad
-	}
-
-	for i := 0; i < len(place); i++ {
-		radios = append(radios, radiosInfo[i])
-		var rows []resPkg.CheckboxesRows
-		for j := 0; j < len(place[i]); j++ {
-			rows = append(rows, place[i][j])
-		}
-		radios[i].Rows = rows
-	}
-
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRadiosNotCommit,
-		}
-	}
-
-	return radios, nil
+	return &dish, nil
 }
 
 func (db *Wrapper) GetReview(id int) ([]resPkg.Review, error) {
@@ -399,7 +364,7 @@ func (db *Wrapper) GetReview(id int) ([]resPkg.Review, error) {
 
 	rowDishes, err := tx.Query(contextTransaction,
 		"SELECT gn.name, r.text, r.date_create, r.rate FROM review r "+
-			"LEFT JOIN general_user_info gn ON r.author = gn.id " +
+			"LEFT JOIN general_user_info gn ON r.author = gn.id "+
 			"WHERE r.restaurant = $1 ORDER BY r.date_create", id)
 	if err != nil {
 		return nil, &errPkg.Errors{
@@ -431,13 +396,13 @@ func (db *Wrapper) GetReview(id int) ([]resPkg.Review, error) {
 
 	return result, nil
 }
-// TODO: make error
+
 func (db *Wrapper) GetStatusRestaurant(idClient int, idRestaurant int) (bool, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.RGetReviewTransactionNotCreate,
+			Alias: errPkg.RGetStatusRestaurantTransactionNotCreate,
 		}
 	}
 
@@ -453,14 +418,14 @@ func (db *Wrapper) GetStatusRestaurant(idClient int, idRestaurant int) (bool, er
 
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.RGetReviewNotSelect,
+			Alias: errPkg.RGetStatusRestaurantNotSelect,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.RGetReviewNotCommit,
+			Alias: errPkg.RGetStatusRestaurantNotCommit,
 		}
 	}
 

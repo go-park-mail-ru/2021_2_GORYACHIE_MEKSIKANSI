@@ -11,8 +11,10 @@ import (
 )
 
 const (
-	Restaurants = 53
-	Categories  = 3
+	Restaurants     = 53
+	FirstRestaurant = 2
+	Categories      = 3
+	CountSetups     = 7
 )
 
 type Dish struct {
@@ -2013,13 +2015,9 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 			},
 		}
 
-		dishesSetups = append(dishesSetups, struct{ Setup []Dish }{})
-		dishesSetups = append(dishesSetups, struct{ Setup []Dish }{})
-		dishesSetups = append(dishesSetups, struct{ Setup []Dish }{})
-		dishesSetups = append(dishesSetups, struct{ Setup []Dish }{})
-		dishesSetups = append(dishesSetups, struct{ Setup []Dish }{})
-		dishesSetups = append(dishesSetups, struct{ Setup []Dish }{})
-		dishesSetups = append(dishesSetups, struct{ Setup []Dish }{})
+		for i := 0; i < CountSetups; i++ {
+			dishesSetups = append(dishesSetups, struct{ Setup []Dish }{})
+		}
 		dishesSetups[0].Setup = dishes1
 		dishesSetups[1].Setup = dishes2
 		dishesSetups[2].Setup = dishes3
@@ -2042,7 +2040,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 		}
 		var dishId int
 		var radiosId int
-		for i := 1; i <= Restaurants; i++ {
+		for i := FirstRestaurant; i <= Restaurants; i++ {
 			for j := 0; j < Categories; j++ {
 				_, err = tx.Exec(context.Background(), requestsCategory[0], i, categorys[util.RandomInteger(0, len(categorys))], j)
 				if err != nil {

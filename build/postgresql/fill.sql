@@ -67,55 +67,55 @@ SET
 
 INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1', NOW(), '');
 
--- INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, count, weight, avatar, place_category, place) VALUES
---     ('Тако', 60, 1, '', 1, 1, 224, 1, 'Горячее', 'Снеки', 1000, 1, 'https://pbs.twimg.com/media/DtAriH3U8AAD3jV.jpg', 0, 0),
---     ('Пряник', 60, 1, '', 1, 1, 126, 1, 'К чаю', 'К чаю', 1000, 1, 'https://s3.amazonaws.com/images.ecwid.com/images/38011115/2135671623.jpg', 1, 0),
---     ('Чёрный бургер', 60, 1, '', 1, 1, 361, 1, 'горячее', 'Снеки', 1000, 1, 'https://meat-pepper.ru/image/cache/catalog/products/burgers/kotlety-dly-burgerov-black-angus-3-800x667.jpg', 0, 1),
---     ('Пицца Ассорти', 60, 1, '', 1, 1, 1024, 1, 'горячее', 'Пиццы', 1000, 1, 'https://www.koolinar.ru/all_image/recipes/156/156543/recipe_7b4bb7f7-1d42-428a-bb0a-3db8df03093a.jpg', 2, 0),
---     ('Кофе', 60, 1, '', 1, 1, 90, 1, 'горячее', 'Напитки', 1000, 1, 'https://traveltimes.ru/wp-content/uploads/2021/08/kofe-caska-penka-scaled.jpg', 3, 0),
---     ('Картошка Фри', 60, 1, '', 1, 1, 232, 1, 'горячее', 'Снеки', 1000, 1, 'https://вести35.рф/images/2020/07/06/5f2775ffddc94d76a57605479b3f02e0.jpg', 0, 2),
---     ('Картошка по деревенски', 60, 1, '', 1, 1, 172, 1, 'Горячее', 'Снеки', 1000, 1, 'https://cherkessk.crazybrothers.ru/wp-content/uploads/Kartofel-po-derevenski.jpg', 0, 3),
---     ('МакКомбо', 256, 1, '', 1, 1, 5036, 1, 'Горячее', 'Комбо', 1000, 1, 'https://www.eatthis.com/wp-content/uploads/sites/4/2019/05/mcdonalds-fries-food-lights.jpg', 4, 0),
---     ('Утреннее комбо', 99, 1, '', 1, 1, 4708, 1, 'Горячее', 'Комбо', 1000, 1, 'https://imageproxy.ru/img/crop/1380x920/https/xn--h1ame.xn--80adxhks/storage/app/uploads/public/5e2/700/f07/5e2700f079c4c587329799.jpg', 4, 1),
---     ('Аппетитное комбо', 150, 1, '', 1, 1, 3575, 1, 'Горячее', 'Комбо', 1000, 1, 'https://www.iphones.ru/wp-content/plugins/wonderm00ns-simple-facebook-open-graph-tags/fbimg.php?img=https%3A%2F%2Fwww.iphones.ru%2Fwp-content%2Fuploads%2F2018%2F08%2FBurgerN.jpg', 4, 2),
---     ('Универсальное комбо', 100, 1, '', 1, 1, 1500, 1, 'Горячее', 'Комбо', 1000, 1, 'https://eda.yandex.ru/images/3667559/9724883e03ae48c2b6a1e28c5b9ea111-680x500.jpeg', 4, 3)
---     ;
---
--- INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element, place) VALUES
---     ('Кетчуп', 1, 5, 1, 1, 1, 1, 5, 0),
---     ('Горчица', 1, 5, 1, 1, 1, 1, 5, 1),
---     ('Сырные бортики', 4, 5, 1, 1, 1, 1, 5, 0),
---     ('Колбаса', 4, 5, 1, 1, 1, 1, 5, 1),
---     ('Сыр Пармезан', 4, 5, 1, 1, 1, 1, 5, 2),
---     ('Сыр Моцарелла', 4, 5, 1, 1, 1, 1, 5, 3),
---     ('Сахар', 5, 5, 1, 1, 1, 1, 5, 0),
---     ('Кетчап', 1, 5, 1, 1, 1, 1, 5, 2)
---     ;
---
--- INSERT INTO radios (name, food, place) VALUES
---     ('МакКомбо', 8, 0),
---     ('Утреннее комбо', 9, 0),
---     ('Аппетитное комбо', 10, 0),
---     ('Универсальное комбо', 11, 0)
---     ;
---
--- INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie, place) VALUES
---     ('Картофель Фри', 1, 1, 1, 1, 1, 0),
---     ('Картофель по деревенски', 1, 1, 1, 1, 1, 1),
---     ('Сырный соус', 2, 1, 1, 1, 1, 0),
---     ('Чесночный соус', 2, 1, 1, 1, 1, 1),
---     ('Кисло-сладкий соус', 2, 1, 1, 1, 1, 2),
---     ('Картофель Фри', 3, 1, 1, 1, 1, 0),
---     ('Картофель по деревенски', 3, 1, 1, 1, 1, 1),
---     ('Сырный соус', 4, 1, 1, 1, 1, 0),
---     ('Чесночный соус', 4, 1, 1, 1, 1, 1)
---     ;
---
--- INSERT INTO restaurant_category (restaurant, category, place)
--- VALUES
--- (1, 'Кафе', 0),
--- (1, 'Поп-ап', 1)
--- ;
+INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, count, weight, avatar, place_category, place) VALUES
+    ('Тако', 60, 1, '', 1, 1, 224, 1, 'Горячее', 'Снеки', 1000, 1, 'https://pbs.twimg.com/media/DtAriH3U8AAD3jV.jpg', 0, 0),
+    ('Пряник', 60, 1, '', 1, 1, 126, 1, 'К чаю', 'К чаю', 1000, 1, 'https://s3.amazonaws.com/images.ecwid.com/images/38011115/2135671623.jpg', 1, 0),
+    ('Чёрный бургер', 60, 1, '', 1, 1, 361, 1, 'горячее', 'Снеки', 1000, 1, 'https://meat-pepper.ru/image/cache/catalog/products/burgers/kotlety-dly-burgerov-black-angus-3-800x667.jpg', 0, 1),
+    ('Пицца Ассорти', 60, 1, '', 1, 1, 1024, 1, 'горячее', 'Пиццы', 1000, 1, 'https://www.koolinar.ru/all_image/recipes/156/156543/recipe_7b4bb7f7-1d42-428a-bb0a-3db8df03093a.jpg', 2, 0),
+    ('Кофе', 60, 1, '', 1, 1, 90, 1, 'горячее', 'Напитки', 1000, 1, 'https://traveltimes.ru/wp-content/uploads/2021/08/kofe-caska-penka-scaled.jpg', 3, 0),
+    ('Картошка Фри', 60, 1, '', 1, 1, 232, 1, 'горячее', 'Снеки', 1000, 1, 'https://вести35.рф/images/2020/07/06/5f2775ffddc94d76a57605479b3f02e0.jpg', 0, 2),
+    ('Картошка по деревенски', 60, 1, '', 1, 1, 172, 1, 'Горячее', 'Снеки', 1000, 1, 'https://cherkessk.crazybrothers.ru/wp-content/uploads/Kartofel-po-derevenski.jpg', 0, 3),
+    ('МакКомбо', 256, 1, '', 1, 1, 5036, 1, 'Горячее', 'Комбо', 1000, 1, 'https://www.eatthis.com/wp-content/uploads/sites/4/2019/05/mcdonalds-fries-food-lights.jpg', 4, 0),
+    ('Утреннее комбо', 99, 1, '', 1, 1, 4708, 1, 'Горячее', 'Комбо', 1000, 1, 'https://imageproxy.ru/img/crop/1380x920/https/xn--h1ame.xn--80adxhks/storage/app/uploads/public/5e2/700/f07/5e2700f079c4c587329799.jpg', 4, 1),
+    ('Аппетитное комбо', 150, 1, '', 1, 1, 3575, 1, 'Горячее', 'Комбо', 1000, 1, 'https://www.iphones.ru/wp-content/plugins/wonderm00ns-simple-facebook-open-graph-tags/fbimg.php?img=https%3A%2F%2Fwww.iphones.ru%2Fwp-content%2Fuploads%2F2018%2F08%2FBurgerN.jpg', 4, 2),
+    ('Универсальное комбо', 100, 1, '', 1, 1, 1500, 1, 'Горячее', 'Комбо', 1000, 1, 'https://eda.yandex.ru/images/3667559/9724883e03ae48c2b6a1e28c5b9ea111-680x500.jpeg', 4, 3)
+    ;
+
+INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element, place) VALUES
+    ('Кетчуп', 1, 5, 1, 1, 1, 1, 5, 0),
+    ('Горчица', 1, 5, 1, 1, 1, 1, 5, 1),
+    ('Сырные бортики', 4, 5, 1, 1, 1, 1, 5, 0),
+    ('Колбаса', 4, 5, 1, 1, 1, 1, 5, 1),
+    ('Сыр Пармезан', 4, 5, 1, 1, 1, 1, 5, 2),
+    ('Сыр Моцарелла', 4, 5, 1, 1, 1, 1, 5, 3),
+    ('Сахар', 5, 5, 1, 1, 1, 1, 5, 0),
+    ('Кетчап', 1, 5, 1, 1, 1, 1, 5, 2)
+    ;
+
+INSERT INTO radios (name, food, place) VALUES
+    ('МакКомбо', 8, 0),
+    ('Утреннее комбо', 9, 0),
+    ('Аппетитное комбо', 10, 0),
+    ('Универсальное комбо', 11, 0)
+    ;
+
+INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie, place) VALUES
+    ('Картофель Фри', 1, 1, 1, 1, 1, 0),
+    ('Картофель по деревенски', 1, 1, 1, 1, 1, 1),
+    ('Сырный соус', 2, 1, 1, 1, 1, 0),
+    ('Чесночный соус', 2, 1, 1, 1, 1, 1),
+    ('Кисло-сладкий соус', 2, 1, 1, 1, 1, 2),
+    ('Картофель Фри', 3, 1, 1, 1, 1, 0),
+    ('Картофель по деревенски', 3, 1, 1, 1, 1, 1),
+    ('Сырный соус', 4, 1, 1, 1, 1, 0),
+    ('Чесночный соус', 4, 1, 1, 1, 1, 1)
+    ;
+
+INSERT INTO restaurant_category (restaurant, category, place)
+VALUES
+(1, 'Кафе', 0),
+(1, 'Поп-ап', 1)
+;
 
 UPDATE restaurant_category
     SET fts = to_tsvector(category);
