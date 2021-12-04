@@ -33,7 +33,7 @@ func (db *Wrapper) GetCart(id int) (*cart.ResponseCartErrors, error) {
 		return nil, err
 	}
 	if cart.Error != "" {
-		return nil, &errPkg.Errors{Alias: cart.Error}
+		return nil, &errPkg.Errors{Text: cart.Error}
 	}
 	return cast.CastResponseCartErrorsProtoToResponseCartErrors(cart), nil
 }
@@ -47,7 +47,7 @@ func (db *Wrapper) UpdateCart(dishes cart.RequestCartDefault, clientId int) (*ca
 		return nil, err
 	}
 	if cart.Error != "" {
-		return nil, &errPkg.Errors{Alias: cart.Error}
+		return nil, &errPkg.Errors{Text: cart.Error}
 	}
 
 	if cart.Restaurant == nil {

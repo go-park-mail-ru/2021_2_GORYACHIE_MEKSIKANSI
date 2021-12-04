@@ -16,13 +16,13 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Warnf("%s, requestId: %d", RGetRestaurantRestaurantNotFound, c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusOK
 
@@ -34,13 +34,13 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}
@@ -59,13 +59,13 @@ func (c *CheckError) CheckErrorRestaurantId(err error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}
@@ -85,13 +85,13 @@ func (c *CheckError) CheckErrorRestaurantDishes(err error) (error, []byte, int) 
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}
@@ -108,13 +108,13 @@ func (c *CheckError) CheckErrorCreateReview(err error) (error, []byte, int) {
 		if errMarshal != nil {
 			c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 			return &Errors{
-					Alias: ErrMarshal,
+					Text: ErrMarshal,
 				},
 				nil, http.StatusInternalServerError
 		}
 		c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 		return &Errors{
-				Alias: ErrCheck,
+				Text: ErrCheck,
 			},
 			result, http.StatusInternalServerError
 	}
@@ -132,13 +132,13 @@ func (c *CheckError) CheckErrorGetReview(err error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}
@@ -158,13 +158,13 @@ func (c *CheckError) CheckErrorSearchRes(err error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusOK
 
@@ -176,13 +176,13 @@ func (c *CheckError) CheckErrorSearchRes(err error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}
@@ -202,13 +202,13 @@ func (c *CheckError) CheckErrorGetFavorite(err error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusOK
 		default:
@@ -219,13 +219,13 @@ func (c *CheckError) CheckErrorGetFavorite(err error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}
@@ -245,13 +245,13 @@ func (c *CheckError) CheckErrorUpdateFavorite(err error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}

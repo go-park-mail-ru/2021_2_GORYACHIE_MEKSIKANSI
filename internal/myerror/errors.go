@@ -20,12 +20,11 @@ type ResultErrorMulti struct {
 }
 
 type Errors struct {
-	Alias string
-	Text  string
+	Text string
 }
 
 func (e *Errors) Error() string {
-	return e.Alias
+	return e.Text
 }
 
 type CheckError struct {

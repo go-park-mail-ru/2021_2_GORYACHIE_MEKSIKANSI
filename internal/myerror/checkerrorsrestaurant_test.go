@@ -18,7 +18,7 @@ func TestCheckErrorRestaurant(t *testing.T) {
 	}{
 		{
 			errorInput: Errors{
-				Alias: RGetRestaurantsRestaurantsNotFound,
+				Text: RGetRestaurantsRestaurantsNotFound,
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusNotFound) +
@@ -27,7 +27,7 @@ func TestCheckErrorRestaurant(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Alias: RGetRestaurantsRestaurantsNotScan,
+				Text: RGetRestaurantsRestaurantsNotScan,
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +

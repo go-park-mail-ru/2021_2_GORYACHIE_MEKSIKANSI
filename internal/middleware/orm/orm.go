@@ -45,7 +45,7 @@ func (w *Wrapper) CheckAccess(cookie *util.Defense) (bool, error) {
 		return false, err
 	}
 	if user.Error != "" {
-		return false, &errPkg.Errors{Alias: user.Error}
+		return false, &errPkg.Errors{Text: user.Error}
 	}
 	return user.CheckResult, nil
 }
@@ -56,7 +56,7 @@ func (w *Wrapper) NewCSRF(cookie *util.Defense) (string, error) {
 		return "", err
 	}
 	if user.Error != "" {
-		return "", &errPkg.Errors{Alias: user.Error}
+		return "", &errPkg.Errors{Text: user.Error}
 	}
 	return user.XCsrfToken.XCsrfToken, nil
 }
@@ -67,7 +67,7 @@ func (w *Wrapper) GetIdByCookie(cookie *util.Defense) (int, error) {
 		return 0, err
 	}
 	if byCookie.Error != "" {
-		return 0, &errPkg.Errors{Alias: byCookie.Error}
+		return 0, &errPkg.Errors{Text: byCookie.Error}
 	}
 	return int(byCookie.IdUser), nil
 }
@@ -77,7 +77,7 @@ func (w *Wrapper) CheckAccessWebsocket(websocket string) (bool, error) {
 	tx, err := w.DBConn.Begin(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.OGetOrderTransactionNotCreate,
+			Text: errPkg.OGetOrderTransactionNotCreate,
 		}
 	}
 
@@ -88,14 +88,14 @@ func (w *Wrapper) CheckAccessWebsocket(websocket string) (bool, error) {
 		"SELECT id FROM cookie WHERE websocket = $1", websocket).Scan(&exist)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.OGetOrderNotSelect,
+			Text: errPkg.OGetOrderNotSelect,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.OGetOrderNotCommit,
+			Text: errPkg.OGetOrderNotCommit,
 		}
 	}
 

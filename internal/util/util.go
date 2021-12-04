@@ -65,7 +65,7 @@ func InterfaceConvertInt(value interface{}) (int, error) {
 		intConvert, errorConvert = strconv.Atoi(value.(string))
 		if errorConvert != nil {
 			return errors.IntNil, &errors.Errors{
-				Alias: errors.ErrAtoi,
+				Text: errors.ErrAtoi,
 			}
 		}
 		return intConvert, nil
@@ -74,7 +74,7 @@ func InterfaceConvertInt(value interface{}) (int, error) {
 		return intConvert, nil
 	default:
 		return errors.IntNil, &errors.Errors{
-			Alias: errors.ErrNotStringAndInt,
+			Text: errors.ErrNotStringAndInt,
 		}
 	}
 }
@@ -90,7 +90,7 @@ func InterfaceConvertString(value interface{}) (string, error) {
 		return StringConvert, nil
 	default:
 		return "", &errors.Errors{
-			Alias: errors.ErrNotStringAndInt,
+			Text: errors.ErrNotStringAndInt,
 		}
 	}
 

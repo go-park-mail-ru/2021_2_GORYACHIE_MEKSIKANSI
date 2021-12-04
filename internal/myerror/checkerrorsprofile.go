@@ -17,13 +17,13 @@ func (c *CheckError) CheckErrorProfile(err error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}
@@ -42,13 +42,13 @@ func (c *CheckError) CheckErrorProfileUpdateName(err error) (error, []byte, int)
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", PUpdateNameNameNotUpdate, c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}
@@ -67,13 +67,13 @@ func (c *CheckError) CheckErrorProfileUpdateEmail(err error) (error, []byte, int
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", PUpdateEmailEmailNotUpdate, c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 
@@ -85,13 +85,13 @@ func (c *CheckError) CheckErrorProfileUpdateEmail(err error) (error, []byte, int
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Warnf("%s, requestId: %d", PUpdateEmailEmailRepeat, c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusOK
 		}
@@ -110,13 +110,13 @@ func (c *CheckError) CheckErrorProfileUpdatePassword(err error) (error, []byte, 
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}
@@ -135,13 +135,13 @@ func (c *CheckError) CheckErrorProfileUpdatePhone(err error) (error, []byte, int
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 
@@ -153,13 +153,13 @@ func (c *CheckError) CheckErrorProfileUpdatePhone(err error) (error, []byte, int
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Warnf("%s, requestId: %d", PUpdatePhonePhoneRepeat, c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusOK
 		}
@@ -179,13 +179,13 @@ func (c *CheckError) CheckErrorProfileUpdateAvatar(err error) (error, []byte, in
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}
@@ -204,13 +204,13 @@ func (c *CheckError) CheckErrorProfileUpdateBirthday(err error) (error, []byte, 
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", PUpdateBirthdayBirthdayNotUpdate, c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}
@@ -229,13 +229,13 @@ func (c *CheckError) CheckErrorProfileUpdateAddress(err error) (error, []byte, i
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", PUpdateAddressAddressNotUpdate, c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}

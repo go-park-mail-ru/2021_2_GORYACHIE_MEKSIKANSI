@@ -44,7 +44,7 @@ func (p *Profile) GetProfile(id int) (*Profile2.Profile, error) {
 		result, err = p.DB.GetProfileHost(id)
 	default:
 		return nil, &errPkg.Errors{
-			Alias: errPkg.PGetProfileUnknownRole,
+			Text: errPkg.PGetProfileUnknownRole,
 		}
 	}
 	if err != nil {
@@ -74,14 +74,14 @@ func (p *Profile) UpdateAvatar(id int, newAvatar *Profile2.UpdateAvatar) error {
 	header := newAvatar.FileHeader
 	if header.Filename == "" {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateAvatarFileNameEmpty,
+			Text: errPkg.PUpdateAvatarFileNameEmpty,
 		}
 	}
 
 	startExtension := strings.LastIndex(header.Filename, ".")
 	if startExtension == -1 {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateAvatarFileWithoutExtension,
+			Text: errPkg.PUpdateAvatarFileWithoutExtension,
 		}
 	}
 	extensionFile := header.Filename[startExtension:]

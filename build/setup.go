@@ -178,7 +178,7 @@ func ConnectAws(config config.AwsBucket) (error, *session.Session) {
 		})
 	if errNewSess != nil {
 		return &errPkg.Errors{
-			Alias: errNewSess.Error(),
+			Text: errNewSess.Error(),
 		}, nil
 	}
 	return nil, sess
@@ -192,14 +192,14 @@ func InitConfig() (error, []interface{}) {
 	errRead := viper.ReadInConfig()
 	if errRead != nil {
 		return &errPkg.Errors{
-			Alias: errRead.Error(),
+			Text: errRead.Error(),
 		}, nil
 	}
 	appConfig := config.AppConfig{}
 	errUnmarshal := viper.Unmarshal(&appConfig)
 	if errUnmarshal != nil {
 		return &errPkg.Errors{
-			Alias: errUnmarshal.Error(),
+			Text: errUnmarshal.Error(),
 		}, nil
 	}
 
@@ -207,14 +207,14 @@ func InitConfig() (error, []interface{}) {
 	errRead = viper.ReadInConfig()
 	if errRead != nil {
 		return &errPkg.Errors{
-			Alias: errRead.Error(),
+			Text: errRead.Error(),
 		}, nil
 	}
 	microserviceConfig := config.MicroserviceConfig{}
 	errUnmarshal = viper.Unmarshal(&microserviceConfig)
 	if errUnmarshal != nil {
 		return &errPkg.Errors{
-			Alias: errUnmarshal.Error(),
+			Text: errUnmarshal.Error(),
 		}, nil
 	}
 
@@ -222,14 +222,14 @@ func InitConfig() (error, []interface{}) {
 	errRead = viper.ReadInConfig()
 	if errRead != nil {
 		return &errPkg.Errors{
-			Alias: errRead.Error(),
+			Text: errRead.Error(),
 		}, nil
 	}
 	dbConfig := config.DBConfig{}
 	errUnmarshal = viper.Unmarshal(&dbConfig)
 	if errUnmarshal != nil {
 		return &errPkg.Errors{
-			Alias: errUnmarshal.Error(),
+			Text: errUnmarshal.Error(),
 		}, nil
 	}
 
@@ -237,14 +237,14 @@ func InitConfig() (error, []interface{}) {
 	errRead = viper.ReadInConfig()
 	if errRead != nil {
 		return &errPkg.Errors{
-			Alias: errRead.Error(),
+			Text: errRead.Error(),
 		}, nil
 	}
 	awsConfig := config.AwsConfig{}
 	errUnmarshal = viper.Unmarshal(&awsConfig)
 	if errUnmarshal != nil {
 		return &errPkg.Errors{
-			Alias: errUnmarshal.Error(),
+			Text: errUnmarshal.Error(),
 		}, nil
 	}
 

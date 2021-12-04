@@ -46,7 +46,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.OCreateOrderTransactionNotCreate,
+			Text: errPkg.OCreateOrderTransactionNotCreate,
 		}
 	}
 
@@ -61,7 +61,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 		cart.Cost.DCost, cart.Cost.SumCost).Scan(&orderId)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.OCreateOrderOrderUserNotInsert,
+			Text: errPkg.OCreateOrderOrderUserNotInsert,
 		}
 	}
 
@@ -74,7 +74,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 			orderId, dish.Id, dish.Count, dish.ItemNumber, dishPlace).Scan(&listId)
 		if err != nil {
 			return 0, &errPkg.Errors{
-				Alias: errPkg.OCreateOrderOrderListNotInsert,
+				Text: errPkg.OCreateOrderOrderListNotInsert,
 			}
 		}
 
@@ -85,7 +85,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 					orderId, radios.RadiosId, radios.Id, cart.Dishes[i].Id, listId, elementPlace)
 				if err != nil {
 					return 0, &errPkg.Errors{
-						Alias: errPkg.OCreateOrderOrderRadiosListUserNotInsert,
+						Text: errPkg.OCreateOrderOrderRadiosListUserNotInsert,
 					}
 				}
 			}
@@ -98,7 +98,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 					orderId, dish.Id, ingredient.Id, listId, elementPlace)
 				if err != nil {
 					return 0, &errPkg.Errors{
-						Alias: errPkg.OCreateOrderOrderStructureListNotInsert,
+						Text: errPkg.OCreateOrderOrderStructureListNotInsert,
 					}
 				}
 				elementPlace++
@@ -111,13 +111,13 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 			dish.Count, dish.Id).Scan(&newCount)
 		if err != nil {
 			return 0, &errPkg.Errors{
-				Alias: errPkg.OCreateOrderCountNotUpdate,
+				Text: errPkg.OCreateOrderCountNotUpdate,
 			}
 		}
 
 		if newCount < 0 && newCount != util.UnlimitedCount-dish.Count {
 			return 0, &errPkg.Errors{
-				Alias: errPkg.OCreateOrderCountNotCorrect,
+				Text: errPkg.OCreateOrderCountNotCorrect,
 			}
 		}
 		dishPlace++
@@ -127,7 +127,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.OCreateOrderNotCommit,
+			Text: errPkg.OCreateOrderNotCommit,
 		}
 	}
 
@@ -139,7 +139,7 @@ func (db *Wrapper) GetOrders(id int) (*orderPkg.HistoryOrderArray, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.OGetOrdersTransactionNotCreate,
+			Text: errPkg.OGetOrdersTransactionNotCreate,
 		}
 	}
 
@@ -164,7 +164,7 @@ func (db *Wrapper) GetOrders(id int) (*orderPkg.HistoryOrderArray, error) {
 			" LEFT JOIN restaurant r ON r.id = order_user.restaurant_id WHERE order_user.client_id = $1 ORDER BY date_order", id)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.OGetOrdersNotSelect,
+			Text: errPkg.OGetOrdersNotSelect,
 		}
 	}
 
@@ -198,7 +198,7 @@ func (db *Wrapper) GetOrders(id int) (*orderPkg.HistoryOrderArray, error) {
 
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.OGetOrdersNotScan,
+				Text: errPkg.OGetOrdersNotScan,
 			}
 		}
 		switch order.Status {
@@ -289,13 +289,13 @@ func (db *Wrapper) GetOrders(id int) (*orderPkg.HistoryOrderArray, error) {
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.OGetOrdersNotCommit,
+			Text: errPkg.OGetOrdersNotCommit,
 		}
 	}
 
 	if result.Orders == nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.OGetOrdersOrdersIsVoid,
+			Text: errPkg.OGetOrdersOrdersIsVoid,
 		}
 	}
 	return &result, nil
@@ -306,7 +306,7 @@ func (db *Wrapper) GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, e
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.OGetOrderTransactionNotCreate,
+			Text: errPkg.OGetOrderTransactionNotCreate,
 		}
 	}
 
@@ -331,7 +331,7 @@ func (db *Wrapper) GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, e
 		idClient, idOrder)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.OGetOrderNotSelect,
+			Text: errPkg.OGetOrderNotSelect,
 		}
 	}
 
@@ -365,7 +365,7 @@ func (db *Wrapper) GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, e
 
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.OGetOrderNotScan,
+				Text: errPkg.OGetOrderNotScan,
 			}
 		}
 
@@ -431,14 +431,14 @@ func (db *Wrapper) GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, e
 
 	if order.Id == 0 {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.OGetOrderNotExist,
+			Text: errPkg.OGetOrderNotExist,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.OGetOrderNotCommit,
+			Text: errPkg.OGetOrderNotCommit,
 		}
 	}
 
@@ -450,7 +450,7 @@ func (db *Wrapper) UpdateStatusOrder(id int, status int) error {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.OUpdateStatusOrderTransactionNotCreate,
+			Text: errPkg.OUpdateStatusOrderTransactionNotCreate,
 		}
 	}
 
@@ -461,14 +461,14 @@ func (db *Wrapper) UpdateStatusOrder(id int, status int) error {
 		status, id)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.OUpdateStatusOrderNotUpdate,
+			Text: errPkg.OUpdateStatusOrderNotUpdate,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.OUpdateStatusOrderNotCommit,
+			Text: errPkg.OUpdateStatusOrderNotCommit,
 		}
 	}
 
@@ -480,7 +480,7 @@ func (db *Wrapper) CheckRun(id int) (bool, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.OUpdateStatusOrderTransactionNotCreate,
+			Text: errPkg.OUpdateStatusOrderTransactionNotCreate,
 		}
 	}
 
@@ -495,14 +495,14 @@ func (db *Wrapper) CheckRun(id int) (bool, error) {
 		id)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.OUpdateStatusOrderNotUpdate,
+			Text: errPkg.OUpdateStatusOrderNotUpdate,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.OUpdateStatusOrderNotCommit,
+			Text: errPkg.OUpdateStatusOrderNotCommit,
 		}
 	}
 
@@ -519,14 +519,14 @@ func (db *Wrapper) GetCart(id int) (*cart.ResponseCartErrors, error) {
 	}
 	if receivedCart.Error != "" {
 		return nil, &errPkg.Errors{
-			Alias: receivedCart.Error,
+			Text: receivedCart.Error,
 		}
 	}
 	cart := cast.CastResponseCartErrorsProtoToResponseCartErrors(receivedCart)
 
 	if cart.DishErr != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.OGetCartCartNoActual,
+			Text: errPkg.OGetCartCartNoActual,
 		}
 	}
 
@@ -538,7 +538,7 @@ func (db *Wrapper) GetRestaurant(id int) (*restaurant.RestaurantId, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRestaurantTransactionNotCreate,
+			Text: errPkg.RGetRestaurantTransactionNotCreate,
 		}
 	}
 
@@ -551,14 +551,14 @@ func (db *Wrapper) GetRestaurant(id int) (*restaurant.RestaurantId, error) {
 		&restaurant.MaxDelivery, &restaurant.Rating)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRestaurantRestaurantNotFound,
+			Text: errPkg.RGetRestaurantRestaurantNotFound,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRestaurantNotCommit,
+			Text: errPkg.RGetRestaurantNotCommit,
 		}
 	}
 
@@ -570,7 +570,7 @@ func (db *Wrapper) DeleteCart(id int) error {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.CDeleteCartTransactionNotCreate,
+			Text: errPkg.CDeleteCartTransactionNotCreate,
 		}
 	}
 
@@ -580,14 +580,14 @@ func (db *Wrapper) DeleteCart(id int) error {
 		"DELETE FROM cart_food CASCADE WHERE client_id = $1", id)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.CDeleteCartCartNotDelete,
+			Text: errPkg.CDeleteCartCartNotDelete,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.CDeleteCartNotCommit,
+			Text: errPkg.CDeleteCartNotCommit,
 		}
 	}
 	return nil

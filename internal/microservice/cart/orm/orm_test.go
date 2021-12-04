@@ -30,6 +30,8 @@ func (r *Row) Scan(dest ...interface{}) error {
 			*dest[i].(*string) = r.row[i].(string)
 		case *float32:
 			*dest[i].(*float32) = float32(r.row[i].(float64))
+		default:
+			dest[i] = nil
 		}
 	}
 	return nil
@@ -74,6 +76,8 @@ func (r *Rows) Scan(dest ...interface{}) error {
 			*dest[i].(*string) = r.row[i].(string)
 		case *float32:
 			*dest[i].(*float32) = float32(r.row[i].(float64))
+		default:
+			dest[i] = nil
 		}
 	}
 	return r.errRow
@@ -98,6 +102,7 @@ var GetCart = []struct {
 	inputQuery               int
 	outQuery                 Rows
 	errQuery                 error
+	countQuery               int
 	errCommitTransaction     error
 	countCommitTransaction   int
 }{
@@ -112,8 +117,30 @@ var GetCart = []struct {
 		inputQuery:               1,
 		outQuery:                 Rows{},
 		errQuery:                 nil,
+		countQuery:               1,
 		errCommitTransaction:     nil,
 		countCommitTransaction:   0,
+	},
+	{
+		testName:                 "Second",
+		input:                    1,
+		outOne:                   nil,
+		outTwo:                   nil,
+		outErr:                   "",
+		errBeginTransaction:      nil,
+		countRollbackTransaction: 1,
+		inputQuery:               1,
+		outQuery: Rows{
+			row: []interface{}{
+				1, 1, 0, "/address/", "Яблоко", 5, 50, 60, 150,
+				"Очень вкусно", nil, nil, nil, nil, nil, nil, 1, 1000,
+				nil, nil, nil, nil, nil},
+			rows: 1,
+		},
+		errQuery:               nil,
+		countQuery:             1,
+		errCommitTransaction:   nil,
+		countCommitTransaction: 1,
 	},
 }
 

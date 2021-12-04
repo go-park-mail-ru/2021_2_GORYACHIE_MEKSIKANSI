@@ -49,7 +49,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 	}{
 		{
 			errorInput: Errors{
-				Alias: AGeneralSignUpLoginNotUnique,
+				Text: AGeneralSignUpLoginNotUnique,
 			},
 			errorExpected:    ErrCheck,
 			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusConflict) + ",\"explain\":\"" + AGeneralSignUpLoginNotUnique + "\"}",
@@ -57,7 +57,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Alias: AGeneralSignUpIncorrectPhoneFormat,
+				Text: AGeneralSignUpIncorrectPhoneFormat,
 			},
 			errorExpected:    ErrCheck,
 			resultExpected:   "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) + ",\"explain\":\"" + AGeneralSignUpIncorrectPhoneFormat + "\"}",
@@ -65,7 +65,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Alias: AGeneralSignUpNotInsert,
+				Text: AGeneralSignUpNotInsert,
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
@@ -74,7 +74,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Alias: ASignUpHostHostNotInsert,
+				Text: ASignUpHostHostNotInsert,
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
@@ -83,7 +83,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Alias: AAddTransactionCookieNotInsert,
+				Text: AAddTransactionCookieNotInsert,
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
@@ -92,7 +92,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Alias: ASignUpCourierCourierNotInsert,
+				Text: ASignUpCourierCourierNotInsert,
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
@@ -101,7 +101,7 @@ func TestCheckErrorSignUp(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Alias: ASignUpClientClientNotInsert,
+				Text: ASignUpClientClientNotInsert,
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
@@ -152,7 +152,7 @@ func TestCheckErrorLogin(t *testing.T) {
 	}{
 		{
 			errorInput: Errors{
-				Alias: ALoginOrPasswordIncorrect,
+				Text: ALoginOrPasswordIncorrect,
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) +
@@ -161,7 +161,7 @@ func TestCheckErrorLogin(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Alias: ALoginNotFound,
+				Text: ALoginNotFound,
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) +
@@ -170,7 +170,7 @@ func TestCheckErrorLogin(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Alias: AAddCookieCookieNotInsert,
+				Text: AAddCookieCookieNotInsert,
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
@@ -179,7 +179,7 @@ func TestCheckErrorLogin(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Alias: ASaltNotSelect,
+				Text: ASaltNotSelect,
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
@@ -224,7 +224,7 @@ func TestCheckErrorLogout(t *testing.T) {
 	}{
 		{
 			errorInput: Errors{
-				Alias: ADeleteCookieCookieNotDelete,
+				Text: ADeleteCookieCookieNotDelete,
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +
@@ -269,7 +269,7 @@ func TestCheckErrorLogoutAccess(t *testing.T) {
 	}{
 		{
 			errorInput: Errors{
-				Alias: MCheckAccessCookieNotFound,
+				Text: MCheckAccessCookieNotFound,
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusUnauthorized) +
@@ -278,7 +278,7 @@ func TestCheckErrorLogoutAccess(t *testing.T) {
 		},
 		{
 			errorInput: Errors{
-				Alias: MCheckAccessCookieNotScan,
+				Text: MCheckAccessCookieNotScan,
 			},
 			errorExpected: ErrCheck,
 			resultExpected: "{\"status\":" + strconv.Itoa(http.StatusInternalServerError) +

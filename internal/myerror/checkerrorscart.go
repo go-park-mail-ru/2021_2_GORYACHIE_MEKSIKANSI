@@ -16,13 +16,13 @@ func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 
@@ -34,13 +34,13 @@ func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Warnf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusOK
 		}
@@ -62,13 +62,13 @@ func (c *CheckError) CheckErrorUpdateCart(err error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}

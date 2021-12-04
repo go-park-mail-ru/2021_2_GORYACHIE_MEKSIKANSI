@@ -45,7 +45,7 @@ func (w *Wrapper) SignUp(signup *authorization.RegistrationRequest) (*Utils2.Def
 		return nil, err
 	}
 	if result.Error != "" {
-		return nil, &errPkg.Errors{Alias: result.Error}
+		return nil, &errPkg.Errors{Text: result.Error}
 	}
 	return cast.CastDefenseResponseProtoToDefense(result), nil
 }
@@ -56,7 +56,7 @@ func (w *Wrapper) Login(login *authorization.Authorization) (*Utils2.Defense, er
 		return nil, err
 	}
 	if response.Error != "" {
-		return nil, &errPkg.Errors{Alias: response.Error}
+		return nil, &errPkg.Errors{Text: response.Error}
 	}
 	return cast.CastDefenseResponseProtoToDefense(response), nil
 }
@@ -69,7 +69,7 @@ func (w *Wrapper) Logout(CSRF string) (string, error) {
 		return "", err
 	}
 	if logout.Error != "" {
-		return "", &errPkg.Errors{Alias: logout.Error}
+		return "", &errPkg.Errors{Text: logout.Error}
 	}
 	return logout.XCsrfToken.XCsrfToken, nil
 }
@@ -79,7 +79,7 @@ func (w *Wrapper) NewCSRFWebsocket(id int) (string, error) {
 	tx, err := w.DBConn.Begin(contextTransaction)
 	if err != nil {
 		return "", &errPkg.Errors{
-			Alias: errPkg.OGetOrderTransactionNotCreate,
+			Text: errPkg.OGetOrderTransactionNotCreate,
 		}
 	}
 
@@ -91,14 +91,14 @@ func (w *Wrapper) NewCSRFWebsocket(id int) (string, error) {
 		"UPDATE cookie SET websocket = $1 WHERE client_id = $2", websocket, id)
 	if err != nil {
 		return "", &errPkg.Errors{
-			Alias: errPkg.OGetOrderNotSelect,
+			Text: errPkg.OGetOrderNotSelect,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return "", &errPkg.Errors{
-			Alias: errPkg.OGetOrderNotCommit,
+			Text: errPkg.OGetOrderNotCommit,
 		}
 	}
 

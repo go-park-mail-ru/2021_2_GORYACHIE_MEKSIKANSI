@@ -43,7 +43,7 @@ func (r *Wrapper) AllRestaurants() ([]restaurant.Restaurants, error) {
 		return nil, err
 	}
 	if restaurants.Error != "" {
-		return nil, &errPkg.Errors{Alias: restaurants.Error}
+		return nil, &errPkg.Errors{Text: restaurants.Error}
 	}
 	return cast.CastRestaurantsProtoToRestaurants(restaurants.Restaurants), nil
 }
@@ -57,7 +57,7 @@ func (r *Wrapper) GetRestaurant(id int) (*restaurant.RestaurantId, error) {
 		return nil, err
 	}
 	if rest.Error != "" {
-		return nil, &errPkg.Errors{Alias: rest.Error}
+		return nil, &errPkg.Errors{Text: rest.Error}
 	}
 	return cast.CastRestaurantInfoToRestaurantIdProto(rest), nil
 }
@@ -72,7 +72,7 @@ func (r *Wrapper) RestaurantDishes(restId int, dishId int) (*restaurant.Dishes, 
 		return nil, err
 	}
 	if dishes.Error != "" {
-		return nil, &errPkg.Errors{Alias: dishes.Error}
+		return nil, &errPkg.Errors{Text: dishes.Error}
 	}
 	return cast.CastDishesProtoToDishes(dishes), nil
 }
@@ -83,7 +83,7 @@ func (r *Wrapper) CreateReview(id int, review restaurant.NewReview) error {
 		return err
 	}
 	if createReview.Error != "" {
-		return &errPkg.Errors{Alias: createReview.Error}
+		return &errPkg.Errors{Text: createReview.Error}
 	}
 	return nil
 }
@@ -98,7 +98,7 @@ func (r *Wrapper) GetReview(id int, idClient int) (*restaurant.ResReview, error)
 		return nil, err
 	}
 	if review.Error != "" {
-		return nil, &errPkg.Errors{Alias: review.Error}
+		return nil, &errPkg.Errors{Text: review.Error}
 	}
 	return cast.CastResReviewProtoToResReview(review), nil
 }
@@ -112,7 +112,7 @@ func (r *Wrapper) SearchRestaurant(search string) ([]restaurant.Restaurants, err
 		return nil, err
 	}
 	if rest.Error != "" {
-		return nil, &errPkg.Errors{Alias: rest.Error}
+		return nil, &errPkg.Errors{Text: rest.Error}
 	}
 	return cast.CastRestaurantsProtoToRestaurant(rest), nil
 }
@@ -123,7 +123,7 @@ func (r *Wrapper) GetFavoriteRestaurants(id int) ([]restaurant.Restaurants, erro
 		return nil, err
 	}
 	if restaurants.Error != "" {
-		return nil, &errPkg.Errors{Alias: restaurants.Error}
+		return nil, &errPkg.Errors{Text: restaurants.Error}
 	}
 	return cast.CastRestaurantsProtoToRestaurants(restaurants.Restaurants), nil
 }
@@ -134,7 +134,7 @@ func (r *Wrapper) EditRestaurantInFavorite(idRestaurant int, idClient int) (bool
 		return false, err
 	}
 	if restaurants.Error != "" {
-		return false, &errPkg.Errors{Alias: restaurants.Error}
+		return false, &errPkg.Errors{Text: restaurants.Error}
 	}
 	return restaurants.Status, nil
 }

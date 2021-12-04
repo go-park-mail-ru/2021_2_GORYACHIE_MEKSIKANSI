@@ -69,7 +69,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return "", &errPkg.Errors{
-			Alias: errPkg.PGetRoleByIdTransactionNotCreate,
+			Text: errPkg.PGetRoleByIdTransactionNotCreate,
 		}
 	}
 
@@ -81,7 +81,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 		"SELECT id FROM host WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err != pgx.ErrNoRows {
 		return "", &errPkg.Errors{
-			Alias: errPkg.PGetRoleByIdHostNotScan,
+			Text: errPkg.PGetRoleByIdHostNotScan,
 		}
 	}
 	if role != 0 {
@@ -92,7 +92,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 		"SELECT id FROM client WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err != pgx.ErrNoRows {
 		return "", &errPkg.Errors{
-			Alias: errPkg.PGetRoleByIdClientNotScan,
+			Text: errPkg.PGetRoleByIdClientNotScan,
 		}
 	}
 	if role != 0 {
@@ -103,7 +103,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 		"SELECT id FROM courier WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err != pgx.ErrNoRows {
 		return "", &errPkg.Errors{
-			Alias: errPkg.PGetRoleByIdCourierNotScan,
+			Text: errPkg.PGetRoleByIdCourierNotScan,
 		}
 	}
 	if role != 0 {
@@ -113,7 +113,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return "", &errPkg.Errors{
-			Alias: errPkg.PGetRoleByIdNotCommit,
+			Text: errPkg.PGetRoleByIdNotCommit,
 		}
 	}
 
@@ -125,7 +125,7 @@ func (db *Wrapper) GetProfileHost(id int) (*profile.Profile, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.PGetProfileHostTransactionNotCreate,
+			Text: errPkg.PGetProfileHostTransactionNotCreate,
 		}
 	}
 
@@ -137,14 +137,14 @@ func (db *Wrapper) GetProfileHost(id int) (*profile.Profile, error) {
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.PGetProfileHostHostNotScan,
+			Text: errPkg.PGetProfileHostHostNotScan,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.PGetProfileHostNotCommit,
+			Text: errPkg.PGetProfileHostNotCommit,
 		}
 	}
 
@@ -156,7 +156,7 @@ func (db *Wrapper) GetProfileClient(id int) (*profile.Profile, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.PGetProfileClientTransactionNotCreate,
+			Text: errPkg.PGetProfileClientTransactionNotCreate,
 		}
 	}
 
@@ -168,7 +168,7 @@ func (db *Wrapper) GetProfileClient(id int) (*profile.Profile, error) {
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.PGetProfileClientClientNotScan,
+			Text: errPkg.PGetProfileClientClientNotScan,
 		}
 	}
 
@@ -179,7 +179,7 @@ func (db *Wrapper) GetProfileClient(id int) (*profile.Profile, error) {
 		profile.Birthday, _ = Utils2.FormatDate(birthday)
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.PGetProfileClientBirthdayNotScan,
+				Text: errPkg.PGetProfileClientBirthdayNotScan,
 			}
 		}
 	}
@@ -187,7 +187,7 @@ func (db *Wrapper) GetProfileClient(id int) (*profile.Profile, error) {
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.PGetProfileClientNotCommit,
+			Text: errPkg.PGetProfileClientNotCommit,
 		}
 	}
 
@@ -199,7 +199,7 @@ func (db *Wrapper) GetProfileCourier(id int) (*profile.Profile, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.PGetProfileCourierTransactionNotCreate,
+			Text: errPkg.PGetProfileCourierTransactionNotCreate,
 		}
 	}
 
@@ -213,14 +213,14 @@ func (db *Wrapper) GetProfileCourier(id int) (*profile.Profile, error) {
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.PGetProfileCourierCourierNotScan,
+			Text: errPkg.PGetProfileCourierCourierNotScan,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.PGetProfileCourierNotCommit,
+			Text: errPkg.PGetProfileCourierNotCommit,
 		}
 	}
 	return &profile, nil
@@ -231,7 +231,7 @@ func (db *Wrapper) UpdateName(id int, newName string) error {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateNameTransactionNotCreate,
+			Text: errPkg.PUpdateNameTransactionNotCreate,
 		}
 	}
 
@@ -242,14 +242,14 @@ func (db *Wrapper) UpdateName(id int, newName string) error {
 		Utils2.Sanitize(newName), id)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateNameNameNotUpdate,
+			Text: errPkg.PUpdateNameNameNotUpdate,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateNameNotCommit,
+			Text: errPkg.PUpdateNameNotCommit,
 		}
 	}
 
@@ -261,7 +261,7 @@ func (db *Wrapper) UpdateEmail(id int, newEmail string) error {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateEmailTransactionNotCreate,
+			Text: errPkg.PUpdateEmailTransactionNotCreate,
 		}
 	}
 
@@ -274,18 +274,18 @@ func (db *Wrapper) UpdateEmail(id int, newEmail string) error {
 		textError := err.Error()
 		if strings.Contains(textError, "duplicate key") {
 			return &errPkg.Errors{
-				Alias: errPkg.PUpdateEmailEmailRepeat,
+				Text: errPkg.PUpdateEmailEmailRepeat,
 			}
 		}
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateEmailEmailNotUpdate,
+			Text: errPkg.PUpdateEmailEmailNotUpdate,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateEmailNotCommit,
+			Text: errPkg.PUpdateEmailNotCommit,
 		}
 	}
 
@@ -297,7 +297,7 @@ func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdatePasswordTransactionNotCreate,
+			Text: errPkg.PUpdatePasswordTransactionNotCreate,
 		}
 	}
 
@@ -309,7 +309,7 @@ func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
 		id).Scan(&salt)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdatePasswordSaltNotSelect,
+			Text: errPkg.PUpdatePasswordSaltNotSelect,
 		}
 	}
 
@@ -318,14 +318,14 @@ func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
 		Utils2.HashPassword(newPassword, salt), id)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdatePasswordPasswordNotUpdate,
+			Text: errPkg.PUpdatePasswordPasswordNotUpdate,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdatePasswordNotCommit,
+			Text: errPkg.PUpdatePasswordNotCommit,
 		}
 	}
 
@@ -337,7 +337,7 @@ func (db *Wrapper) UpdatePhone(id int, newPhone string) error {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdatePhoneTransactionNotCreate,
+			Text: errPkg.PUpdatePhoneTransactionNotCreate,
 		}
 	}
 
@@ -345,7 +345,7 @@ func (db *Wrapper) UpdatePhone(id int, newPhone string) error {
 
 	if _, err := strconv.Atoi(newPhone); err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdatePhoneIncorrectPhoneFormat,
+			Text: errPkg.PUpdatePhoneIncorrectPhoneFormat,
 		}
 	}
 
@@ -356,18 +356,18 @@ func (db *Wrapper) UpdatePhone(id int, newPhone string) error {
 		errText := err.Error()
 		if strings.Contains(errText, "duplicate key") {
 			return &errPkg.Errors{
-				Alias: errPkg.PUpdatePhonePhoneRepeat,
+				Text: errPkg.PUpdatePhonePhoneRepeat,
 			}
 		}
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdatePhonePhoneNotUpdate,
+			Text: errPkg.PUpdatePhonePhoneNotUpdate,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdatePhoneNotCommit,
+			Text: errPkg.PUpdatePhoneNotCommit,
 		}
 	}
 
@@ -379,7 +379,7 @@ func (db *Wrapper) UpdateAvatar(id int, newAvatar *profile.UpdateAvatar, newFile
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateAvatarTransactionNotCreate,
+			Text: errPkg.PUpdateAvatarTransactionNotCreate,
 		}
 	}
 
@@ -389,7 +389,7 @@ func (db *Wrapper) UpdateAvatar(id int, newAvatar *profile.UpdateAvatar, newFile
 	file, errTet := header.Open()
 	if errTet != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateAvatarAvatarNotOpen,
+			Text: errPkg.PUpdateAvatarAvatarNotOpen,
 		}
 	}
 
@@ -401,7 +401,7 @@ func (db *Wrapper) UpdateAvatar(id int, newAvatar *profile.UpdateAvatar, newFile
 	})
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateAvatarAvatarNotUpload,
+			Text: errPkg.PUpdateAvatarAvatarNotUpload,
 		}
 	}
 
@@ -410,14 +410,14 @@ func (db *Wrapper) UpdateAvatar(id int, newAvatar *profile.UpdateAvatar, newFile
 		newAvatar.Avatar, id)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateAvatarAvatarNotUpdate,
+			Text: errPkg.PUpdateAvatarAvatarNotUpdate,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateAvatarNotCommit,
+			Text: errPkg.PUpdateAvatarNotCommit,
 		}
 	}
 
@@ -429,7 +429,7 @@ func (db *Wrapper) UpdateBirthday(id int, newBirthday string) error {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateBirthdayTransactionNotCreate,
+			Text: errPkg.PUpdateBirthdayTransactionNotCreate,
 		}
 	}
 
@@ -438,7 +438,7 @@ func (db *Wrapper) UpdateBirthday(id int, newBirthday string) error {
 	birthday, err := time.Parse(layout, newBirthday)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateBirthdayNotParse,
+			Text: errPkg.PUpdateBirthdayNotParse,
 		}
 	}
 	_, err = tx.Exec(contextTransaction,
@@ -446,14 +446,14 @@ func (db *Wrapper) UpdateBirthday(id int, newBirthday string) error {
 		birthday, id)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateBirthdayBirthdayNotUpdate,
+			Text: errPkg.PUpdateBirthdayBirthdayNotUpdate,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateBirthdayNotCommit,
+			Text: errPkg.PUpdateBirthdayNotCommit,
 		}
 	}
 
@@ -465,7 +465,7 @@ func (db *Wrapper) UpdateAddress(id int, newAddress profile.AddressCoordinates) 
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateAddressTransactionNotCreate,
+			Text: errPkg.PUpdateAddressTransactionNotCreate,
 		}
 	}
 
@@ -482,14 +482,14 @@ func (db *Wrapper) UpdateAddress(id int, newAddress profile.AddressCoordinates) 
 		newAddress.Coordinates.Longitude, id)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateAddressAddressNotUpdate,
+			Text: errPkg.PUpdateAddressAddressNotUpdate,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PUpdateAddressNotCommit,
+			Text: errPkg.PUpdateAddressNotCommit,
 		}
 	}
 
@@ -501,7 +501,7 @@ func (db *Wrapper) AddAddress(id int, newAddress profile.AddressCoordinates) (in
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.PAddAddressNotCreate,
+			Text: errPkg.PAddAddressNotCreate,
 		}
 	}
 
@@ -518,14 +518,14 @@ func (db *Wrapper) AddAddress(id int, newAddress profile.AddressCoordinates) (in
 		newAddress.Coordinates.Longitude, id).Scan(&idAddress)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.PAddAddressAddressNotAdd,
+			Text: errPkg.PAddAddressAddressNotAdd,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.PAddAddressNotCommit,
+			Text: errPkg.PAddAddressNotCommit,
 		}
 	}
 
@@ -537,7 +537,7 @@ func (db *Wrapper) DeleteAddress(id int, addressId int) error {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PAddDeleteAddressTransactionNotCreate,
+			Text: errPkg.PAddDeleteAddressTransactionNotCreate,
 		}
 	}
 
@@ -548,14 +548,14 @@ func (db *Wrapper) DeleteAddress(id int, addressId int) error {
 		id, addressId)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PAddDeleteAddressNotDelete,
+			Text: errPkg.PAddDeleteAddressNotDelete,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.PAddDeleteAddressNotCommit,
+			Text: errPkg.PAddDeleteAddressNotCommit,
 		}
 	}
 

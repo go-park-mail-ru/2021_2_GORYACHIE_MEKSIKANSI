@@ -17,14 +17,14 @@ func (c CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			fmt.Printf("Console: %s\n", AGeneralSignUpLoginNotUnique)
 			c.Logger.Warnf("%s, requestId: %d", AGeneralSignUpLoginNotUnique, c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusOK
 
@@ -36,13 +36,13 @@ func (c CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Warnf("%s, requestId: %d", AGeneralSignUpIncorrectPhoneFormat, c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusOK
 
@@ -57,13 +57,13 @@ func (c CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", errIn.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}
@@ -82,13 +82,13 @@ func (c *CheckError) CheckErrorLogin(err error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Warnf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusOK
 
@@ -101,13 +101,13 @@ func (c *CheckError) CheckErrorLogin(err error) (error, []byte, int) {
 			if errMarshal != nil {
 				c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 				return &Errors{
-						Alias: ErrMarshal,
+						Text: ErrMarshal,
 					},
 					nil, http.StatusInternalServerError
 			}
 			c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 			return &Errors{
-					Alias: ErrCheck,
+					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
 		}
@@ -124,13 +124,13 @@ func (c *CheckError) CheckErrorLogout(err error) (error, []byte, int) {
 		if errMarshal != nil {
 			c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 			return &Errors{
-					Alias: ErrMarshal,
+					Text: ErrMarshal,
 				},
 				nil, http.StatusInternalServerError
 		}
 		c.Logger.Errorf("%s, requestId: %d", ADeleteCookieCookieNotDelete, c.RequestId)
 		return &Errors{
-				Alias: ErrCheck,
+				Text: ErrCheck,
 			},
 			result, http.StatusInternalServerError
 	}
@@ -146,13 +146,13 @@ func (c *CheckError) CheckErrorNewWsKey(err error) (error, []byte, int) {
 		if errMarshal != nil {
 			c.Logger.Errorf("%s, %v, requestId: %d", ErrMarshal, errMarshal, c.RequestId)
 			return &Errors{
-					Alias: ErrMarshal,
+					Text: ErrMarshal,
 				},
 				nil, http.StatusInternalServerError
 		}
 		c.Logger.Errorf("%s, requestId: %d", err.Error(), c.RequestId)
 		return &Errors{
-				Alias: ErrCheck,
+				Text: ErrCheck,
 			},
 			result, http.StatusInternalServerError
 	}
