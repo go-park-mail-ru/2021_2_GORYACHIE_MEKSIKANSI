@@ -1,0 +1,662 @@
+package orm
+
+import (
+	cartPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/myerror"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/orm/mocks"
+	"context"
+	"fmt"
+	"github.com/golang/mock/gomock"
+	"github.com/jackc/pgconn"
+	"github.com/jackc/pgproto3/v2"
+	"github.com/stretchr/testify/require"
+	"testing"
+)
+
+type Row struct {
+	row    []interface{}
+	errRow error
+}
+
+func (r *Row) Scan(dest ...interface{}) error {
+	if r.errRow != nil {
+		return r.errRow
+	}
+	for i := range dest {
+		switch dest[i].(type) {
+		case *int:
+			*dest[i].(*int) = r.row[i].(int)
+		case *string:
+			*dest[i].(*string) = r.row[i].(string)
+		case *float32:
+			*dest[i].(*float32) = float32(r.row[i].(float64))
+		}
+	}
+	return nil
+}
+
+type Rows struct {
+	row        []interface{}
+	rows       int
+	currentRow int
+	errRow     error
+}
+
+func (r *Rows) Close() {
+}
+
+func (r *Rows) Err() error {
+	return nil
+}
+
+func (r *Rows) CommandTag() pgconn.CommandTag {
+	return nil
+}
+
+func (r *Rows) FieldDescriptions() []pgproto3.FieldDescription {
+	return nil
+}
+
+func (r *Rows) Values() ([]interface{}, error) {
+	return nil, nil
+}
+
+func (r *Rows) RawValues() [][]byte {
+	return nil
+}
+
+func (r *Rows) Scan(dest ...interface{}) error {
+	for i := range dest {
+		switch dest[i].(type) {
+		case *int:
+			*dest[i].(*int) = r.row[i].(int)
+		case *string:
+			*dest[i].(*string) = r.row[i].(string)
+		case *float32:
+			*dest[i].(*float32) = float32(r.row[i].(float64))
+		}
+	}
+	return r.errRow
+}
+
+func (r *Rows) Next() bool {
+	if r.currentRow == r.rows {
+		return false
+	}
+	r.currentRow++
+	return true
+}
+
+var GetCart = []struct {
+	testName                 string
+	input                    int
+	outOne                   *cartPkg.ResponseCartErrors
+	outTwo                   []cartPkg.CastDishesErrs
+	outErr                   string
+	errBeginTransaction      error
+	countRollbackTransaction int
+	inputQuery               int
+	outQuery                 Rows
+	errQuery                 error
+	errCommitTransaction     error
+	countCommitTransaction   int
+}{
+	{
+		testName:                 "First",
+		input:                    1,
+		outOne:                   nil,
+		outTwo:                   nil,
+		outErr:                   errPkg.CGetCartCartNotFound,
+		errBeginTransaction:      nil,
+		countRollbackTransaction: 1,
+		inputQuery:               1,
+		outQuery:                 Rows{},
+		errQuery:                 nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   0,
+	},
+}
+
+func TestGetCart(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range GetCart {
+		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
+			EXPECT().
+			Query(context.Background(),
+				"SELECT cart_food.id, cart_food.food, cart_food.number_item, d.avatar, d.name, cart_food.count_food, d.cost, d.kilocalorie, d.weight,"+
+					" d.description, sr.name, sr.id, sr.radios, sd.name, sd.id, sd.cost, d.restaurant, d.count, sr.kilocalorie, sd.kilocalorie,"+
+					" cart_food.place, crf.place, csf.place "+
+					"FROM cart_food "+
+					"LEFT JOIN dishes d ON d.id = cart_food.food "+
+					"LEFT JOIN cart_structure_food csf ON csf.client_id = cart_food.client_id and d.id=csf.food and cart_food.id=csf.cart_id "+
+					"LEFT JOIN structure_dishes sd ON sd.id = csf.checkbox and sd.food=cart_food.food "+
+					"LEFT JOIN cart_radios_food crf ON crf.client_id = cart_food.client_id and cart_food.id=crf.cart_id "+
+					"LEFT JOIN structure_radios sr ON sr.id = crf.radios "+
+					"WHERE cart_food.client_id = $1",
+				tt.inputQuery,
+			).
+			Return(&tt.outQuery, tt.errQuery)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			resultOne, resultTwo, err := testUser.GetCart(tt.input)
+			require.Equal(t, tt.outOne, resultOne, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outOne, resultOne))
+			require.Equal(t, tt.outTwo, resultTwo, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outTwo, resultTwo))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var DeleteCart = []struct {
+	testName                 string
+	input                    int
+	outErr                   string
+	errBeginTransaction      error
+	inputDelete              int
+	errDelete                error
+	countDelete              int
+	errCommitTransaction     error
+	countCommitTransaction   int
+	countRollbackTransaction int
+}{
+	{
+		testName:                 "First",
+		input:                    1,
+		outErr:                   "",
+		errBeginTransaction:      nil,
+		inputDelete:              1,
+		errDelete:                nil,
+		countDelete:              1,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		countRollbackTransaction: 1,
+	},
+}
+
+func TestDeleteCart(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range DeleteCart {
+		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
+			EXPECT().
+			Exec(context.Background(),
+				"DELETE FROM cart_food CASCADE WHERE client_id = $1",
+				tt.inputDelete,
+			).
+			Return(nil, tt.errDelete)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			err := testUser.DeleteCart(tt.input)
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var UpdateCartStructFood = []struct {
+	testName              string
+	inputIngredient       []cartPkg.IngredientsCartRequest
+	inputClientId         int
+	inputCartId           int
+	out                   []cartPkg.IngredientCartResponse
+	outErr                string
+	inputQuery            int
+	outQuery              Row
+	countQuery            int
+	inputInsertIngredient int
+	inputInsertClient     int
+	errInsert             error
+	countInsert           int
+	inputInsertFood       int
+	inputInsertCartId     int
+}{
+	{
+		testName: "First",
+		inputIngredient: []cartPkg.IngredientsCartRequest{
+			{
+				Id: 1,
+			},
+		},
+		inputClientId: 1,
+		inputCartId:   1,
+		out: []cartPkg.IngredientCartResponse{
+			{
+				Name: "1",
+				Id:   1,
+				Cost: 1,
+			},
+		},
+		outErr:                "",
+		inputQuery:            1,
+		outQuery:              Row{row: []interface{}{1, "1", 1, 1}},
+		countQuery:            1,
+		inputInsertIngredient: 1,
+		inputInsertClient:     1,
+		inputInsertFood:       1,
+		inputInsertCartId:     1,
+		errInsert:             nil,
+		countInsert:           1,
+	},
+}
+
+func TestUpdateCartStructFood(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range UpdateCartStructFood {
+		mTx.
+			EXPECT().
+			QueryRow(context.Background(),
+				"SELECT id, name, cost, food FROM structure_dishes WHERE id = $1",
+				tt.inputQuery,
+			).
+			Return(&tt.outQuery).
+			Times(tt.countQuery)
+		for i := 0; i < tt.countInsert; i++ {
+			mTx.
+				EXPECT().
+				Exec(context.Background(),
+					"INSERT INTO cart_structure_food (checkbox, client_id, food, cart_id, place) VALUES ($1, $2, $3, $4, $5)",
+					tt.inputInsertIngredient, tt.inputInsertClient, tt.inputInsertFood, tt.inputInsertCartId, i,
+				).
+				Return(nil, tt.errInsert).
+				Times(1)
+		}
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.updateCartStructFood(tt.inputIngredient, tt.inputClientId, tt.inputCartId, mTx, context.Background())
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var UpdateCartRadios = []struct {
+	testName            string
+	inputClientId       int
+	inputRadios         []cartPkg.RadiosCartRequest
+	inputCartId         int
+	out                 []cartPkg.RadiosCartResponse
+	outErr              string
+	inputQuery          int
+	outQuery            Row
+	countQuery          int
+	inputInsertRadiosId int
+	inputInsertRadios   int
+	inputInsertClient   int
+	inputInsertCartId   int
+	errInsert           error
+	countInsert         int
+}{
+	{
+		testName:            "First",
+		inputRadios:         []cartPkg.RadiosCartRequest{{Id: 1, RadiosId: 1}},
+		inputClientId:       1,
+		inputCartId:         1,
+		out:                 []cartPkg.RadiosCartResponse{{Name: "1", RadiosId: 0, Id: 1}},
+		outErr:              "",
+		inputQuery:          1,
+		outQuery:            Row{row: []interface{}{1, "1"}},
+		countQuery:          1,
+		inputInsertRadiosId: 1,
+		inputInsertRadios:   1,
+		inputInsertClient:   1,
+		inputInsertCartId:   1,
+		errInsert:           nil,
+		countInsert:         1,
+	},
+}
+
+func TestUpdateCartRadios(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range UpdateCartRadios {
+		mTx.
+			EXPECT().
+			QueryRow(context.Background(),
+				"SELECT id, name FROM structure_radios WHERE id = $1",
+				tt.inputQuery,
+			).
+			Return(&tt.outQuery).
+			Times(tt.countQuery)
+		for i := 0; i < tt.countInsert; i++ {
+			mTx.
+				EXPECT().
+				Exec(context.Background(),
+					"INSERT INTO cart_radios_food (radios_id, radios, client_id, cart_id, place) VALUES ($1, $2, $3, $4, $5)",
+					tt.inputInsertRadiosId, tt.inputInsertRadios, tt.inputInsertClient, tt.inputInsertCartId, i,
+				).
+				Return(nil, tt.errInsert).
+				Times(1)
+		}
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.updateCartRadios(tt.inputRadios, tt.inputClientId, tt.inputCartId, mTx, context.Background())
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var UpdateCart = []struct {
+	testName                    string
+	inputClientId               int
+	inputCart                   cartPkg.RequestCartDefault
+	outOne                      *cartPkg.ResponseCartErrors
+	outTwo                      []cartPkg.CastDishesErrs
+	outErr                      string
+	inputInsertClientId         int
+	inputInsertFood             []int
+	inputInsertCountFood        []int
+	inputInsertRestaurantId     int
+	inputInsertNumberItem       []int
+	errInsert                   error
+	countInsert                 int
+	inputInsertDishId           int
+	inputQueryRestaurantId      int
+	outQuery                    Row
+	countQuery                  int
+	errBeginTransaction         error
+	inputQueryStruct            int
+	outQueryStruct              Row
+	countQueryStruct            int
+	inputInsertStructIngredient int
+	inputInsertStructClient     int
+	errInsertStruct             error
+	countInsertStruct           int
+	inputQueryRadios            int
+	outQueryRadios              Row
+	countQueryRadios            int
+	inputInsertRadiosId         int
+	inputInsertRadios           int
+	inputInsertClient           int
+	errInsertRadios             error
+	countInsertRadios           int
+	errCommitTransaction        error
+	countCommitTransaction      int
+	errRollbackTransaction      error
+	countRollbackTransaction    int
+}{
+	{
+		testName:      "First",
+		inputClientId: 1,
+		inputCart: cartPkg.RequestCartDefault{
+			Restaurant: cartPkg.RestaurantRequest{Id: 1},
+			Dishes: []cartPkg.DishesRequest{
+				{
+					Id:         1,
+					ItemNumber: 1,
+					Count:      1,
+					Radios: []cartPkg.RadiosCartRequest{
+						{
+							RadiosId: 1,
+							Id:       1,
+						},
+					},
+					Ingredients: []cartPkg.IngredientsCartRequest{
+						{
+							Id: 1,
+						},
+					},
+				},
+			},
+		},
+		outOne: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  0,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse{
+				{
+					Id:          1,
+					ItemNumber:  0,
+					Img:         "1",
+					Name:        "1",
+					Count:       1,
+					Cost:        1,
+					Kilocalorie: 1,
+					Weight:      1,
+					Description: "1",
+					RadiosCart: []cartPkg.RadiosCartResponse{
+						{
+							Name:     "1",
+							RadiosId: 0,
+							Id:       1,
+						},
+					},
+					IngredientCart: []cartPkg.IngredientCartResponse{
+						{
+							Name: "1",
+							Id:   1,
+							Cost: 1,
+						},
+					},
+				},
+			},
+			Cost: cartPkg.CostCartResponse{
+				DCost:   0,
+				SumCost: 0,
+			},
+			DishErr: []cartPkg.CastDishesErrs(nil),
+		},
+		outTwo:                      []cartPkg.CastDishesErrs(nil),
+		outErr:                      "",
+		inputInsertClientId:         1,
+		inputInsertFood:             []int{1},
+		inputInsertCountFood:        []int{1},
+		inputInsertRestaurantId:     1,
+		inputInsertNumberItem:       []int{1},
+		errInsert:                   nil,
+		countInsert:                 1,
+		inputInsertDishId:           1,
+		inputQueryRestaurantId:      1,
+		outQuery:                    Row{row: []interface{}{1, "1", 1, "1", "1", 1, 1, 1}},
+		countQuery:                  1,
+		errBeginTransaction:         nil,
+		inputQueryStruct:            1,
+		outQueryStruct:              Row{row: []interface{}{1, "1", 1}},
+		countQueryStruct:            1,
+		inputInsertStructIngredient: 1,
+		inputInsertStructClient:     1,
+		errInsertStruct:             nil,
+		countInsertStruct:           1,
+		inputQueryRadios:            1,
+		outQueryRadios:              Row{row: []interface{}{1, "1"}},
+		countQueryRadios:            1,
+		inputInsertRadiosId:         1,
+		inputInsertRadios:           1,
+		inputInsertClient:           1,
+		errInsertRadios:             nil,
+		countInsertRadios:           1,
+		errCommitTransaction:        nil,
+		countCommitTransaction:      1,
+		errRollbackTransaction:      nil,
+		countRollbackTransaction:    0,
+	},
+}
+
+func TestUpdateCart(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range UpdateCart {
+		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
+			EXPECT().
+			Exec(context.Background(),
+				"INSERT INTO cart_food (client_id, food, count_food, restaurant_id, number_item, place) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+				tt.inputInsertClientId, tt.inputInsertFood, tt.inputInsertCountFood, tt.inputInsertRestaurantId, tt.inputInsertNumberItem,
+			).
+			Return(nil, tt.errInsert).
+			Times(tt.countInsert)
+		mTx.
+			EXPECT().
+			Exec(context.Background(),
+				"INSERT INTO cart_structure_food (checkbox, client_id) VALUES ($1, $2)",
+				tt.inputInsertStructIngredient, tt.inputInsertStructClient,
+			).
+			Return(nil, tt.errInsertStruct).
+			Times(tt.countInsertStruct)
+		mTx.
+			EXPECT().
+			Exec(context.Background(),
+				"INSERT INTO cart_radios_food (radios_id, radios, client_id) VALUES ($1, $2, $3)",
+				tt.inputInsertRadiosId, tt.inputInsertRadios, tt.inputInsertClient,
+			).
+			Return(nil, tt.errInsertRadios).
+			Times(tt.countInsertRadios)
+		mTx.
+			EXPECT().
+			QueryRow(context.Background(),
+				"SELECT id, name FROM structure_radios WHERE id = $1",
+				tt.inputQueryRadios,
+			).
+			Return(&tt.outQueryRadios).
+			Times(tt.countQueryRadios)
+		mTx.
+			EXPECT().
+			QueryRow(context.Background(),
+				"SELECT id, name, cost FROM structure_dishes WHERE id = $1",
+				tt.inputQueryStruct,
+			).
+			Return(&tt.outQueryStruct).
+			Times(tt.countQueryStruct)
+		mTx.
+			EXPECT().
+			QueryRow(context.Background(),
+				"SELECT id, avatar, cost, name, description, count, weight, kilocalorie FROM dishes WHERE id = $1 AND restaurant = $2",
+				tt.inputInsertDishId, tt.inputQueryRestaurantId,
+			).
+			Return(&tt.outQuery).
+			Times(tt.countQuery)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			resultOne, resultTwo, err := testUser.UpdateCart(tt.inputCart, tt.inputClientId)
+			require.Equal(t, tt.outOne, resultOne, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outOne, resultOne))
+			require.Equal(t, tt.outTwo, resultTwo, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outTwo, resultTwo))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var GetPriceDelivery = []struct {
+	testName   string
+	out        int
+	outErr     string
+	input      int
+	outQuery   Row
+	inputQuery int
+}{
+	{
+		input:      1,
+		inputQuery: 1,
+		outQuery:   Row{row: []interface{}{1}},
+		testName:   "One",
+		outErr:     "",
+		out:        1,
+	},
+}
+
+func TestGetPriceDelivery(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	for _, tt := range GetPriceDelivery {
+		m.
+			EXPECT().
+			QueryRow(context.Background(),
+				"SELECT price_delivery FROM restaurant WHERE id = $1",
+				tt.inputQuery,
+			).
+			Return(&tt.outQuery)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.GetPriceDelivery(tt.input)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}

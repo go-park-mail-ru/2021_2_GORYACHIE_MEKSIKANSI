@@ -1,3 +1,4 @@
+//go:generate mockgen -destination=mocks/orm.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/orm WrapperAuthorizationInterface,ConnectionInterface,ConnectAuthServiceInterface
 package orm
 
 import (
@@ -5,7 +6,7 @@ import (
 	authProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/proto"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	Utils2 "2021_2_GORYACHIE_MEKSIKANSI/internal/util"
-	cast "2021_2_GORYACHIE_MEKSIKANSI/internal/util/cast"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/util/cast"
 	"context"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"

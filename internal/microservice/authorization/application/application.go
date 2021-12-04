@@ -1,3 +1,4 @@
+//go:generate mockgen -destination=mocks/application.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/orm WrapperAuthorization
 package Application
 
 import (

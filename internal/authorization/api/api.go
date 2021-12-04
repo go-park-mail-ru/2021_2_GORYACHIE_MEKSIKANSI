@@ -301,7 +301,7 @@ func (u *UserInfo) UserWebSocket(ctx *fasthttp.RequestCtx) {
 			return true
 		},
 	}
-	errUpgrade := upgrade.Upgrade( ctx, func(conn *websocket.Conn) {
+	errUpgrade := upgrade.Upgrade(ctx, func(conn *websocket.Conn) {
 		for {
 			statusOrder := <-u.IntCh
 

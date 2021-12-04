@@ -1,3 +1,4 @@
+//go:generate mockgen -destination=mocks/orm.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internal/middleware/orm WrapperMiddlewareInterface,ConnectionMiddlewareInterface,ConnectionInterface
 package orm
 
 import (

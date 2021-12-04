@@ -1,12 +1,10 @@
 package orm
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/application"
+	authPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/orm/mocks"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
-	mocks "2021_2_GORYACHIE_MEKSIKANSI/test/mocks"
 	"context"
-	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/jackc/pgx/v4"
@@ -53,7 +51,7 @@ func TestOrmGenerateNew(t *testing.T) {
 
 var OrmGeneralSignUp = []struct {
 	testName         string
-	inputSignup      *authorization.RegistrationRequest
+	inputSignup      *authPkg.RegistrationRequest
 	inputTransaction pgx.Tx
 	inputQueryPhone  string
 	inputQueryEmail  string
@@ -65,7 +63,7 @@ var OrmGeneralSignUp = []struct {
 	{
 		testName:        "One",
 		out:             1,
-		inputSignup:     &authorization.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
+		inputSignup:     &authPkg.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
 		resultQuery:     Row{row: []interface{}{1}, errRow: nil},
 		inputQueryPhone: "1",
 		inputQueryEmail: "1",
@@ -77,7 +75,7 @@ func TestOrmGeneralSignUp(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockTransactionInterface(ctrl)
+	m := mocks.NewMockConnectionInterface(ctrl)
 	for _, tt := range OrmGeneralSignUp {
 		m.
 			EXPECT().
@@ -368,7 +366,7 @@ func TestOrmAddTransactionCookie(t *testing.T) {
 var OrmSignupClient = []struct {
 	testName                  string
 	inputCookie               *util.Defense
-	inputSignUp               *authorization.RegistrationRequest
+	inputSignUp               *authPkg.RegistrationRequest
 	outErr                    string
 	errQueryCookie            error
 	inputQueryCookieSessionId string
@@ -395,7 +393,7 @@ var OrmSignupClient = []struct {
 		inputQueryCookieCSRFToken: "1",
 		inputQueryCookieDateLife:  time.Time{},
 		inputCookie:               &util.Defense{SessionId: "1", CsrfToken: "1"},
-		inputSignUp:               &authorization.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
+		inputSignUp:               &authPkg.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
 		errQueryCookie:            nil,
 		inputQueryCookieClientId:  1,
 		resultQueryInfo:           Row{row: []interface{}{1}, errRow: nil},
@@ -475,7 +473,7 @@ func TestOrmSignupClient(t *testing.T) {
 var OrmSignupCourier = []struct {
 	testName                  string
 	inputCookie               *util.Defense
-	inputSignUp               *authorization.RegistrationRequest
+	inputSignUp               *authPkg.RegistrationRequest
 	outErr                    string
 	errQueryCookie            error
 	inputQueryCookieSessionId string
@@ -502,7 +500,7 @@ var OrmSignupCourier = []struct {
 		inputQueryCookieCSRFToken: "1",
 		inputQueryCookieDateLife:  time.Time{},
 		inputCookie:               &util.Defense{SessionId: "1", CsrfToken: "1"},
-		inputSignUp:               &authorization.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
+		inputSignUp:               &authPkg.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
 		errQueryCookie:            nil,
 		inputQueryCookieClientId:  1,
 		resultQueryInfo:           Row{row: []interface{}{1}, errRow: nil},
@@ -582,7 +580,7 @@ func TestOrmSignupCourier(t *testing.T) {
 var OrmSignupHost = []struct {
 	testName                  string
 	inputCookie               *util.Defense
-	inputSignUp               *authorization.RegistrationRequest
+	inputSignUp               *authPkg.RegistrationRequest
 	outErr                    string
 	errQueryCookie            error
 	inputQueryCookieSessionId string
@@ -609,7 +607,7 @@ var OrmSignupHost = []struct {
 		inputQueryCookieCSRFToken: "1",
 		inputQueryCookieDateLife:  time.Time{},
 		inputCookie:               &util.Defense{SessionId: "1", CsrfToken: "1"},
-		inputSignUp:               &authorization.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
+		inputSignUp:               &authPkg.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
 		errQueryCookie:            nil,
 		inputQueryCookieClientId:  1,
 		resultQueryInfo:           Row{row: []interface{}{1}, errRow: nil},
@@ -679,276 +677,6 @@ func TestOrmSignupHost(t *testing.T) {
 			require.NotEqual(t, &util.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &util.Defense{}, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
-			} else {
-				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
-			}
-		})
-	}
-}
-
-var ApplicationSignUp = []struct {
-	testName                 string
-	out                      *util.Defense
-	outErr                   string
-	input                    *authorization.RegistrationRequest
-	inputSignupClientSignUp  *authorization.RegistrationRequest
-	resultSignupClient       *util.Defense
-	errSignupClient          error
-	countSignupClient        int
-	inputSignupCourierSignUp *authorization.RegistrationRequest
-	resultSignupCourier      *util.Defense
-	errSignupCourier         error
-	countSignupCourier       int
-	inputSignupHostSignUp    *authorization.RegistrationRequest
-	resultSignupHost         *util.Defense
-	errSignupHost            error
-	countSignupHost          int
-	resultGenerateNew        *util.Defense
-	inputSignupClientCookie  *util.Defense
-	inputSignupCourierCookie *util.Defense
-	inputSignupHostCookie    *util.Defense
-}{
-	{
-		input:                   &authorization.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "client"},
-		testName:                "One",
-		outErr:                  "",
-		resultSignupClient:      &util.Defense{},
-		inputSignupClientSignUp: &authorization.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "client"},
-		out:                     &util.Defense{},
-		errSignupClient:         nil,
-		countSignupClient:       1,
-		resultGenerateNew:       &util.Defense{},
-		inputSignupClientCookie: &util.Defense{},
-	},
-	{
-		input:                    &authorization.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "courier"},
-		testName:                 "Two",
-		outErr:                   "",
-		resultSignupCourier:      &util.Defense{},
-		inputSignupCourierSignUp: &authorization.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "courier"},
-		out:                      &util.Defense{},
-		errSignupCourier:         nil,
-		countSignupCourier:       1,
-		resultGenerateNew:        &util.Defense{},
-		inputSignupCourierCookie: &util.Defense{},
-	},
-	{
-		input:                 &authorization.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "host"},
-		testName:              "Three",
-		outErr:                "",
-		resultSignupHost:      &util.Defense{},
-		inputSignupHostSignUp: &authorization.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "host"},
-		out:                   &util.Defense{},
-		errSignupHost:         nil,
-		countSignupHost:       1,
-		resultGenerateNew:     &util.Defense{},
-		inputSignupHostCookie: &util.Defense{},
-	},
-	{
-		input:                   &authorization.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "client"},
-		testName:                "Four",
-		outErr:                  "text",
-		resultSignupClient:      &util.Defense{},
-		inputSignupClientSignUp: &authorization.RegistrationRequest{Email: "", Phone: "", Password: "", TypeUser: "client"},
-		out:                     nil,
-		errSignupClient:         errors.New("text"),
-		countSignupClient:       1,
-		resultGenerateNew:       &util.Defense{},
-		inputSignupClientCookie: &util.Defense{},
-	},
-}
-
-func TestApplicationSignUp(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	m := mocks.NewMockWrapperAuthorization(ctrl)
-	for _, tt := range ApplicationSignUp {
-		m.
-			EXPECT().
-			SignupClient(tt.inputSignupClientSignUp, tt.inputSignupClientCookie).
-			Return(tt.resultSignupClient, tt.errSignupClient).
-			Times(tt.countSignupClient)
-		m.
-			EXPECT().
-			SignupCourier(tt.inputSignupCourierSignUp, tt.inputSignupCourierCookie).
-			Return(tt.resultSignupCourier, tt.errSignupCourier).
-			Times(tt.countSignupCourier)
-		m.
-			EXPECT().
-			SignupHost(tt.inputSignupHostSignUp, tt.inputSignupHostCookie).
-			Return(tt.resultSignupHost, tt.errSignupHost).
-			Times(tt.countSignupHost)
-		m.
-			EXPECT().
-			GenerateNew().
-			Return(tt.resultGenerateNew)
-		test := application.Authorization{DB: m}
-		t.Run(tt.testName, func(t *testing.T) {
-			result, err := test.SignUp(tt.input)
-			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
-			} else {
-				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
-			}
-		})
-	}
-}
-
-var ApplicationLogin = []struct {
-	testName             string
-	out                  *util.Defense
-	outErr               string
-	input                *authorization.Authorization
-	inputLoginEmail      string
-	inputLoginPassword   string
-	resultLogin          int
-	errLogin             error
-	countLoginEmail      int
-	countLoginPhone      int
-	inputLoginPhone      string
-	resultGenerateNew    *util.Defense
-	countGenerateNew     int
-	inputAddCookieCookie *util.Defense
-	inputAddCookieId     int
-	errAddCookie         error
-	countAddCookie       int
-}{
-	{
-		input:                &authorization.Authorization{Email: "1", Phone: "", Password: "1"},
-		testName:             "One",
-		outErr:               "",
-		out:                  &util.Defense{},
-		inputLoginEmail:      "1",
-		inputLoginPhone:      "1",
-		inputLoginPassword:   "1",
-		resultLogin:          1,
-		errLogin:             nil,
-		countLoginEmail:      1,
-		countLoginPhone:      0,
-		resultGenerateNew:    &util.Defense{},
-		countGenerateNew:     1,
-		inputAddCookieCookie: &util.Defense{},
-		inputAddCookieId:     1,
-		errAddCookie:         nil,
-		countAddCookie:       1,
-	},
-	{
-		input:                &authorization.Authorization{Email: "", Phone: "1", Password: "1"},
-		testName:             "Two",
-		outErr:               "",
-		out:                  &util.Defense{},
-		inputLoginEmail:      "",
-		inputLoginPhone:      "1",
-		inputLoginPassword:   "1",
-		resultLogin:          1,
-		errLogin:             nil,
-		countLoginEmail:      0,
-		countLoginPhone:      1,
-		resultGenerateNew:    &util.Defense{},
-		countGenerateNew:     1,
-		inputAddCookieCookie: &util.Defense{},
-		inputAddCookieId:     1,
-		errAddCookie:         nil,
-		countAddCookie:       1,
-	},
-	{
-		input:                &authorization.Authorization{Email: "", Phone: "1", Password: "1"},
-		testName:             "Three",
-		outErr:               "text",
-		out:                  nil,
-		inputLoginEmail:      "",
-		inputLoginPhone:      "1",
-		inputLoginPassword:   "1",
-		resultLogin:          1,
-		errLogin:             nil,
-		countLoginEmail:      0,
-		countLoginPhone:      1,
-		resultGenerateNew:    &util.Defense{},
-		countGenerateNew:     1,
-		inputAddCookieCookie: &util.Defense{},
-		inputAddCookieId:     1,
-		errAddCookie:         errors.New("text"),
-		countAddCookie:       1,
-	},
-}
-
-func TestApplicationLogin(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	m := mocks.NewMockWrapperAuthorization(ctrl)
-	for _, tt := range ApplicationLogin {
-		m.
-			EXPECT().
-			LoginByEmail(tt.inputLoginEmail, tt.inputLoginPassword).
-			Return(tt.resultLogin, tt.errLogin).
-			Times(tt.countLoginEmail)
-		m.
-			EXPECT().
-			LoginByPhone(tt.inputLoginPhone, tt.inputLoginPassword).
-			Return(tt.resultLogin, tt.errLogin).
-			Times(tt.countLoginPhone)
-		m.
-			EXPECT().
-			GenerateNew().
-			Return(tt.resultGenerateNew).
-			Times(tt.countGenerateNew)
-		m.
-			EXPECT().
-			AddCookie(tt.inputAddCookieCookie, tt.inputAddCookieId).
-			Return(tt.errAddCookie).
-			Times(tt.countAddCookie)
-		test := application.Authorization{DB: m}
-		t.Run(tt.testName, func(t *testing.T) {
-			result, err := test.Login(tt.input)
-			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
-			} else {
-				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
-			}
-		})
-	}
-}
-
-var ApplicationLogout = []struct {
-	testName     string
-	outErr       string
-	out          string
-	input        string
-	inputDelete  string
-	resultDelete string
-	errDelete    error
-}{
-	{
-		testName:     "One",
-		out:          "1",
-		outErr:       "",
-		input:        "1",
-		inputDelete:  "1",
-		resultDelete: "1",
-		errDelete:    nil,
-	},
-}
-
-func TestApplicationLogout(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	m := mocks.NewMockWrapperAuthorization(ctrl)
-	for _, tt := range ApplicationLogout {
-		m.
-			EXPECT().
-			DeleteCookie(tt.inputDelete).
-			Return(tt.resultDelete, tt.errDelete)
-		test := application.Authorization{DB: m}
-		t.Run(tt.testName, func(t *testing.T) {
-			result, err := test.Logout(tt.input)
-			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
 			}

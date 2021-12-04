@@ -1,3 +1,4 @@
+//go:generate mockgen -destination=mocks/orm.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/orm WrapperRestaurantInterface,ConnectionInterface
 package orm
 
 import (

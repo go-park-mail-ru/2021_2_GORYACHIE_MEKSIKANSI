@@ -1,3 +1,4 @@
+//go:generate mockgen -destination=mocks/orm.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/orm WrapperCartInterface,ConnectionInterface,TransactionInterface
 package orm
 
 import (
@@ -65,7 +66,8 @@ func (db *Wrapper) GetCart(id int) (*cartPkg.ResponseCartErrors, []cartPkg.CastD
 			"LEFT JOIN structure_dishes sd ON sd.id = csf.checkbox and sd.food=cart_food.food "+
 			"LEFT JOIN cart_radios_food crf ON crf.client_id = cart_food.client_id and cart_food.id=crf.cart_id "+
 			"LEFT JOIN structure_radios sr ON sr.id = crf.radios "+
-			"WHERE cart_food.client_id = $1", id)
+			"WHERE cart_food.client_id = $1",
+		id)
 	if err != nil {
 		return nil, nil, &errPkg.Errors{
 			Alias: errPkg.CGetCartNotSelect,
@@ -207,13 +209,14 @@ func (db *Wrapper) DeleteCart(id int) error {
 	return nil
 }
 
-func (db *Wrapper) updateCartStructFood(ingredients []cartPkg.IngredientsCartRequest, clientId int, cartId int, place int, tx TransactionInterface, contextTransaction context.Context) ([]cartPkg.IngredientCartResponse, error) {
+func (db *Wrapper) updateCartStructFood(ingredients []cartPkg.IngredientsCartRequest, clientId int, cartId int, tx TransactionInterface, contextTransaction context.Context) ([]cartPkg.IngredientCartResponse, error) {
 	var result []cartPkg.IngredientCartResponse
+	place := 0
 	for _, ingredient := range ingredients {
 		var checkedIngredient cartPkg.IngredientCartResponse
 		var dishId int
 		err := tx.QueryRow(contextTransaction,
-			"SELECT id, name, cost, food  FROM structure_dishes WHERE id = $1", ingredient.Id).Scan(
+			"SELECT id, name, cost, food FROM structure_dishes WHERE id = $1", ingredient.Id).Scan(
 			&checkedIngredient.Id, &checkedIngredient.Name, &checkedIngredient.Cost, &dishId)
 		if err != nil {
 			return nil, &errPkg.Errors{
@@ -235,7 +238,7 @@ func (db *Wrapper) updateCartStructFood(ingredients []cartPkg.IngredientsCartReq
 	return result, nil
 }
 
-func (db *Wrapper) updateCartRadios(radios []cartPkg.RadiosCartRequest, clientId int, cartId int, tx TransactionInterface, contextTransaction context.Context) ([]cartPkg.RadiosCartResponse, int, error) {
+func (db *Wrapper) updateCartRadios(radios []cartPkg.RadiosCartRequest, clientId int, cartId int, tx TransactionInterface, contextTransaction context.Context) ([]cartPkg.RadiosCartResponse, error) {
 	var result []cartPkg.RadiosCartResponse
 	radiosPlace := 0
 	for _, radio := range radios {
@@ -244,7 +247,7 @@ func (db *Wrapper) updateCartRadios(radios []cartPkg.RadiosCartRequest, clientId
 			"SELECT id, name FROM structure_radios WHERE id = $1", radio.Id).Scan(
 			&checkedRadios.Id, &checkedRadios.Name)
 		if err != nil {
-			return nil, 0, &errPkg.Errors{
+			return nil, &errPkg.Errors{
 				Alias: errPkg.CUpdateCartStructRadiosStructRadiosNotSelect,
 			}
 		}
@@ -254,13 +257,13 @@ func (db *Wrapper) updateCartRadios(radios []cartPkg.RadiosCartRequest, clientId
 			"INSERT INTO cart_radios_food (radios_id, radios, client_id, cart_id, place) VALUES ($1, $2, $3, $4, $5)",
 			radio.RadiosId, radio.Id, clientId, cartId, radiosPlace)
 		if err != nil {
-			return nil, 0, &errPkg.Errors{
+			return nil, &errPkg.Errors{
 				Alias: errPkg.CUpdateCartRadiosRadiosNotInsert,
 			}
 		}
 		radiosPlace++
 	}
-	return result, radiosPlace, nil
+	return result, nil
 }
 
 func (db *Wrapper) UpdateCart(newCart cartPkg.RequestCartDefault, clientId int) (*cartPkg.ResponseCartErrors, []cartPkg.CastDishesErrs, error) {
@@ -277,7 +280,6 @@ func (db *Wrapper) UpdateCart(newCart cartPkg.RequestCartDefault, clientId int) 
 	var dishesErrors []cartPkg.CastDishesErrs
 	var cart cartPkg.ResponseCartErrors
 
-	structureDishesPlace := 0
 	for i, dish := range newCart.Dishes {
 		var dishes cartPkg.DishesCartResponse
 		count := 0
@@ -322,17 +324,15 @@ func (db *Wrapper) UpdateCart(newCart cartPkg.RequestCartDefault, clientId int) 
 				Alias: errPkg.CUpdateCartCartNotInsert,
 			}
 		}
-		cart.Dishes[i].RadiosCart, structureDishesPlace, err = db.updateCartRadios(dish.Radios, clientId, idCart, tx, contextTransaction)
+		cart.Dishes[i].RadiosCart, err = db.updateCartRadios(dish.Radios, clientId, idCart, tx, contextTransaction)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		cart.Dishes[i].IngredientCart, err = db.updateCartStructFood(dish.Ingredients, clientId, idCart, structureDishesPlace, tx, contextTransaction)
+		cart.Dishes[i].IngredientCart, err = db.updateCartStructFood(dish.Ingredients, clientId, idCart, tx, contextTransaction)
 		if err != nil {
 			return nil, nil, err
 		}
-
-		structureDishesPlace = 0
 	}
 	err = tx.Commit(contextTransaction)
 	if err != nil {
