@@ -7,7 +7,7 @@ import (
 )
 
 type RestaurantApplicationInterface interface {
-	AllRestaurants() ([]resPkg.Restaurants, error)
+	AllRestaurants() (*resPkg.AllRestaurants, error)
 	GetRestaurant(id int) (*resPkg.RestaurantId, error)
 	RestaurantDishes(restId int, dishId int) (*resPkg.Dishes, error)
 	CreateReview(id int, review resPkg.NewReview) error
@@ -21,7 +21,7 @@ type Restaurant struct {
 	DB ormPkg.WrapperRestaurantInterface
 }
 
-func (r *Restaurant) AllRestaurants() ([]resPkg.Restaurants, error) {
+func (r *Restaurant) AllRestaurants() (*resPkg.AllRestaurants, error) {
 	result, err := r.DB.GetRestaurants()
 	if err != nil {
 		return nil, err
@@ -64,7 +64,6 @@ func (r *Restaurant) CreateReview(id int, review resPkg.NewReview) error {
 		return err
 	}
 	return nil
-
 }
 
 func (r *Restaurant) GetReview(idRestaurant int, idClient int) (*resPkg.ResReview, error) {

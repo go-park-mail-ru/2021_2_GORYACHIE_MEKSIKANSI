@@ -10,6 +10,11 @@ type Restaurants struct {
 	Rating              float32 `json:"rate"`
 }
 
+type AllRestaurants struct {
+	Restaurant []Restaurants `json:"restaurants_info"`
+	AllTags    []Tag         `json:"tags"`
+}
+
 type RestaurantId struct {
 	Id                  int     `json:"id"`
 	Img                 string  `json:"img"`

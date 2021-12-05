@@ -8,7 +8,7 @@ import (
 )
 
 type RestaurantManagerInterface interface {
-	AllRestaurants(ctx context.Context, _ *resProto.Empty) (*resProto.Restaurants, error)
+	AllRestaurants(ctx context.Context, _ *resProto.Empty) (*resProto.RestaurantsTags, error)
 	GetRestaurant(ctx context.Context, id *resProto.RestaurantId) (*resProto.RestaurantInfo, error)
 	RestaurantDishes(ctx context.Context, id *resProto.DishInfo) (*resProto.Dishes, error)
 	CreateReview(ctx context.Context, rev *resProto.NewReview) (*resProto.Error, error)
@@ -22,12 +22,12 @@ type RestaurantManager struct {
 	Application appPkg.RestaurantApplicationInterface
 }
 
-func (r *RestaurantManager) AllRestaurants(ctx context.Context, _ *resProto.Empty) (*resProto.Restaurants, error) {
+func (r *RestaurantManager) AllRestaurants(ctx context.Context, _ *resProto.Empty) (*resProto.RestaurantsTags, error) {
 	restaurants, err := r.Application.AllRestaurants()
 	if err != nil {
-		return &resProto.Restaurants{Error: err.Error()}, nil
+		return &resProto.RestaurantsTags{Error: err.Error()}, nil
 	}
-	sendRestaurant := CastRestaurantsToRestaurantsProto(restaurants)
+	sendRestaurant := CastAllRestaurantsToRestaurantsTagsProto(restaurants)
 	return sendRestaurant, nil
 }
 

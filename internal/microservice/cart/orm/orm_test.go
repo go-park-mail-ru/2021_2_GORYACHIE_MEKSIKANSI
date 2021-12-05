@@ -69,13 +69,24 @@ func (r *Rows) RawValues() [][]byte {
 
 func (r *Rows) Scan(dest ...interface{}) error {
 	for i := range dest {
+		j := i + len(dest)*(r.currentRow-1)
+		if r.row[j] == nil {
+			dest[i] = nil
+			continue
+		}
 		switch dest[i].(type) {
 		case *int:
-			*dest[i].(*int) = r.row[i].(int)
+			*dest[i].(*int) = r.row[j].(int)
 		case *string:
-			*dest[i].(*string) = r.row[i].(string)
+			*dest[i].(*string) = r.row[j].(string)
+		case **string:
+			t := r.row[j].(string)
+			*dest[i].(**string) = &t
 		case *float32:
-			*dest[i].(*float32) = float32(r.row[i].(float64))
+			*dest[i].(*float32) = float32(r.row[j].(float64))
+		case **int32:
+			t := int32(r.row[j].(int))
+			*dest[i].(**int32) = &t
 		default:
 			dest[i] = nil
 		}
@@ -122,9 +133,39 @@ var GetCart = []struct {
 		countCommitTransaction:   0,
 	},
 	{
-		testName:                 "Second",
-		input:                    1,
-		outOne:                   nil,
+		testName: "Second",
+		input:    1,
+		outOne: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  1,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse{
+				{
+					Id:             1,
+					ItemNumber:     0,
+					Img:            "/address/",
+					Name:           "Яблоко",
+					Count:          5,
+					Cost:           50,
+					Kilocalorie:    300,
+					Weight:         750,
+					Description:    "Очень вкусно",
+					RadiosCart:     []cartPkg.RadiosCartResponse(nil),
+					IngredientCart: []cartPkg.IngredientCartResponse(nil),
+				},
+			},
+			Cost: cartPkg.CostCartResponse{
+				DCost:   0,
+				SumCost: 0,
+			},
+			DishErr: []cartPkg.CastDishesErrs(nil),
+		},
 		outTwo:                   nil,
 		outErr:                   "",
 		errBeginTransaction:      nil,
@@ -134,8 +175,167 @@ var GetCart = []struct {
 			row: []interface{}{
 				1, 1, 0, "/address/", "Яблоко", 5, 50, 60, 150,
 				"Очень вкусно", nil, nil, nil, nil, nil, nil, 1, 1000,
-				nil, nil, nil, nil, nil},
+				nil, nil, 0, nil, nil},
 			rows: 1,
+		},
+		errQuery:               nil,
+		countQuery:             1,
+		errCommitTransaction:   nil,
+		countCommitTransaction: 1,
+	},
+	{
+		testName: "Second",
+		input:    1,
+		outOne: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  1,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse{
+				{
+					Id:             1,
+					ItemNumber:     0,
+					Img:            "/address/",
+					Name:           "Яблоко",
+					Count:          5,
+					Cost:           50,
+					Kilocalorie:    300,
+					Weight:         750,
+					Description:    "Очень вкусно",
+					RadiosCart:     []cartPkg.RadiosCartResponse(nil),
+					IngredientCart: []cartPkg.IngredientCartResponse(nil),
+				},
+				{
+					Id:          2,
+					ItemNumber:  0,
+					Img:         "/address/",
+					Name:        "Яблоко с ингредиентом",
+					Count:       5,
+					Cost:        50,
+					Kilocalorie: 425,
+					Weight:      750,
+					Description: "Очень вкусно",
+					RadiosCart:  []cartPkg.RadiosCartResponse(nil),
+					IngredientCart: []cartPkg.IngredientCartResponse{
+						{
+							Id:   1,
+							Name: "Червяк",
+							Cost: 5,
+						},
+					},
+				},
+			},
+			Cost: cartPkg.CostCartResponse{
+				DCost:   0,
+				SumCost: 0,
+			},
+			DishErr: []cartPkg.CastDishesErrs(nil),
+		},
+		outTwo:                   nil,
+		outErr:                   "",
+		errBeginTransaction:      nil,
+		countRollbackTransaction: 1,
+		inputQuery:               1,
+		outQuery: Rows{
+			row: []interface{}{
+				1, 1, 0, "/address/", "Яблоко", 5, 50, 60, 150,
+				"Очень вкусно", nil, nil, nil, nil, nil, nil, 1, 1000,
+				nil, nil, 0, nil, nil,
+
+				1, 2, 0, "/address/", "Яблоко с ингредиентом", 5, 50, 60, 150,
+				"Очень вкусно", nil, nil, nil, "Червяк", 1, 5, 1, 1000,
+				nil, 25, 1, nil, 0,
+			},
+			rows: 2,
+		},
+		errQuery:               nil,
+		countQuery:             1,
+		errCommitTransaction:   nil,
+		countCommitTransaction: 1,
+	},
+	{
+		testName: "Third",
+		input:    1,
+		outOne: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  1,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse{
+				{
+					Id:             1,
+					ItemNumber:     0,
+					Img:            "/address/",
+					Name:           "Яблоко",
+					Count:          5,
+					Cost:           50,
+					Kilocalorie:    300,
+					Weight:         750,
+					Description:    "Очень вкусно",
+					RadiosCart:     []cartPkg.RadiosCartResponse(nil),
+					IngredientCart: []cartPkg.IngredientCartResponse(nil),
+				},
+				{
+					Id:          2,
+					ItemNumber:  0,
+					Img:         "/address/",
+					Name:        "Яблоко с радиусом",
+					Count:       5,
+					Cost:        50,
+					Kilocalorie: 1050,
+					Weight:      750,
+					Description: "Очень вкусно",
+					RadiosCart: []cartPkg.RadiosCartResponse{
+						{
+							Id:       1,
+							Name:     "Червяк",
+							RadiosId: 1,
+						},
+						{
+							Id:       2,
+							Name:     "Листок",
+							RadiosId: 1,
+						},
+					},
+					IngredientCart: []cartPkg.IngredientCartResponse(nil),
+				},
+			},
+			Cost: cartPkg.CostCartResponse{
+				DCost:   0,
+				SumCost: 0,
+			},
+			DishErr: []cartPkg.CastDishesErrs(nil),
+		},
+		outTwo:                   nil,
+		outErr:                   "",
+		errBeginTransaction:      nil,
+		countRollbackTransaction: 1,
+		inputQuery:               1,
+		outQuery: Rows{
+			row: []interface{}{
+				1, 1, 0, "/address/", "Яблоко", 5, 50, 60, 150,
+				"Очень вкусно", nil, nil, nil, nil, nil, nil, 1, 1000,
+				25, nil, 0, nil, nil,
+
+				1, 2, 0, "/address/", "Яблоко с радиусом", 5, 50, 60, 150,
+				"Очень вкусно", "Листок", 2, 1, nil, nil, nil, 1, 1000,
+				150, nil, 1, 1, nil,
+
+				1, 2, 0, "/address/", "Яблоко с радиусом", 5, 50, 60, 150,
+				"Очень вкусно", "Червяк", 1, 1, nil, nil, nil, 1, 1000,
+				150, nil, 1, 0, nil,
+			},
+			rows: 3,
 		},
 		errQuery:               nil,
 		countQuery:             1,

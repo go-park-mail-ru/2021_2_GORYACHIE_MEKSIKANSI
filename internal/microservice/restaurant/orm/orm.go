@@ -11,7 +11,7 @@ import (
 )
 
 type WrapperRestaurantInterface interface {
-	GetRestaurants() ([]resPkg.Restaurants, error)
+	GetRestaurants() (*resPkg.AllRestaurants, error)
 	GetDishes(restId int, dishesId int) (*resPkg.Dishes, error)
 	GetRestaurant(id int) (*resPkg.RestaurantId, error)
 	GetMenu(id int) ([]resPkg.Menu, error)
@@ -37,7 +37,7 @@ type Wrapper struct {
 	Conn ConnectionInterface
 }
 
-func (db *Wrapper) GetRestaurants() ([]resPkg.Restaurants, error) {
+func (db *Wrapper) GetRestaurants() (*resPkg.AllRestaurants, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
@@ -49,7 +49,7 @@ func (db *Wrapper) GetRestaurants() ([]resPkg.Restaurants, error) {
 	defer tx.Rollback(contextTransaction)
 
 	row, err := tx.Query(contextTransaction,
-		"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating, rc.category "+
+		"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating, rc.category, rc.id "+
 			"FROM restaurant r "+
 			"LEFT JOIN restaurant_category rc ON rc.restaurant = r.id ORDER BY random() LIMIT 51")
 	if err != nil {
@@ -58,34 +58,42 @@ func (db *Wrapper) GetRestaurants() ([]resPkg.Restaurants, error) {
 		}
 	}
 
-	var result []resPkg.Restaurants
+	var result resPkg.AllRestaurants
+	var restaurants []resPkg.Restaurants
+	var tags []resPkg.Tag
 	infoRestaurant := make(map[int]resPkg.Restaurants)
+	namesTags := make(map[string]resPkg.Tag)
 	for row.Next() {
 		var restaurant resPkg.Restaurants
 		var category *string
+		var categoryId *int32
 		err := row.Scan(&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery,
-			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating, &category)
+			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating, &category, &categoryId)
 		if err != nil {
 			return nil, &errPkg.Errors{
 				Alias: errPkg.RGetRestaurantsRestaurantsNotScan,
 			}
 		}
 
-		if _, ok := infoRestaurant[restaurant.Id]; ok {
-			//temp := infoRestaurant[restaurant.Id]
-			//temp.Category = append(temp.Category, category)
-			//infoRestaurant[restaurant.Id] = temp
-		} else {
+		if _, ok := namesTags[*category]; !ok {
+			namesTags[*category] = resPkg.Tag{Name: *category, Id: int(*categoryId)}
+			tags = append(tags, namesTags[*category])
+		}
+
+		if _, ok := infoRestaurant[restaurant.Id]; !ok {
 			infoRestaurant[restaurant.Id] = restaurant
-			result = append(result, restaurant)
+			restaurants = append(restaurants, restaurant)
 		}
 	}
 
-	if result == nil {
+	if restaurants == nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.RGetRestaurantsRestaurantsNotFound,
 		}
 	}
+
+	result.Restaurant = restaurants
+	result.AllTags = tags
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
@@ -94,7 +102,7 @@ func (db *Wrapper) GetRestaurants() ([]resPkg.Restaurants, error) {
 		}
 	}
 
-	return result, nil
+	return &resPkg.AllRestaurants{Restaurant: restaurants, AllTags: tags}, nil
 }
 
 func (db *Wrapper) GetRestaurant(id int) (*resPkg.RestaurantId, error) {

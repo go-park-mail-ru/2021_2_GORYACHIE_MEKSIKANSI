@@ -70,6 +70,23 @@ func CastRestaurantsProtoToRestaurants(restaurants []*resProto.Restaurant) []res
 	return r
 }
 
+func CastRestaurantsTagsProtoToAllRestaurants(restaurants *resProto.RestaurantsTags) *restaurant.AllRestaurants {
+	var r restaurant.AllRestaurants
+	for _, rest := range restaurants.Restaurants {
+		var res restaurant.Restaurants
+		res.Id = int(rest.Id)
+		res.Img = rest.Img
+		res.MaxDelivery = int(rest.MaxDelivery)
+		res.MinDelivery = int(rest.MinDelivery)
+		res.CostForFreeDelivery = int(rest.CostForFreeDelivery)
+		res.Rating = rest.Rating
+		res.Name = rest.Name
+		r.Restaurant = append(r.Restaurant, res)
+	}
+	r.AllTags = CastTagsProtoToTags(restaurants.Tag)
+	return &r
+}
+
 func CastRestaurantInfoToRestaurantIdProto(restInfo *resProto.RestaurantInfo) *restaurant.RestaurantId {
 	var p *restaurant.RestaurantId
 	p = &restaurant.RestaurantId{}
