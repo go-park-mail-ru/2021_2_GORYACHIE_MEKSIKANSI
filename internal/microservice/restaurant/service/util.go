@@ -139,7 +139,7 @@ func CastAllRestaurantsToRestaurantsTagsProto(restaurants *resPkg.AllRestaurants
 	}
 
 	p.Restaurants = protoRestaurants
-	p.Tag = CastTagsToTagsProto(restaurants.AllTags)
+	p.Tags = CastTagsToTagsProto(restaurants.AllTags)
 	return p
 }
 

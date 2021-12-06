@@ -89,7 +89,15 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 		r.Logger.Errorf("%s", errConvert.Error())
 	}
 
-	restaurant, err := r.Application.GetRestaurant(id)
+	idCtx = ctx.UserValue("id")
+	idClient, errConvert := util.InterfaceConvertInt(idCtx)
+	if errConvert != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		r.Logger.Errorf("%s", errConvert.Error())
+	}
+
+	restaurant, err := r.Application.GetRestaurant(id, idClient)
 
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorRestaurantId(err) // должна появиться новая ошибка +1
 	if errOut != nil {

@@ -13,7 +13,7 @@ import (
 type WrapperRestaurantInterface interface {
 	GetRestaurants() (*resPkg.AllRestaurants, error)
 	GetDishes(restId int, dishesId int) (*resPkg.Dishes, error)
-	GetRestaurant(id int) (*resPkg.RestaurantId, error)
+	GetRestaurant(id int, idClient int) (*resPkg.RestaurantId, error)
 	GetMenu(id int) ([]resPkg.Menu, error)
 	GetTagsRestaurant(id int) ([]resPkg.Tag, error)
 	GetReview(id int) ([]resPkg.Review, error)
@@ -24,6 +24,7 @@ type WrapperRestaurantInterface interface {
 	GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error)
 	EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error)
 	GetStatusRestaurant(idClient int, idRestaurant int) (bool, error)
+	IsFavoriteRestaurant(idClient int, idRestaurant int) (bool, error)
 }
 
 type ConnectionInterface interface {
@@ -105,7 +106,7 @@ func (db *Wrapper) GetRestaurants() (*resPkg.AllRestaurants, error) {
 	return &resPkg.AllRestaurants{Restaurant: restaurants, AllTags: tags}, nil
 }
 
-func (db *Wrapper) GetRestaurant(id int) (*resPkg.RestaurantId, error) {
+func (db *Wrapper) GetRestaurant(id int, idClient int) (*resPkg.RestaurantId, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
@@ -117,22 +118,14 @@ func (db *Wrapper) GetRestaurant(id int) (*resPkg.RestaurantId, error) {
 	defer tx.Rollback(contextTransaction)
 
 	var restaurant resPkg.RestaurantId
-	var isFavorite *int32
 	err = tx.QueryRow(contextTransaction,
-		"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating, fr.restaurant FROM restaurant r"+
-			" LEFT JOIN favorite_restaurant fr ON fr.restaurant = r.id WHERE r.id = $1", id).Scan(
+		"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating FROM restaurant r WHERE r.id = $1", id).Scan(
 		&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery, &restaurant.MinDelivery,
-		&restaurant.MaxDelivery, &restaurant.Rating, &isFavorite)
+		&restaurant.MaxDelivery, &restaurant.Rating)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.RGetRestaurantRestaurantNotFound,
 		}
-	}
-
-	if isFavorite != nil {
-		restaurant.Favourite = true
-	} else {
-		restaurant.Favourite = false
 	}
 
 	err = tx.Commit(contextTransaction)
@@ -652,6 +645,40 @@ func (db *Wrapper) GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error) 
 	}
 
 	return restaurants, nil
+}
+
+func (db *Wrapper) IsFavoriteRestaurant(idClient int, idRestaurant int) (bool, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.RIsFavoriteRestaurantsTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	var check *int32
+	err = tx.QueryRow(contextTransaction,
+		"SELECT id FROM favorite_restaurant WHERE client = $1 AND restaurant = $2",
+		idClient, idRestaurant).Scan(&check)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return false, nil
+		}
+		return false, &errPkg.Errors{
+			Alias: errPkg.RIsFavoriteRestaurantsRestaurantsNotSelect,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return false, &errPkg.Errors{
+			Alias: errPkg.RIsFavoriteRestaurantsInfoNotCommit,
+		}
+	}
+
+	return true, nil
 }
 
 func (db *Wrapper) EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error) {

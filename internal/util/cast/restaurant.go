@@ -83,7 +83,7 @@ func CastRestaurantsTagsProtoToAllRestaurants(restaurants *resProto.RestaurantsT
 		res.Name = rest.Name
 		r.Restaurant = append(r.Restaurant, res)
 	}
-	r.AllTags = CastTagsProtoToTags(restaurants.Tag)
+	r.AllTags = CastTagsProtoToTags(restaurants.Tags)
 	return &r
 }
 

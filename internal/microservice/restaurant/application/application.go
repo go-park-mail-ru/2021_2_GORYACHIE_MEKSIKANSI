@@ -8,7 +8,7 @@ import (
 
 type RestaurantApplicationInterface interface {
 	AllRestaurants() (*resPkg.AllRestaurants, error)
-	GetRestaurant(id int) (*resPkg.RestaurantId, error)
+	GetRestaurant(id int, idClient int) (*resPkg.RestaurantId, error)
 	RestaurantDishes(restId int, dishId int) (*resPkg.Dishes, error)
 	CreateReview(id int, review resPkg.NewReview) error
 	GetReview(idRestaurant int, idClient int) (*resPkg.ResReview, error)
@@ -29,8 +29,13 @@ func (r *Restaurant) AllRestaurants() (*resPkg.AllRestaurants, error) {
 	return result, nil
 }
 
-func (r *Restaurant) GetRestaurant(id int) (*resPkg.RestaurantId, error) {
-	restInfo, err := r.DB.GetRestaurant(id)
+func (r *Restaurant) GetRestaurant(id int, idClient int) (*resPkg.RestaurantId, error) {
+	restInfo, err := r.DB.GetRestaurant(id, idClient)
+	if err != nil {
+		return nil, err
+	}
+
+	restInfo.Favourite, err = r.DB.IsFavoriteRestaurant(idClient, id)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +83,7 @@ func (r *Restaurant) GetReview(idRestaurant int, idClient int) (*resPkg.ResRevie
 		return nil, err
 	}
 
-	restInfo, err := r.DB.GetRestaurant(idRestaurant)
+	restInfo, err := r.DB.GetRestaurant(idRestaurant, idClient)
 	if err != nil {
 		return nil, err
 	}

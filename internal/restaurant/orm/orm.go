@@ -12,7 +12,7 @@ import (
 
 type WrapperRestaurantServerInterface interface {
 	AllRestaurants() (*restaurant.AllRestaurants, error)
-	GetRestaurant(id int) (*restaurant.RestaurantId, error)
+	GetRestaurant(id int, idClient int) (*restaurant.RestaurantId, error)
 	RestaurantDishes(restId int, dishId int) (*restaurant.Dishes, error)
 	CreateReview(id int, review restaurant.NewReview) error
 	GetReview(idRestaurant int, idClient int) (*restaurant.ResReview, error)
@@ -48,10 +48,11 @@ func (r *Wrapper) AllRestaurants() (*restaurant.AllRestaurants, error) {
 	return cast.CastRestaurantsTagsProtoToAllRestaurants(restaurants), nil
 }
 
-func (r *Wrapper) GetRestaurant(id int) (*restaurant.RestaurantId, error) {
+func (r *Wrapper) GetRestaurant(id int, idClient int) (*restaurant.RestaurantId, error) {
 	var restaurantId *resProto.RestaurantId
 	restaurantId = &resProto.RestaurantId{}
 	restaurantId.Id = int64(id)
+	restaurantId.IdClient = int64(idClient)
 	rest, err := r.Conn.GetRestaurant(r.Ctx, restaurantId)
 	if err != nil {
 		return nil, err

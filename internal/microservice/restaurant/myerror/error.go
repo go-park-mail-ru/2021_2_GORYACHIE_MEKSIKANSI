@@ -89,4 +89,7 @@ const (
 	RGetStatusRestaurantTransactionNotCreate      = "transaction get restaurant not create"
 	RGetStatusRestaurantNotSelect                 = "status not select"
 	RGetStatusRestaurantNotCommit                 = "transaction get restaurant not commit"
+	RIsFavoriteRestaurantsTransactionNotCreate    = "transaction is favorite not create"
+	RIsFavoriteRestaurantsRestaurantsNotSelect    = "favorite restaurant not select for check"
+	RIsFavoriteRestaurantsInfoNotCommit           = "transaction is favorite not commit"
 )

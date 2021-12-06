@@ -14,7 +14,7 @@ type MiddlewareApiInterface interface {
 	GetIdClient(h fasthttp.RequestHandler) fasthttp.RequestHandler
 	CheckClient(h fasthttp.RequestHandler) fasthttp.RequestHandler
 	CheckWebSocketKey(h fasthttp.RequestHandler) fasthttp.RequestHandler
-	GetIdClientForReview(h fasthttp.RequestHandler) fasthttp.RequestHandler
+	GetIdClientIgnoreErr(h fasthttp.RequestHandler) fasthttp.RequestHandler
 }
 
 type InfoMiddleware struct {
@@ -74,7 +74,7 @@ func (m *InfoMiddleware) GetIdClient(h fasthttp.RequestHandler) fasthttp.Request
 	})
 }
 
-func (m *InfoMiddleware) GetIdClientForReview(h fasthttp.RequestHandler) fasthttp.RequestHandler {
+func (m *InfoMiddleware) GetIdClientIgnoreErr(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
 		reqIdCtx := ctx.UserValue("reqId")
 		reqId, errConvert := util.InterfaceConvertInt(reqIdCtx)

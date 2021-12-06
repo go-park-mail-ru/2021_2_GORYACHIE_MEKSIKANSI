@@ -232,6 +232,9 @@ const (
 	RGetStatusRestaurantTransactionNotCreate      = "transaction get restaurant not create"             // TODO: add in checkErrors
 	RGetStatusRestaurantNotSelect                 = "status not select"                                 // TODO: add in checkErrors
 	RGetStatusRestaurantNotCommit                 = "transaction get restaurant not commit"             // TODO: add in checkErrors
+	RIsFavoriteRestaurantsTransactionNotCreate    = "transaction is favorite not create"                // TODO: add in checkErrors
+	RIsFavoriteRestaurantsRestaurantsNotSelect    = "favorite restaurant not select for check"          // TODO: add in checkErrors
+	RIsFavoriteRestaurantsInfoNotCommit           = "transaction is favorite not commit"                // TODO: add in checkErrors
 )
 
 // Error of cart

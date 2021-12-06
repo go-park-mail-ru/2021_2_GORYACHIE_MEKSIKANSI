@@ -32,7 +32,7 @@ func (r *RestaurantManager) AllRestaurants(ctx context.Context, _ *resProto.Empt
 }
 
 func (r *RestaurantManager) GetRestaurant(ctx context.Context, id *resProto.RestaurantId) (*resProto.RestaurantInfo, error) {
-	restaurant, err := r.Application.GetRestaurant(int(id.Id))
+	restaurant, err := r.Application.GetRestaurant(int(id.Id), int(id.IdClient))
 	if err != nil {
 		return &resProto.RestaurantInfo{Error: err.Error()}, nil
 	}
