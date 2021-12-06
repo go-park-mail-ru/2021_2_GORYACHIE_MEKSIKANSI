@@ -5,6 +5,7 @@ import (
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/orm/mocks"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/jackc/pgconn"
@@ -342,6 +343,164 @@ var GetCart = []struct {
 		errCommitTransaction:   nil,
 		countCommitTransaction: 1,
 	},
+	{
+		testName: "Fourth",
+		input:    1,
+		outOne: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  1,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse{
+				{
+					Id:             1,
+					ItemNumber:     0,
+					Img:            "/address/",
+					Name:           "Яблоко",
+					Count:          5,
+					Cost:           50,
+					Kilocalorie:    300,
+					Weight:         750,
+					Description:    "Очень вкусно",
+					RadiosCart:     []cartPkg.RadiosCartResponse(nil),
+					IngredientCart: []cartPkg.IngredientCartResponse(nil),
+				},
+				{
+					Id:          2,
+					ItemNumber:  0,
+					Img:         "/address/",
+					Name:        "Яблоко с радиусом",
+					Count:       5,
+					Cost:        50,
+					Kilocalorie: 1050,
+					Weight:      750,
+					Description: "Очень вкусно",
+					RadiosCart: []cartPkg.RadiosCartResponse{
+						{
+							Id:       1,
+							Name:     "Червяк",
+							RadiosId: 1,
+						},
+						{
+							Id:       2,
+							Name:     "Листок",
+							RadiosId: 1,
+						},
+					},
+					IngredientCart: []cartPkg.IngredientCartResponse(nil),
+				},
+				{
+					Id:          3,
+					ItemNumber:  0,
+					Img:         "/address/",
+					Name:        "Яблоко с ингредиентом",
+					Count:       5,
+					Cost:        50,
+					Kilocalorie: 425,
+					Weight:      750,
+					Description: "Очень вкусно",
+					RadiosCart:  []cartPkg.RadiosCartResponse(nil),
+					IngredientCart: []cartPkg.IngredientCartResponse{
+						{
+							Id:   1,
+							Name: "Червяк",
+							Cost: 5,
+						},
+					},
+				},
+			},
+			Cost: cartPkg.CostCartResponse{
+				DCost:   0,
+				SumCost: 0,
+			},
+			DishErr: []cartPkg.CastDishesErrs(nil),
+		},
+		outTwo:                   nil,
+		outErr:                   "",
+		errBeginTransaction:      nil,
+		countRollbackTransaction: 1,
+		inputQuery:               1,
+		outQuery: Rows{
+			row: []interface{}{
+				1, 1, 0, "/address/", "Яблоко", 5, 50, 60, 150,
+				"Очень вкусно", nil, nil, nil, nil, nil, nil, 1, 1000,
+				25, nil, 0, nil, nil,
+
+				1, 2, 0, "/address/", "Яблоко с радиусом", 5, 50, 60, 150,
+				"Очень вкусно", "Листок", 2, 1, nil, nil, nil, 1, 1000,
+				150, nil, 1, 1, nil,
+
+				1, 2, 0, "/address/", "Яблоко с радиусом", 5, 50, 60, 150,
+				"Очень вкусно", "Червяк", 1, 1, nil, nil, nil, 1, 1000,
+				150, nil, 1, 0, nil,
+
+				1, 3, 0, "/address/", "Яблоко с ингредиентом", 5, 50, 60, 150,
+				"Очень вкусно", nil, nil, nil, "Червяк", 1, 5, 1, 1000,
+				nil, 25, 2, nil, 0,
+			},
+			rows: 4,
+		},
+		errQuery:               nil,
+		countQuery:             1,
+		errCommitTransaction:   nil,
+		countCommitTransaction: 1,
+	},
+	{
+		testName:                 "Fifth",
+		input:                    1,
+		outOne:                   nil,
+		outTwo:                   nil,
+		outErr:                   errPkg.CGetCartTransactionNotCreate,
+		errBeginTransaction:      errors.New("text"),
+		countRollbackTransaction: 0,
+		inputQuery:               1,
+		outQuery:                 Rows{},
+		errQuery:                 nil,
+		countQuery:               0,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   0,
+	},
+	{
+		testName:                 "Sixth",
+		input:                    1,
+		outOne:                   nil,
+		outTwo:                   nil,
+		outErr:                   errPkg.CGetCartNotSelect,
+		errBeginTransaction:      nil,
+		countRollbackTransaction: 1,
+		inputQuery:               1,
+		outQuery:                 Rows{},
+		errQuery:                 errors.New("text"),
+		countQuery:               1,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   0,
+	},
+	{
+		testName:                 "Seventh",
+		input:                    1,
+		outOne:                   nil,
+		outTwo:                   nil,
+		outErr:                   errPkg.CGetCartNotCommit,
+		errBeginTransaction:      nil,
+		countRollbackTransaction: 1,
+		inputQuery:               1,
+		outQuery: Rows{
+			row: []interface{}{
+				1, 1, 0, "/address/", "Яблоко", 5, 50, 60, 150,
+				"Очень вкусно", nil, nil, nil, nil, nil, nil, 1, 1000,
+				nil, nil, 0, nil, nil},
+			rows: 1,
+		},
+		errQuery:               nil,
+		countQuery:             1,
+		errCommitTransaction:   errors.New("text"),
+		countCommitTransaction: 1,
+	},
 }
 
 func TestGetCart(t *testing.T) {
@@ -380,7 +539,8 @@ func TestGetCart(t *testing.T) {
 					"WHERE cart_food.client_id = $1",
 				tt.inputQuery,
 			).
-			Return(&tt.outQuery, tt.errQuery)
+			Return(&tt.outQuery, tt.errQuery).
+			Times(tt.countQuery)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			resultOne, resultTwo, err := testUser.GetCart(tt.input)
