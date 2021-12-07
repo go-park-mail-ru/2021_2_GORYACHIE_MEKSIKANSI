@@ -56,6 +56,8 @@ func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) (int, error)
 	if err != nil {
 		return 0, err
 	}
+
+	//TODO: delete
 	check, _ := o.DB.CheckRun(order)
 	if check {
 		go o.UpdateStatusOrder(order, 4)
@@ -69,27 +71,15 @@ func (o *Order) GetOrders(id int) (*Order2.HistoryOrderArray, error) {
 }
 
 func (o *Order) GetActiveOrder(idClient int, idOrder int) (*Order2.ActiveOrder, error) {
-	order, err := o.DB.GetOrder(idClient, idOrder)
-	if err != nil {
-		return nil, err
-	}
-	return order, nil
+	return o.DB.GetOrder(idClient, idOrder)
 }
 
 func (o *Order) UpdateStatusOrder(id int, status int) error {
-	for i := 1; i <= 3; i++ {
+	for i := 1; i <= 4; i++ {
 		time.Sleep(time.Second * 15)
 		o.IntCh <- authPkg.WebSocketOrder{Id: id, Status: i}
 		o.DB.UpdateStatusOrder(id, i)
 	}
-	time.Sleep(time.Second * 15)
-	o.IntCh <- authPkg.WebSocketOrder{Id: id, Status: status}
-
-	//for i := 1; i <= 4; i++ {
-	//	time.Sleep(time.Second * 5)
-	//	o.IntCh <- authPkg.WebSocketOrder{Id: id, Status: i}
-	//	o.DB.UpdateStatusOrder(id, i)
-	//}
-
+	// o.IntCh <- authPkg.WebSocketOrder{Id: id, Status: status}
 	return o.DB.UpdateStatusOrder(id, status)
 }

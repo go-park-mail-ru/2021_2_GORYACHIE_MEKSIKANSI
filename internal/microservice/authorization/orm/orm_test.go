@@ -35,7 +35,7 @@ func (r Row) Scan(dest ...interface{}) error {
 	return nil
 }
 
-func TestOrmGenerateNew(t *testing.T) {
+func TestGenerateNew(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -49,7 +49,7 @@ func TestOrmGenerateNew(t *testing.T) {
 	})
 }
 
-var OrmGeneralSignUp = []struct {
+var GeneralSignUp = []struct {
 	testName         string
 	inputSignup      *authPkg.RegistrationRequest
 	inputTransaction pgx.Tx
@@ -71,12 +71,12 @@ var OrmGeneralSignUp = []struct {
 	},
 }
 
-func TestOrmGeneralSignUp(t *testing.T) {
+func TestGeneralSignUp(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmGeneralSignUp {
+	for _, tt := range GeneralSignUp {
 		m.
 			EXPECT().
 			QueryRow(context.Background(),
@@ -97,7 +97,7 @@ func TestOrmGeneralSignUp(t *testing.T) {
 	}
 }
 
-var OrmLoginByEmail = []struct {
+var LoginByEmail = []struct {
 	testName           string
 	inputEmail         string
 	inputPassword      string
@@ -120,12 +120,12 @@ var OrmLoginByEmail = []struct {
 	},
 }
 
-func TestOrmLoginByEmail(t *testing.T) {
+func TestLoginByEmail(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmLoginByEmail {
+	for _, tt := range LoginByEmail {
 		m.
 			EXPECT().
 			QueryRow(context.Background(),
@@ -153,7 +153,7 @@ func TestOrmLoginByEmail(t *testing.T) {
 	}
 }
 
-var OrmLoginByPhone = []struct {
+var LoginByPhone = []struct {
 	testName           string
 	inputPhone         string
 	inputPassword      string
@@ -176,12 +176,12 @@ var OrmLoginByPhone = []struct {
 	},
 }
 
-func TestOrmLoginByPhone(t *testing.T) {
+func TestLoginByPhone(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmLoginByPhone {
+	for _, tt := range LoginByPhone {
 		m.
 			EXPECT().
 			QueryRow(context.Background(),
@@ -209,7 +209,7 @@ func TestOrmLoginByPhone(t *testing.T) {
 	}
 }
 
-var OrmDeleteCookie = []struct {
+var DeleteCookie = []struct {
 	testName    string
 	input       string
 	out         string
@@ -235,12 +235,12 @@ var OrmDeleteCookie = []struct {
 	},
 }
 
-func TestOrmDeleteCookie(t *testing.T) {
+func TestDeleteCookie(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmDeleteCookie {
+	for _, tt := range DeleteCookie {
 		m.
 			EXPECT().
 			Exec(context.Background(),
@@ -269,7 +269,7 @@ func TestOrmDeleteCookie(t *testing.T) {
 	}
 }
 
-var OrmAddCookie = []struct {
+var AddCookie = []struct {
 	testName            string
 	inputCookie         *util.Defense
 	inputId             int
@@ -291,12 +291,12 @@ var OrmAddCookie = []struct {
 	},
 }
 
-func TestOrmAddCookie(t *testing.T) {
+func TestAddCookie(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmAddCookie {
+	for _, tt := range AddCookie {
 		m.
 			EXPECT().
 			Exec(context.Background(),
@@ -316,7 +316,7 @@ func TestOrmAddCookie(t *testing.T) {
 	}
 }
 
-var OrmAddTransactionCookie = []struct {
+var AddTransactionCookie = []struct {
 	testName            string
 	inputCookie         *util.Defense
 	inputId             int
@@ -338,12 +338,12 @@ var OrmAddTransactionCookie = []struct {
 	},
 }
 
-func TestOrmAddTransactionCookie(t *testing.T) {
+func TestAddTransactionCookie(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockTransactionInterface(ctrl)
-	for _, tt := range OrmAddTransactionCookie {
+	for _, tt := range AddTransactionCookie {
 		m.
 			EXPECT().
 			Exec(context.Background(),
@@ -363,7 +363,7 @@ func TestOrmAddTransactionCookie(t *testing.T) {
 	}
 }
 
-var OrmSignupClient = []struct {
+var SignupClient = []struct {
 	testName                  string
 	inputCookie               *util.Defense
 	inputSignUp               *authPkg.RegistrationRequest
@@ -413,13 +413,13 @@ var OrmSignupClient = []struct {
 	},
 }
 
-func TestOrmSignupClient(t *testing.T) {
+func TestSignupClient(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
 	mTx := mocks.NewMockTransactionInterface(ctrl)
-	for _, tt := range OrmSignupClient {
+	for _, tt := range SignupClient {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
@@ -470,7 +470,7 @@ func TestOrmSignupClient(t *testing.T) {
 	}
 }
 
-var OrmSignupCourier = []struct {
+var SignupCourier = []struct {
 	testName                  string
 	inputCookie               *util.Defense
 	inputSignUp               *authPkg.RegistrationRequest
@@ -520,13 +520,13 @@ var OrmSignupCourier = []struct {
 	},
 }
 
-func TestOrmSignupCourier(t *testing.T) {
+func TestSignupCourier(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
 	mTx := mocks.NewMockTransactionInterface(ctrl)
-	for _, tt := range OrmSignupCourier {
+	for _, tt := range SignupCourier {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
@@ -577,7 +577,7 @@ func TestOrmSignupCourier(t *testing.T) {
 	}
 }
 
-var OrmSignupHost = []struct {
+var SignupHost = []struct {
 	testName                  string
 	inputCookie               *util.Defense
 	inputSignUp               *authPkg.RegistrationRequest
@@ -627,13 +627,13 @@ var OrmSignupHost = []struct {
 	},
 }
 
-func TestOrmSignupHost(t *testing.T) {
+func TestSignupHost(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
 	mTx := mocks.NewMockTransactionInterface(ctrl)
-	for _, tt := range OrmSignupHost {
+	for _, tt := range SignupHost {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),

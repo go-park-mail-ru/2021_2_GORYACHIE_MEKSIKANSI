@@ -29,7 +29,10 @@ var AllRestaurants = []struct {
 	},
 	{
 		testName: "Second",
-		out:      nil,
+		out: &resPkg.AllRestaurants{
+			Restaurant: []resPkg.Restaurants(nil),
+			AllTags:    []resPkg.Tag(nil),
+		},
 		outErr:   "text",
 		outQuery: &resPkg.AllRestaurants{},
 		errQuery: errors.New("text"),
@@ -274,10 +277,19 @@ var RestaurantDishes = []struct {
 	countGetDishes       int
 }{
 	{
-		testName:             "First",
-		inputRestId:          1,
-		inputDishId:          1,
-		out:                  nil,
+		testName:    "First",
+		inputRestId: 1,
+		inputDishId: 1,
+		out: &resPkg.Dishes{
+			Id:          0,
+			Img:         "",
+			Title:       "",
+			Cost:        0,
+			Ccal:        0,
+			Description: "",
+			Radios:      []resPkg.Radios(nil),
+			Ingredient:  []resPkg.Ingredients(nil),
+		},
 		outErr:               "text",
 		inputGetDishesRestId: 1,
 		inputGetDishesDishId: 1,

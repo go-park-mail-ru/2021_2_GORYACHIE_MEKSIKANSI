@@ -168,21 +168,6 @@ func (mr *MockWrapperRestaurantInterfaceMockRecorder) GetReview(arg0 interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetReview", reflect.TypeOf((*MockWrapperRestaurantInterface)(nil).GetReview), arg0)
 }
 
-// GetStatusRestaurant mocks base method.
-func (m *MockWrapperRestaurantInterface) GetStatusRestaurant(arg0, arg1 int) (bool, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetStatusRestaurant", arg0, arg1)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetStatusRestaurant indicates an expected call of GetStatusRestaurant.
-func (mr *MockWrapperRestaurantInterfaceMockRecorder) GetStatusRestaurant(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStatusRestaurant", reflect.TypeOf((*MockWrapperRestaurantInterface)(nil).GetStatusRestaurant), arg0, arg1)
-}
-
 // GetTagsRestaurant mocks base method.
 func (m *MockWrapperRestaurantInterface) GetTagsRestaurant(arg0 int) ([]restaurantlf.Tag, error) {
 	m.ctrl.T.Helper()

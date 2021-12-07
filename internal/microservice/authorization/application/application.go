@@ -81,25 +81,13 @@ func (ap *AuthorizationApplication) Logout(CSRF string) (string, error) {
 }
 
 func (ap *AuthorizationApplication) CheckAccess(cookie *authPkg.Defense) (bool, error) {
-	status, err := ap.DB.CheckAccess(cookie)
-	if err != nil {
-		return false, err
-	}
-	return status, nil
+	return ap.DB.CheckAccess(cookie)
 }
 
 func (ap *AuthorizationApplication) NewCSRF(cookie *authPkg.Defense) (string, error) {
-	csrf, err := ap.DB.NewCSRF(cookie)
-	if err != nil {
-		return "", err
-	}
-	return csrf, nil
+	return ap.DB.NewCSRF(cookie)
 }
 
 func (ap *AuthorizationApplication) GetIdByCookie(cookie *authPkg.Defense) (int, error) {
-	byCookie, err := ap.DB.GetIdByCookie(cookie)
-	if err != nil {
-		return 0, err
-	}
-	return byCookie, nil
+	return ap.DB.GetIdByCookie(cookie)
 }

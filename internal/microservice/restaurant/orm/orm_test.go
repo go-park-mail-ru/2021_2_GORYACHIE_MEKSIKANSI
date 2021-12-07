@@ -1,12 +1,17 @@
 package orm
 
 import (
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/orm/mocks"
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	rest "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
+	"context"
+	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/jackc/pgconn"
+	"github.com/jackc/pgproto3/v2"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 type Row struct {
@@ -83,7 +88,7 @@ func (r *Rows) Next() bool {
 	return true
 }
 
-var OrmGetRestaurants = []struct {
+var GetRestaurants = []struct {
 	testName string
 	row      Rows
 	errQuery error
@@ -99,12 +104,12 @@ var OrmGetRestaurants = []struct {
 	},
 }
 
-func TestOrmGetRestaurants(t *testing.T) {
+func TestGetRestaurants(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmGetRestaurants {
+	for _, tt := range GetRestaurants {
 		m.
 			EXPECT().
 			Query(context.Background(),
@@ -125,7 +130,7 @@ func TestOrmGetRestaurants(t *testing.T) {
 	}
 }
 
-var OrmGetGeneralInfoRestaurant = []struct {
+var GetGeneralInfoRestaurant = []struct {
 	testName   string
 	input      int
 	row        Row
@@ -147,17 +152,18 @@ var OrmGetGeneralInfoRestaurant = []struct {
 		input:      1,
 		inputQuery: 1,
 		out:        nil,
-		row:        Row{row: []interface{}{}, errRow: errors.New(errorsConst.RGetRestaurantRestaurantNotFound)},
-		outErr:     errorsConst.RGetRestaurantRestaurantNotFound,
+		row: Row{row: []interface{}{},
+			errRow: errors.New(errorsConst.RGetRestaurantRestaurantNotFound)},
+		outErr: errorsConst.RGetRestaurantRestaurantNotFound,
 	},
 }
 
-func TestOrmGetGeneralInfoRestaurant(t *testing.T) {
+func TestGetGeneralInfoRestaurant(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmGetGeneralInfoRestaurant {
+	for _, tt := range GetGeneralInfoRestaurant {
 		m.
 			EXPECT().
 			QueryRow(context.Background(),
@@ -178,7 +184,7 @@ func TestOrmGetGeneralInfoRestaurant(t *testing.T) {
 	}
 }
 
-var OrmGetTagsRestaurant = []struct {
+var GetTagsRestaurant = []struct {
 	testName   string
 	input      int
 	rowsQuery  Rows
@@ -198,12 +204,12 @@ var OrmGetTagsRestaurant = []struct {
 	},
 }
 
-func TestOrmGetTagsRestaurant(t *testing.T) {
+func TestGetTagsRestaurant(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmGetTagsRestaurant {
+	for _, tt := range GetTagsRestaurant {
 		m.
 			EXPECT().
 			Query(context.Background(),
@@ -224,57 +230,7 @@ func TestOrmGetTagsRestaurant(t *testing.T) {
 	}
 }
 
-var OrmGetDishesRestaurant = []struct {
-	testName       string
-	inputName      string
-	inputId        int
-	rowsQuery      Rows
-	inputQueryName string
-	inputQueryId   int
-	errQuery       error
-	out            []rest.DishesMenu
-	outErr         string
-}{
-	{
-		testName:       "One",
-		inputName:      "1",
-		inputId:        1,
-		inputQueryName: "1",
-		inputQueryId:   1,
-		errQuery:       nil,
-		out:            []rest.DishesMenu{{Id: 1, Name: "1", Cost: 1, Kilocalorie: 1, Img: "1"}},
-		rowsQuery:      Rows{row: []interface{}{1, "1", "1", 1, 1}, errRow: nil, rows: 1},
-		outErr:         errorsConst.RGetRestaurantRestaurantNotFound,
-	},
-}
-
-func TestOrmGetDishesRestaurant(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmGetDishesRestaurant {
-		m.
-			EXPECT().
-			Query(context.Background(),
-				"SELECT id, avatar, name, cost, kilocalorie FROM dishes WHERE category_restaurant = $1 AND restaurant = $2",
-				tt.inputQueryName, tt.inputQueryId,
-			).
-			Return(&tt.rowsQuery, tt.errQuery)
-		testUser := &Wrapper{Conn: m}
-		t.Run(tt.testName, func(t *testing.T) {
-			result, err := getDishesRestaurant(testUser, tt.inputName, tt.inputId)
-			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
-			} else {
-				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
-			}
-		})
-	}
-}
-
-var OrmGetMenu = []struct {
+var GetMenu = []struct {
 	testName                     string
 	inputId                      int
 	rowsQuery                    Rows
@@ -308,12 +264,12 @@ var OrmGetMenu = []struct {
 	},
 }
 
-func TestOrmGetMenu(t *testing.T) {
+func TestGetMenu(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmGetMenu {
+	for _, tt := range GetMenu {
 		m.
 			EXPECT().
 			Query(context.Background(),
@@ -341,103 +297,7 @@ func TestOrmGetMenu(t *testing.T) {
 	}
 }
 
-var OrmGetStructDishes = []struct {
-	testName                     string
-	input                        int
-	rowsQuery                    Rows
-	inputQueryId                 int
-	errQuery                     error
-	out                          []rest.Ingredients
-	inputGetDishesRestaurantName string
-	inputGetDishesRestaurantId   int
-	outErr                       string
-}{
-	{
-		testName:     "One",
-		input:        1,
-		inputQueryId: 1,
-		errQuery:     nil,
-		out:          []rest.Ingredients{{Id: 1, Title: "1", Cost: 1}},
-		rowsQuery:    Rows{rows: 1, row: []interface{}{1, "1", 1}},
-		outErr:       errorsConst.RGetRestaurantRestaurantNotFound,
-	},
-}
-
-func TestGetStructDishes(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmGetStructDishes {
-		m.
-			EXPECT().
-			Query(context.Background(),
-				"SELECT id, name, cost FROM structure_dishes WHERE food = $1",
-				tt.inputQueryId,
-			).
-			Return(&tt.rowsQuery, tt.errQuery)
-		testUser := &Wrapper{Conn: m}
-		t.Run(tt.testName, func(t *testing.T) {
-			result, err := testUser.GetStructDishes(tt.input)
-			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
-			} else {
-				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
-			}
-		})
-	}
-}
-
-var OrmGetStructRadios = []struct {
-	testName                     string
-	input                        int
-	rowsQuery                    Rows
-	inputQueryId                 int
-	errQuery                     error
-	out                          []rest.CheckboxesRows
-	inputGetDishesRestaurantName string
-	inputGetDishesRestaurantId   int
-	outErr                       string
-}{
-	{
-		testName:     "One",
-		input:        1,
-		inputQueryId: 1,
-		errQuery:     nil,
-		out:          []rest.CheckboxesRows{{Id: 1, Name: "1"}},
-		rowsQuery:    Rows{rows: 1, row: []interface{}{1, "1"}},
-		outErr:       errorsConst.RGetRestaurantRestaurantNotFound,
-	},
-}
-
-func TestGetStructRadios(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmGetStructRadios {
-		m.
-			EXPECT().
-			Query(context.Background(),
-				"SELECT id, name FROM structure_radios WHERE radios = $1",
-				tt.inputQueryId,
-			).
-			Return(&tt.rowsQuery, tt.errQuery)
-		testUser := &Wrapper{Conn: m}
-		t.Run(tt.testName, func(t *testing.T) {
-			result, err := getStructRadios(testUser, tt.input)
-			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
-			} else {
-				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
-			}
-		})
-	}
-}
-
-var OrmGetDishes = []struct {
+var GetDishes = []struct {
 	testName                     string
 	inputRestId                  int
 	inputDishesId                int
@@ -467,7 +327,7 @@ func TestGetDishes(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmGetDishes {
+	for _, tt := range GetDishes {
 		m.
 			EXPECT().
 			QueryRow(context.Background(),
@@ -478,67 +338,6 @@ func TestGetDishes(t *testing.T) {
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetDishes(tt.inputRestId, tt.inputDishesId)
-			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
-			} else {
-				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
-			}
-		})
-	}
-}
-
-var OrmGetRadios = []struct {
-	testName                     string
-	input                        int
-	rowsQuery                    Rows
-	inputQueryId                 int
-	errQuery                     error
-	out                          []rest.Radios
-	inputGetDishesRestaurantName string
-	inputGetDishesRestaurantId   int
-	outErr                       string
-	inputQueryIdStructRadios     int
-	errQueryStructRadios         error
-	rowsQueryStructRadios        Rows
-}{
-	{
-		testName:                 "One",
-		input:                    1,
-		inputQueryId:             1,
-		errQuery:                 nil,
-		out:                      []rest.Radios{{Title: "1", Id: 1, Rows: []rest.CheckboxesRows{{Id: 1, Name: "1"}}}},
-		rowsQuery:                Rows{rows: 1, row: []interface{}{1, "1", "1", 1, 1, "1"}},
-		outErr:                   errorsConst.RGetRestaurantRestaurantNotFound,
-		inputQueryIdStructRadios: 1,
-		errQueryStructRadios:     nil,
-		rowsQueryStructRadios:    Rows{rows: 1, row: []interface{}{1, "1"}},
-	},
-}
-
-func TestGetRadios(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmGetRadios {
-		m.
-			EXPECT().
-			Query(context.Background(),
-				"SELECT id, name FROM radios WHERE food = $1",
-				tt.inputQueryId,
-			).
-			Return(&tt.rowsQuery, tt.errQuery)
-		m.
-			EXPECT().
-			Query(context.Background(),
-				"SELECT id, name FROM structure_radios WHERE radios = $1",
-				tt.inputQueryIdStructRadios,
-			).
-			Return(&tt.rowsQueryStructRadios, tt.errQueryStructRadios)
-		testUser := &Wrapper{Conn: m}
-		t.Run(tt.testName, func(t *testing.T) {
-			result, err := testUser.GetRadios(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))

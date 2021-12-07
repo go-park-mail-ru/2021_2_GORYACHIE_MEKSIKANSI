@@ -3,7 +3,7 @@ package orm
 import (
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/profile"
-	mocks "2021_2_GORYACHIE_MEKSIKANSI/test/mocks"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/profile/orm/mocks"
 	"context"
 	"fmt"
 	"github.com/golang/mock/gomock"
@@ -35,7 +35,7 @@ func (r *Row) Scan(dest ...interface{}) error {
 	return nil
 }
 
-var OrmGetRoleById = []struct {
+var GetRoleById = []struct {
 	testName                     string
 	input                        int
 	rowsQueryHost                Row
@@ -76,7 +76,7 @@ func TestGetRoleById(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmGetRoleById {
+	for _, tt := range GetRoleById {
 		m.
 			EXPECT().
 			QueryRow(context.Background(),
@@ -111,7 +111,7 @@ func TestGetRoleById(t *testing.T) {
 	}
 }
 
-var OrmGetProfileHost = []struct {
+var GetProfileHost = []struct {
 	testName                     string
 	input                        int
 	rowsQuery                    Row
@@ -139,7 +139,7 @@ func TestGetProfileHost(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmGetProfileHost {
+	for _, tt := range GetProfileHost {
 		m.
 			EXPECT().
 			QueryRow(context.Background(),
@@ -160,7 +160,7 @@ func TestGetProfileHost(t *testing.T) {
 	}
 }
 
-var OrmGetProfileCourier = []struct {
+var GetProfileCourier = []struct {
 	testName                     string
 	input                        int
 	rowsQuery                    Row
@@ -188,7 +188,7 @@ func TestGetProfileCourier(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmGetProfileCourier {
+	for _, tt := range GetProfileCourier {
 		m.
 			EXPECT().
 			QueryRow(context.Background(),
@@ -209,7 +209,7 @@ func TestGetProfileCourier(t *testing.T) {
 	}
 }
 
-var OrmGetProfileClient = []struct {
+var GetProfileClient = []struct {
 	testName                     string
 	input                        int
 	rowsQuery                    Row
@@ -243,7 +243,7 @@ func TestGetProfileClient(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmGetProfileClient {
+	for _, tt := range GetProfileClient {
 		m.
 			EXPECT().
 			QueryRow(context.Background(),
@@ -272,7 +272,7 @@ func TestGetProfileClient(t *testing.T) {
 	}
 }
 
-var OrmUpdateName = []struct {
+var UpdateName = []struct {
 	testName       string
 	inputId        int
 	inputName      string
@@ -297,7 +297,7 @@ func TestUpdateName(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmUpdateName {
+	for _, tt := range UpdateName {
 		m.
 			EXPECT().
 			Exec(context.Background(),
@@ -317,7 +317,7 @@ func TestUpdateName(t *testing.T) {
 	}
 }
 
-var OrmUpdateEmail = []struct {
+var UpdateEmail = []struct {
 	testName        string
 	inputId         int
 	inputEmail      string
@@ -342,7 +342,7 @@ func TestUpdateEmail(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmUpdateEmail {
+	for _, tt := range UpdateEmail {
 		m.
 			EXPECT().
 			Exec(context.Background(),
@@ -362,7 +362,7 @@ func TestUpdateEmail(t *testing.T) {
 	}
 }
 
-var OrmUpdatePassword = []struct {
+var UpdatePassword = []struct {
 	testName           string
 	inputId            int
 	inputPassword      string
@@ -391,7 +391,7 @@ func TestUpdatePassword(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmUpdatePassword {
+	for _, tt := range UpdatePassword {
 		m.
 			EXPECT().
 			QueryRow(context.Background(),
@@ -418,7 +418,7 @@ func TestUpdatePassword(t *testing.T) {
 	}
 }
 
-var OrmUpdatePhone = []struct {
+var UpdatePhone = []struct {
 	testName        string
 	inputId         int
 	inputPhone      string
@@ -443,7 +443,7 @@ func TestUpdatePhone(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmUpdatePhone {
+	for _, tt := range UpdatePhone {
 		m.
 			EXPECT().
 			Exec(context.Background(),
@@ -463,7 +463,7 @@ func TestUpdatePhone(t *testing.T) {
 	}
 }
 
-var OrmUpdateAvatar = []struct {
+var UpdateAvatar = []struct {
 	testName         string
 	inputId          int
 	inputAvatar      *profile.UpdateAvatar
@@ -489,13 +489,13 @@ var OrmUpdateAvatar = []struct {
 	},
 }
 
-func TestOrmUpdateAvatar(t *testing.T) {
+func TestUpdateAvatar(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	mUploader := mocks.NewMockUploader(ctrl)
-	for _, tt := range OrmUpdateAvatar {
+	mUploader := mocks.NewMockUploaderInterface(ctrl)
+	for _, tt := range UpdateAvatar {
 		m.
 			EXPECT().
 			Exec(context.Background(),
@@ -521,7 +521,7 @@ func TestOrmUpdateAvatar(t *testing.T) {
 	}
 }
 
-var OrmUpdateBirthday = []struct {
+var UpdateBirthday = []struct {
 	testName           string
 	inputId            int
 	inputBirthday      time.Time
@@ -546,7 +546,7 @@ func TestUpdateBirthday(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmUpdateBirthday {
+	for _, tt := range UpdateBirthday {
 		m.
 			EXPECT().
 			Exec(context.Background(),
@@ -566,7 +566,7 @@ func TestUpdateBirthday(t *testing.T) {
 	}
 }
 
-var OrmUpdateAddress = []struct {
+var UpdateAddress = []struct {
 	testName          string
 	inputId           int
 	inputAddress      profile.AddressCoordinates
@@ -579,12 +579,12 @@ var OrmUpdateAddress = []struct {
 		testName:     "One",
 		inputQueryId: 1,
 		inputQueryAddress: profile.AddressCoordinates{Alias: "1", Comment: "1", City: "1", Street: "1", House: "1",
-			Floor: 1, Flat: 1, Porch: 1, Intercom: "1", Coordinates: profile.Coordinates{Latitude: 1.0, Longitude: 1.0}},
+			Floor: 1, Flat: "1", Porch: 1, Intercom: "1", Coordinates: profile.Coordinates{Latitude: 1.0, Longitude: 1.0}},
 		errQuery: nil,
 		outErr:   "",
 		inputId:  1,
 		inputAddress: profile.AddressCoordinates{Alias: "1", Comment: "1", City: "1", Street: "1", House: "1",
-			Floor: 1, Flat: 1, Porch: 1, Intercom: "1", Coordinates: profile.Coordinates{Latitude: 1.0, Longitude: 1.0}},
+			Floor: 1, Flat: "1", Porch: 1, Intercom: "1", Coordinates: profile.Coordinates{Latitude: 1.0, Longitude: 1.0}},
 	},
 }
 
@@ -593,7 +593,7 @@ func TestUpdateAddress(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
-	for _, tt := range OrmUpdateAddress {
+	for _, tt := range UpdateAddress {
 		m.
 			EXPECT().
 			Exec(context.Background(),

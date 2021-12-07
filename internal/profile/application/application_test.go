@@ -1,56 +1,65 @@
 package application
 
 import (
+	profilePkg "2021_2_GORYACHIE_MEKSIKANSI/internal/profile"
+	"2021_2_GORYACHIE_MEKSIKANSI/internal/profile/application/mocks"
+	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
-var ApplicationGetProfile = []struct {
+var GetProfile = []struct {
 	testName                string
 	input                   int
-	out                     *profile.Profile
+	out                     *profilePkg.Profile
 	outErr                  string
 	inputGetRoleById        int
 	resultGetRoleById       string
 	errGetRoleById          error
 	inputGetProfileClient   int
-	resultGetProfileClient  *profile.Profile
+	resultGetProfileClient  *profilePkg.Profile
 	errGetProfileClient     error
 	countGetProfileClient   int
 	inputGetProfileCourier  int
-	resultGetProfileCourier *profile.Profile
+	resultGetProfileCourier *profilePkg.Profile
 	errGetProfileCourier    error
 	countGetProfileCourier  int
 	inputGetProfileHost     int
-	resultGetProfileHost    *profile.Profile
+	resultGetProfileHost    *profilePkg.Profile
 	errGetProfileHost       error
 	countGetProfileHost     int
 }{
 	{
-		testName: "One",
+		testName: "First",
 		input:    1,
-		out: &profile.Profile{Name: "", Email: "", Phone: "", Avatar: "",
-			Birthday: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)},
+		out: &profilePkg.Profile{
+			Name:     "",
+			Email:    "",
+			Phone:    "",
+			Avatar:   "",
+			Birthday: "",
+		},
 		outErr:                  "",
 		inputGetRoleById:        1,
 		resultGetRoleById:       "client",
 		errGetRoleById:          nil,
 		inputGetProfileClient:   1,
-		resultGetProfileClient:  &profile.Profile{},
+		resultGetProfileClient:  &profilePkg.Profile{},
 		errGetProfileClient:     nil,
 		countGetProfileClient:   1,
 		inputGetProfileCourier:  1,
-		resultGetProfileCourier: &profile.Profile{},
+		resultGetProfileCourier: &profilePkg.Profile{},
 		errGetProfileCourier:    nil,
 		countGetProfileCourier:  0,
 		inputGetProfileHost:     0,
-		resultGetProfileHost:    &profile.Profile{},
+		resultGetProfileHost:    &profilePkg.Profile{},
 		errGetProfileHost:       nil,
 		countGetProfileHost:     0,
 	},
 	{
-		testName:                "Two",
+		testName:                "Second",
 		input:                   1,
 		out:                     nil,
 		outErr:                  "text",
@@ -58,20 +67,20 @@ var ApplicationGetProfile = []struct {
 		resultGetRoleById:       "client",
 		errGetRoleById:          nil,
 		inputGetProfileClient:   1,
-		resultGetProfileClient:  &profile.Profile{},
+		resultGetProfileClient:  &profilePkg.Profile{},
 		errGetProfileClient:     errors.New("text"),
 		countGetProfileClient:   1,
 		inputGetProfileCourier:  1,
-		resultGetProfileCourier: &profile.Profile{},
+		resultGetProfileCourier: &profilePkg.Profile{},
 		errGetProfileCourier:    nil,
 		countGetProfileCourier:  0,
 		inputGetProfileHost:     0,
-		resultGetProfileHost:    &profile.Profile{},
+		resultGetProfileHost:    &profilePkg.Profile{},
 		errGetProfileHost:       nil,
 		countGetProfileHost:     0,
 	},
 	{
-		testName:                "Three",
+		testName:                "Third",
 		input:                   1,
 		out:                     nil,
 		outErr:                  "text",
@@ -79,26 +88,26 @@ var ApplicationGetProfile = []struct {
 		resultGetRoleById:       "client",
 		errGetRoleById:          nil,
 		inputGetProfileClient:   1,
-		resultGetProfileClient:  &profile.Profile{},
+		resultGetProfileClient:  &profilePkg.Profile{},
 		errGetProfileClient:     errors.New("text"),
 		countGetProfileClient:   1,
 		inputGetProfileCourier:  1,
-		resultGetProfileCourier: &profile.Profile{},
+		resultGetProfileCourier: &profilePkg.Profile{},
 		errGetProfileCourier:    nil,
 		countGetProfileCourier:  0,
 		inputGetProfileHost:     0,
-		resultGetProfileHost:    &profile.Profile{},
+		resultGetProfileHost:    &profilePkg.Profile{},
 		errGetProfileHost:       nil,
 		countGetProfileHost:     0,
 	},
 }
 
-func TestApplicationGetProfile(t *testing.T) {
+func TestGetProfile(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperProfile(ctrl)
-	for _, tt := range ApplicationGetProfile {
+	m := mocks.NewMockWrapperProfileInterface(ctrl)
+	for _, tt := range GetProfile {
 		m.
 			EXPECT().
 			GetRoleById(tt.inputGetRoleById).
@@ -118,7 +127,7 @@ func TestApplicationGetProfile(t *testing.T) {
 			GetProfileHost(tt.inputGetProfileHost).
 			Return(tt.resultGetProfileHost, tt.errGetProfileHost).
 			Times(tt.countGetProfileHost)
-		test := application.Profile{DB: m}
+		test := Profile{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := test.GetProfile(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
@@ -131,7 +140,7 @@ func TestApplicationGetProfile(t *testing.T) {
 	}
 }
 
-var ApplicationUpdateName = []struct {
+var UpdateName = []struct {
 	testName               string
 	inputId                int
 	inputNewName           string
@@ -141,7 +150,7 @@ var ApplicationUpdateName = []struct {
 	errUpdateName          error
 }{
 	{
-		testName:               "One",
+		testName:               "First",
 		inputId:                1,
 		inputNewName:           "1",
 		outErr:                 "",
@@ -160,17 +169,17 @@ var ApplicationUpdateName = []struct {
 	},
 }
 
-func TestApplicationUpdateName(t *testing.T) {
+func TestUpdateName(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperProfile(ctrl)
-	for _, tt := range ApplicationUpdateName {
+	m := mocks.NewMockWrapperProfileInterface(ctrl)
+	for _, tt := range UpdateName {
 		m.
 			EXPECT().
 			UpdateName(tt.inputUpdateNameId, tt.inputUpdateNameNewName).
 			Return(tt.errUpdateName)
-		test := application.Profile{DB: m}
+		test := Profile{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := test.UpdateName(tt.inputId, tt.inputNewName)
 			if tt.outErr != "" {
@@ -182,7 +191,7 @@ func TestApplicationUpdateName(t *testing.T) {
 	}
 }
 
-var ApplicationUpdateEmail = []struct {
+var UpdateEmail = []struct {
 	testName                 string
 	inputId                  int
 	inputNewEmail            string
@@ -193,7 +202,7 @@ var ApplicationUpdateEmail = []struct {
 	countUpdateEmail         int
 }{
 	{
-		testName:                 "One",
+		testName:                 "First",
 		inputId:                  1,
 		inputNewEmail:            "1",
 		outErr:                   "",
@@ -212,17 +221,17 @@ var ApplicationUpdateEmail = []struct {
 	},
 }
 
-func TestApplicationUpdateEmail(t *testing.T) {
+func TestUpdateEmail(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperProfile(ctrl)
-	for _, tt := range ApplicationUpdateEmail {
+	m := mocks.NewMockWrapperProfileInterface(ctrl)
+	for _, tt := range UpdateEmail {
 		m.
 			EXPECT().
 			UpdateEmail(tt.inputUpdateEmailId, tt.inputUpdateEmailNewEmail).
 			Return(tt.errUpdateEmail)
-		test := application.Profile{DB: m}
+		test := Profile{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := test.UpdateEmail(tt.inputId, tt.inputNewEmail)
 			if tt.outErr != "" {
@@ -234,7 +243,7 @@ func TestApplicationUpdateEmail(t *testing.T) {
 	}
 }
 
-var ApplicationUpdatePassword = []struct {
+var UpdatePassword = []struct {
 	testName                       string
 	inputId                        int
 	inputNewPassword               string
@@ -244,7 +253,7 @@ var ApplicationUpdatePassword = []struct {
 	errUpdatePassword              error
 }{
 	{
-		testName:                       "One",
+		testName:                       "First",
 		inputId:                        1,
 		inputNewPassword:               "1",
 		outErr:                         "",
@@ -263,17 +272,17 @@ var ApplicationUpdatePassword = []struct {
 	},
 }
 
-func TestApplicationUpdatePassword(t *testing.T) {
+func TestUpdatePassword(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperProfile(ctrl)
-	for _, tt := range ApplicationUpdatePassword {
+	m := mocks.NewMockWrapperProfileInterface(ctrl)
+	for _, tt := range UpdatePassword {
 		m.
 			EXPECT().
 			UpdatePassword(tt.inputUpdatePasswordId, tt.inputUpdatePasswordNewPassword).
 			Return(tt.errUpdatePassword)
-		test := application.Profile{DB: m}
+		test := Profile{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := test.UpdatePassword(tt.inputId, tt.inputNewPassword)
 			if tt.outErr != "" {
@@ -285,7 +294,7 @@ func TestApplicationUpdatePassword(t *testing.T) {
 	}
 }
 
-var ApplicationUpdatePhone = []struct {
+var UpdatePhone = []struct {
 	testName                 string
 	inputId                  int
 	inputNewPhone            string
@@ -295,7 +304,7 @@ var ApplicationUpdatePhone = []struct {
 	errUpdatePhone           error
 }{
 	{
-		testName:                 "One",
+		testName:                 "First",
 		inputId:                  1,
 		inputNewPhone:            "1",
 		outErr:                   "",
@@ -314,17 +323,17 @@ var ApplicationUpdatePhone = []struct {
 	},
 }
 
-func TestApplicationUpdatePhone(t *testing.T) {
+func TestUpdatePhone(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperProfile(ctrl)
-	for _, tt := range ApplicationUpdatePhone {
+	m := mocks.NewMockWrapperProfileInterface(ctrl)
+	for _, tt := range UpdatePhone {
 		m.
 			EXPECT().
 			UpdatePhone(tt.inputUpdatePhoneId, tt.inputUpdatePhoneNewPhone).
 			Return(tt.errUpdatePhone)
-		test := application.Profile{DB: m}
+		test := Profile{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := test.UpdatePhone(tt.inputId, tt.inputNewPhone)
 			if tt.outErr != "" {
@@ -336,46 +345,49 @@ func TestApplicationUpdatePhone(t *testing.T) {
 	}
 }
 
-var ApplicationUpdateAvatar = []struct {
+var UpdateAvatar = []struct {
 	testName                   string
 	inputId                    int
-	inputNewAvatar             *profile.UpdateAvatar
+	inputNewAvatar             *profilePkg.UpdateAvatar
 	outErr                     string
 	inputUpdateAvatarId        int
-	inputUpdateAvatarNewAvatar *profile.UpdateAvatar
+	inputUpdateAvatarNewAvatar *profilePkg.UpdateAvatar
+	inputUpdateAvatarFilePath  string
 	errUpdateAvatar            error
 }{
 	{
-		testName:                   "One",
+		testName:                   "First",
 		inputId:                    1,
-		inputNewAvatar:             &profile.UpdateAvatar{},
+		inputNewAvatar:             &profilePkg.UpdateAvatar{},
 		outErr:                     "",
 		inputUpdateAvatarId:        1,
-		inputUpdateAvatarNewAvatar: &profile.UpdateAvatar{},
+		inputUpdateAvatarNewAvatar: &profilePkg.UpdateAvatar{},
+		inputUpdateAvatarFilePath:  "",
 		errUpdateAvatar:            nil,
 	},
 	{
 		testName:                   "Two",
 		inputId:                    1,
-		inputNewAvatar:             &profile.UpdateAvatar{},
+		inputNewAvatar:             &profilePkg.UpdateAvatar{},
 		outErr:                     "text",
 		inputUpdateAvatarId:        1,
-		inputUpdateAvatarNewAvatar: &profile.UpdateAvatar{},
+		inputUpdateAvatarNewAvatar: &profilePkg.UpdateAvatar{},
+		inputUpdateAvatarFilePath:  "",
 		errUpdateAvatar:            errors.New("text"),
 	},
 }
 
-func TestApplicationUpdateAvatar(t *testing.T) {
+func TestUpdateAvatar(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperProfile(ctrl)
-	for _, tt := range ApplicationUpdateAvatar {
+	m := mocks.NewMockWrapperProfileInterface(ctrl)
+	for _, tt := range UpdateAvatar {
 		m.
 			EXPECT().
-			UpdateAvatar(tt.inputUpdateAvatarId, tt.inputUpdateAvatarNewAvatar).
+			UpdateAvatar(tt.inputUpdateAvatarId, tt.inputUpdateAvatarNewAvatar, tt.inputUpdateAvatarFilePath).
 			Return(tt.errUpdateAvatar)
-		test := application.Profile{DB: m}
+		test := Profile{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := test.UpdateAvatar(tt.inputId, tt.inputNewAvatar)
 			if tt.outErr != "" {
@@ -387,46 +399,46 @@ func TestApplicationUpdateAvatar(t *testing.T) {
 	}
 }
 
-var ApplicationUpdateBirthday = []struct {
+var UpdateBirthday = []struct {
 	testName                string
 	inputId                 int
-	inputNewBirthday        time.Time
+	inputNewBirthday        string
 	outErr                  string
 	inputUpdateBirthdayId   int
-	inputUpdateBirthdayDate time.Time
+	inputUpdateBirthdayDate string
 	errUpdateBirthday       error
 }{
 	{
-		testName:                "One",
+		testName:                "First",
 		inputId:                 1,
-		inputNewBirthday:        time.Time{},
+		inputNewBirthday:        "02.01.2006",
 		outErr:                  "",
 		inputUpdateBirthdayId:   1,
-		inputUpdateBirthdayDate: time.Time{},
+		inputUpdateBirthdayDate: "02.01.2006",
 		errUpdateBirthday:       nil,
 	},
 	{
 		testName:                "Two",
 		inputId:                 1,
-		inputNewBirthday:        time.Time{},
+		inputNewBirthday:        "02.01.2006",
 		outErr:                  "text",
 		inputUpdateBirthdayId:   1,
-		inputUpdateBirthdayDate: time.Time{},
+		inputUpdateBirthdayDate: "02.01.2006",
 		errUpdateBirthday:       errors.New("text"),
 	},
 }
 
-func TestApplicationUpdateBirthday(t *testing.T) {
+func TestUpdateBirthday(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperProfile(ctrl)
-	for _, tt := range ApplicationUpdateBirthday {
+	m := mocks.NewMockWrapperProfileInterface(ctrl)
+	for _, tt := range UpdateBirthday {
 		m.
 			EXPECT().
 			UpdateBirthday(tt.inputUpdateBirthdayId, tt.inputUpdateBirthdayDate).
 			Return(tt.errUpdateBirthday)
-		test := application.Profile{DB: m}
+		test := Profile{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := test.UpdateBirthday(tt.inputId, tt.inputNewBirthday)
 			if tt.outErr != "" {
@@ -438,46 +450,46 @@ func TestApplicationUpdateBirthday(t *testing.T) {
 	}
 }
 
-var ApplicationUpdateAddress = []struct {
+var UpdateAddress = []struct {
 	testName                     string
 	inputId                      int
-	inputNewAddress              profile.AddressCoordinates
+	inputNewAddress              profilePkg.AddressCoordinates
 	outErr                       string
 	inputUpdateAddressId         int
-	inputUpdateAddressNewAddress profile.AddressCoordinates
+	inputUpdateAddressNewAddress profilePkg.AddressCoordinates
 	errUpdateAddress             error
 }{
 	{
-		testName:                     "One",
-		outErr:                       "",
+		testName:                     "First",
 		inputId:                      1,
-		inputNewAddress:              profile.AddressCoordinates{},
+		inputNewAddress:              profilePkg.AddressCoordinates{},
+		outErr:                       "",
 		inputUpdateAddressId:         1,
-		inputUpdateAddressNewAddress: profile.AddressCoordinates{},
+		inputUpdateAddressNewAddress: profilePkg.AddressCoordinates{},
 		errUpdateAddress:             nil,
 	},
 	{
 		testName:                     "Two",
-		outErr:                       "text",
 		inputId:                      1,
-		inputNewAddress:              profile.AddressCoordinates{},
+		outErr:                       "text",
+		inputNewAddress:              profilePkg.AddressCoordinates{},
 		inputUpdateAddressId:         1,
-		inputUpdateAddressNewAddress: profile.AddressCoordinates{},
+		inputUpdateAddressNewAddress: profilePkg.AddressCoordinates{},
 		errUpdateAddress:             errors.New("text"),
 	},
 }
 
-func TestApplicationUpdateAddress(t *testing.T) {
+func TestUpdateAddress(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperProfile(ctrl)
-	for _, tt := range ApplicationUpdateAddress {
+	m := mocks.NewMockWrapperProfileInterface(ctrl)
+	for _, tt := range UpdateAddress {
 		m.
 			EXPECT().
 			UpdateAddress(tt.inputUpdateAddressId, tt.inputUpdateAddressNewAddress).
 			Return(tt.errUpdateAddress)
-		test := application.Profile{DB: m}
+		test := Profile{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := test.UpdateAddress(tt.inputId, tt.inputNewAddress)
 			if tt.outErr != "" {
