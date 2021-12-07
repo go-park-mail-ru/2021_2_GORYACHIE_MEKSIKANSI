@@ -229,9 +229,6 @@ const (
 	REditRestaurantInFavoriteInfoNotCommit        = "transaction get favourite restaurants not commmit" // TODO: add in checkErrors
 	REditRestaurantInFavoriteRestaurantsNotDelete = "favorite restaurant not delete"                    // TODO: add in checkErrors
 	RGetFavoriteRestaurantsRestaurantsNotExist    = "restaurant not exist"                              // TODO: add in checkErrors
-	RGetStatusRestaurantTransactionNotCreate      = "transaction get restaurant not create"             // TODO: add in checkErrors
-	RGetStatusRestaurantNotSelect                 = "status not select"                                 // TODO: add in checkErrors
-	RGetStatusRestaurantNotCommit                 = "transaction get restaurant not commit"             // TODO: add in checkErrors
 	RIsFavoriteRestaurantsTransactionNotCreate    = "transaction is favorite not create"                // TODO: add in checkErrors
 	RIsFavoriteRestaurantsRestaurantsNotSelect    = "favorite restaurant not select for check"          // TODO: add in checkErrors
 	RIsFavoriteRestaurantsInfoNotCommit           = "transaction is favorite not commit"                // TODO: add in checkErrors

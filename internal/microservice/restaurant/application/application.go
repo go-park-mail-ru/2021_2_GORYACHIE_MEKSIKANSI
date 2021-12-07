@@ -22,11 +22,7 @@ type Restaurant struct {
 }
 
 func (r *Restaurant) AllRestaurants() (*resPkg.AllRestaurants, error) {
-	result, err := r.DB.GetRestaurants()
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
+	return r.DB.GetRestaurants()
 }
 
 func (r *Restaurant) GetRestaurant(id int, idClient int) (*resPkg.RestaurantId, error) {
@@ -56,19 +52,11 @@ func (r *Restaurant) GetRestaurant(id int, idClient int) (*resPkg.RestaurantId, 
 }
 
 func (r *Restaurant) RestaurantDishes(restId int, dishId int) (*resPkg.Dishes, error) {
-	dishes, err := r.DB.GetDishes(restId, dishId)
-	if err != nil {
-		return nil, err
-	}
-	return dishes, nil
+	return r.DB.GetDishes(restId, dishId)
 }
 
 func (r *Restaurant) CreateReview(id int, review resPkg.NewReview) error {
-	err := r.DB.CreateReview(id, review)
-	if err != nil {
-		return err
-	}
-	return nil
+	return r.DB.CreateReview(id, review)
 }
 
 func (r *Restaurant) GetReview(idRestaurant int, idClient int) (*resPkg.ResReview, error) {
@@ -78,7 +66,7 @@ func (r *Restaurant) GetReview(idRestaurant int, idClient int) (*resPkg.ResRevie
 		return nil, err
 	}
 
-	review.Status, err = r.DB.GetStatusRestaurant(idClient, idRestaurant)
+	review.Status, err = r.DB.IsFavoriteRestaurant(idClient, idRestaurant)
 	if err != nil {
 		return nil, err
 	}

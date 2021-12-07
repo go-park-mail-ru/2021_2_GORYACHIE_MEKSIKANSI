@@ -23,7 +23,6 @@ type WrapperRestaurantInterface interface {
 	GetGeneralInfoRestaurant(id int) (*resPkg.Restaurants, error)
 	GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error)
 	EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error)
-	GetStatusRestaurant(idClient int, idRestaurant int) (bool, error)
 	IsFavoriteRestaurant(idClient int, idRestaurant int) (bool, error)
 }
 
@@ -397,44 +396,6 @@ func (db *Wrapper) GetReview(id int) ([]resPkg.Review, error) {
 	}
 
 	return result, nil
-}
-
-func (db *Wrapper) GetStatusRestaurant(idClient int, idRestaurant int) (bool, error) {
-	contextTransaction := context.Background()
-	tx, err := db.Conn.Begin(contextTransaction)
-	if err != nil {
-		return false, &errPkg.Errors{
-			Alias: errPkg.RGetStatusRestaurantTransactionNotCreate,
-		}
-	}
-
-	defer tx.Rollback(contextTransaction)
-
-	var checkFavorite *int32
-	err = tx.QueryRow(contextTransaction,
-		"SELECT id FROM favorite_restaurant WHERE restaurant = $1 AND client = $2",
-		idClient, idRestaurant).Scan(&checkFavorite)
-	if err == pgx.ErrNoRows {
-		return false, nil
-	}
-
-	if err != nil {
-		return false, &errPkg.Errors{
-			Alias: errPkg.RGetStatusRestaurantNotSelect,
-		}
-	}
-
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return false, &errPkg.Errors{
-			Alias: errPkg.RGetStatusRestaurantNotCommit,
-		}
-	}
-
-	if checkFavorite == nil {
-		return false, nil
-	}
-	return true, nil
 }
 
 func (db *Wrapper) CreateReview(id int, review resPkg.NewReview) error {

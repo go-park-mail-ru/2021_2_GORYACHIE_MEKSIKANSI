@@ -38,10 +38,10 @@ func (m *MockWrapperRestaurantServerInterface) EXPECT() *MockWrapperRestaurantSe
 }
 
 // AllRestaurants mocks base method.
-func (m *MockWrapperRestaurantServerInterface) AllRestaurants() ([]restaurant.Restaurants, error) {
+func (m *MockWrapperRestaurantServerInterface) AllRestaurants() (*restaurant.AllRestaurants, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AllRestaurants")
-	ret0, _ := ret[0].([]restaurant.Restaurants)
+	ret0, _ := ret[0].(*restaurant.AllRestaurants)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -97,18 +97,18 @@ func (mr *MockWrapperRestaurantServerInterfaceMockRecorder) GetFavoriteRestauran
 }
 
 // GetRestaurant mocks base method.
-func (m *MockWrapperRestaurantServerInterface) GetRestaurant(arg0 int) (*restaurant.RestaurantId, error) {
+func (m *MockWrapperRestaurantServerInterface) GetRestaurant(arg0, arg1 int) (*restaurant.RestaurantId, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetRestaurant", arg0)
+	ret := m.ctrl.Call(m, "GetRestaurant", arg0, arg1)
 	ret0, _ := ret[0].(*restaurant.RestaurantId)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetRestaurant indicates an expected call of GetRestaurant.
-func (mr *MockWrapperRestaurantServerInterfaceMockRecorder) GetRestaurant(arg0 interface{}) *gomock.Call {
+func (mr *MockWrapperRestaurantServerInterfaceMockRecorder) GetRestaurant(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRestaurant", reflect.TypeOf((*MockWrapperRestaurantServerInterface)(nil).GetRestaurant), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRestaurant", reflect.TypeOf((*MockWrapperRestaurantServerInterface)(nil).GetRestaurant), arg0, arg1)
 }
 
 // GetReview mocks base method.
@@ -180,14 +180,14 @@ func (m *MockConnectRestaurantServiceInterface) EXPECT() *MockConnectRestaurantS
 }
 
 // AllRestaurants mocks base method.
-func (m *MockConnectRestaurantServiceInterface) AllRestaurants(arg0 context.Context, arg1 *resProto.Empty, arg2 ...grpc.CallOption) (*resProto.Restaurants, error) {
+func (m *MockConnectRestaurantServiceInterface) AllRestaurants(arg0 context.Context, arg1 *resProto.Empty, arg2 ...grpc.CallOption) (*resProto.RestaurantsTags, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "AllRestaurants", varargs...)
-	ret0, _ := ret[0].(*resProto.Restaurants)
+	ret0, _ := ret[0].(*resProto.RestaurantsTags)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
