@@ -2,8 +2,8 @@ package orm
 
 import (
 	authPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/orm/mocks"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
 	"context"
 	"fmt"
 	"github.com/golang/mock/gomock"
@@ -18,7 +18,7 @@ type Row struct {
 	errRow error
 }
 
-func (r Row) Scan(dest ...interface{}) error {
+func (r *Row) Scan(dest ...interface{}) error {
 	if r.errRow != nil {
 		return r.errRow
 	}
@@ -28,8 +28,16 @@ func (r Row) Scan(dest ...interface{}) error {
 			*dest[i].(*int) = r.row[i].(int)
 		case *string:
 			*dest[i].(*string) = r.row[i].(string)
+		case **string:
+			t := r.row[i].(string)
+			*dest[i].(**string) = &t
 		case *float32:
 			*dest[i].(*float32) = float32(r.row[i].(float64))
+		case **int32:
+			t := int32(r.row[i].(int))
+			*dest[i].(**int32) = &t
+		default:
+			dest[i] = nil
 		}
 	}
 	return nil
@@ -41,7 +49,7 @@ func TestGenerateNew(t *testing.T) {
 
 	m := mocks.NewMockConnectionInterface(ctrl)
 	testUser := &Wrapper{Conn: m}
-	t.Run("One", func(t *testing.T) {
+	t.Run("First", func(t *testing.T) {
 		result := testUser.NewDefense()
 		require.NotEqual(t, time.Time{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", time.Time{}, result.DateLife))
 		require.NotEqual(t, "", result, fmt.Sprintf("Expected: %v\nbut got: %v", "", result.SessionId))
@@ -50,24 +58,35 @@ func TestGenerateNew(t *testing.T) {
 }
 
 var GeneralSignUp = []struct {
-	testName         string
-	inputSignup      *authPkg.RegistrationRequest
-	inputTransaction pgx.Tx
-	inputQueryPhone  string
-	inputQueryEmail  string
-	inputQueryName   string
-	resultQuery      Row
-	out              int
-	outErr           string
+	testName                 string
+	inputSignup              *authPkg.RegistrationRequest
+	inputTransaction         pgx.Tx
+	inputQueryPhone          string
+	inputQueryEmail          string
+	inputQueryName           string
+	resultQuery              Row
+	out                      int
+	outErr                   string
+	errCommitTransaction     error
+	countCommitTransaction   int
+	countRollbackTransaction int
 }{
 	{
-		testName:        "One",
-		out:             1,
-		inputSignup:     &authPkg.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
-		resultQuery:     Row{row: []interface{}{1}, errRow: nil},
-		inputQueryPhone: "1",
-		inputQueryEmail: "1",
-		inputQueryName:  "1",
+		testName: "First",
+		out:      1,
+		inputSignup: &authPkg.RegistrationRequest{
+			Phone:    "89165554433",
+			Email:    "1",
+			Password: "1",
+			Name:     "1",
+		},
+		resultQuery:              Row{row: []interface{}{1}, errRow: nil},
+		inputQueryPhone:          "89165554433",
+		inputQueryEmail:          "1",
+		inputQueryName:           "1",
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		countRollbackTransaction: 1,
 	},
 }
 
@@ -75,18 +94,18 @@ func TestGeneralSignUp(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
 	for _, tt := range GeneralSignUp {
-		m.
+		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
 				"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
 				tt.inputQueryName, tt.inputQueryEmail, tt.inputQueryPhone, gomock.Any(), gomock.Any(),
 			).
 			Return(&tt.resultQuery)
-		testUser := &Wrapper{}
+		testUser := Wrapper{}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := testUser.generalSignUp(tt.inputSignup, m)
+			result, err := testUser.generalSignUp(tt.inputSignup, mTx, context.Background())
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
@@ -98,25 +117,35 @@ func TestGeneralSignUp(t *testing.T) {
 }
 
 var LoginByEmail = []struct {
-	testName           string
-	inputEmail         string
-	inputPassword      string
-	resultQuerySalt    Row
-	resultQueryId      Row
-	out                int
-	outErr             string
-	inputQuerySalt     string
-	inputQueryPassword string
+	testName                 string
+	inputEmail               string
+	inputPassword            string
+	resultQuerySalt          Row
+	resultQueryId            Row
+	out                      int
+	outErr                   string
+	inputQuerySalt           string
+	inputQueryPassword       string
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
 }{
 	{
-		testName:           "One",
-		out:                1,
-		resultQuerySalt:    Row{row: []interface{}{"1"}, errRow: nil},
-		resultQueryId:      Row{row: []interface{}{1}, errRow: nil},
-		inputQuerySalt:     "1",
-		inputQueryPassword: "4fc82b26aecb47d2868c4efbe3581732a3e7cbcc6c2efb32062c08170a05eeb8",
-		inputEmail:         "1",
-		inputPassword:      "1",
+		testName:                 "First",
+		out:                      1,
+		resultQuerySalt:          Row{row: []interface{}{"1"}, errRow: nil},
+		resultQueryId:            Row{row: []interface{}{1}, errRow: nil},
+		inputQuerySalt:           "1",
+		inputQueryPassword:       "4fc82b26aecb47d2868c4efbe3581732a3e7cbcc6c2efb32062c08170a05eeb8",
+		inputEmail:               "1",
+		inputPassword:            "1",
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
 	},
 }
 
@@ -125,15 +154,30 @@ func TestLoginByEmail(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
 	for _, tt := range LoginByEmail {
 		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
 				"SELECT salt FROM general_user_info WHERE email = $1",
 				tt.inputQuerySalt,
 			).
 			Return(&tt.resultQuerySalt)
-		m.
+		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
 				"SELECT id FROM general_user_info WHERE email = $1 AND password = $2",
@@ -154,25 +198,35 @@ func TestLoginByEmail(t *testing.T) {
 }
 
 var LoginByPhone = []struct {
-	testName           string
-	inputPhone         string
-	inputPassword      string
-	resultQuerySalt    Row
-	resultQueryId      Row
-	out                int
-	outErr             string
-	inputQuerySalt     string
-	inputQueryPassword string
+	testName                 string
+	inputPhone               string
+	inputPassword            string
+	resultQuerySalt          Row
+	resultQueryId            Row
+	out                      int
+	outErr                   string
+	inputQuerySalt           string
+	inputQueryPassword       string
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
 }{
 	{
-		testName:           "One",
-		out:                1,
-		resultQuerySalt:    Row{row: []interface{}{"1"}, errRow: nil},
-		resultQueryId:      Row{row: []interface{}{1}, errRow: nil},
-		inputQuerySalt:     "1",
-		inputQueryPassword: "4fc82b26aecb47d2868c4efbe3581732a3e7cbcc6c2efb32062c08170a05eeb8",
-		inputPhone:         "1",
-		inputPassword:      "1",
+		testName:                 "First",
+		out:                      1,
+		resultQuerySalt:          Row{row: []interface{}{"1"}, errRow: nil},
+		resultQueryId:            Row{row: []interface{}{1}, errRow: nil},
+		inputQuerySalt:           "1",
+		inputQueryPassword:       "4fc82b26aecb47d2868c4efbe3581732a3e7cbcc6c2efb32062c08170a05eeb8",
+		inputPhone:               "1",
+		inputPassword:            "1",
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
 	},
 }
 
@@ -181,15 +235,30 @@ func TestLoginByPhone(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
 	for _, tt := range LoginByPhone {
 		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
 				"SELECT salt FROM general_user_info WHERE phone = $1",
 				tt.inputQuerySalt,
 			).
 			Return(&tt.resultQuerySalt)
-		m.
+		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
 				"SELECT id FROM general_user_info WHERE phone = $1 AND password = $2",
@@ -210,28 +279,32 @@ func TestLoginByPhone(t *testing.T) {
 }
 
 var DeleteCookie = []struct {
-	testName    string
-	input       string
-	out         string
-	outErr      string
-	inputDelete string
-	errDelete   error
-	countDelete int
-	inputQuery  string
-	errQuery    error
-	resultQuery Row
+	testName                 string
+	input                    string
+	out                      string
+	outErr                   string
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
+	inputDelete              string
+	outDelete                Row
+	countDelete              int
 }{
 	{
-		testName:    "One",
-		input:       "1",
-		out:         "1",
-		outErr:      "",
-		inputDelete: "1",
-		errDelete:   nil,
-		countDelete: 1,
-		inputQuery:  "1",
-		errQuery:    nil,
-		resultQuery: Row{row: []interface{}{"1"}},
+		testName:                 "First",
+		input:                    "1",
+		out:                      "1",
+		outErr:                   "",
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+		inputDelete:              "1",
+		outDelete:                Row{row: []interface{}{"1"}},
+		countDelete:              1,
 	},
 }
 
@@ -240,22 +313,30 @@ func TestDeleteCookie(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
 	for _, tt := range DeleteCookie {
 		m.
 			EXPECT().
-			Exec(context.Background(),
-				"DELETE FROM cookie WHERE csrf_token = $1",
-				tt.inputDelete,
-			).
-			Return(nil, tt.errDelete).
-			Times(tt.countDelete)
-		m.
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT session_id FROM cookie WHERE csrf_token = $1",
-				tt.inputQuery,
+				"DELETE FROM cookie WHERE csrf_token = $1 RETURNING session_id",
+				tt.inputDelete,
 			).
-			Return(tt.resultQuery)
+			Return(&tt.outDelete).
+			Times(tt.countDelete)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.DeleteCookie(tt.input)
@@ -270,24 +351,34 @@ func TestDeleteCookie(t *testing.T) {
 }
 
 var AddCookie = []struct {
-	testName            string
-	inputCookie         *util.Defense
-	inputId             int
-	outErr              string
-	errQuery            error
-	inputQuerySessionId string
-	inputQueryCSRFToken string
-	inputQueryClientId  int
-	inputQueryDateLife  time.Time
+	testName                 string
+	inputCookie              *authPkg.Defense
+	inputId                  int
+	outErr                   string
+	errQuery                 error
+	inputQuerySessionId      string
+	inputQueryCSRFToken      string
+	inputQueryClientId       int
+	inputQueryDateLife       time.Time
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
 }{
 	{
-		testName:            "One",
-		inputQuerySessionId: "1",
-		inputQueryCSRFToken: "1",
-		inputCookie:         &util.Defense{SessionId: "1", CsrfToken: "1"},
-		inputId:             1,
-		errQuery:            nil,
-		inputQueryClientId:  1,
+		testName:                 "First",
+		inputQuerySessionId:      "1",
+		inputQueryCSRFToken:      "1",
+		inputCookie:              &authPkg.Defense{SessionId: "1", CsrfToken: "1"},
+		inputId:                  1,
+		errQuery:                 nil,
+		inputQueryClientId:       1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
 	},
 }
 
@@ -296,8 +387,23 @@ func TestAddCookie(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
 	for _, tt := range AddCookie {
 		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
 			EXPECT().
 			Exec(context.Background(),
 				"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
@@ -318,7 +424,7 @@ func TestAddCookie(t *testing.T) {
 
 var AddTransactionCookie = []struct {
 	testName            string
-	inputCookie         *util.Defense
+	inputCookie         *authPkg.Defense
 	inputId             int
 	outErr              string
 	errQuery            error
@@ -328,10 +434,10 @@ var AddTransactionCookie = []struct {
 	inputQueryDateLife  time.Time
 }{
 	{
-		testName:            "One",
+		testName:            "First",
 		inputQuerySessionId: "1",
 		inputQueryCSRFToken: "1",
-		inputCookie:         &util.Defense{SessionId: "1", CsrfToken: "1"},
+		inputCookie:         &authPkg.Defense{SessionId: "1", CsrfToken: "1"},
 		inputId:             1,
 		errQuery:            nil,
 		inputQueryClientId:  1,
@@ -353,7 +459,7 @@ func TestAddTransactionCookie(t *testing.T) {
 			Return(nil, tt.errQuery)
 		testUser := &Wrapper{}
 		t.Run(tt.testName, func(t *testing.T) {
-			err := testUser.addTransactionCookie(tt.inputCookie, m, tt.inputId)
+			err := testUser.addTransactionCookie(tt.inputCookie, m, tt.inputId, context.Background())
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
@@ -365,7 +471,7 @@ func TestAddTransactionCookie(t *testing.T) {
 
 var SignupClient = []struct {
 	testName                  string
-	inputCookie               *util.Defense
+	inputCookie               *authPkg.Defense
 	inputSignUp               *authPkg.RegistrationRequest
 	outErr                    string
 	errQueryCookie            error
@@ -382,34 +488,41 @@ var SignupClient = []struct {
 	countInsert               int
 	countQueryCookie          int
 	countQueryInfo            int
-	countRollback             int
-	countCommit               int
-	errRollback               error
-	errCommit                 error
+	errBeginTransaction       error
+	errCommitTransaction      error
+	countCommitTransaction    int
+	errRollbackTransaction    error
+	countRollbackTransaction  int
 }{
 	{
-		testName:                  "One",
+		testName:                  "First",
 		inputQueryCookieSessionId: "1",
 		inputQueryCookieCSRFToken: "1",
 		inputQueryCookieDateLife:  time.Time{},
-		inputCookie:               &util.Defense{SessionId: "1", CsrfToken: "1"},
-		inputSignUp:               &authPkg.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
-		errQueryCookie:            nil,
-		inputQueryCookieClientId:  1,
-		resultQueryInfo:           Row{row: []interface{}{1}, errRow: nil},
-		inputQueryInfoPhone:       "1",
-		inputQueryInfoEmail:       "1",
-		inputQueryInfoName:        "1",
-		inputInsert:               1,
-		ErrInsert:                 nil,
-		countInsert:               1,
-		countQueryCookie:          1,
-		countQueryInfo:            1,
-		countRollback:             0,
-		countCommit:               1,
-		errRollback:               nil,
-		errCommit:                 nil,
-		outErr:                    "",
+		inputCookie:               &authPkg.Defense{SessionId: "1", CsrfToken: "1"},
+		inputSignUp: &authPkg.RegistrationRequest{
+			Phone:    "89175554433",
+			Email:    "1",
+			Password: "1",
+			Name:     "1",
+		},
+		errQueryCookie:           nil,
+		inputQueryCookieClientId: 1,
+		resultQueryInfo:          Row{row: []interface{}{1}, errRow: nil},
+		inputQueryInfoPhone:      "89175554433",
+		inputQueryInfoEmail:      "1",
+		inputQueryInfoName:       "1",
+		inputInsert:              1,
+		ErrInsert:                nil,
+		countInsert:              1,
+		countQueryCookie:         1,
+		countQueryInfo:           1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+		outErr:                   "",
 	},
 }
 
@@ -443,24 +556,24 @@ func TestSignupClient(t *testing.T) {
 			).
 			Return(&tt.resultQueryInfo).
 			Times(tt.countQueryInfo)
-		mTx.
-			EXPECT().
-			Rollback(context.Background()).
-			Return(tt.errRollback).
-			Times(tt.countRollback)
-		mTx.
-			EXPECT().
-			Commit(context.Background()).
-			Return(tt.errCommit).
-			Times(tt.countCommit)
 		m.
 			EXPECT().
-			Begin(context.Background()).
-			Return(mTx, nil)
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.SignupClient(tt.inputSignUp, tt.inputCookie)
-			require.NotEqual(t, &util.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &util.Defense{}, result))
+			require.NotEqual(t, &authPkg.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &authPkg.Defense{}, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
@@ -472,7 +585,7 @@ func TestSignupClient(t *testing.T) {
 
 var SignupCourier = []struct {
 	testName                  string
-	inputCookie               *util.Defense
+	inputCookie               *authPkg.Defense
 	inputSignUp               *authPkg.RegistrationRequest
 	outErr                    string
 	errQueryCookie            error
@@ -489,34 +602,40 @@ var SignupCourier = []struct {
 	countInsert               int
 	countQueryCookie          int
 	countQueryInfo            int
-	countRollback             int
-	countCommit               int
-	errRollback               error
-	errCommit                 error
+	errBeginTransaction       error
+	errCommitTransaction      error
+	countCommitTransaction    int
+	errRollbackTransaction    error
+	countRollbackTransaction  int
 }{
 	{
-		testName:                  "One",
+		testName:                  "First",
 		inputQueryCookieSessionId: "1",
 		inputQueryCookieCSRFToken: "1",
 		inputQueryCookieDateLife:  time.Time{},
-		inputCookie:               &util.Defense{SessionId: "1", CsrfToken: "1"},
-		inputSignUp:               &authPkg.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
-		errQueryCookie:            nil,
-		inputQueryCookieClientId:  1,
-		resultQueryInfo:           Row{row: []interface{}{1}, errRow: nil},
-		inputQueryInfoPhone:       "1",
-		inputQueryInfoEmail:       "1",
-		inputQueryInfoName:        "1",
-		inputInsert:               1,
-		ErrInsert:                 nil,
-		countInsert:               1,
-		countQueryCookie:          1,
-		countQueryInfo:            1,
-		countRollback:             0,
-		countCommit:               1,
-		errRollback:               nil,
-		errCommit:                 nil,
-		outErr:                    "",
+		inputCookie:               &authPkg.Defense{SessionId: "1", CsrfToken: "1"},
+		inputSignUp: &authPkg.RegistrationRequest{Phone: "89175554433",
+			Email:    "1",
+			Password: "1",
+			Name:     "1",
+		},
+		errQueryCookie:           nil,
+		inputQueryCookieClientId: 1,
+		resultQueryInfo:          Row{row: []interface{}{1}, errRow: nil},
+		inputQueryInfoPhone:      "89175554433",
+		inputQueryInfoEmail:      "1",
+		inputQueryInfoName:       "1",
+		inputInsert:              1,
+		ErrInsert:                nil,
+		countInsert:              1,
+		countQueryCookie:         1,
+		countQueryInfo:           1,
+		outErr:                   "",
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
 	},
 }
 
@@ -527,6 +646,20 @@ func TestSignupCourier(t *testing.T) {
 	m := mocks.NewMockConnectionInterface(ctrl)
 	mTx := mocks.NewMockTransactionInterface(ctrl)
 	for _, tt := range SignupCourier {
+		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
@@ -550,24 +683,10 @@ func TestSignupCourier(t *testing.T) {
 			).
 			Return(&tt.resultQueryInfo).
 			Times(tt.countQueryInfo)
-		mTx.
-			EXPECT().
-			Rollback(context.Background()).
-			Return(tt.errRollback).
-			Times(tt.countRollback)
-		mTx.
-			EXPECT().
-			Commit(context.Background()).
-			Return(tt.errCommit).
-			Times(tt.countCommit)
-		m.
-			EXPECT().
-			Begin(context.Background()).
-			Return(mTx, nil)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.SignupCourier(tt.inputSignUp, tt.inputCookie)
-			require.NotEqual(t, &util.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &util.Defense{}, result))
+			require.NotEqual(t, &authPkg.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &authPkg.Defense{}, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
@@ -579,7 +698,7 @@ func TestSignupCourier(t *testing.T) {
 
 var SignupHost = []struct {
 	testName                  string
-	inputCookie               *util.Defense
+	inputCookie               *authPkg.Defense
 	inputSignUp               *authPkg.RegistrationRequest
 	outErr                    string
 	errQueryCookie            error
@@ -596,34 +715,41 @@ var SignupHost = []struct {
 	countInsert               int
 	countQueryCookie          int
 	countQueryInfo            int
-	countRollback             int
-	countCommit               int
-	errRollback               error
-	errCommit                 error
+	errBeginTransaction       error
+	errCommitTransaction      error
+	countCommitTransaction    int
+	errRollbackTransaction    error
+	countRollbackTransaction  int
 }{
 	{
-		testName:                  "One",
+		testName:                  "First",
 		inputQueryCookieSessionId: "1",
 		inputQueryCookieCSRFToken: "1",
 		inputQueryCookieDateLife:  time.Time{},
-		inputCookie:               &util.Defense{SessionId: "1", CsrfToken: "1"},
-		inputSignUp:               &authPkg.RegistrationRequest{Phone: "1", Email: "1", Password: "1", Name: "1"},
-		errQueryCookie:            nil,
-		inputQueryCookieClientId:  1,
-		resultQueryInfo:           Row{row: []interface{}{1}, errRow: nil},
-		inputQueryInfoPhone:       "1",
-		inputQueryInfoEmail:       "1",
-		inputQueryInfoName:        "1",
-		inputInsert:               1,
-		ErrInsert:                 nil,
-		countInsert:               1,
-		countQueryCookie:          1,
-		countQueryInfo:            1,
-		countRollback:             0,
-		countCommit:               1,
-		errRollback:               nil,
-		errCommit:                 nil,
-		outErr:                    "",
+		inputCookie:               &authPkg.Defense{SessionId: "1", CsrfToken: "1"},
+		inputSignUp: &authPkg.RegistrationRequest{
+			Phone:    "89175554433",
+			Email:    "1",
+			Password: "1",
+			Name:     "1",
+		},
+		errQueryCookie:           nil,
+		inputQueryCookieClientId: 1,
+		resultQueryInfo:          Row{row: []interface{}{1}, errRow: nil},
+		inputQueryInfoPhone:      "89175554433",
+		inputQueryInfoEmail:      "1",
+		inputQueryInfoName:       "1",
+		inputInsert:              1,
+		ErrInsert:                nil,
+		countInsert:              1,
+		countQueryCookie:         1,
+		countQueryInfo:           1,
+		outErr:                   "",
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
 	},
 }
 
@@ -634,6 +760,20 @@ func TestSignupHost(t *testing.T) {
 	m := mocks.NewMockConnectionInterface(ctrl)
 	mTx := mocks.NewMockTransactionInterface(ctrl)
 	for _, tt := range SignupHost {
+		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
@@ -657,24 +797,241 @@ func TestSignupHost(t *testing.T) {
 			).
 			Return(&tt.resultQueryInfo).
 			Times(tt.countQueryInfo)
-		mTx.
-			EXPECT().
-			Rollback(context.Background()).
-			Return(tt.errRollback).
-			Times(tt.countRollback)
-		mTx.
-			EXPECT().
-			Commit(context.Background()).
-			Return(tt.errCommit).
-			Times(tt.countCommit)
-		m.
-			EXPECT().
-			Begin(context.Background()).
-			Return(mTx, nil)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.SignupHost(tt.inputSignUp, tt.inputCookie)
-			require.NotEqual(t, &util.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &util.Defense{}, result))
+			require.NotEqual(t, &authPkg.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &authPkg.Defense{}, result))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var CheckAccess = []struct {
+	testName                  string
+	input                     *authPkg.Defense
+	out                       bool
+	outErr                    string
+	inputCheckAccessSessionId string
+	inputCheckAccessCSRFToken string
+	outCheckAccess            Row
+	countCheckAccess          int
+	errBeginTransaction       error
+	errCommitTransaction      error
+	countCommitTransaction    int
+	errRollbackTransaction    error
+	countRollbackTransaction  int
+}{
+	{
+		testName: "First",
+		input: &authPkg.Defense{
+			SessionId: "1",
+			CsrfToken: "1",
+		},
+		out:                       false,
+		inputCheckAccessSessionId: "1",
+		inputCheckAccessCSRFToken: "1",
+		outCheckAccess:            Row{row: []interface{}{1, time.Now()}},
+		countCheckAccess:          1,
+		outErr:                    "",
+		errBeginTransaction:       nil,
+		errCommitTransaction:      nil,
+		countCommitTransaction:    1,
+		errRollbackTransaction:    nil,
+		countRollbackTransaction:  1,
+	},
+}
+
+func TestCheckAccess(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range CheckAccess {
+		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
+			EXPECT().
+			QueryRow(context.Background(),
+				"SELECT client_id, date_life FROM cookie WHERE session_id = $1 AND csrf_token = $2",
+				tt.inputCheckAccessSessionId, tt.inputCheckAccessCSRFToken,
+			).
+			Return(&tt.outCheckAccess).
+			Times(tt.countCheckAccess)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.CheckAccess(tt.input)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var NewCSRF = []struct {
+	testName                 string
+	input                    *authPkg.Defense
+	out                      string
+	outErr                   string
+	inputNewCSRF             string
+	errNewCSRF               error
+	countNewCSRF             int
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
+}{
+	{
+		testName: "First",
+		input: &authPkg.Defense{
+			SessionId: "1",
+			CsrfToken: "1",
+		},
+		out:                      "text",
+		inputNewCSRF:             "1",
+		errNewCSRF:               nil,
+		countNewCSRF:             1,
+		outErr:                   "",
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+	},
+}
+
+func TestNewCSRF(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range NewCSRF {
+		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
+			EXPECT().
+			Exec(context.Background(),
+				"UPDATE cookie SET csrf_token = $1 WHERE session_id = $2",
+				gomock.Any(), tt.inputNewCSRF,
+			).
+			Return(nil, tt.errNewCSRF).
+			Times(tt.countNewCSRF)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.NewCSRF(tt.input)
+			require.NotNil(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var GetIdByCookie = []struct {
+	testName                 string
+	input                    *authPkg.Defense
+	out                      int
+	outErr                   string
+	inputGetIdByCookie       string
+	outGetIdByCookie         Row
+	countGetIdByCookie       int
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
+}{
+	{
+		testName: "First",
+		input: &authPkg.Defense{
+			SessionId: "1",
+			CsrfToken: "1",
+		},
+		out:                0,
+		outErr:             errPkg.MGetIdByCookieCookieExpired,
+		inputGetIdByCookie: "1",
+		outGetIdByCookie: Row{row: []interface{}{
+			1,
+			time.Now().Add(1 * time.Second),
+		},
+		},
+		countGetIdByCookie:       1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+	},
+}
+
+func TestGetIdByCookie(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range GetIdByCookie {
+		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
+			EXPECT().
+			QueryRow(context.Background(),
+				"SELECT client_id, date_life FROM cookie WHERE session_id = $1",
+				tt.inputGetIdByCookie,
+			).
+			Return(&tt.outGetIdByCookie).
+			Times(tt.countGetIdByCookie)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.GetIdByCookie(tt.input)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {

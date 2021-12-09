@@ -1042,7 +1042,7 @@ var GetPriceDelivery = []struct {
 		input:                    1,
 		inputQuery:               1,
 		outQuery:                 Row{row: []interface{}{1}},
-		testName:                 "One",
+		testName:                 "First",
 		outErr:                   "",
 		out:                      1,
 		errBeginTransaction:      nil,

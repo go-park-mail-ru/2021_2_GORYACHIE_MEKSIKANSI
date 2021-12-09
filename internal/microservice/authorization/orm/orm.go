@@ -462,7 +462,7 @@ func (db *Wrapper) GetIdByCookie(cookie *authPkg.Defense) (int, error) {
 
 	var timeLiveCookie time.Time
 	var id int
-	err = db.Conn.QueryRow(contextTransaction,
+	err = tx.QueryRow(contextTransaction,
 		"SELECT client_id, date_life FROM cookie WHERE session_id = $1",
 		cookie.SessionId).Scan(&id, &timeLiveCookie)
 	if err != nil {
