@@ -780,43 +780,52 @@ func TestUpdateCartRadios(t *testing.T) {
 }
 
 var UpdateCart = []struct {
-	testName                    string
-	inputClientId               int
-	inputCart                   cartPkg.RequestCartDefault
-	outOne                      *cartPkg.ResponseCartErrors
-	outTwo                      []cartPkg.CastDishesErrs
-	outErr                      string
-	inputInsertClientId         int
-	inputInsertFood             []int
-	inputInsertCountFood        []int
-	inputInsertRestaurantId     int
-	inputInsertNumberItem       []int
-	errInsert                   error
-	countInsert                 int
-	inputInsertDishId           int
-	inputQueryRestaurantId      int
-	outQuery                    Row
-	countQuery                  int
-	errBeginTransaction         error
-	inputQueryStruct            int
-	outQueryStruct              Row
-	countQueryStruct            int
-	inputInsertStructIngredient int
-	inputInsertStructClient     int
-	errInsertStruct             error
-	countInsertStruct           int
-	inputQueryRadios            int
-	outQueryRadios              Row
-	countQueryRadios            int
-	inputInsertRadiosId         int
-	inputInsertRadios           int
-	inputInsertClient           int
-	errInsertRadios             error
-	countInsertRadios           int
-	errCommitTransaction        error
-	countCommitTransaction      int
-	errRollbackTransaction      error
-	countRollbackTransaction    int
+	testName                      string
+	inputClientId                 int
+	inputCart                     cartPkg.RequestCartDefault
+	outOne                        *cartPkg.ResponseCartErrors
+	outTwo                        []cartPkg.CastDishesErrs
+	outErr                        string
+	errBeginTransaction           error
+	errCommitTransaction          error
+	countCommitTransaction        int
+	errRollbackTransaction        error
+	countRollbackTransaction      int
+	inputSelectDishesIdDish       int
+	inputSelectDishesIdRestaurant int
+	outSelectDishes               Row
+	errSelectDishes               error
+	countSelectDishes             int
+	inputInsertDishClientId       int
+	inputInsertDishFood           int
+	inputInsertDishCountFood      int
+	inputInsertDishRestaurantId   int
+	inputInsertDishNumberItem     int
+	inputInsertDishPlace          int
+	outInsertDish                 Row
+	countInsertDish               int
+	inputSelectRadios             int
+	outSelectRadios               Row
+	errSelectRadios               error
+	countSelectRadios             int
+	inputInsertRadiosId           int
+	inputInsertRadiosRadios       int
+	inputInsertRadiosClientId     int
+	inputInsertRadiosCartId       int
+	inputInsertRadiosPlace        int
+	errInsertRadios               error
+	countInsertRadios             int
+	inputSelectIngredient         int
+	outSelectIngredient           Row
+	errSelectIngredient           error
+	countSelectIngredient         int
+	inputInsertIngredientCheckbox int
+	inputInsertIngredientClient   int
+	inputInsertIngredientFood     int
+	inputInsertIngredientCartId   int
+	inputInsertIngredientPlace    int
+	errInsertIngredient           error
+	countInsertIngredient         int
 }{
 	{
 		testName:      "First",
@@ -885,39 +894,48 @@ var UpdateCart = []struct {
 			},
 			DishErr: []cartPkg.CastDishesErrs(nil),
 		},
-		outTwo:                      []cartPkg.CastDishesErrs(nil),
-		outErr:                      "",
-		inputInsertClientId:         1,
-		inputInsertFood:             []int{1},
-		inputInsertCountFood:        []int{1},
-		inputInsertRestaurantId:     1,
-		inputInsertNumberItem:       []int{1},
-		errInsert:                   nil,
-		countInsert:                 1,
-		inputInsertDishId:           1,
-		inputQueryRestaurantId:      1,
-		outQuery:                    Row{row: []interface{}{1, "1", 1, "1", "1", 1, 1, 1}},
-		countQuery:                  1,
-		errBeginTransaction:         nil,
-		inputQueryStruct:            1,
-		outQueryStruct:              Row{row: []interface{}{1, "1", 1}},
-		countQueryStruct:            1,
-		inputInsertStructIngredient: 1,
-		inputInsertStructClient:     1,
-		errInsertStruct:             nil,
-		countInsertStruct:           1,
-		inputQueryRadios:            1,
-		outQueryRadios:              Row{row: []interface{}{1, "1"}},
-		countQueryRadios:            1,
-		inputInsertRadiosId:         1,
-		inputInsertRadios:           1,
-		inputInsertClient:           1,
-		errInsertRadios:             nil,
-		countInsertRadios:           1,
-		errCommitTransaction:        nil,
-		countCommitTransaction:      1,
-		errRollbackTransaction:      nil,
-		countRollbackTransaction:    0,
+		outTwo:                        []cartPkg.CastDishesErrs(nil),
+		outErr:                        "",
+		errBeginTransaction:           nil,
+		errCommitTransaction:          nil,
+		countCommitTransaction:        1,
+		errRollbackTransaction:        nil,
+		countRollbackTransaction:      1,
+		inputSelectDishesIdDish:       1,
+		inputSelectDishesIdRestaurant: 1,
+		outSelectDishes:               Row{row: []interface{}{1, "1", 1, "1", "1", 1, 1, 1}},
+		errSelectDishes:               nil,
+		countSelectDishes:             1,
+		inputInsertDishClientId:       1,
+		inputInsertDishFood:           1,
+		inputInsertDishCountFood:      1,
+		inputInsertDishRestaurantId:   1,
+		inputInsertDishNumberItem:     1,
+		inputInsertDishPlace:          0,
+		outInsertDish:                 Row{row: []interface{}{1}},
+		countInsertDish:               1,
+		inputSelectRadios:             1,
+		outSelectRadios:               Row{row: []interface{}{1, "1"}},
+		errSelectRadios:               nil,
+		countSelectRadios:             1,
+		inputInsertRadiosId:           1,
+		inputInsertRadiosRadios:       1,
+		inputInsertRadiosClientId:     1,
+		inputInsertRadiosCartId:       1,
+		inputInsertRadiosPlace:        0,
+		errInsertRadios:               nil,
+		countInsertRadios:             1,
+		inputSelectIngredient:         1,
+		outSelectIngredient:           Row{row: []interface{}{1, "1", 1, 1}},
+		errSelectIngredient:           nil,
+		countSelectIngredient:         1,
+		inputInsertIngredientCheckbox: 1,
+		inputInsertIngredientClient:   1,
+		inputInsertIngredientFood:     1,
+		inputInsertIngredientCartId:   1,
+		inputInsertIngredientPlace:    0,
+		errInsertIngredient:           nil,
+		countInsertIngredient:         1,
 	},
 }
 
@@ -944,52 +962,55 @@ func TestUpdateCart(t *testing.T) {
 			Times(tt.countRollbackTransaction)
 		mTx.
 			EXPECT().
-			Exec(context.Background(),
+			QueryRow(context.Background(),
+				"SELECT id, avatar, cost, name, description, count, weight, kilocalorie FROM dishes WHERE id = $1 AND restaurant = $2",
+				tt.inputSelectDishesIdDish, tt.inputSelectDishesIdRestaurant,
+			).
+			Return(&tt.outSelectDishes).
+			Times(1)
+		mTx.
+			EXPECT().
+			QueryRow(context.Background(),
 				"INSERT INTO cart_food (client_id, food, count_food, restaurant_id, number_item, place) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
-				tt.inputInsertClientId, tt.inputInsertFood, tt.inputInsertCountFood, tt.inputInsertRestaurantId, tt.inputInsertNumberItem,
+				tt.inputInsertDishClientId, tt.inputInsertDishFood, tt.inputInsertDishCountFood,
+				tt.inputInsertDishRestaurantId, tt.inputInsertDishNumberItem, tt.inputInsertDishPlace,
 			).
-			Return(nil, tt.errInsert).
-			Times(tt.countInsert)
+			Return(&tt.outInsertDish).
+			Times(tt.countInsertDish)
+		mTx.
+			EXPECT().
+			QueryRow(context.Background(),
+				"SELECT id, name FROM structure_radios WHERE id = $1",
+				tt.inputSelectRadios,
+			).
+			Return(&tt.outSelectRadios).
+			Times(tt.countSelectRadios)
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"INSERT INTO cart_structure_food (checkbox, client_id) VALUES ($1, $2)",
-				tt.inputInsertStructIngredient, tt.inputInsertStructClient,
-			).
-			Return(nil, tt.errInsertStruct).
-			Times(tt.countInsertStruct)
-		mTx.
-			EXPECT().
-			Exec(context.Background(),
-				"INSERT INTO cart_radios_food (radios_id, radios, client_id) VALUES ($1, $2, $3)",
-				tt.inputInsertRadiosId, tt.inputInsertRadios, tt.inputInsertClient,
+				"INSERT INTO cart_radios_food (radios_id, radios, client_id, cart_id, place) VALUES ($1, $2, $3, $4, $5)",
+				tt.inputInsertRadiosId, tt.inputInsertRadiosRadios,
+				tt.inputInsertRadiosClientId, tt.inputInsertRadiosCartId, tt.inputInsertRadiosPlace,
 			).
 			Return(nil, tt.errInsertRadios).
 			Times(tt.countInsertRadios)
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT id, name FROM structure_radios WHERE id = $1",
-				tt.inputQueryRadios,
+				"SELECT id, name, cost, food FROM structure_dishes WHERE id = $1",
+				tt.inputSelectIngredient,
 			).
-			Return(&tt.outQueryRadios).
-			Times(tt.countQueryRadios)
+			Return(&tt.outSelectIngredient).
+			Times(tt.countSelectIngredient)
 		mTx.
 			EXPECT().
-			QueryRow(context.Background(),
-				"SELECT id, name, cost FROM structure_dishes WHERE id = $1",
-				tt.inputQueryStruct,
+			Exec(context.Background(),
+				"INSERT INTO cart_structure_food (checkbox, client_id, food, cart_id, place) VALUES ($1, $2, $3, $4, $5)",
+				tt.inputInsertIngredientCheckbox, tt.inputInsertIngredientClient, tt.inputInsertIngredientFood,
+				tt.inputInsertIngredientCartId, tt.inputInsertIngredientPlace,
 			).
-			Return(&tt.outQueryStruct).
-			Times(tt.countQueryStruct)
-		mTx.
-			EXPECT().
-			QueryRow(context.Background(),
-				"SELECT id, avatar, cost, name, description, count, weight, kilocalorie FROM dishes WHERE id = $1 AND restaurant = $2",
-				tt.inputInsertDishId, tt.inputQueryRestaurantId,
-			).
-			Return(&tt.outQuery).
-			Times(tt.countQuery)
+			Return(nil, tt.errInsertIngredient).
+			Times(tt.countSelectIngredient)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			resultOne, resultTwo, err := testUser.UpdateCart(tt.inputCart, tt.inputClientId)
@@ -1005,20 +1026,30 @@ func TestUpdateCart(t *testing.T) {
 }
 
 var GetPriceDelivery = []struct {
-	testName   string
-	out        int
-	outErr     string
-	input      int
-	outQuery   Row
-	inputQuery int
+	testName                 string
+	out                      int
+	outErr                   string
+	input                    int
+	outQuery                 Row
+	inputQuery               int
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
 }{
 	{
-		input:      1,
-		inputQuery: 1,
-		outQuery:   Row{row: []interface{}{1}},
-		testName:   "One",
-		outErr:     "",
-		out:        1,
+		input:                    1,
+		inputQuery:               1,
+		outQuery:                 Row{row: []interface{}{1}},
+		testName:                 "One",
+		outErr:                   "",
+		out:                      1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
 	},
 }
 
@@ -1027,8 +1058,23 @@ func TestGetPriceDelivery(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
 	for _, tt := range GetPriceDelivery {
 		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
 				"SELECT price_delivery FROM restaurant WHERE id = $1",
