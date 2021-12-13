@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package promocode;
+
+option go_package = "./";
+
+message Empty { }
+
+
+service RestaurantService {
+  rpc TempFunc(Empty) returns (Empty);
+}
