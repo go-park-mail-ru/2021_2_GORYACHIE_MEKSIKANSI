@@ -63,11 +63,12 @@ func (mr *MockWrapperCartInterfaceMockRecorder) DeleteCart(arg0 interface{}) *go
 }
 
 // DoPromoCode mocks base method.
-func (m *MockWrapperCartInterface) DoPromoCode(arg0 string, arg1 int, arg2 *cart.ResponseCartErrors) error {
+func (m *MockWrapperCartInterface) DoPromoCode(arg0 string, arg1 int, arg2 *cart.ResponseCartErrors) (*cart.ResponseCartErrors, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DoPromoCode", arg0, arg1, arg2)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(*cart.ResponseCartErrors)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // DoPromoCode indicates an expected call of DoPromoCode.
@@ -105,6 +106,21 @@ func (m *MockWrapperCartInterface) GetPriceDelivery(arg0 int) (int, error) {
 func (mr *MockWrapperCartInterfaceMockRecorder) GetPriceDelivery(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPriceDelivery", reflect.TypeOf((*MockWrapperCartInterface)(nil).GetPriceDelivery), arg0)
+}
+
+// GetPromoCode mocks base method.
+func (m *MockWrapperCartInterface) GetPromoCode(arg0 int) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPromoCode", arg0)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPromoCode indicates an expected call of GetPromoCode.
+func (mr *MockWrapperCartInterfaceMockRecorder) GetPromoCode(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPromoCode", reflect.TypeOf((*MockWrapperCartInterface)(nil).GetPromoCode), arg0)
 }
 
 // GetRestaurant mocks base method.

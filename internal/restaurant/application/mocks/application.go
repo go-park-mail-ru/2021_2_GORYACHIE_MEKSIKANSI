@@ -35,10 +35,10 @@ func (m *MockWrapperRestaurantServerInterface) EXPECT() *MockWrapperRestaurantSe
 }
 
 // AllRestaurants mocks base method.
-func (m *MockWrapperRestaurantServerInterface) AllRestaurants() (*restaurant.AllRestaurants, error) {
+func (m *MockWrapperRestaurantServerInterface) AllRestaurants() (*restaurant.AllRestaurantsPromo, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AllRestaurants")
-	ret0, _ := ret[0].(*restaurant.AllRestaurants)
+	ret0, _ := ret[0].(*restaurant.AllRestaurantsPromo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

@@ -15,6 +15,12 @@ type RestaurantApiInterface interface {
 	RestaurantHandler(ctx *fasthttp.RequestCtx)
 	RestaurantIdHandler(ctx *fasthttp.RequestCtx)
 	RestaurantDishesHandler(ctx *fasthttp.RequestCtx)
+	RecommendedRestaurantsHandler(ctx *fasthttp.RequestCtx)
+	UpdateFavouritesHandler(ctx *fasthttp.RequestCtx)
+	GetFavouritesHandler(ctx *fasthttp.RequestCtx)
+	SearchRestaurantHandler(ctx *fasthttp.RequestCtx)
+	GetReviewHandler(ctx *fasthttp.RequestCtx)
+	CreateReviewHandler(ctx *fasthttp.RequestCtx)
 }
 
 type InfoRestaurant struct {
@@ -37,6 +43,51 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	restaurant, err := r.Application.AllRestaurants()
+	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorRestaurant(err)
+	if errOut != nil {
+		switch errOut.Error() {
+		case errPkg.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errPkg.ErrMarshal))
+			return
+		case errPkg.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOutAccess)
+			return
+		}
+	}
+
+	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+		Status: http.StatusOK,
+		Body: &resPkg.RestaurantsResponse{
+			RestaurantsGet: restaurant,
+		},
+	})
+	if err != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		return
+	}
+
+	ctx.SetStatusCode(http.StatusOK)
+}
+
+func (r *InfoRestaurant) RecommendedRestaurantsHandler(ctx *fasthttp.RequestCtx) {
+	reqIdCtx := ctx.UserValue("reqId")
+	reqId, errConvert := util.InterfaceConvertInt(reqIdCtx)
+	if errConvert != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		r.Logger.Errorf("%s", errConvert.Error())
+	}
+
+	checkError := &errPkg.CheckError{
+		Logger:    r.Logger,
+		RequestId: reqId,
+	}
+
+	restaurant, err := r.Application.RecommendedRestaurants()
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorRestaurant(err)
 	if errOut != nil {
 		switch errOut.Error() {

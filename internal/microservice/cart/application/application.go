@@ -67,9 +67,17 @@ func (c *Cart) GetCart(id int) (*cartPkg.ResponseCartErrors, error) {
 	result.Cost = *cost
 	result.DishErr = errorDishes
 
-	err = c.DB.DoPromoCode(result.PromoCode.Code, result.Restaurant.Id, result)
+	promoCode, err := c.DB.GetPromoCode(id)
 	if err != nil {
 		return nil, err
+	}
+
+	if promoCode != "" {
+		result.PromoCode.Code = promoCode
+		result, err = c.DB.DoPromoCode(result.PromoCode.Code, result.Restaurant.Id, result)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return result, nil
 }
@@ -110,9 +118,11 @@ func (c *Cart) UpdateCart(dishes cartPkg.RequestCartDefault, clientId int) (*car
 		return nil, err
 	}
 
-	err = c.DB.DoPromoCode(dishes.PromoCode, result.Restaurant.Id, result)
-	if err != nil {
-		return nil, err
+	if dishes.PromoCode != "" {
+		result, err = c.DB.DoPromoCode(dishes.PromoCode, result.Restaurant.Id, result)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return result, nil
 }

@@ -86,7 +86,7 @@ func TestSignUp(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperAuthorization(ctrl)
+	m := mocks.NewMockWrapperAuthorizationInterface(ctrl)
 	for _, tt := range SignUp {
 		m.
 			EXPECT().
@@ -202,7 +202,7 @@ func TestLogin(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperAuthorization(ctrl)
+	m := mocks.NewMockWrapperAuthorizationInterface(ctrl)
 	for _, tt := range Login {
 		m.
 			EXPECT().
@@ -261,7 +261,7 @@ func TestLogout(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperAuthorization(ctrl)
+	m := mocks.NewMockWrapperAuthorizationInterface(ctrl)
 	for _, tt := range Logout {
 		m.
 			EXPECT().
@@ -316,7 +316,7 @@ func TestCheckAccess(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperAuthorization(ctrl)
+	m := mocks.NewMockWrapperAuthorizationInterface(ctrl)
 	for _, tt := range CheckAccess {
 		m.
 			EXPECT().
@@ -372,7 +372,7 @@ func TestNewCSRF(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperAuthorization(ctrl)
+	m := mocks.NewMockWrapperAuthorizationInterface(ctrl)
 	for _, tt := range NewCSRF {
 		m.
 			EXPECT().
@@ -428,7 +428,7 @@ func TestGetIdByCookie(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperAuthorization(ctrl)
+	m := mocks.NewMockWrapperAuthorizationInterface(ctrl)
 	for _, tt := range GetIdByCookie {
 		m.
 			EXPECT().

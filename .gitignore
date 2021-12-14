@@ -27,4 +27,12 @@ go.sum
 
 # configs
 **/*.env
-**/*.yml
+/config/*.yml
+/internal/microservice/authorization/config/*.yml
+/internal/microservice/cart/config/*.yml
+/internal/microservice/promocode/config/*.yml
+/internal/microservice/restaurant/config/*.yml
+
+#tests files
+cover
+cover_wo_mock

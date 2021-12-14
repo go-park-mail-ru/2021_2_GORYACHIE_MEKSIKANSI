@@ -256,8 +256,9 @@ const (
 	CGetPriceDeliveryNotCommit                     = "transaction get price delivery not commit" // TODO: add in checkErrors
 	CAddPromoCodeTransactionNotCreate              = "transaction add promo code not create"     // TODO: add in checkErrors
 	CAddPromoCodeNotCommit                         = "transaction add promo code not commit"     // TODO: add in checkErrors
-	CAddPromoCodeNotDelete                         = "promo not delete"                          // TODO: add in checkErrors
-	CAddPromoCodeNotInsert                         = "promo not insert"                          // TODO: add in checkErrors
+	CAddPromoCodeNotUpsert                         = "promo not upsert"                          // TODO: add in checkErrors
+	CDoPromoCodeNotSelectInfo                      = "promo code info not select"                // TODO: add in checkErrors
+	CDoPromoCodeNotSelectInfoDish                  = "info about free dish not select"           // TODO: add in checkErrors
 )
 
 // Error of order

@@ -106,22 +106,32 @@ func TestCalculateCost(t *testing.T) {
 }
 
 var GetCart = []struct {
-	testName              string
-	input                 int
-	out                   *cartPkg.ResponseCartErrors
-	outErr                string
-	inputGetCart          int
-	outGetCartResult      *cartPkg.ResponseCartErrors
-	outGetCartErrorDishes []cartPkg.CastDishesErrs
-	errGetCart            error
-	inputGetRestaurant    int
-	outGetRestaurant      *cartPkg.RestaurantId
-	errGetRestaurant      error
-	countGetRestaurant    int
-	inputGetPriceDelivery int
-	outGetPriceDelivery   int
-	errGetPriceDelivery   error
-	countGetPriceDelivery int
+	testName                   string
+	input                      int
+	out                        *cartPkg.ResponseCartErrors
+	outErr                     string
+	inputGetCart               int
+	outGetCartResult           *cartPkg.ResponseCartErrors
+	outGetCartErrorDishes      []cartPkg.CastDishesErrs
+	errGetCart                 error
+	inputGetRestaurant         int
+	outGetRestaurant           *cartPkg.RestaurantId
+	errGetRestaurant           error
+	countGetRestaurant         int
+	inputGetPriceDelivery      int
+	outGetPriceDelivery        int
+	errGetPriceDelivery        error
+	countGetPriceDelivery      int
+	inputDoPromoCodeCode       string
+	inputDoPromoCodeRestaurant int
+	inputDoPromoCodeResult     *cartPkg.ResponseCartErrors
+	outDoPromoCode             *cartPkg.ResponseCartErrors
+	errDoPromoCode             error
+	countDoPromoCode           int
+	inputGetPromoCode          int
+	outGetPromoCode            string
+	errGetPromoCode            error
+	countGetPromoCode          int
 }{
 	{
 		testName: "First",
@@ -141,6 +151,11 @@ var GetCart = []struct {
 				SumCost: 0,
 			},
 			DishErr: []cartPkg.CastDishesErrs{},
+			PromoCode: cartPkg.PromoCode{
+				Name:        "promocode",
+				Description: "a",
+				Code:        "code",
+			},
 		},
 		outErr:       "",
 		inputGetCart: 1,
@@ -148,6 +163,7 @@ var GetCart = []struct {
 			Restaurant: cartPkg.RestaurantIdCastResponse{
 				Id: 1,
 			},
+			PromoCode: cartPkg.PromoCode{Code: "promo"},
 		},
 		outGetCartErrorDishes: []cartPkg.CastDishesErrs{},
 		errGetCart:            nil,
@@ -155,12 +171,60 @@ var GetCart = []struct {
 		outGetRestaurant: &cartPkg.RestaurantId{
 			Id: 1,
 		},
-		errGetRestaurant:      nil,
-		countGetRestaurant:    1,
-		inputGetPriceDelivery: 1,
-		outGetPriceDelivery:   1,
-		errGetPriceDelivery:   nil,
-		countGetPriceDelivery: 0,
+		errGetRestaurant:           nil,
+		countGetRestaurant:         1,
+		inputGetPriceDelivery:      1,
+		outGetPriceDelivery:        1,
+		errGetPriceDelivery:        nil,
+		countGetPriceDelivery:      0,
+		inputDoPromoCodeCode:       "promo",
+		inputDoPromoCodeRestaurant: 1,
+		inputDoPromoCodeResult: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  1,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse(nil),
+			Cost: cartPkg.CostCartResponse{
+				DCost:   0,
+				SumCost: 0,
+			},
+			DishErr:   []cartPkg.CastDishesErrs{},
+			PromoCode: cartPkg.PromoCode{Code: "promo"},
+		},
+		outDoPromoCode: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  1,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse(nil),
+			Cost: cartPkg.CostCartResponse{
+				DCost:   0,
+				SumCost: 0,
+			},
+			DishErr: []cartPkg.CastDishesErrs{},
+			PromoCode: cartPkg.PromoCode{
+				Name:        "promocode",
+				Code:        "code",
+				Description: "a",
+			},
+		},
+		errDoPromoCode:    nil,
+		countDoPromoCode:  1,
+		inputGetPromoCode: 1,
+		outGetPromoCode:   "promo",
+		errGetPromoCode:   nil,
+		countGetPromoCode: 1,
 	},
 }
 
@@ -184,6 +248,16 @@ func TestApplicationGetCart(t *testing.T) {
 			GetPriceDelivery(tt.inputGetPriceDelivery).
 			Return(tt.outGetPriceDelivery, tt.errGetPriceDelivery).
 			Times(tt.countGetPriceDelivery)
+		m.
+			EXPECT().
+			DoPromoCode(tt.inputDoPromoCodeCode, tt.inputDoPromoCodeRestaurant, tt.inputDoPromoCodeResult).
+			Return(tt.outDoPromoCode, tt.errDoPromoCode).
+			Times(tt.countDoPromoCode)
+		m.
+			EXPECT().
+			GetPromoCode(tt.inputGetPromoCode).
+			Return(tt.outGetPromoCode, tt.errGetPromoCode).
+			Times(tt.countGetPromoCode)
 
 		test := Cart{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
@@ -199,27 +273,38 @@ func TestApplicationGetCart(t *testing.T) {
 }
 
 var UpdateCart = []struct {
-	testName                 string
-	inputDishes              cartPkg.RequestCartDefault
-	inputId                  int
-	out                      *cartPkg.ResponseCartErrors
-	outErr                   string
-	inputDeleteCart          int
-	errDeleteCart            error
-	inputUpdateCartDishes    cartPkg.RequestCartDefault
-	inputUpdateCartId        int
-	outUpdateCartResult      *cartPkg.ResponseCartErrors
-	outUpdateCartErrorDishes []cartPkg.CastDishesErrs
-	errUpdateCart            error
-	countUpdateCart          int
-	inputGetRestaurant       int
-	outGetRestaurant         *cartPkg.RestaurantId
-	errGetRestaurant         error
-	countGetRestaurant       int
-	inputGetPriceDelivery    int
-	outGetPriceDelivery      int
-	errGetPriceDelivery      error
-	countGetPriceDelivery    int
+	testName                    string
+	inputDishes                 cartPkg.RequestCartDefault
+	inputId                     int
+	out                         *cartPkg.ResponseCartErrors
+	outErr                      string
+	inputDeleteCart             int
+	errDeleteCart               error
+	inputUpdateCartDishes       cartPkg.RequestCartDefault
+	inputUpdateCartId           int
+	outUpdateCartResult         *cartPkg.ResponseCartErrors
+	outUpdateCartErrorDishes    []cartPkg.CastDishesErrs
+	errUpdateCart               error
+	countUpdateCart             int
+	inputGetRestaurant          int
+	outGetRestaurant            *cartPkg.RestaurantId
+	errGetRestaurant            error
+	countGetRestaurant          int
+	inputGetPriceDelivery       int
+	outGetPriceDelivery         int
+	errGetPriceDelivery         error
+	countGetPriceDelivery       int
+	inputAddPromoCodeCode       string
+	inputAddPromoCodeRestaurant int
+	inputAddPromoCodeClientId   int
+	errAddPromoCode             error
+	countAddPromoCode           int
+	inputDoPromoCodeCode        string
+	inputDoPromoCodeRestaurant  int
+	inputDoPromoCodeResult      *cartPkg.ResponseCartErrors
+	outDoPromoCode              *cartPkg.ResponseCartErrors
+	errDoPromoCode              error
+	countDoPromoCode            int
 }{
 	{
 		testName: "First",
@@ -227,6 +312,7 @@ var UpdateCart = []struct {
 			Restaurant: cartPkg.RestaurantRequest{
 				Id: 1,
 			},
+			PromoCode: "promo",
 		},
 		inputId: 1,
 		out: &cartPkg.ResponseCartErrors{
@@ -245,6 +331,11 @@ var UpdateCart = []struct {
 				SumCost: 0,
 			},
 			DishErr: []cartPkg.CastDishesErrs{},
+			PromoCode: cartPkg.PromoCode{
+				Name:        "promocode",
+				Code:        "code",
+				Description: "a",
+			},
 		},
 		outErr:          "",
 		inputDeleteCart: 1,
@@ -253,6 +344,7 @@ var UpdateCart = []struct {
 			Restaurant: cartPkg.RestaurantRequest{
 				Id: 1,
 			},
+			PromoCode: "promo",
 		},
 		inputUpdateCartId: 1,
 		outUpdateCartResult: &cartPkg.ResponseCartErrors{
@@ -266,13 +358,61 @@ var UpdateCart = []struct {
 		outGetRestaurant: &cartPkg.RestaurantId{
 			Id: 1,
 		},
-		errGetRestaurant:      nil,
-		countGetRestaurant:    1,
-		countUpdateCart:       1,
-		inputGetPriceDelivery: 1,
-		outGetPriceDelivery:   1,
-		errGetPriceDelivery:   nil,
-		countGetPriceDelivery: 0,
+		errGetRestaurant:            nil,
+		countGetRestaurant:          1,
+		countUpdateCart:             1,
+		inputGetPriceDelivery:       1,
+		outGetPriceDelivery:         1,
+		errGetPriceDelivery:         nil,
+		countGetPriceDelivery:       0,
+		inputAddPromoCodeCode:       "promo",
+		inputAddPromoCodeRestaurant: 1,
+		inputAddPromoCodeClientId:   1,
+		errAddPromoCode:             nil,
+		countAddPromoCode:           1,
+		inputDoPromoCodeCode:        "promo",
+		inputDoPromoCodeRestaurant:  1,
+		inputDoPromoCodeResult: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  1,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse(nil),
+			Cost: cartPkg.CostCartResponse{
+				DCost:   0,
+				SumCost: 0,
+			},
+			DishErr: []cartPkg.CastDishesErrs{},
+		},
+		outDoPromoCode: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  1,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse(nil),
+			Cost: cartPkg.CostCartResponse{
+				DCost:   0,
+				SumCost: 0,
+			},
+			DishErr: []cartPkg.CastDishesErrs{},
+			PromoCode: cartPkg.PromoCode{
+				Name:        "promocode",
+				Code:        "code",
+				Description: "a",
+			},
+		},
+		errDoPromoCode:   nil,
+		countDoPromoCode: 1,
 	},
 }
 
@@ -301,6 +441,16 @@ func TestApplicationUpdateCart(t *testing.T) {
 			GetPriceDelivery(tt.inputGetPriceDelivery).
 			Return(tt.outGetPriceDelivery, tt.errGetPriceDelivery).
 			Times(tt.countGetPriceDelivery)
+		m.
+			EXPECT().
+			AddPromoCode(tt.inputAddPromoCodeCode, tt.inputAddPromoCodeRestaurant, tt.inputAddPromoCodeClientId).
+			Return(tt.errAddPromoCode).
+			Times(tt.countAddPromoCode)
+		m.
+			EXPECT().
+			DoPromoCode(tt.inputDoPromoCodeCode, tt.inputDoPromoCodeRestaurant, tt.inputDoPromoCodeResult).
+			Return(tt.outDoPromoCode, tt.errDoPromoCode).
+			Times(tt.countDoPromoCode)
 
 		test := Cart{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {

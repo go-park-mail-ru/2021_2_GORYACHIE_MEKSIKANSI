@@ -8,6 +8,7 @@ import (
 
 type RestaurantApplicationInterface interface {
 	AllRestaurants() (*resPkg.AllRestaurantsPromo, error)
+	RecommendedRestaurants() (*resPkg.AllRestaurants, error)
 	GetRestaurant(id int, idClient int) (*resPkg.RestaurantId, error)
 	RestaurantDishes(restId int, dishId int) (*resPkg.Dishes, error)
 	CreateReview(id int, review resPkg.NewReview) error
@@ -51,4 +52,8 @@ func (r *Restaurant) GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error
 
 func (r *Restaurant) EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error) {
 	return r.DB.EditRestaurantInFavorite(idRestaurant, idClient)
+}
+
+func (r *Restaurant) RecommendedRestaurants() (*resPkg.AllRestaurants, error) {
+	return r.DB.RecommendedRestaurants()
 }

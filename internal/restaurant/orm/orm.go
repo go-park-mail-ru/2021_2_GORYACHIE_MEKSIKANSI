@@ -12,6 +12,7 @@ import (
 
 type WrapperRestaurantServerInterface interface {
 	AllRestaurants() (*restaurant.AllRestaurantsPromo, error)
+	RecommendedRestaurants() (*restaurant.AllRestaurants, error)
 	GetRestaurant(id int, idClient int) (*restaurant.RestaurantId, error)
 	RestaurantDishes(restId int, dishId int) (*restaurant.Dishes, error)
 	CreateReview(id int, review restaurant.NewReview) error
@@ -23,6 +24,7 @@ type WrapperRestaurantServerInterface interface {
 
 type ConnectRestaurantServiceInterface interface {
 	AllRestaurants(ctx context.Context, in *resProto.Empty, opts ...grpc.CallOption) (*resProto.RestaurantsTagsPromo, error)
+	GetRecommendedRestaurants(ctx context.Context, in *resProto.Empty, opts ...grpc.CallOption) (*resProto.RecommendedRestaurants, error)
 	GetRestaurant(ctx context.Context, in *resProto.RestaurantId, opts ...grpc.CallOption) (*resProto.RestaurantInfo, error)
 	RestaurantDishes(ctx context.Context, in *resProto.DishInfo, opts ...grpc.CallOption) (*resProto.Dishes, error)
 	CreateReview(ctx context.Context, in *resProto.NewReview, opts ...grpc.CallOption) (*resProto.Error, error)
@@ -46,6 +48,17 @@ func (r *Wrapper) AllRestaurants() (*restaurant.AllRestaurantsPromo, error) {
 		return nil, &errPkg.Errors{Text: restaurants.Error}
 	}
 	return cast.CastRestaurantsTagsProtoToAllRestaurants(restaurants), nil
+}
+
+func (r *Wrapper) RecommendedRestaurants() (*restaurant.AllRestaurants, error) {
+	restaurants, err := r.Conn.GetRecommendedRestaurants(r.Ctx, &resProto.Empty{})
+	if err != nil {
+		return nil, err
+	}
+	if restaurants.Error != "" {
+		return nil, &errPkg.Errors{Text: restaurants.Error}
+	}
+	return cast.CastRecommendedRestaurantsProtoToAllRestaurants(restaurants), nil
 }
 
 func (r *Wrapper) GetRestaurant(id int, idClient int) (*restaurant.RestaurantId, error) {

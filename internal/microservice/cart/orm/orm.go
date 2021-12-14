@@ -18,7 +18,8 @@ type WrapperCartInterface interface {
 	GetPriceDelivery(id int) (int, error)
 	GetRestaurant(id int) (*cartPkg.RestaurantId, error)
 	AddPromoCode(promoCode string, restaurantId int, clientId int) error
-	DoPromoCode(promoCode string, restaurantId int, cart *cartPkg.ResponseCartErrors) error
+	DoPromoCode(promoCode string, restaurantId int, cart *cartPkg.ResponseCartErrors) (*cartPkg.ResponseCartErrors, error)
+	GetPromoCode(id int) (string, error)
 }
 
 type ConnectionInterface interface {
@@ -392,6 +393,7 @@ func (db *Wrapper) GetPriceDelivery(id int) (int, error) {
 	return price, nil
 }
 
+//TODO: call microservice
 func (db *Wrapper) GetRestaurant(id int) (*cartPkg.RestaurantId, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
@@ -436,19 +438,11 @@ func (db *Wrapper) AddPromoCode(promoCode string, restaurantId int, clientId int
 	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
-		"DELETE FROM cart_user WHERE client_id = $1", clientId)
-	if err != nil {
-		return &errPkg.Errors{
-			Alias: errPkg.CAddPromoCodeNotDelete,
-		}
-	}
-
-	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3)",
+		"INSERT INTO cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3) ON CONFLICT (promo_code, client_id) DO UPDATE SET promo_code = $2 WHERE cart_user.client_id =  $1",
 		clientId, promoCode, restaurantId)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.CAddPromoCodeNotInsert,
+			Alias: errPkg.CAddPromoCodeNotUpsert,
 		}
 	}
 
@@ -461,15 +455,60 @@ func (db *Wrapper) AddPromoCode(promoCode string, restaurantId int, clientId int
 	return nil
 }
 
-func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg.ResponseCartErrors) error {
+//TODO: make errors
+func (db *Wrapper) GetPromoCode(id int) (string, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return "", &errPkg.Errors{
+			Alias: errPkg.CAddPromoCodeTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	var promoCode string
+	err = tx.QueryRow(contextTransaction,
+		"SELECT promo_code FROM cart_user WHERE client_id = $1", id).Scan(&promoCode)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return "", nil
+		}
+		return "", &errPkg.Errors{
+			Alias: errPkg.CAddPromoCodeNotUpsert,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return "", &errPkg.Errors{
+			Alias: errPkg.CAddPromoCodeNotCommit,
+		}
+	}
+	return promoCode, nil
+}
+
+func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg.ResponseCartErrors) (*cartPkg.ResponseCartErrors, error) {
 	typePromoCode, err := db.ConnPromoService.GetTypePromoCode(db.Ctx, &promoProtoPkg.PromoCodeWithRestaurantId{
 		PromoCode:  promoCode,
 		Restaurant: int64(restaurantId),
 	},
 	)
 	if err != nil {
-		return err
-	} // TODO: make define
+		return nil, err
+	}
+
+	transactionPromoCode := context.Background()
+	tx, err := db.Conn.Begin(transactionPromoCode)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.CDoPromoCodeNotSelectInfo,
+		}
+	}
+
+	defer tx.Rollback(transactionPromoCode)
+
+	// TODO: make define
 	switch typePromoCode.Type {
 	case 1:
 		{
@@ -479,17 +518,82 @@ func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg
 			},
 			)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			cart.Cost.DCost = int(newCost.Cost)
 		}
+	case 2:
+		{
+			newCost, err := db.ConnPromoService.ActiveCostForSale(db.Ctx, &promoProtoPkg.PromoCodeWithAmount{
+				PromoCode:  promoCode,
+				Amount:     int64(cart.Cost.SumCost),
+				Restaurant: int64(restaurantId),
+			},
+			)
+			if err != nil {
+				return nil, err
+			}
+			cart.Cost.SumCost = int(newCost.Cost)
+		}
+	case 3:
+		{
+			newCost, err := db.ConnPromoService.ActiveTimeForSale(db.Ctx, &promoProtoPkg.PromoCodeWithAmount{
+				PromoCode:  promoCode,
+				Amount:     int64(cart.Cost.SumCost),
+				Restaurant: int64(restaurantId),
+			},
+			)
+			if err != nil {
+				return nil, err
+			}
+			cart.Cost.SumCost = int(newCost.Cost)
+		}
+	case 4:
+		{
+			freeDishId, err := db.ConnPromoService.ActiveCostForFreeDish(db.Ctx, &promoProtoPkg.PromoCodeWithRestaurantId{
+				PromoCode:  promoCode,
+				Restaurant: int64(restaurantId),
+			},
+			)
+			if err != nil {
+				return nil, err
+			}
+			var newDish cartPkg.DishesCartResponse
+			err = tx.QueryRow(transactionPromoCode,
+				"SELECT avatar, name, kilocalorie, weight, description FROM dishes WHERE id = $1 AND count > 1",
+				int(freeDishId.DishId)).Scan(&newDish.Img, &newDish.Name, &newDish.Kilocalorie,
+				&newDish.Weight, &newDish.Description)
+			if err != nil {
+				return nil, &errPkg.Errors{
+					Alias: errPkg.CDoPromoCodeNotSelectInfoDish,
+				}
+			}
+
+			newDish.Count = 1
+			newDish.Cost = 0
+			newDish.ItemNumber = 0
+			newDish.Id = int(freeDishId.DishId)
+			newDish.RadiosCart = []cartPkg.RadiosCartResponse{}
+			newDish.IngredientCart = []cartPkg.IngredientCartResponse{}
+
+			cart.Dishes = append(cart.Dishes, newDish)
+		}
 	}
 
-	transactionPromoCode := context.Background()
-	tx, err := db.Conn.Begin(transactionPromoCode)
 	err = tx.QueryRow(transactionPromoCode,
 		"SELECT name, description FROM promocode WHERE code = $1 AND restaurant = $2",
 		promoCode, restaurantId).Scan(&cart.PromoCode.Name, &cart.PromoCode.Description)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.CDoPromoCodeNotSelectInfo,
+		}
+	}
+	err = tx.Commit(transactionPromoCode)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.CDoPromoCodeNotSelectInfo,
+		}
+	}
 	cart.PromoCode.Code = promoCode
-	return nil
+	return cart, nil
 }

@@ -4,6 +4,7 @@ import (
 	cartPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/orm/mocks"
+	promoProtoPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/promocode/proto"
 	"context"
 	"errors"
 	"fmt"
@@ -1031,6 +1032,7 @@ var GetPriceDelivery = []struct {
 	outErr                   string
 	input                    int
 	outQuery                 Row
+	countQuery               int
 	inputQuery               int
 	errBeginTransaction      error
 	errCommitTransaction     error
@@ -1042,6 +1044,7 @@ var GetPriceDelivery = []struct {
 		input:                    1,
 		inputQuery:               1,
 		outQuery:                 Row{row: []interface{}{1}},
+		countQuery:               1,
 		testName:                 "First",
 		outErr:                   "",
 		out:                      1,
@@ -1080,10 +1083,727 @@ func TestGetPriceDelivery(t *testing.T) {
 				"SELECT price_delivery FROM restaurant WHERE id = $1",
 				tt.inputQuery,
 			).
-			Return(&tt.outQuery)
+			Return(&tt.outQuery).
+			Times(tt.countQuery)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetPriceDelivery(tt.input)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var AddPromoCode = []struct {
+	testName                 string
+	outErr                   string
+	inputQueryClient         int
+	inputQueryPromoCode      string
+	inputQueryRestaurant     int
+	inputPromoCode           string
+	inputRestaurantId        int
+	inputClientId            int
+	errQuery                 error
+	countQuery               int
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
+}{
+	{
+		testName:                 "First",
+		outErr:                   "",
+		inputQueryClient:         1,
+		inputQueryPromoCode:      "promo",
+		inputQueryRestaurant:     1,
+		inputPromoCode:           "promo",
+		inputRestaurantId:        1,
+		inputClientId:            1,
+		errQuery:                 nil,
+		countQuery:               1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+	},
+}
+
+func TestAddPromoCode(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range AddPromoCode {
+		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
+			EXPECT().
+			Exec(context.Background(),
+				"INSERT INTO cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3) ON CONFLICT (promo_code) DO UPDATE SET promo_code = $2",
+				tt.inputQueryClient, tt.inputQueryPromoCode, tt.inputQueryRestaurant,
+			).
+			Return(nil, tt.errQuery).
+			Times(tt.countQuery)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			err := testUser.AddPromoCode(tt.inputPromoCode, tt.inputRestaurantId, tt.inputClientId)
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var DoPromoCode = []struct {
+	testName                             string
+	inputCart                            *cartPkg.ResponseCartErrors
+	inputPromoCode                       string
+	inputRestaurantId                    int
+	out                                  *cartPkg.ResponseCartErrors
+	outErr                               string
+	inputSelectPromoCodeInfoPromoCode    string
+	inputSelectPromoCodeInfoRestaurantId int
+	outSelectPromoCodeInfo               Row
+	countSelectPromoCodeInfo             int
+	inputGetTypePromoCode                *promoProtoPkg.PromoCodeWithRestaurantId
+	outGetTypePromoCode                  *promoProtoPkg.TypePromoCodeResponse
+	errGetTypePromoCode                  error
+	countGetTypePromoCode                int
+	errBeginTransaction                  error
+	errCommitTransaction                 error
+	countCommitTransaction               int
+	errRollbackTransaction               error
+	countRollbackTransaction             int
+
+	inputActiveCostForFreeDelivery *promoProtoPkg.PromoCodeWithRestaurantId
+	outActiveCostForFreeDelivery   *promoProtoPkg.NewCostResponse
+	errActiveCostForFreeDelivery   error
+	countActiveCostForFreeDelivery int
+
+	inputActiveCostForSale *promoProtoPkg.PromoCodeWithAmount
+	outActiveCostForSale   *promoProtoPkg.NewCostResponse
+	errActiveCostForSale   error
+	countActiveCostForSale int
+
+	inputActiveTimeForSale *promoProtoPkg.PromoCodeWithAmount
+	outActiveTimeForSale   *promoProtoPkg.NewCostResponse
+	errActiveTimeForSale   error
+	countActiveTimeForSale int
+
+	inputActiveCostForFreeDish *promoProtoPkg.PromoCodeWithRestaurantId
+	outActiveCostForFreeDish   *promoProtoPkg.FreeDishResponse
+	errActiveCostForFreeDish   error
+	countActiveCostForFreeDish int
+
+	inputSelectInfoDish int
+	outSelectInfoDish   Row
+	countSelectInfoDish int
+}{
+	{
+		testName:          "Type 1",
+		inputPromoCode:    "promo",
+		inputRestaurantId: 1,
+		inputCart: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  0,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse{
+				{
+					Id:          1,
+					ItemNumber:  0,
+					Img:         "1",
+					Name:        "1",
+					Count:       1,
+					Cost:        1,
+					Kilocalorie: 1,
+					Weight:      1,
+					Description: "1",
+					RadiosCart: []cartPkg.RadiosCartResponse{
+						{
+							Name:     "1",
+							RadiosId: 0,
+							Id:       1,
+						},
+					},
+					IngredientCart: []cartPkg.IngredientCartResponse{
+						{
+							Name: "1",
+							Id:   1,
+							Cost: 1,
+						},
+					},
+				},
+			},
+			Cost: cartPkg.CostCartResponse{
+				DCost:   100,
+				SumCost: 500,
+			},
+			DishErr: []cartPkg.CastDishesErrs(nil),
+		},
+		out: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  0,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse{
+				{
+					Id:          1,
+					ItemNumber:  0,
+					Img:         "1",
+					Name:        "1",
+					Count:       1,
+					Cost:        1,
+					Kilocalorie: 1,
+					Weight:      1,
+					Description: "1",
+					RadiosCart: []cartPkg.RadiosCartResponse{
+						{
+							Name:     "1",
+							RadiosId: 0,
+							Id:       1,
+						},
+					},
+					IngredientCart: []cartPkg.IngredientCartResponse{
+						{
+							Name: "1",
+							Id:   1,
+							Cost: 1,
+						},
+					},
+				},
+			},
+			Cost: cartPkg.CostCartResponse{
+				DCost:   0,
+				SumCost: 500,
+			},
+			PromoCode: cartPkg.PromoCode{
+				Name:        "Double Time",
+				Description: "Description",
+				Code:        "promo",
+			},
+			DishErr: []cartPkg.CastDishesErrs(nil),
+		},
+		outErr:                               "",
+		inputSelectPromoCodeInfoPromoCode:    "promo",
+		inputSelectPromoCodeInfoRestaurantId: 1,
+		outSelectPromoCodeInfo:               Row{row: []interface{}{"Double Time", "Description"}},
+		countSelectPromoCodeInfo:             1,
+		inputGetTypePromoCode: &promoProtoPkg.PromoCodeWithRestaurantId{
+			PromoCode:  "promo",
+			Restaurant: 1,
+		},
+		outGetTypePromoCode:      &promoProtoPkg.TypePromoCodeResponse{Type: 1},
+		errGetTypePromoCode:      nil,
+		countGetTypePromoCode:    1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+
+		inputActiveCostForFreeDelivery: &promoProtoPkg.PromoCodeWithRestaurantId{
+			Restaurant: 1,
+			PromoCode:  "promo",
+		},
+		outActiveCostForFreeDelivery: &promoProtoPkg.NewCostResponse{
+			Cost: 0,
+		},
+		errActiveCostForFreeDelivery:   nil,
+		countActiveCostForFreeDelivery: 1,
+		countActiveCostForFreeDish:     0,
+		countActiveCostForSale:         0,
+		countActiveTimeForSale:         0,
+		countSelectInfoDish:            0,
+	},
+	{
+		testName:          "Type 2",
+		inputPromoCode:    "promo",
+		inputRestaurantId: 1,
+		inputCart: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  0,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse{
+				{
+					Id:          1,
+					ItemNumber:  0,
+					Img:         "1",
+					Name:        "1",
+					Count:       1,
+					Cost:        1,
+					Kilocalorie: 1,
+					Weight:      1,
+					Description: "1",
+					RadiosCart: []cartPkg.RadiosCartResponse{
+						{
+							Name:     "1",
+							RadiosId: 0,
+							Id:       1,
+						},
+					},
+					IngredientCart: []cartPkg.IngredientCartResponse{
+						{
+							Name: "1",
+							Id:   1,
+							Cost: 1,
+						},
+					},
+				},
+			},
+			Cost: cartPkg.CostCartResponse{
+				DCost:   100,
+				SumCost: 500,
+			},
+			DishErr: []cartPkg.CastDishesErrs(nil),
+		},
+		out: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  0,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse{
+				{
+					Id:          1,
+					ItemNumber:  0,
+					Img:         "1",
+					Name:        "1",
+					Count:       1,
+					Cost:        1,
+					Kilocalorie: 1,
+					Weight:      1,
+					Description: "1",
+					RadiosCart: []cartPkg.RadiosCartResponse{
+						{
+							Name:     "1",
+							RadiosId: 0,
+							Id:       1,
+						},
+					},
+					IngredientCart: []cartPkg.IngredientCartResponse{
+						{
+							Name: "1",
+							Id:   1,
+							Cost: 1,
+						},
+					},
+				},
+			},
+			Cost: cartPkg.CostCartResponse{
+				DCost:   100,
+				SumCost: 100,
+			},
+			PromoCode: cartPkg.PromoCode{
+				Name:        "Double Time",
+				Description: "Description",
+				Code:        "promo",
+			},
+			DishErr: []cartPkg.CastDishesErrs(nil),
+		},
+		outErr:                               "",
+		inputSelectPromoCodeInfoPromoCode:    "promo",
+		inputSelectPromoCodeInfoRestaurantId: 1,
+		outSelectPromoCodeInfo:               Row{row: []interface{}{"Double Time", "Description"}},
+		countSelectPromoCodeInfo:             1,
+		inputGetTypePromoCode: &promoProtoPkg.PromoCodeWithRestaurantId{
+			PromoCode:  "promo",
+			Restaurant: 1,
+		},
+		outGetTypePromoCode:      &promoProtoPkg.TypePromoCodeResponse{Type: 2},
+		errGetTypePromoCode:      nil,
+		countGetTypePromoCode:    1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+
+		inputActiveCostForSale: &promoProtoPkg.PromoCodeWithAmount{
+			Amount:     500,
+			PromoCode:  "promo",
+			Restaurant: 1,
+		},
+		outActiveCostForSale:   &promoProtoPkg.NewCostResponse{Cost: 100},
+		errActiveCostForSale:   nil,
+		countActiveCostForSale: 1,
+	},
+	{
+		testName:          "Type 3",
+		inputPromoCode:    "promo",
+		inputRestaurantId: 1,
+		inputCart: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  0,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse{
+				{
+					Id:          1,
+					ItemNumber:  0,
+					Img:         "1",
+					Name:        "1",
+					Count:       1,
+					Cost:        1,
+					Kilocalorie: 1,
+					Weight:      1,
+					Description: "1",
+					RadiosCart: []cartPkg.RadiosCartResponse{
+						{
+							Name:     "1",
+							RadiosId: 0,
+							Id:       1,
+						},
+					},
+					IngredientCart: []cartPkg.IngredientCartResponse{
+						{
+							Name: "1",
+							Id:   1,
+							Cost: 1,
+						},
+					},
+				},
+			},
+			Cost: cartPkg.CostCartResponse{
+				DCost:   100,
+				SumCost: 500,
+			},
+			DishErr: []cartPkg.CastDishesErrs(nil),
+		},
+		out: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  0,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse{
+				{
+					Id:          1,
+					ItemNumber:  0,
+					Img:         "1",
+					Name:        "1",
+					Count:       1,
+					Cost:        1,
+					Kilocalorie: 1,
+					Weight:      1,
+					Description: "1",
+					RadiosCart: []cartPkg.RadiosCartResponse{
+						{
+							Name:     "1",
+							RadiosId: 0,
+							Id:       1,
+						},
+					},
+					IngredientCart: []cartPkg.IngredientCartResponse{
+						{
+							Name: "1",
+							Id:   1,
+							Cost: 1,
+						},
+					},
+				},
+			},
+			Cost: cartPkg.CostCartResponse{
+				DCost:   100,
+				SumCost: 20,
+			},
+			PromoCode: cartPkg.PromoCode{
+				Name:        "Double Time",
+				Description: "Description",
+				Code:        "promo",
+			},
+			DishErr: []cartPkg.CastDishesErrs(nil),
+		},
+		outErr:                               "",
+		inputSelectPromoCodeInfoPromoCode:    "promo",
+		inputSelectPromoCodeInfoRestaurantId: 1,
+		outSelectPromoCodeInfo:               Row{row: []interface{}{"Double Time", "Description"}},
+		countSelectPromoCodeInfo:             1,
+		inputGetTypePromoCode: &promoProtoPkg.PromoCodeWithRestaurantId{
+			PromoCode:  "promo",
+			Restaurant: 1,
+		},
+		outGetTypePromoCode:      &promoProtoPkg.TypePromoCodeResponse{Type: 3},
+		errGetTypePromoCode:      nil,
+		countGetTypePromoCode:    1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+
+		inputActiveTimeForSale: &promoProtoPkg.PromoCodeWithAmount{
+			Amount:     500,
+			PromoCode:  "promo",
+			Restaurant: 1,
+		},
+		outActiveTimeForSale: &promoProtoPkg.NewCostResponse{
+			Cost: 20,
+		},
+		errActiveTimeForSale:   nil,
+		countActiveTimeForSale: 1,
+	},
+	{
+		testName:          "Type 4",
+		inputPromoCode:    "promo",
+		inputRestaurantId: 1,
+		inputCart: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  0,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse{
+				{
+					Id:          1,
+					ItemNumber:  0,
+					Img:         "1",
+					Name:        "1",
+					Count:       1,
+					Cost:        1,
+					Kilocalorie: 1,
+					Weight:      1,
+					Description: "1",
+					RadiosCart: []cartPkg.RadiosCartResponse{
+						{
+							Name:     "1",
+							RadiosId: 0,
+							Id:       1,
+						},
+					},
+					IngredientCart: []cartPkg.IngredientCartResponse{
+						{
+							Name: "1",
+							Id:   1,
+							Cost: 1,
+						},
+					},
+				},
+			},
+			Cost: cartPkg.CostCartResponse{
+				DCost:   100,
+				SumCost: 500,
+			},
+			DishErr: []cartPkg.CastDishesErrs(nil),
+		},
+		out: &cartPkg.ResponseCartErrors{
+			Restaurant: cartPkg.RestaurantIdCastResponse{
+				Id:                  0,
+				Img:                 "",
+				Name:                "",
+				CostForFreeDelivery: 0,
+				MinDelivery:         0,
+				MaxDelivery:         0,
+				Rating:              0,
+			},
+			Dishes: []cartPkg.DishesCartResponse{
+				{
+					Id:          1,
+					ItemNumber:  0,
+					Img:         "1",
+					Name:        "1",
+					Count:       1,
+					Cost:        1,
+					Kilocalorie: 1,
+					Weight:      1,
+					Description: "1",
+					RadiosCart: []cartPkg.RadiosCartResponse{
+						{
+							Name:     "1",
+							RadiosId: 0,
+							Id:       1,
+						},
+					},
+					IngredientCart: []cartPkg.IngredientCartResponse{
+						{
+							Name: "1",
+							Id:   1,
+							Cost: 1,
+						},
+					},
+				},
+				{
+					Id:             1,
+					ItemNumber:     0,
+					Img:            "/url/url/",
+					Name:           "Бесплатное кофе",
+					Count:          1,
+					Cost:           0,
+					Kilocalorie:    100,
+					Weight:         500,
+					Description:    "Очень вкусный и очень бесплатный кофе",
+					RadiosCart:     []cartPkg.RadiosCartResponse{},
+					IngredientCart: []cartPkg.IngredientCartResponse{},
+				},
+			},
+			Cost: cartPkg.CostCartResponse{
+				DCost:   100,
+				SumCost: 500,
+			},
+			PromoCode: cartPkg.PromoCode{
+				Name:        "Double Time",
+				Description: "Description",
+				Code:        "promo",
+			},
+			DishErr: []cartPkg.CastDishesErrs(nil),
+		},
+		outErr:                               "",
+		inputSelectPromoCodeInfoPromoCode:    "promo",
+		inputSelectPromoCodeInfoRestaurantId: 1,
+		outSelectPromoCodeInfo:               Row{row: []interface{}{"Double Time", "Description"}},
+		countSelectPromoCodeInfo:             1,
+		inputGetTypePromoCode: &promoProtoPkg.PromoCodeWithRestaurantId{
+			PromoCode:  "promo",
+			Restaurant: 1,
+		},
+		outGetTypePromoCode:      &promoProtoPkg.TypePromoCodeResponse{Type: 4},
+		errGetTypePromoCode:      nil,
+		countGetTypePromoCode:    1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+
+		inputActiveCostForFreeDish: &promoProtoPkg.PromoCodeWithRestaurantId{
+			PromoCode:  "promo",
+			Restaurant: 1,
+		},
+		outActiveCostForFreeDish: &promoProtoPkg.FreeDishResponse{
+			DishId: 1,
+		},
+		errActiveCostForFreeDish:   nil,
+		countActiveCostForFreeDish: 1,
+
+		inputSelectInfoDish: 1,
+		outSelectInfoDish:   Row{row: []interface{}{"/url/url/", "Бесплатное кофе", 100, 500, "Очень вкусный и очень бесплатный кофе"}},
+		countSelectInfoDish: 1,
+	},
+}
+
+func TestDoPromoCode(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
+	mPromo := mocks.NewMockConnectPromoCodeServiceInterface(ctrl)
+	for _, tt := range DoPromoCode {
+		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
+			EXPECT().
+			QueryRow(context.Background(),
+				"SELECT name, description FROM promocode WHERE code = $1 AND restaurant = $2",
+				tt.inputSelectPromoCodeInfoPromoCode, tt.inputSelectPromoCodeInfoRestaurantId,
+			).
+			Return(&tt.outSelectPromoCodeInfo).
+			Times(tt.countSelectPromoCodeInfo)
+		mPromo.
+			EXPECT().
+			GetTypePromoCode(gomock.Any(), tt.inputGetTypePromoCode).
+			Return(tt.outGetTypePromoCode, tt.errGetTypePromoCode).
+			Times(tt.countGetTypePromoCode)
+
+		mPromo.
+			EXPECT().
+			ActiveCostForFreeDelivery(gomock.Any(), tt.inputActiveCostForFreeDelivery).
+			Return(tt.outActiveCostForFreeDelivery, tt.errActiveCostForFreeDelivery).
+			Times(tt.countActiveCostForFreeDelivery)
+
+		mPromo.
+			EXPECT().
+			ActiveCostForSale(gomock.Any(), tt.inputActiveCostForSale).
+			Return(tt.outActiveCostForSale, tt.errActiveCostForSale).
+			Times(tt.countActiveCostForSale)
+
+		mPromo.
+			EXPECT().
+			ActiveTimeForSale(gomock.Any(), tt.inputActiveTimeForSale).
+			Return(tt.outActiveTimeForSale, tt.errActiveTimeForSale).
+			Times(tt.countActiveTimeForSale)
+
+		mPromo.
+			EXPECT().
+			ActiveCostForFreeDish(gomock.Any(), tt.inputActiveCostForFreeDish).
+			Return(tt.outActiveCostForFreeDish, tt.errActiveCostForFreeDish).
+			Times(tt.countActiveCostForFreeDish)
+		mTx.
+			EXPECT().
+			QueryRow(gomock.Any(),
+				"SELECT avatar, name, kilocalorie, weight, description FROM dishes WHERE id = $1 AND count > 1",
+				tt.inputSelectInfoDish).
+			Return(&tt.outSelectInfoDish).
+			Times(tt.countSelectInfoDish)
+		testUser := &Wrapper{Conn: m, Ctx: context.Background(), ConnPromoService: mPromo}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.DoPromoCode(tt.inputPromoCode, tt.inputRestaurantId, tt.inputCart)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))

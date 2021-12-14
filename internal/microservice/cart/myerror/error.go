@@ -59,6 +59,7 @@ const (
 	CGetPriceDeliveryNotCommit                     = "transaction get price delivery not commit"
 	CAddPromoCodeTransactionNotCreate              = "transaction add promo code not create"
 	CAddPromoCodeNotCommit                         = "transaction add promo code not commit"
-	CAddPromoCodeNotDelete                         = "promo not delete"
-	CAddPromoCodeNotInsert                         = "promo not insert"
+	CAddPromoCodeNotUpsert                         = "promo not upsert"
+	CDoPromoCodeNotSelectInfo                      = "promo code info not select"
+	CDoPromoCodeNotSelectInfoDish                  = "info about free dish not select"
 )

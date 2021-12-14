@@ -292,11 +292,12 @@ CREATE TABLE IF NOT EXISTS order_radios_list (
 
 CREATE TABLE IF NOT EXISTS cart_user (
     id SERIAL PRIMARY KEY,
-    client_id int,
+    client_id int UNIQUE,
     promo_code text,
     restaurant int,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
-    FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE
+    FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE,
+    UNIQUE(client_id, promo_code)
 );
 
 CREATE TABLE IF NOT EXISTS cart_food (
