@@ -4,7 +4,7 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/promocode/build"
 	confPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/promocode/config"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/promocode/myerror"
-	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/proto"
+	promoProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/promocode/proto"
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -14,7 +14,6 @@ import (
 )
 
 func main() {
-
 	var logger Logger
 	logger.Log = NewLogger("./logs.txt")
 
@@ -49,9 +48,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	restaurantManager := build.SetUp(connectDB)
+	promocodeManager := build.SetUp(connectDB)
 
-	resProto.RegisterRestaurantServiceServer(server, &restaurantManager)
+	promoProto.RegisterPromocodeServiceServer(server, &promocodeManager)
 
 	logger.Log.Infof("Listen in %s", address)
 	errServ := server.Serve(listen)

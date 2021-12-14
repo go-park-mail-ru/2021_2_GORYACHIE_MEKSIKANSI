@@ -11,7 +11,7 @@ import (
 )
 
 type WrapperRestaurantServerInterface interface {
-	AllRestaurants() (*restaurant.AllRestaurants, error)
+	AllRestaurants() (*restaurant.AllRestaurantsPromo, error)
 	GetRestaurant(id int, idClient int) (*restaurant.RestaurantId, error)
 	RestaurantDishes(restId int, dishId int) (*restaurant.Dishes, error)
 	CreateReview(id int, review restaurant.NewReview) error
@@ -22,7 +22,7 @@ type WrapperRestaurantServerInterface interface {
 }
 
 type ConnectRestaurantServiceInterface interface {
-	AllRestaurants(ctx context.Context, in *resProto.Empty, opts ...grpc.CallOption) (*resProto.RestaurantsTags, error)
+	AllRestaurants(ctx context.Context, in *resProto.Empty, opts ...grpc.CallOption) (*resProto.RestaurantsTagsPromo, error)
 	GetRestaurant(ctx context.Context, in *resProto.RestaurantId, opts ...grpc.CallOption) (*resProto.RestaurantInfo, error)
 	RestaurantDishes(ctx context.Context, in *resProto.DishInfo, opts ...grpc.CallOption) (*resProto.Dishes, error)
 	CreateReview(ctx context.Context, in *resProto.NewReview, opts ...grpc.CallOption) (*resProto.Error, error)
@@ -37,7 +37,7 @@ type Wrapper struct {
 	Ctx  context.Context
 }
 
-func (r *Wrapper) AllRestaurants() (*restaurant.AllRestaurants, error) {
+func (r *Wrapper) AllRestaurants() (*restaurant.AllRestaurantsPromo, error) {
 	restaurants, err := r.Conn.AllRestaurants(r.Ctx, &resProto.Empty{})
 	if err != nil {
 		return nil, err

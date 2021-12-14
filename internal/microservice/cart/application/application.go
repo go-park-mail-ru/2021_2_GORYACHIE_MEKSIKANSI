@@ -67,6 +67,10 @@ func (c *Cart) GetCart(id int) (*cartPkg.ResponseCartErrors, error) {
 	result.Cost = *cost
 	result.DishErr = errorDishes
 
+	err = c.DB.DoPromoCode(result.PromoCode.Code, result.Restaurant.Id, result)
+	if err != nil {
+		return nil, err
+	}
 	return result, nil
 }
 
@@ -101,5 +105,14 @@ func (c *Cart) UpdateCart(dishes cartPkg.RequestCartDefault, clientId int) (*car
 	result.Cost = *cost
 	result.DishErr = errorDishes
 
+	err = c.DB.AddPromoCode(dishes.PromoCode, result.Restaurant.Id, clientId)
+	if err != nil {
+		return nil, err
+	}
+
+	err = c.DB.DoPromoCode(dishes.PromoCode, result.Restaurant.Id, result)
+	if err != nil {
+		return nil, err
+	}
 	return result, nil
 }

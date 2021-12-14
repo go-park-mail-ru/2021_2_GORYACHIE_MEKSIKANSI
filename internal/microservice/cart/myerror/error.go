@@ -57,4 +57,8 @@ const (
 	CDeleteCartNotCommit                           = "transaction delete cart not commit"
 	CGetPriceDeliveryTransactionNotCreate          = "transaction get price delivery not create"
 	CGetPriceDeliveryNotCommit                     = "transaction get price delivery not commit"
+	CAddPromoCodeTransactionNotCreate              = "transaction add promo code not create"
+	CAddPromoCodeNotCommit                         = "transaction add promo code not commit"
+	CAddPromoCodeNotDelete                         = "promo not delete"
+	CAddPromoCodeNotInsert                         = "promo not insert"
 )

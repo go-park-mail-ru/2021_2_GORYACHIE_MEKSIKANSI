@@ -12,7 +12,14 @@ type ResponseCartErrors struct {
 	Restaurant RestaurantIdCastResponse `json:"restaurant"`
 	Dishes     []DishesCartResponse     `json:"dishes"`
 	Cost       CostCartResponse         `json:"cost"`
+	PromoCode  PromoCode                `json:"promo_code"`
 	DishErr    []CastDishesErrs         `json:"dishesErrs,omitempty"`
+}
+
+type PromoCode struct {
+	Name        string `json:"name"`
+	Description string `json:"desc"`
+	Code        string `json:"code"`
 }
 
 type CostCartResponse struct {
@@ -73,6 +80,7 @@ type CartRequest struct {
 type RequestCartDefault struct {
 	Restaurant RestaurantRequest `json:"restaurant"`
 	Dishes     []DishesRequest   `json:"dishes"`
+	PromoCode  string            `json:"promo_code"`
 }
 
 type RestaurantRequest struct {

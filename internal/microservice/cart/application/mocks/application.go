@@ -34,6 +34,20 @@ func (m *MockWrapperCartInterface) EXPECT() *MockWrapperCartInterfaceMockRecorde
 	return m.recorder
 }
 
+// AddPromoCode mocks base method.
+func (m *MockWrapperCartInterface) AddPromoCode(arg0 string, arg1, arg2 int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddPromoCode", arg0, arg1, arg2)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AddPromoCode indicates an expected call of AddPromoCode.
+func (mr *MockWrapperCartInterfaceMockRecorder) AddPromoCode(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddPromoCode", reflect.TypeOf((*MockWrapperCartInterface)(nil).AddPromoCode), arg0, arg1, arg2)
+}
+
 // DeleteCart mocks base method.
 func (m *MockWrapperCartInterface) DeleteCart(arg0 int) error {
 	m.ctrl.T.Helper()
@@ -46,6 +60,20 @@ func (m *MockWrapperCartInterface) DeleteCart(arg0 int) error {
 func (mr *MockWrapperCartInterfaceMockRecorder) DeleteCart(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCart", reflect.TypeOf((*MockWrapperCartInterface)(nil).DeleteCart), arg0)
+}
+
+// DoPromoCode mocks base method.
+func (m *MockWrapperCartInterface) DoPromoCode(arg0 string, arg1 int, arg2 *cart.ResponseCartErrors) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DoPromoCode", arg0, arg1, arg2)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DoPromoCode indicates an expected call of DoPromoCode.
+func (mr *MockWrapperCartInterfaceMockRecorder) DoPromoCode(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DoPromoCode", reflect.TypeOf((*MockWrapperCartInterface)(nil).DoPromoCode), arg0, arg1, arg2)
 }
 
 // GetCart mocks base method.

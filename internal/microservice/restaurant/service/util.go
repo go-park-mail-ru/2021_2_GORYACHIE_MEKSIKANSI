@@ -121,9 +121,9 @@ func CastMenuToMenuProto(menu []resPkg.Menu) []*resProto.Menu {
 	return p
 }
 
-func CastAllRestaurantsToRestaurantsTagsProto(restaurants *resPkg.AllRestaurants) *resProto.RestaurantsTags {
-	var p *resProto.RestaurantsTags
-	p = &resProto.RestaurantsTags{}
+func CastAllRestaurantsToRecommendedRestaurantsProto(restaurants *resPkg.AllRestaurants) *resProto.RecommendedRestaurants {
+	var p *resProto.RecommendedRestaurants
+	p = &resProto.RecommendedRestaurants{}
 	var protoRestaurants []*resProto.Restaurant
 	for _, restaurant := range restaurants.Restaurant {
 		var res *resProto.Restaurant
@@ -140,6 +140,39 @@ func CastAllRestaurantsToRestaurantsTagsProto(restaurants *resPkg.AllRestaurants
 
 	p.Restaurants = protoRestaurants
 	p.Tags = CastTagsToTagsProto(restaurants.AllTags)
+	return p
+}
+
+func CastAllRestaurantsPromoToRestaurantsTagsPromoProto(restaurants *resPkg.AllRestaurantsPromo) *resProto.RestaurantsTagsPromo {
+	var p *resProto.RestaurantsTagsPromo
+	p = &resProto.RestaurantsTagsPromo{}
+	var protoRestaurants []*resProto.Restaurant
+	for _, restaurant := range restaurants.Restaurant {
+		var res *resProto.Restaurant
+		res = &resProto.Restaurant{}
+		res.Id = int64(restaurant.Id)
+		res.Img = restaurant.Img
+		res.MaxDelivery = int64(restaurant.MaxDelivery)
+		res.MinDelivery = int64(restaurant.MinDelivery)
+		res.CostForFreeDelivery = int64(restaurant.CostForFreeDelivery)
+		res.Rating = restaurant.Rating
+		res.Name = restaurant.Name
+		protoRestaurants = append(protoRestaurants, res)
+	}
+
+	p.Restaurants = protoRestaurants
+	p.Tags = CastTagsToTagsProto(restaurants.AllTags)
+	var protoPromoCodes []*resProto.Promocode
+	for _, code := range restaurants.AllPromo {
+		var res *resProto.Promocode
+		res = &resProto.Promocode{}
+		res.RestId = int64(code.RestaurantId)
+		res.Img = code.Img
+		res.Desc = code.Description
+		res.Name = code.Name
+		protoPromoCodes = append(protoPromoCodes, res)
+	}
+	p.Promocode = protoPromoCodes
 	return p
 }
 

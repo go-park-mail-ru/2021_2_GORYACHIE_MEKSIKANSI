@@ -1,4 +1,4 @@
-//go:generate mockgen -destination=mocks/application.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/orm WrapperAuthorization
+//go:generate mockgen -destination=mocks/application.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/orm WrapperAuthorizationInterface
 package Application
 
 import (
@@ -17,7 +17,7 @@ type AuthorizationInterface interface {
 }
 
 type AuthorizationApplication struct {
-	DB ormPkg.WrapperAuthorization
+	DB ormPkg.WrapperAuthorizationInterface
 }
 
 func (ap *AuthorizationApplication) SignUp(signup *authPkg.RegistrationRequest) (*authPkg.Defense, error) {

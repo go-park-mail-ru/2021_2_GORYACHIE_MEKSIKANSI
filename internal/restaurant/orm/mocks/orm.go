@@ -180,14 +180,14 @@ func (m *MockConnectRestaurantServiceInterface) EXPECT() *MockConnectRestaurantS
 }
 
 // AllRestaurants mocks base method.
-func (m *MockConnectRestaurantServiceInterface) AllRestaurants(arg0 context.Context, arg1 *resProto.Empty, arg2 ...grpc.CallOption) (*resProto.RestaurantsTags, error) {
+func (m *MockConnectRestaurantServiceInterface) AllRestaurants(arg0 context.Context, arg1 *resProto.Empty, arg2 ...grpc.CallOption) (*resProto.RestaurantsTagsPromo, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
 	for _, a := range arg2 {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "AllRestaurants", varargs...)
-	ret0, _ := ret[0].(*resProto.RestaurantsTags)
+	ret0, _ := ret[0].(*resProto.RestaurantsTagsPromo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

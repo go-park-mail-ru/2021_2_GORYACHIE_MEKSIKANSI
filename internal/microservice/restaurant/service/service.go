@@ -8,7 +8,8 @@ import (
 )
 
 type RestaurantManagerInterface interface {
-	AllRestaurants(ctx context.Context, _ *resProto.Empty) (*resProto.RestaurantsTags, error)
+	AllRestaurants(ctx context.Context, _ *resProto.Empty) (*resProto.RestaurantsTagsPromo, error)
+	GetRecommendedRestaurants(ctx context.Context, _ *resProto.Empty) (*resProto.RecommendedRestaurants, error)
 	GetRestaurant(ctx context.Context, id *resProto.RestaurantId) (*resProto.RestaurantInfo, error)
 	RestaurantDishes(ctx context.Context, id *resProto.DishInfo) (*resProto.Dishes, error)
 	CreateReview(ctx context.Context, rev *resProto.NewReview) (*resProto.Error, error)
@@ -22,12 +23,21 @@ type RestaurantManager struct {
 	Application appPkg.RestaurantApplicationInterface
 }
 
-func (r *RestaurantManager) AllRestaurants(ctx context.Context, _ *resProto.Empty) (*resProto.RestaurantsTags, error) {
-	restaurants, err := r.Application.AllRestaurants()
+func (r *RestaurantManager) AllRestaurants(ctx context.Context, _ *resProto.Empty) (*resProto.RestaurantsTagsPromo, error) {
+	restaurants, err := r.Application.AllRestaurantsPromo()
 	if err != nil {
-		return &resProto.RestaurantsTags{Error: err.Error()}, nil
+		return &resProto.RestaurantsTagsPromo{Error: err.Error()}, nil
 	}
-	sendRestaurant := CastAllRestaurantsToRestaurantsTagsProto(restaurants)
+	sendRestaurant := CastAllRestaurantsPromoToRestaurantsTagsPromoProto(restaurants)
+	return sendRestaurant, nil
+}
+
+func (r *RestaurantManager) GetRecommendedRestaurants(ctx context.Context, _ *resProto.Empty) (*resProto.RecommendedRestaurants, error) {
+	restaurants, err := r.Application.RecommendedRestaurants()
+	if err != nil {
+		return &resProto.RecommendedRestaurants{Error: err.Error()}, nil
+	}
+	sendRestaurant := CastAllRestaurantsToRecommendedRestaurantsProto(restaurants)
 	return sendRestaurant, nil
 }
 

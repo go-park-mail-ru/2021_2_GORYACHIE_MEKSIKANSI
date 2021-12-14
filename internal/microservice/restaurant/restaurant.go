@@ -15,6 +15,19 @@ type AllRestaurants struct {
 	AllTags    []Tag         `json:"tags"`
 }
 
+type AllRestaurantsPromo struct {
+	Restaurant []Restaurants `json:"restaurants_info"`
+	AllTags    []Tag         `json:"tags"`
+	AllPromo   []Promocode   `json:"promos"`
+}
+
+type Promocode struct {
+	Name         string `json:"name"`
+	Description  string `json:"desc"`
+	Img          string `json:"img"`
+	RestaurantId int    `json:"restId"`
+}
+
 type RestaurantId struct {
 	Id                  int     `json:"id"`
 	Img                 string  `json:"img"`

@@ -1,4 +1,4 @@
-//go:generate mockgen -destination=mocks/orm.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/orm WrapperRestaurantInterface,ConnectionInterface
+//go:generate mockgen -destination=mocks/orm.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/orm WrapperRestaurantInterface,ConnectionInterface,TransactionInterface
 package orm
 
 import (
@@ -11,9 +11,10 @@ import (
 )
 
 type WrapperRestaurantInterface interface {
-	GetRestaurants() (*resPkg.AllRestaurants, error)
+	GetRestaurants() (*resPkg.AllRestaurantsPromo, error)
+	GetRecommendedRestaurants() (*resPkg.AllRestaurants, error)
 	GetDishes(restId int, dishesId int) (*resPkg.Dishes, error)
-	GetRestaurant(id int, idClient int) (*resPkg.RestaurantId, error)
+	GetRestaurant(id int) (*resPkg.RestaurantId, error)
 	GetMenu(id int) ([]resPkg.Menu, error)
 	GetTagsRestaurant(id int) ([]resPkg.Tag, error)
 	GetReview(id int) ([]resPkg.Review, error)
@@ -24,6 +25,7 @@ type WrapperRestaurantInterface interface {
 	GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error)
 	EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error)
 	IsFavoriteRestaurant(idClient int, idRestaurant int) (bool, error)
+	GetPromoCodes() ([]resPkg.Promocode, error)
 }
 
 type ConnectionInterface interface {
@@ -33,11 +35,27 @@ type ConnectionInterface interface {
 	Begin(ctx context.Context) (pgx.Tx, error)
 }
 
+type TransactionInterface interface {
+	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
+	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
+	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
+	Begin(ctx context.Context) (pgx.Tx, error)
+	BeginFunc(ctx context.Context, f func(pgx.Tx) error) error
+	Commit(ctx context.Context) error
+	Rollback(ctx context.Context) error
+	CopyFrom(ctx context.Context, tableName pgx.Identifier, columnNames []string, rowSrc pgx.CopyFromSource) (int64, error)
+	SendBatch(ctx context.Context, b *pgx.Batch) pgx.BatchResults
+	LargeObjects() pgx.LargeObjects
+	Prepare(ctx context.Context, name, sql string) (*pgconn.StatementDescription, error)
+	QueryFunc(ctx context.Context, sql string, args []interface{}, scans []interface{}, f func(pgx.QueryFuncRow) error) (pgconn.CommandTag, error)
+	Conn() *pgx.Conn
+}
+
 type Wrapper struct {
 	Conn ConnectionInterface
 }
 
-func (db *Wrapper) GetRestaurants() (*resPkg.AllRestaurants, error) {
+func (db *Wrapper) GetRestaurants() (*resPkg.AllRestaurantsPromo, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
@@ -58,7 +76,7 @@ func (db *Wrapper) GetRestaurants() (*resPkg.AllRestaurants, error) {
 		}
 	}
 
-	var result resPkg.AllRestaurants
+	var result resPkg.AllRestaurantsPromo
 	var restaurants []resPkg.Restaurants
 	var tags []resPkg.Tag
 	infoRestaurant := make(map[int]resPkg.Restaurants)
@@ -102,10 +120,78 @@ func (db *Wrapper) GetRestaurants() (*resPkg.AllRestaurants, error) {
 		}
 	}
 
+	return &resPkg.AllRestaurantsPromo{Restaurant: restaurants, AllTags: tags}, nil
+}
+
+func (db *Wrapper) GetRecommendedRestaurants() (*resPkg.AllRestaurants, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetRecommendedRestaurantsTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	row, err := tx.Query(contextTransaction,
+		"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating, rc.category, rc.id "+
+			"FROM restaurant r "+
+			"LEFT JOIN restaurant_category rc ON rc.restaurant = r.id ORDER BY rating DESC LIMIT 51")
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetRecommendedRestaurantsRestaurantsNotSelect,
+		}
+	}
+
+	var result resPkg.AllRestaurants
+	var restaurants []resPkg.Restaurants
+	var tags []resPkg.Tag
+	infoRestaurant := make(map[int]resPkg.Restaurants)
+	namesTags := make(map[string]resPkg.Tag)
+	for row.Next() {
+		var restaurant resPkg.Restaurants
+		var category *string
+		var categoryId *int32
+		err := row.Scan(&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery,
+			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating, &category, &categoryId)
+		if err != nil {
+			return nil, &errPkg.Errors{
+				Alias: errPkg.RGetRecommendedRestaurantsRestaurantsNotScan,
+			}
+		}
+
+		if _, ok := namesTags[*category]; !ok {
+			namesTags[*category] = resPkg.Tag{Name: *category, Id: int(*categoryId)}
+			tags = append(tags, namesTags[*category])
+		}
+
+		if _, ok := infoRestaurant[restaurant.Id]; !ok {
+			infoRestaurant[restaurant.Id] = restaurant
+			restaurants = append(restaurants, restaurant)
+		}
+	}
+
+	if restaurants == nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetRecommendedRestaurantsRestaurantsNotFound,
+		}
+	}
+
+	result.Restaurant = restaurants
+	result.AllTags = tags
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetRecommendedRestaurantsNotCommit,
+		}
+	}
+
 	return &resPkg.AllRestaurants{Restaurant: restaurants, AllTags: tags}, nil
 }
 
-func (db *Wrapper) GetRestaurant(id int, idClient int) (*resPkg.RestaurantId, error) {
+func (db *Wrapper) GetRestaurant(id int) (*resPkg.RestaurantId, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
@@ -706,4 +792,44 @@ func (db *Wrapper) EditRestaurantInFavorite(idRestaurant int, idClient int) (boo
 	}
 
 	return true, nil
+}
+
+func (db *Wrapper) GetPromoCodes() ([]resPkg.Promocode, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetPromoCodesTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	rows, err := tx.Query(contextTransaction,
+		"SELECT name, description, avatar, restaurant FROM promocode ORDER BY random() LIMIT 5")
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetPromoCodesCodesNotSelect,
+		}
+	}
+	var promoCodes []resPkg.Promocode
+	for rows.Next() {
+		var promoCode resPkg.Promocode
+		err := rows.Scan(&promoCode.Name, &promoCode.Description, &promoCode.Img, &promoCode.RestaurantId)
+		if err != nil {
+			return nil, &errPkg.Errors{
+				Alias: errPkg.RGetRadiosRadiosNotScan,
+			}
+		}
+		promoCodes = append(promoCodes, promoCode)
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return nil, &errPkg.Errors{
+			Alias: errPkg.RGetPromoCodesNotCommit,
+		}
+	}
+
+	return promoCodes, nil
 }

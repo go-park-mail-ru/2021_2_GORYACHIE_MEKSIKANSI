@@ -33,6 +33,7 @@ func CastRequestCartDefaultToRequestCartDefaultProto(cart *Cart2.RequestCartDefa
 		dishes = append(dishes, newDish)
 	}
 	protoCart.Dishes = dishes
+	protoCart.PromoCode = cart.PromoCode
 	return &protoCart
 }
 
@@ -78,5 +79,8 @@ func CastResponseCartErrorsProtoToResponseCartErrors(result *proto.ResponseCartE
 		dish.ItemNumber = int(errDish.ItemNumber)
 		dish.CountAvail = int(errDish.CountAvail)
 	}
+	end.PromoCode.Code = result.PromoCode.Code
+	end.PromoCode.Description = result.PromoCode.Description
+	end.PromoCode.Name = result.PromoCode.Name
 	return end
 }

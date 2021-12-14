@@ -254,6 +254,10 @@ const (
 	CDeleteCartNotCommit                           = "transaction delete cart not commit"        // TODO: add in checkErrors
 	CGetPriceDeliveryTransactionNotCreate          = "transaction get price delivery not create" // TODO: add in checkErrors
 	CGetPriceDeliveryNotCommit                     = "transaction get price delivery not commit" // TODO: add in checkErrors
+	CAddPromoCodeTransactionNotCreate              = "transaction add promo code not create"     // TODO: add in checkErrors
+	CAddPromoCodeNotCommit                         = "transaction add promo code not commit"     // TODO: add in checkErrors
+	CAddPromoCodeNotDelete                         = "promo not delete"                          // TODO: add in checkErrors
+	CAddPromoCodeNotInsert                         = "promo not insert"                          // TODO: add in checkErrors
 )
 
 // Error of order
@@ -280,4 +284,28 @@ const (
 	OUpdateStatusOrderNotCommit              = "transaction update status not commit" // TODO: add in checkErrors
 	OGetCartCartNoActual                     = "cart not valid"                       // TODO: add in checkErrors
 	OGetOrderNotExist                        = "order not exist"                      // TODO: add in checkErrors
+)
+
+// Error of promo codes
+const (
+	PGetTypePromoCodeTransactionNotCreate          = "transaction get type promo code not create"        // TODO: add in checkErrors
+	PGetTypePromoCodeNotCommit                     = "transaction get type promo code not commit"        // TODO: add in checkErrors
+	PGetTypePromoCodeRestaurantsNotFound           = "type not found"                                    // TODO: add in checkErrors
+	PGetTypePromoCodeRestaurantsNotSelect          = "type not select"                                   // TODO: add in checkErrors
+	PActiveCostForFreeDeliveryTransactionNotCreate = "transaction get cost for free delivery not create" // TODO: add in checkErrors
+	PActiveCostForFreeDeliveryNotCommit            = "transaction get cost for free delivery not commit" // TODO: add in checkErrors
+	PActiveCostForFreeDeliveryRestaurantsNotFound  = "cost for free delivery not found"                  // TODO: add in checkErrors
+	PActiveCostForFreeDeliveryRestaurantsNotSelect = "cost for free delivery not select"                 // TODO: add in checkErrors
+	PActiveCostForSaleTransactionNotCreate         = "transaction get cost for sale not create"          // TODO: add in checkErrors
+	PActiveCostForSaleNotCommit                    = "transaction get cost for sale not commit"          // TODO: add in checkErrors
+	PActiveCostForSaleRestaurantsNotFound          = "cost for sale not found"                           // TODO: add in checkErrors
+	PActiveCostForSaleRestaurantsNotSelect         = "cost for sale not select"                          // TODO: add in checkErrors
+	PActiveTimeForSaleTransactionNotCreate         = "transaction get Time for sale not create"          // TODO: add in checkErrors
+	PActiveTimeForSaleNotCommit                    = "transaction get Time for sale not commit"          // TODO: add in checkErrors
+	PActiveTimeForSaleRestaurantsNotFound          = "Time for sale not found"                           // TODO: add in checkErrors
+	PActiveTimeForSaleRestaurantsNotSelect         = "Time for sale not select"                          // TODO: add in checkErrors
+	PActiveCostForFreeDishTransactionNotCreate     = "transaction for free dish not create"              // TODO: add in checkErrors
+	PActiveCostForFreeDishRestaurantsNotFound      = "free dish not found"                               // TODO: add in checkErrors
+	PActiveCostForFreeDishRestaurantsNotSelect     = "free dish not select"                              // TODO: add in checkErrors
+	PActiveCostForFreeDishNotCommit                = "transaction for free dish not commit"              // TODO: add in checkErrors
 )

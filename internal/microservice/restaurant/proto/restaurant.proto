@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package protoproto;
+package restaurant;
 
 option go_package = "./";
 
@@ -9,10 +9,24 @@ message Restaurants {
   string error = 2;
 }
 
-message RestaurantsTags {
+message RecommendedRestaurants {
   repeated Restaurant restaurants = 1;
   repeated Tags tags = 2;
   string error = 3;
+}
+
+message RestaurantsTagsPromo {
+  repeated Restaurant restaurants = 1;
+  repeated Tags tags = 2;
+  repeated Promocode promocode = 3;
+  string error = 4;
+}
+
+message Promocode {
+  string name = 1;
+  string desc = 2;
+  string img = 3;
+  int64 rest_id = 4;
 }
 
 message Restaurant {
@@ -155,7 +169,8 @@ message ResponseEditRestaurantInFavorite {
 }
 
 service RestaurantService {
-  rpc AllRestaurants(Empty) returns (RestaurantsTags);
+  rpc AllRestaurants(Empty) returns (RestaurantsTagsPromo);
+  rpc GetRecommendedRestaurants(Empty) returns (RecommendedRestaurants);
   rpc GetRestaurant(RestaurantId) returns (RestaurantInfo);
   rpc RestaurantDishes(DishInfo) returns (Dishes);
   rpc CreateReview(NewReview) returns (Error);

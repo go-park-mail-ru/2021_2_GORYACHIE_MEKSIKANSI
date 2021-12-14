@@ -1,4 +1,4 @@
-//go:generate mockgen -destination=mocks/orm.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/orm WrapperAuthorization,ConnectionInterface,TransactionInterface
+//go:generate mockgen -destination=mocks/orm.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/orm WrapperAuthorizationInterface,ConnectionInterface,TransactionInterface
 package orm
 
 import (
@@ -16,7 +16,7 @@ const (
 	PhoneLen = 11
 )
 
-type WrapperAuthorization interface {
+type WrapperAuthorizationInterface interface {
 	SignupClient(signup *authPkg.RegistrationRequest, cookie *authPkg.Defense) (*authPkg.Defense, error)
 	SignupCourier(signup *authPkg.RegistrationRequest, cookie *authPkg.Defense) (*authPkg.Defense, error)
 	SignupHost(signup *authPkg.RegistrationRequest, cookie *authPkg.Defense) (*authPkg.Defense, error)

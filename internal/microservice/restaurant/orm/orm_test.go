@@ -1,9 +1,9 @@
 package orm
 
 import (
+	rest "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/orm/mocks"
 	errorsConst "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
-	rest "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant"
 	"context"
 	"errors"
 	"fmt"
@@ -68,13 +68,26 @@ func (r *Rows) RawValues() [][]byte {
 
 func (r *Rows) Scan(dest ...interface{}) error {
 	for i := range dest {
+		j := i + len(dest)*(r.currentRow-1)
+		if r.row[j] == nil {
+			dest[i] = nil
+			continue
+		}
 		switch dest[i].(type) {
 		case *int:
-			*dest[i].(*int) = r.row[i].(int)
+			*dest[i].(*int) = r.row[j].(int)
 		case *string:
-			*dest[i].(*string) = r.row[i].(string)
+			*dest[i].(*string) = r.row[j].(string)
+		case **string:
+			t := r.row[j].(string)
+			*dest[i].(**string) = &t
 		case *float32:
-			*dest[i].(*float32) = float32(r.row[i].(float64))
+			*dest[i].(*float32) = float32(r.row[j].(float64))
+		case **int32:
+			t := int32(r.row[j].(int))
+			*dest[i].(**int32) = &t
+		default:
+			dest[i] = nil
 		}
 	}
 	return r.errRow
@@ -89,18 +102,49 @@ func (r *Rows) Next() bool {
 }
 
 var GetRestaurants = []struct {
-	testName string
-	row      Rows
-	errQuery error
-	out      []rest.Restaurants
-	outErr   string
+	testName                 string
+	out                      *rest.AllRestaurants
+	outErr                   string
+	outQuery                 Rows
+	errQuery                 error
+	countQuery               int
+	errBeginTransaction      error
+	countRollbackTransaction int
+	errCommitTransaction     error
+	countCommitTransaction   int
 }{
 	{
-		testName: "One",
-		out:      []rest.Restaurants{{Id: 1, Img: "1", Name: "1", CostForFreeDelivery: 1, MinDelivery: 1, MaxDelivery: 1, Rating: 1.0}},
+		testName: "First",
+		out: &rest.AllRestaurants{
+			Restaurant: []rest.Restaurants{
+				{
+					Id:                  1,
+					Img:                 "/url/",
+					Name:                "restaurant",
+					CostForFreeDelivery: 1,
+					MinDelivery:         1,
+					MaxDelivery:         1,
+					Rating:              1,
+				},
+			},
+			AllTags: []rest.Tag{
+				{
+					Id:   1,
+					Name: "Кафе",
+				},
+			},
+		},
 		errQuery: nil,
-		row:      Rows{rows: 1, row: []interface{}{1, "1", "1", 1, 1, 1, 1.0}, errRow: nil},
-		outErr:   errorsConst.RGetRestaurantsRestaurantsNotSelect,
+		outQuery: Rows{rows: 1,
+			row:    []interface{}{1, "/url/", "restaurant", 1, 1, 1, 1.0, "Кафе", 1},
+			errRow: nil,
+		},
+		outErr:                   errorsConst.RGetRestaurantsRestaurantsNotSelect,
+		errBeginTransaction:      nil,
+		countQuery:               1,
+		countRollbackTransaction: 1,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
 	},
 }
 
@@ -109,17 +153,34 @@ func TestGetRestaurants(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
 	for _, tt := range GetRestaurants {
 		m.
 			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
+			EXPECT().
 			Query(context.Background(),
-				"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating"+
-					" FROM restaurant ORDER BY random() LIMIT 50",
+				"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating, rc.category, rc.id "+
+					"FROM restaurant r "+
+					"LEFT JOIN restaurant_category rc ON rc.restaurant = r.id ORDER BY rating DESC LIMIT 51",
 			).
-			Return(&tt.row, tt.errQuery)
+			Return(&tt.outQuery, tt.errQuery).
+			Times(tt.countQuery)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := testUser.GetRestaurants()
+			result, err := testUser.GetRecommendedRestaurants()
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
@@ -143,7 +204,7 @@ var GetGeneralInfoRestaurant = []struct {
 		input:      1,
 		inputQuery: 1,
 		out: &rest.RestaurantId{Id: 1, Img: "1", Name: "1",
-			CostForFreeDelivery: 1, MinDelivery: 1, MaxDelivery: 1, Rating: 1, Tags: interface{}(nil), Menu: interface{}(nil)},
+			CostForFreeDelivery: 1, MinDelivery: 1, MaxDelivery: 1, Rating: 1, Tags: nil, Menu: nil},
 		row:    Row{row: []interface{}{1, "1", "1", 1, 1, 1, 1.0}, errRow: nil},
 		outErr: errorsConst.RGetRestaurantRestaurantNotFound,
 	},
@@ -316,7 +377,7 @@ var GetDishes = []struct {
 		inputQueryId:  1,
 		errQuery:      nil,
 		out: &rest.Dishes{Id: 1, Img: "1", Title: "1", Cost: 1, Ccal: 1, Description: "1",
-			Radios: interface{}(nil), Ingredient: interface{}(nil)},
+			Radios: nil, Ingredient: nil},
 		rowsQuery: Rows{rows: 1, row: []interface{}{1, "1", "1", 1, 1, "1"}},
 		outErr:    errorsConst.RGetRestaurantRestaurantNotFound,
 	},

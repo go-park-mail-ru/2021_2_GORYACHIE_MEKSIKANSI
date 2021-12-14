@@ -123,26 +123,56 @@ func (mr *MockWrapperRestaurantInterfaceMockRecorder) GetMenu(arg0 interface{}) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMenu", reflect.TypeOf((*MockWrapperRestaurantInterface)(nil).GetMenu), arg0)
 }
 
-// GetRestaurant mocks base method.
-func (m *MockWrapperRestaurantInterface) GetRestaurant(arg0, arg1 int) (*restaurantlf.RestaurantId, error) {
+// GetPromoCodes mocks base method.
+func (m *MockWrapperRestaurantInterface) GetPromoCodes() ([]restaurantlf.Promocode, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetRestaurant", arg0, arg1)
+	ret := m.ctrl.Call(m, "GetPromoCodes")
+	ret0, _ := ret[0].([]restaurantlf.Promocode)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPromoCodes indicates an expected call of GetPromoCodes.
+func (mr *MockWrapperRestaurantInterfaceMockRecorder) GetPromoCodes() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPromoCodes", reflect.TypeOf((*MockWrapperRestaurantInterface)(nil).GetPromoCodes))
+}
+
+// GetRecommendedRestaurants mocks base method.
+func (m *MockWrapperRestaurantInterface) GetRecommendedRestaurants() (*restaurantlf.AllRestaurants, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRecommendedRestaurants")
+	ret0, _ := ret[0].(*restaurantlf.AllRestaurants)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRecommendedRestaurants indicates an expected call of GetRecommendedRestaurants.
+func (mr *MockWrapperRestaurantInterfaceMockRecorder) GetRecommendedRestaurants() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRecommendedRestaurants", reflect.TypeOf((*MockWrapperRestaurantInterface)(nil).GetRecommendedRestaurants))
+}
+
+// GetRestaurant mocks base method.
+func (m *MockWrapperRestaurantInterface) GetRestaurant(arg0 int) (*restaurantlf.RestaurantId, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRestaurant", arg0)
 	ret0, _ := ret[0].(*restaurantlf.RestaurantId)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetRestaurant indicates an expected call of GetRestaurant.
-func (mr *MockWrapperRestaurantInterfaceMockRecorder) GetRestaurant(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockWrapperRestaurantInterfaceMockRecorder) GetRestaurant(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRestaurant", reflect.TypeOf((*MockWrapperRestaurantInterface)(nil).GetRestaurant), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRestaurant", reflect.TypeOf((*MockWrapperRestaurantInterface)(nil).GetRestaurant), arg0)
 }
 
 // GetRestaurants mocks base method.
-func (m *MockWrapperRestaurantInterface) GetRestaurants() (*restaurantlf.AllRestaurants, error) {
+func (m *MockWrapperRestaurantInterface) GetRestaurants() (*restaurantlf.AllRestaurantsPromo, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetRestaurants")
-	ret0, _ := ret[0].(*restaurantlf.AllRestaurants)
+	ret0, _ := ret[0].(*restaurantlf.AllRestaurantsPromo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

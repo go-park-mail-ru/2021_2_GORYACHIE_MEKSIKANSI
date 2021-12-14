@@ -6,7 +6,10 @@ import (
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/myerror"
 	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/orm"
 	servicePkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/service"
+	promoProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/promocode/proto"
+	"context"
 	"github.com/spf13/viper"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -16,14 +19,27 @@ const (
 	ConfPath     = "./internal/microservice/cart/config/"
 )
 
-func SetUp(connectionDB ormPkg.ConnectionInterface) servicePkg.CartManager {
-	authWrapper := ormPkg.Wrapper{Conn: connectionDB}
-	authorizationManager := Application.Cart{DB: &authWrapper}
-	authInfo := servicePkg.CartManager{Application: &authorizationManager}
+func SetUp(connectionDB ormPkg.ConnectionInterface, logger errPkg.MultiLogger) *servicePkg.CartManager {
 
-	var _ servicePkg.CartManagerInterface = &authInfo
+	addressCart := "127.0.0.1:8085"
+	grpcConnCart, errDialCart := grpc.Dial(
+		addressCart,
+		grpc.WithInsecure(),
+	)
+	if errDialCart != nil {
+		logger.Errorf("Not connect %s , %s", addressCart, errDialCart.Error())
+		return nil
+	}
+	promoManager := promoProto.NewPromocodeServiceClient(grpcConnCart)
+	promoCtx := context.Background()
 
-	return authInfo
+	cartWrapper := ormPkg.Wrapper{Conn: connectionDB, ConnPromoService: promoManager, Ctx: promoCtx}
+	cartManager := Application.Cart{DB: &cartWrapper}
+	cartInfo := servicePkg.CartManager{Application: &cartManager}
+
+	var _ servicePkg.CartManagerInterface = &cartInfo
+
+	return &cartInfo
 }
 
 func InitConfig() (error, []interface{}) {

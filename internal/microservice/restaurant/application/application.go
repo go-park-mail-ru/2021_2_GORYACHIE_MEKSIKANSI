@@ -7,7 +7,8 @@ import (
 )
 
 type RestaurantApplicationInterface interface {
-	AllRestaurants() (*resPkg.AllRestaurants, error)
+	AllRestaurantsPromo() (*resPkg.AllRestaurantsPromo, error)
+	RecommendedRestaurants() (*resPkg.AllRestaurants, error)
 	GetRestaurant(id int, idClient int) (*resPkg.RestaurantId, error)
 	RestaurantDishes(restId int, dishId int) (*resPkg.Dishes, error)
 	CreateReview(id int, review resPkg.NewReview) error
@@ -21,12 +22,25 @@ type Restaurant struct {
 	DB ormPkg.WrapperRestaurantInterface
 }
 
-func (r *Restaurant) AllRestaurants() (*resPkg.AllRestaurants, error) {
-	return r.DB.GetRestaurants()
+func (r *Restaurant) AllRestaurantsPromo() (*resPkg.AllRestaurantsPromo, error) {
+	restaurants, err := r.DB.GetRestaurants()
+	if err != nil {
+		return nil, err
+	}
+	promoCodes, err := r.DB.GetPromoCodes()
+	if err != nil {
+		return nil, err
+	}
+	restaurants.AllPromo = promoCodes
+	return restaurants, nil
+}
+
+func (r *Restaurant) RecommendedRestaurants() (*resPkg.AllRestaurants, error) {
+	return r.DB.GetRecommendedRestaurants()
 }
 
 func (r *Restaurant) GetRestaurant(id int, idClient int) (*resPkg.RestaurantId, error) {
-	restInfo, err := r.DB.GetRestaurant(id, idClient)
+	restInfo, err := r.DB.GetRestaurant(id)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +85,7 @@ func (r *Restaurant) GetReview(idRestaurant int, idClient int) (*resPkg.ResRevie
 		return nil, err
 	}
 
-	restInfo, err := r.DB.GetRestaurant(idRestaurant, idClient)
+	restInfo, err := r.DB.GetRestaurant(idRestaurant)
 	if err != nil {
 		return nil, err
 	}

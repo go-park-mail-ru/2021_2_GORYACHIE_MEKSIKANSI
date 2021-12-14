@@ -1,12 +1,14 @@
-//go:generate mockgen -destination=mocks/orm.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/orm WrapperCartInterface,ConnectionInterface,TransactionInterface
+//go:generate mockgen -destination=mocks/orm.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/orm WrapperCartInterface,ConnectionInterface,TransactionInterface,ConnectPromoCodeServiceInterface
 package orm
 
 import (
 	cartPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/myerror"
+	promoProtoPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/promocode/proto"
 	"context"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
+	"google.golang.org/grpc"
 )
 
 type WrapperCartInterface interface {
@@ -15,6 +17,8 @@ type WrapperCartInterface interface {
 	DeleteCart(id int) error
 	GetPriceDelivery(id int) (int, error)
 	GetRestaurant(id int) (*cartPkg.RestaurantId, error)
+	AddPromoCode(promoCode string, restaurantId int, clientId int) error
+	DoPromoCode(promoCode string, restaurantId int, cart *cartPkg.ResponseCartErrors) error
 }
 
 type ConnectionInterface interface {
@@ -40,8 +44,18 @@ type TransactionInterface interface {
 	Conn() *pgx.Conn
 }
 
+type ConnectPromoCodeServiceInterface interface {
+	GetTypePromoCode(ctx context.Context, in *promoProtoPkg.PromoCodeWithRestaurantId, opts ...grpc.CallOption) (*promoProtoPkg.TypePromoCodeResponse, error)
+	ActiveCostForFreeDelivery(ctx context.Context, in *promoProtoPkg.PromoCodeWithRestaurantId, opts ...grpc.CallOption) (*promoProtoPkg.NewCostResponse, error)
+	ActiveCostForFreeDish(ctx context.Context, in *promoProtoPkg.PromoCodeWithRestaurantId, opts ...grpc.CallOption) (*promoProtoPkg.FreeDishResponse, error)
+	ActiveCostForSale(ctx context.Context, in *promoProtoPkg.PromoCodeWithAmount, opts ...grpc.CallOption) (*promoProtoPkg.NewCostResponse, error)
+	ActiveTimeForSale(ctx context.Context, in *promoProtoPkg.PromoCodeWithAmount, opts ...grpc.CallOption) (*promoProtoPkg.NewCostResponse, error)
+}
+
 type Wrapper struct {
-	Conn ConnectionInterface
+	Conn             ConnectionInterface
+	ConnPromoService ConnectPromoCodeServiceInterface
+	Ctx              context.Context
 }
 
 func (db *Wrapper) GetCart(id int) (*cartPkg.ResponseCartErrors, []cartPkg.CastDishesErrs, error) {
@@ -408,4 +422,74 @@ func (db *Wrapper) GetRestaurant(id int) (*cartPkg.RestaurantId, error) {
 	}
 
 	return &restaurant, nil
+}
+
+func (db *Wrapper) AddPromoCode(promoCode string, restaurantId int, clientId int) error {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.CAddPromoCodeTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	_, err = tx.Exec(contextTransaction,
+		"DELETE FROM cart_user WHERE client_id = $1", clientId)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.CAddPromoCodeNotDelete,
+		}
+	}
+
+	_, err = tx.Exec(contextTransaction,
+		"INSERT INTO cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3)",
+		clientId, promoCode, restaurantId)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.CAddPromoCodeNotInsert,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.CAddPromoCodeNotCommit,
+		}
+	}
+	return nil
+}
+
+func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg.ResponseCartErrors) error {
+	typePromoCode, err := db.ConnPromoService.GetTypePromoCode(db.Ctx, &promoProtoPkg.PromoCodeWithRestaurantId{
+		PromoCode:  promoCode,
+		Restaurant: int64(restaurantId),
+	},
+	)
+	if err != nil {
+		return err
+	} // TODO: make define
+	switch typePromoCode.Type {
+	case 1:
+		{
+			newCost, err := db.ConnPromoService.ActiveCostForFreeDelivery(db.Ctx, &promoProtoPkg.PromoCodeWithRestaurantId{
+				PromoCode:  promoCode,
+				Restaurant: int64(restaurantId),
+			},
+			)
+			if err != nil {
+				return err
+			}
+			cart.Cost.DCost = int(newCost.Cost)
+		}
+	}
+
+	transactionPromoCode := context.Background()
+	tx, err := db.Conn.Begin(transactionPromoCode)
+	err = tx.QueryRow(transactionPromoCode,
+		"SELECT name, description FROM promocode WHERE code = $1 AND restaurant = $2",
+		promoCode, restaurantId).Scan(&cart.PromoCode.Name, &cart.PromoCode.Description)
+	cart.PromoCode.Code = promoCode
+	return nil
 }

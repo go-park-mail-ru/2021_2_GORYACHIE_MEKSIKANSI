@@ -48,9 +48,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	cartManager := build.SetUp(connectDB)
+	cartManager := build.SetUp(connectDB, logger.Log)
 
-	proto.RegisterCartServiceServer(server, &cartManager)
+	proto.RegisterCartServiceServer(server, cartManager)
 
 	logger.Log.Infof("Listen in %s", address)
 	errServ := server.Serve(listen)

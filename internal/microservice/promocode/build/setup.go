@@ -1,11 +1,11 @@
 package build
 
 import (
+	Application "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/promocode/application"
+	confPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/promocode/config"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/promocode/myerror"
-	Application "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/application"
-	confPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/config"
-	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/orm"
-	servicePkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/service"
+	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/promocode/orm"
+	servicePkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/promocode/service"
 	"github.com/spf13/viper"
 )
 
@@ -13,15 +13,15 @@ const (
 	ConfNameMain = "main"
 	ConfNameDB   = "database"
 	ConfType     = "yml"
-	ConfPath     = "./internal/microservice/restaurant/config/"
+	ConfPath     = "./internal/microservice/promocode/config/"
 )
 
-func SetUp(connectionDB ormPkg.ConnectionInterface) servicePkg.RestaurantManager {
+func SetUp(connectionDB ormPkg.ConnectionInterface) servicePkg.PromocodeManager {
 	authWrapper := ormPkg.Wrapper{Conn: connectionDB}
-	authorizationManager := Application.Restaurant{DB: &authWrapper}
-	authInfo := servicePkg.RestaurantManager{Application: &authorizationManager}
+	authorizationManager := Application.Promocode{DB: &authWrapper}
+	authInfo := servicePkg.PromocodeManager{Application: &authorizationManager}
 
-	var _ servicePkg.RestaurantManagerInterface = &authInfo
+	var _ servicePkg.PromocodeManagerInterface = &authInfo
 
 	return authInfo
 }

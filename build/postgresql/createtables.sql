@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS general_user_info
     deleted boolean DEFAULT false
 );
 
-
 CREATE TABLE IF NOT EXISTS restaurant (
     id serial PRIMARY KEY,
     owner int,
@@ -211,22 +210,25 @@ CREATE TABLE IF NOT EXISTS structure_radios (
 
 CREATE TABLE IF NOT EXISTS promocode (
     id serial PRIMARY KEY,
+    code text NOT NULL,
+    type int DEFAULT 0 NOT NULL,
     restaurant int,
     FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE,
     name text NOT NULL,
-    order_sale int DEFAULT 0 NOT NULL,
-    delivery_sale int DEFAULT 0 NOT NULL,
+    description text NOT NULL,
+    start_date timestamp DEFAULT NOW(),
     end_date timestamp NOT NULL,
-    start_date timestamp DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS promocode_on_food (
-    id serial PRIMARY KEY,
-    sale int,
-    promocode int,
-    food int,
-    FOREIGN KEY (promocode) REFERENCES promocode (id) ON DELETE CASCADE,
-    FOREIGN KEY (food) REFERENCES dishes(id) ON DELETE CASCADE
+    avatar text NOT NULL,
+    cost_for_free_delivery int,
+    cost_for_free_dish int,
+    free_dish_id int,
+    FOREIGN KEY (free_dish_id) REFERENCES dishes (id) ON DELETE CASCADE,
+    cost_for_sale int,
+    sale_percent int,
+    sale_amount int,
+    time_for_sale timestamp,
+    sale_in_time_percent int,
+    sale_in_time_amount int
 );
 
 CREATE TABLE IF NOT EXISTS order_user (
@@ -235,12 +237,11 @@ CREATE TABLE IF NOT EXISTS order_user (
     courier_id int,
     address_id int,
     restaurant_id int,
-    promocode_id int,
+    promo_code text,
     FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
     FOREIGN KEY (courier_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
     FOREIGN KEY (address_id) REFERENCES address_user (id) ON DELETE CASCADE,
     FOREIGN KEY (restaurant_id) REFERENCES restaurant (id) ON DELETE CASCADE,
-    FOREIGN KEY (promocode_id) REFERENCES promocode (id) ON DELETE CASCADE,
     comment text DEFAULT '' NOT NULL,
     status int DEFAULT 1 NOT NULL,
     method_pay text NOT NULL,
@@ -287,6 +288,15 @@ CREATE TABLE IF NOT EXISTS order_radios_list (
     FOREIGN KEY (order_id) REFERENCES order_user (id) ON DELETE CASCADE,
     FOREIGN KEY (radios_id) REFERENCES radios (id) ON DELETE CASCADE,
     FOREIGN KEY (radios) REFERENCES structure_radios (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS cart_user (
+    id SERIAL PRIMARY KEY,
+    client_id int,
+    promo_code text,
+    restaurant int,
+    FOREIGN KEY (client_id) REFERENCES general_user_info (id) ON DELETE CASCADE,
+    FOREIGN KEY (restaurant) REFERENCES restaurant (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS cart_food (

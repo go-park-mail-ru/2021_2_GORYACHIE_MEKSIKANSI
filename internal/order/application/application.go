@@ -52,6 +52,11 @@ func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) (int, error)
 		return 0, err
 	}
 
+	//err = o.DB.DoPromoCode(cart.PromoCode, rest.Id, cart)
+	//if err != nil {
+	//	return nil, err
+	//}
+
 	order, err := o.DB.CreateOrder(id, createOrder, addressId, *cart, courierId)
 	if err != nil {
 		return 0, err

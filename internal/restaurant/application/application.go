@@ -7,7 +7,7 @@ import (
 )
 
 type RestaurantApplicationInterface interface {
-	AllRestaurants() (*resPkg.AllRestaurants, error)
+	AllRestaurants() (*resPkg.AllRestaurantsPromo, error)
 	GetRestaurant(id int, idClient int) (*resPkg.RestaurantId, error)
 	RestaurantDishes(restId int, dishId int) (*resPkg.Dishes, error)
 	CreateReview(id int, review resPkg.NewReview) error
@@ -21,7 +21,7 @@ type Restaurant struct {
 	DB ormPkg.WrapperRestaurantServerInterface
 }
 
-func (r *Restaurant) AllRestaurants() (*resPkg.AllRestaurants, error) {
+func (r *Restaurant) AllRestaurants() (*resPkg.AllRestaurantsPromo, error) {
 	return r.DB.AllRestaurants()
 }
 
