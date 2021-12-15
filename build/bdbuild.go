@@ -2,8 +2,8 @@ package build
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/myerror"
+	"2021_2_GORYACHIE_MEKSIKANSI/internals/util"
 	"context"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"io/ioutil"

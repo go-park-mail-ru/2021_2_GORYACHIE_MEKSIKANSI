@@ -3,9 +3,9 @@ package main
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/build"
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
-	authPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/authorization"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
-	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/util"
+	authPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/authorization"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/myerror"
+	utils "2021_2_GORYACHIE_MEKSIKANSI/internals/util"
 	cors "github.com/AdhityaRamadhanus/fasthttpcors"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/fasthttp/router"
