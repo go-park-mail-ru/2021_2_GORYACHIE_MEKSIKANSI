@@ -20,6 +20,10 @@ func (r *Row) Scan(dest ...interface{}) error {
 		return r.errRow
 	}
 	for i := range dest {
+		if r.row[i] == nil {
+			dest[i] = nil
+			continue
+		}
 		switch dest[i].(type) {
 		case *int:
 			*dest[i].(*int) = r.row[i].(int)

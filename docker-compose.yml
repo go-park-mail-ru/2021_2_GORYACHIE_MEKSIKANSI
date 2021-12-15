@@ -1,0 +1,177 @@
+version: "2.3"
+
+services:
+  monolith:
+    depends_on:
+      postgres:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: Monolith
+    logging:
+      driver: syslog
+      options:
+        tag: foo-logs
+    ports:
+      - "5000:5000"
+      - "40000:40000"
+    volumes:
+      - ./config/bucket.yml:/app/config/bucket.yml
+      - ./config/main.yml:/app/config/main.yml
+      - ./config/microservice.yml:/app/config/microservice.yml
+      - ./config/prometheus.yml:/app/config/prometheus.yml
+      - ./config/database.yml:/app/config/database.yml
+      - ./build/postgresql/createtables.sql:/app/build/postgresql/createtables.sql
+      - ./build/postgresql/deletetables.sql:/app/build/postgresql/deletetables.sql
+      - ./build/postgresql/fill.sql:/app/build/postgresql/fill.sql
+      - ./build/postgresql/fillcategory.sql:/app/build/postgresql/fillcategory.sql
+      - ./build/postgresql/filldishes.sql:/app/build/postgresql/filldishes.sql
+
+  service_authorization:
+    depends_on:
+      postgres:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: AuthorizationService
+    logging:
+      driver: syslog
+      options:
+        tag: foo-logs
+    ports:
+      - "8081:8081"
+      - "40001:40001"
+    volumes:
+      - ./internals/microservice/authorization/config/main.yml:/app/internals/microservice/authorization/config/main.yml
+      - ./internals/microservice/authorization/config/database.yml:/app/internals/microservice/authorization/config/database.yml
+
+  service_cart:
+    depends_on:
+      postgres:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: CartService
+    logging:
+      driver: syslog
+      options:
+        tag: foo-logs
+    ports:
+      - "8082:8082"
+      - "40002:40002"
+    volumes:
+      - ./internals/microservice/cart/config/main.yml:/app/internals/microservice/cart/config/main.yml
+      - ./internals/microservice/cart/config/database.yml:/app/internals/microservice/cart/config/database.yml
+
+  service_promocode:
+    depends_on:
+      postgres:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: PromocodeService
+    logging:
+      driver: syslog
+      options:
+        tag: foo-logs
+    ports:
+      - "8085:8085"
+      - "40005:40005"
+    volumes:
+      - ./internals/microservice/promocode/config/main.yml:/app/internals/microservice/promocode/config/main.yml
+      - ./internals/microservice/promocode/config/database.yml:/app/internals/microservice/promocode/config/database.yml
+
+
+  service_restaurant:
+    depends_on:
+      postgres:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: RestaurantService
+    logging:
+      driver: syslog
+      options:
+        tag: foo-logs
+    ports:
+      - "8084:8084"
+      - "40004:40004"
+    volumes:
+      - ./internals/microservice/restaurant/config/main.yml:/app/internals/microservice/restaurant/config/main.yml
+      - ./internals/microservice/restaurant/config/database.yml:/app/internals/microservice/restaurant/config/database.yml
+
+  postgres:
+    container_name: BackInfo
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=Captain-matroskin
+      - POSTGRES_PASSWORD=74tbr6r54f78
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U Captain-matroskin" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9091:9091"
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./config:/etc/config
+    depends_on:
+      - cadvisor
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    depends_on:
+      - redis
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: 'node_exporter'
+    user: root
+    privileged: true
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    expose:
+      - "9101"
+    ports:
+      - "9101:9101"
+
+  grafana:
+    image: grafana/grafana
+    depends_on:
+      - prometheus
+      - node_exporter
+    ports:
+      - "3001:3001"
+    expose:
+      - "3001"

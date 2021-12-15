@@ -23,6 +23,10 @@ func (r *Row) Scan(dest ...interface{}) error {
 		return r.errRow
 	}
 	for i := range dest {
+		if r.row[i] == nil {
+			dest[i] = nil
+			continue
+		}
 		switch dest[i].(type) {
 		case *int:
 			*dest[i].(*int) = r.row[i].(int)
@@ -388,22 +392,32 @@ func TestGetProfileClient(t *testing.T) {
 }
 
 var UpdateName = []struct {
-	testName       string
-	inputId        int
-	inputName      string
-	inputQueryId   int
-	inputQueryName string
-	errQuery       error
-	outErr         string
+	testName                 string
+	inputId                  int
+	inputName                string
+	inputQueryId             int
+	inputQueryName           string
+	errQuery                 error
+	outErr                   string
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
 }{
 	{
-		testName:       "First",
-		inputQueryId:   1,
-		inputQueryName: "1",
-		errQuery:       nil,
-		outErr:         "",
-		inputId:        1,
-		inputName:      "1",
+		testName:                 "First",
+		inputQueryId:             1,
+		inputQueryName:           "1",
+		errQuery:                 nil,
+		outErr:                   "",
+		inputId:                  1,
+		inputName:                "1",
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
 	},
 }
 
@@ -412,8 +426,23 @@ func TestUpdateName(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
 	for _, tt := range UpdateName {
 		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
 			EXPECT().
 			Exec(context.Background(),
 				"UPDATE general_user_info SET name = $1 WHERE id = $2",
@@ -433,22 +462,32 @@ func TestUpdateName(t *testing.T) {
 }
 
 var UpdateEmail = []struct {
-	testName        string
-	inputId         int
-	inputEmail      string
-	inputQueryId    int
-	inputQueryEmail string
-	errQuery        error
-	outErr          string
+	testName                 string
+	inputId                  int
+	inputEmail               string
+	inputQueryId             int
+	inputQueryEmail          string
+	errQuery                 error
+	outErr                   string
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
 }{
 	{
-		testName:        "First",
-		inputQueryId:    1,
-		inputQueryEmail: "1",
-		errQuery:        nil,
-		outErr:          "",
-		inputId:         1,
-		inputEmail:      "1",
+		testName:                 "First",
+		inputQueryId:             1,
+		inputQueryEmail:          "1",
+		errQuery:                 nil,
+		outErr:                   "",
+		inputId:                  1,
+		inputEmail:               "1",
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
 	},
 }
 
@@ -457,8 +496,23 @@ func TestUpdateEmail(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
 	for _, tt := range UpdateEmail {
 		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
 			EXPECT().
 			Exec(context.Background(),
 				"UPDATE general_user_info SET email = $1 WHERE id = $2",
@@ -478,26 +532,36 @@ func TestUpdateEmail(t *testing.T) {
 }
 
 var UpdatePassword = []struct {
-	testName           string
-	inputId            int
-	inputPassword      string
-	inputQueryId       int
-	inputQuerySalt     int
-	inputQueryPassword string
-	errQuery           error
-	querySalt          Row
-	outErr             string
+	testName                 string
+	inputId                  int
+	inputPassword            string
+	inputQueryId             int
+	inputQuerySalt           int
+	inputQueryPassword       string
+	errQuery                 error
+	querySalt                Row
+	outErr                   string
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
 }{
 	{
-		testName:           "First",
-		inputQueryId:       1,
-		inputQueryPassword: "4fc82b26aecb47d2868c4efbe3581732a3e7cbcc6c2efb32062c08170a05eeb8",
-		inputQuerySalt:     1,
-		errQuery:           nil,
-		querySalt:          Row{row: []interface{}{"1"}},
-		outErr:             "",
-		inputId:            1,
-		inputPassword:      "1",
+		testName:                 "First",
+		inputQueryId:             1,
+		inputQueryPassword:       "4fc82b26aecb47d2868c4efbe3581732a3e7cbcc6c2efb32062c08170a05eeb8",
+		inputQuerySalt:           1,
+		errQuery:                 nil,
+		querySalt:                Row{row: []interface{}{"1"}},
+		outErr:                   "",
+		inputId:                  1,
+		inputPassword:            "1",
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
 	},
 }
 
@@ -506,15 +570,30 @@ func TestUpdatePassword(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
 	for _, tt := range UpdatePassword {
 		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
 				"SELECT salt FROM general_user_info WHERE id = $1",
 				tt.inputQuerySalt,
 			).
 			Return(&tt.querySalt)
-		m.
+		mTx.
 			EXPECT().
 			Exec(context.Background(),
 				"UPDATE general_user_info SET password = $1 WHERE id = $2",
