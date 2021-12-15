@@ -466,8 +466,7 @@ func (db *Wrapper) GetIdByCookie(cookie *authPkg.Defense) (int, error) {
 		"SELECT client_id, date_life FROM cookie WHERE session_id = $1",
 		cookie.SessionId).Scan(&id, &timeLiveCookie)
 	if err != nil {
-		errorText := err.Error()
-		if strings.Contains(errorText, "no rows") {
+		if err == pgx.ErrNoRows {
 			return 0, &errPkg.Errors{
 				Alias: errPkg.MGetIdByCookieCookieNotFound,
 			}

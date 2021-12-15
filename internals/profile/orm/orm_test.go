@@ -613,22 +613,32 @@ func TestUpdatePassword(t *testing.T) {
 }
 
 var UpdatePhone = []struct {
-	testName        string
-	inputId         int
-	inputPhone      string
-	inputQueryId    int
-	inputQueryPhone string
-	errQuery        error
-	outErr          string
+	testName                 string
+	inputId                  int
+	inputPhone               string
+	inputQueryId             int
+	inputQueryPhone          string
+	errQuery                 error
+	outErr                   string
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
 }{
 	{
-		testName:        "First",
-		inputQueryId:    1,
-		inputQueryPhone: "1",
-		errQuery:        nil,
-		outErr:          "",
-		inputId:         1,
-		inputPhone:      "1",
+		testName:                 "First",
+		inputQueryId:             1,
+		inputQueryPhone:          "1",
+		errQuery:                 nil,
+		outErr:                   "",
+		inputId:                  1,
+		inputPhone:               "1",
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
 	},
 }
 
@@ -637,8 +647,23 @@ func TestUpdatePhone(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
 	for _, tt := range UpdatePhone {
 		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
 			EXPECT().
 			Exec(context.Background(),
 				"UPDATE general_user_info SET phone = $1 WHERE id = $2",
@@ -658,30 +683,40 @@ func TestUpdatePhone(t *testing.T) {
 }
 
 var UpdateAvatar = []struct {
-	testName         string
-	inputId          int
-	inputAvatar      *profile.UpdateAvatar
-	inputQueryId     int
-	inputNewFileName string
-	countQuery       int
-	inputQueryAvatar string
-	errQuery         error
-	errUpload        error
-	countUpload      int
-	outErr           string
+	testName                 string
+	inputId                  int
+	inputAvatar              *profile.UpdateAvatar
+	inputQueryId             int
+	inputNewFileName         string
+	outErr                   string
+	countQuery               int
+	inputQueryAvatar         string
+	errQuery                 error
+	errUpload                error
+	countUpload              int
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
 }{
 	{
-		testName:         "First",
-		inputQueryId:     1,
-		inputQueryAvatar: "1",
-		inputNewFileName: "1",
-		errQuery:         nil,
-		outErr:           errorsConst.PUpdateAvatarAvatarNotOpen,
-		inputId:          1,
-		inputAvatar:      &profile.UpdateAvatar{FileHeader: &multipart.FileHeader{Filename: "name.txt"}}, //TODO: make fill
-		countQuery:       0,
-		errUpload:        nil,
-		countUpload:      0,
+		testName:                 "First",
+		inputQueryId:             1,
+		inputQueryAvatar:         "1",
+		inputNewFileName:         "1",
+		errQuery:                 nil,
+		outErr:                   errorsConst.PUpdateAvatarAvatarNotOpen,
+		inputId:                  1,
+		inputAvatar:              &profile.UpdateAvatar{FileHeader: &multipart.FileHeader{Filename: "name.txt"}}, //TODO: make fill
+		countQuery:               0,
+		errUpload:                nil,
+		countUpload:              0,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
 	},
 }
 
@@ -690,9 +725,24 @@ func TestUpdateAvatar(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
 	mUploader := mocks.NewMockUploaderInterface(ctrl)
 	for _, tt := range UpdateAvatar {
 		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
 			EXPECT().
 			Exec(context.Background(),
 				"UPDATE general_user_info SET avatar = $1 WHERE id = $2",
@@ -718,22 +768,32 @@ func TestUpdateAvatar(t *testing.T) {
 }
 
 var UpdateBirthday = []struct {
-	testName           string
-	inputId            int
-	inputBirthday      string
-	inputQueryId       int
-	inputQueryBirthday string
-	errQuery           error
-	outErr             string
+	testName                 string
+	inputId                  int
+	inputBirthday            string
+	outErr                   string
+	inputQueryId             int
+	inputQueryBirthday       string
+	errQuery                 error
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
 }{
 	{
-		testName:           "First",
-		inputQueryId:       1,
-		inputQueryBirthday: "2009.10.23",
-		errQuery:           nil,
-		outErr:             "",
-		inputId:            1,
-		inputBirthday:      "2009.10.23",
+		testName:                 "First",
+		inputQueryId:             1,
+		inputQueryBirthday:       "2009.10.23",
+		errQuery:                 nil,
+		outErr:                   "",
+		inputId:                  1,
+		inputBirthday:            "2009.10.23",
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
 	},
 }
 
@@ -742,8 +802,23 @@ func TestUpdateBirthday(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
 	for _, tt := range UpdateBirthday {
 		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
 			EXPECT().
 			Exec(context.Background(),
 				"UPDATE client SET date_birthday = $1 WHERE client_id = $2",
@@ -763,13 +838,18 @@ func TestUpdateBirthday(t *testing.T) {
 }
 
 var UpdateAddress = []struct {
-	testName          string
-	inputId           int
-	inputAddress      profile.AddressCoordinates
-	inputQueryId      int
-	inputQueryAddress profile.AddressCoordinates
-	errQuery          error
-	outErr            string
+	testName                 string
+	inputId                  int
+	inputAddress             profile.AddressCoordinates
+	inputQueryId             int
+	inputQueryAddress        profile.AddressCoordinates
+	errQuery                 error
+	outErr                   string
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
 }{
 	{
 		testName:     "First",
@@ -781,6 +861,11 @@ var UpdateAddress = []struct {
 		inputId:  1,
 		inputAddress: profile.AddressCoordinates{Alias: "1", Comment: "1", City: "1", Street: "1", House: "1",
 			Floor: 1, Flat: "1", Porch: 1, Intercom: "1", Coordinates: profile.Coordinates{Latitude: 1.0, Longitude: 1.0}},
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
 	},
 }
 
@@ -789,8 +874,23 @@ func TestUpdateAddress(t *testing.T) {
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
 	for _, tt := range UpdateAddress {
 		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
 			EXPECT().
 			Exec(context.Background(),
 				"UPDATE address_user SET alias = $1, comment = $2, city = $3, street = $4, house = $5, floor = $6,"+

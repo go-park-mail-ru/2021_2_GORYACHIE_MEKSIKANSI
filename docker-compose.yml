@@ -24,7 +24,8 @@ services:
       - ./config/database.yml:/app/config/database.yml
       - ./build/postgresql/createtables.sql:/app/build/postgresql/createtables.sql
       - ./build/postgresql/deletetables.sql:/app/build/postgresql/deletetables.sql
-      - ./build/postgresql/fill.sql:/app/build/postgresql/fill.sql
+      - ./build/postgresql/fill.sql:/app/build/postgresql/f
+      - ill.sql
       - ./build/postgresql/fillcategory.sql:/app/build/postgresql/fillcategory.sql
       - ./build/postgresql/filldishes.sql:/app/build/postgresql/filldishes.sql
 
