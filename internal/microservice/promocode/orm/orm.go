@@ -12,7 +12,7 @@ import (
 
 type WrapperPromocodeInterface interface {
 	GetTypePromoCode(promoCode string, restaurantId int) (int, error)
-	ActiveCostForFreeDelivery(promoCode string, restaurantId int) (int, error)
+	ActiveFreeDelivery(promoCode string, restaurantId int) (bool, error)
 	ActiveCostForFreeDish(promoCode string, restaurantId int) (int, int, error)
 	ActiveCostForSale(promoCode string, amount int, restaurantId int) (int, error)
 	ActiveTimeForSale(promoCode string, amount int, restaurantId int) (int, error)
@@ -80,39 +80,39 @@ func (db *Wrapper) GetTypePromoCode(promoCode string, restaurantId int) (int, er
 	return typePromoCode, nil
 }
 
-func (db *Wrapper) ActiveCostForFreeDelivery(promoCode string, restaurantId int) (int, error) {
+func (db *Wrapper) ActiveFreeDelivery(promoCode string, restaurantId int) (bool, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
-		return 0, &errPkg.Errors{
-			Alias: errPkg.PActiveCostForFreeDeliveryTransactionNotCreate,
+		return false, &errPkg.Errors{
+			Alias: errPkg.PActiveFreeDeliveryTransactionNotCreate,
 		}
 	}
 
 	defer tx.Rollback(contextTransaction)
 
-	var costForFreeDelivery int
+	var freeDelivery bool
 	err = tx.QueryRow(contextTransaction,
-		"SELECT cost_for_free_delivery FROM promocode WHERE code = $1 AND restaurant = $2",
-		promoCode, restaurantId).Scan(&costForFreeDelivery)
+		"SELECT free_delivery FROM promocode WHERE code = $1 AND restaurant = $2",
+		promoCode, restaurantId).Scan(&freeDelivery)
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return 0, &errPkg.Errors{
-				Alias: errPkg.PActiveCostForFreeDeliveryRestaurantsNotFound,
+			return false, &errPkg.Errors{
+				Alias: errPkg.PActiveFreeDeliveryRestaurantsNotFound,
 			}
 		}
-		return 0, &errPkg.Errors{
-			Alias: errPkg.PActiveCostForFreeDeliveryRestaurantsNotSelect,
+		return false, &errPkg.Errors{
+			Alias: errPkg.PActiveFreeDeliveryRestaurantsNotSelect,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
-		return 0, &errPkg.Errors{
-			Alias: errPkg.PActiveCostForFreeDeliveryNotCommit,
+		return false, &errPkg.Errors{
+			Alias: errPkg.PActiveFreeDeliveryNotCommit,
 		}
 	}
-	return 0, nil
+	return freeDelivery, nil
 }
 
 func (db *Wrapper) ActiveCostForFreeDish(promoCode string, restaurantId int) (int, int, error) {

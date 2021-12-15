@@ -8,7 +8,7 @@ import (
 
 type PromocodeManagerInterface interface {
 	GetTypePromoCode(ctx context.Context, promoCode *proto.PromoCodeWithRestaurantId) (*proto.TypePromoCodeResponse, error)
-	ActiveCostForFreeDelivery(ctx context.Context, promoCode *proto.PromoCodeWithRestaurantId) (*proto.NewCostResponse, error)
+	ActiveFreeDelivery(ctx context.Context, promoCode *proto.PromoCodeWithRestaurantId) (*proto.FreeDeliveryResponse, error)
 	ActiveCostForFreeDish(ctx context.Context, promoCode *proto.PromoCodeWithRestaurantId) (*proto.FreeDishResponse, error)
 	ActiveCostForSale(ctx context.Context, promoCode *proto.PromoCodeWithAmount) (*proto.NewCostResponse, error)
 	ActiveTimeForSale(ctx context.Context, promoCode *proto.PromoCodeWithAmount) (*proto.NewCostResponse, error)
@@ -26,12 +26,12 @@ func (pm *PromocodeManager) GetTypePromoCode(ctx context.Context, promoCode *pro
 	return &proto.TypePromoCodeResponse{Type: int64(result)}, nil
 }
 
-func (pm *PromocodeManager) ActiveCostForFreeDelivery(ctx context.Context, promoCode *proto.PromoCodeWithRestaurantId) (*proto.NewCostResponse, error) {
-	result, err := pm.Application.ActiveCostForFreeDelivery(promoCode.PromoCode, int(promoCode.Restaurant))
+func (pm *PromocodeManager) ActiveFreeDelivery(ctx context.Context, promoCode *proto.PromoCodeWithRestaurantId) (*proto.FreeDeliveryResponse, error) {
+	result, err := pm.Application.ActiveFreeDelivery(promoCode.PromoCode, int(promoCode.Restaurant))
 	if err != nil {
-		return &proto.NewCostResponse{Error: err.Error()}, nil
+		return &proto.FreeDeliveryResponse{Error: err.Error()}, nil
 	}
-	return &proto.NewCostResponse{Cost: int64(result)}, nil
+	return &proto.FreeDeliveryResponse{Have: result}, nil
 }
 
 func (pm *PromocodeManager) ActiveCostForFreeDish(ctx context.Context, promoCode *proto.PromoCodeWithRestaurantId) (*proto.FreeDishResponse, error) {

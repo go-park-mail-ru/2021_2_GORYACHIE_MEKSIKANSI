@@ -3,8 +3,8 @@ package main
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/build"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/config"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/proto"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

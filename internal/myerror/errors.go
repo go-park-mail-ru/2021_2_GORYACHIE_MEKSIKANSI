@@ -259,6 +259,9 @@ const (
 	CAddPromoCodeNotUpsert                         = "promo not upsert"                          // TODO: add in checkErrors
 	CDoPromoCodeNotSelectInfo                      = "promo code info not select"                // TODO: add in checkErrors
 	CDoPromoCodeNotSelectInfoDish                  = "info about free dish not select"           // TODO: add in checkErrors
+	CGetPromoCodeTransactionNotCreate              = "transaction get promo code not create"     // TODO: add in checkErrors
+	CGetPromoCodeNotSelect                         = "promo code not select"                     // TODO: add in checkErrors
+	CGetPromoCodeNotCommit                         = "transaction get promo code not commit"     // TODO: add in checkErrors
 )
 
 // Error of order

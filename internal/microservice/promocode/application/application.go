@@ -8,7 +8,7 @@ import (
 
 type PromocodeApplicationInterface interface {
 	GetTypePromoCode(promoCode string, restaurantId int) (int, error)
-	ActiveCostForFreeDelivery(promoCode string, restaurantId int) (int, error)
+	ActiveFreeDelivery(promoCode string, restaurantId int) (bool, error)
 	ActiveCostForFreeDish(promoCode string, restaurantId int) (int, int, error)
 	ActiveCostForSale(promoCode string, amount int, restaurantId int) (int, error)
 	ActiveTimeForSale(promoCode string, amount int, restaurantId int) (int, error)
@@ -22,8 +22,8 @@ func (db *Promocode) GetTypePromoCode(promoCode string, restaurantId int) (int, 
 	return db.DB.GetTypePromoCode(promoCode, restaurantId)
 }
 
-func (db *Promocode) ActiveCostForFreeDelivery(promoCode string, restaurantId int) (int, error) {
-	return db.DB.ActiveCostForFreeDelivery(promoCode, restaurantId)
+func (db *Promocode) ActiveFreeDelivery(promoCode string, restaurantId int) (bool, error) {
+	return db.DB.ActiveFreeDelivery(promoCode, restaurantId)
 }
 
 func (db *Promocode) ActiveCostForFreeDish(promoCode string, restaurantId int) (int, int, error) {

@@ -25,6 +25,11 @@ message NewCostResponse {
   string error = 2;
 }
 
+message FreeDeliveryResponse {
+  bool have = 1;
+  string error = 2;
+}
+
 message FreeDishResponse {
   int64 cost = 1;
   int64 dish_id = 2;
@@ -33,7 +38,7 @@ message FreeDishResponse {
 
 service PromocodeService {
   rpc GetTypePromoCode(PromoCodeWithRestaurantId) returns (TypePromoCodeResponse);
-  rpc ActiveCostForFreeDelivery(PromoCodeWithRestaurantId) returns (NewCostResponse);
+  rpc ActiveFreeDelivery(PromoCodeWithRestaurantId) returns (FreeDeliveryResponse);
   rpc ActiveCostForFreeDish(PromoCodeWithRestaurantId) returns (FreeDishResponse);
   rpc ActiveCostForSale(PromoCodeWithAmount) returns (NewCostResponse);
   rpc ActiveTimeForSale(PromoCodeWithAmount) returns (NewCostResponse);

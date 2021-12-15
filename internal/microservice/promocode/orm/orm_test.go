@@ -39,6 +39,8 @@ func (r *Row) Scan(dest ...interface{}) error {
 			*dest[i].(**string) = &t
 		case *time.Time:
 			*dest[i].(*time.Time) = r.row[i].(time.Time)
+		case *bool:
+			*dest[i].(*bool) = r.row[i].(bool)
 		default:
 			dest[i] = nil
 		}
@@ -119,11 +121,11 @@ func TestGetTypePromoCode(t *testing.T) {
 	}
 }
 
-var ActiveCostForFreeDelivery = []struct {
+var ActiveFreeDelivery = []struct {
 	testName                 string
 	inputName                string
 	inputRestaurant          int
-	out                      int
+	out                      bool
 	outErr                   string
 	outQuery                 Row
 	inputQuery               string
@@ -134,13 +136,13 @@ var ActiveCostForFreeDelivery = []struct {
 	countRollbackTransaction int
 }{
 	{
+		testName:                 "First",
+		outErr:                   "",
+		out:                      true,
 		inputName:                "promo",
 		inputRestaurant:          1,
 		inputQuery:               "promo",
-		outQuery:                 Row{row: []interface{}{1}},
-		testName:                 "First",
-		outErr:                   "",
-		out:                      1,
+		outQuery:                 Row{row: []interface{}{true}},
 		errBeginTransaction:      nil,
 		errCommitTransaction:     nil,
 		countCommitTransaction:   1,
@@ -149,13 +151,13 @@ var ActiveCostForFreeDelivery = []struct {
 	},
 }
 
-func TestActiveCostForFreeDelivery(t *testing.T) {
+func TestActiveFreeDelivery(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockConnectionInterface(ctrl)
 	mTx := mocks.NewMockTransactionInterface(ctrl)
-	for _, tt := range ActiveCostForFreeDelivery {
+	for _, tt := range ActiveFreeDelivery {
 		m.
 			EXPECT().
 			Begin(gomock.Any()).
@@ -173,13 +175,13 @@ func TestActiveCostForFreeDelivery(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT cost_for_free_delivery FROM promocode WHERE code = $1 AND restaurant = $2",
+				"SELECT free_delivery FROM promocode WHERE code = $1 AND restaurant = $2",
 				tt.inputQuery,
 			).
 			Return(&tt.outQuery)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := testUser.ActiveCostForFreeDelivery(tt.inputName, tt.inputRestaurant)
+			result, err := testUser.ActiveFreeDelivery(tt.inputName, tt.inputRestaurant)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))

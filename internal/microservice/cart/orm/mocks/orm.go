@@ -505,26 +505,6 @@ func (m *MockConnectPromoCodeServiceInterface) EXPECT() *MockConnectPromoCodeSer
 	return m.recorder
 }
 
-// ActiveCostForFreeDelivery mocks base method.
-func (m *MockConnectPromoCodeServiceInterface) ActiveCostForFreeDelivery(arg0 context.Context, arg1 *proto.PromoCodeWithRestaurantId, arg2 ...grpc.CallOption) (*proto.NewCostResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{arg0, arg1}
-	for _, a := range arg2 {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "ActiveCostForFreeDelivery", varargs...)
-	ret0, _ := ret[0].(*proto.NewCostResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ActiveCostForFreeDelivery indicates an expected call of ActiveCostForFreeDelivery.
-func (mr *MockConnectPromoCodeServiceInterfaceMockRecorder) ActiveCostForFreeDelivery(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{arg0, arg1}, arg2...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActiveCostForFreeDelivery", reflect.TypeOf((*MockConnectPromoCodeServiceInterface)(nil).ActiveCostForFreeDelivery), varargs...)
-}
-
 // ActiveCostForFreeDish mocks base method.
 func (m *MockConnectPromoCodeServiceInterface) ActiveCostForFreeDish(arg0 context.Context, arg1 *proto.PromoCodeWithRestaurantId, arg2 ...grpc.CallOption) (*proto.FreeDishResponse, error) {
 	m.ctrl.T.Helper()
@@ -563,6 +543,26 @@ func (mr *MockConnectPromoCodeServiceInterfaceMockRecorder) ActiveCostForSale(ar
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActiveCostForSale", reflect.TypeOf((*MockConnectPromoCodeServiceInterface)(nil).ActiveCostForSale), varargs...)
+}
+
+// ActiveFreeDelivery mocks base method.
+func (m *MockConnectPromoCodeServiceInterface) ActiveFreeDelivery(arg0 context.Context, arg1 *proto.PromoCodeWithRestaurantId, arg2 ...grpc.CallOption) (*proto.FreeDeliveryResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ActiveFreeDelivery", varargs...)
+	ret0, _ := ret[0].(*proto.FreeDeliveryResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ActiveFreeDelivery indicates an expected call of ActiveFreeDelivery.
+func (mr *MockConnectPromoCodeServiceInterfaceMockRecorder) ActiveFreeDelivery(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActiveFreeDelivery", reflect.TypeOf((*MockConnectPromoCodeServiceInterface)(nil).ActiveFreeDelivery), varargs...)
 }
 
 // ActiveTimeForSale mocks base method.

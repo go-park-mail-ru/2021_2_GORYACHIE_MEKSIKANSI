@@ -522,15 +522,15 @@ func (db *Wrapper) GetCart(id int) (*cart.ResponseCartErrors, error) {
 			Text: receivedCart.Error,
 		}
 	}
-	cart := cast.CastResponseCartErrorsProtoToResponseCartErrors(receivedCart)
+	currentCart := cast.CastResponseCartErrorsProtoToResponseCartErrors(receivedCart)
 
-	if cart.DishErr != nil {
+	if currentCart.DishErr != nil {
 		return nil, &errPkg.Errors{
 			Text: errPkg.OGetCartCartNoActual,
 		}
 	}
 
-	return cart, nil
+	return currentCart, nil
 }
 
 func (db *Wrapper) GetRestaurant(id int) (*restaurant.RestaurantId, error) {

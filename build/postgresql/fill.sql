@@ -124,8 +124,8 @@ UPDATE restaurant_category
 INSERT INTO address_user (client_id, alias, comment, city, street, house, floor, flat, porch, intercom, latitude, longitude)
 VALUES (1, 'Мой дом', 'Есть злая собака', 'Москва', 'Вязов', 2, 5, 28, 2, '28K', 500, 500);
 
-INSERT INTO promocode (id, code, type, restaurant, name, description, end_date, avatar, cost_for_free_delivery)
-VALUES (1, 'Double Time', 1, 1, 'Тук-тук', 'Кто там?', TIMESTAMP '2022-04-28', 'url/photo/', 1);
+INSERT INTO promocode (id, code, type, restaurant, name, description, end_date, avatar, free_delivery)
+VALUES (1, 'Double Time', 1, 1, 'Тук-тук', 'Кто там?', TIMESTAMP '2022-04-28', 'url/photo/', true);
 
 INSERT INTO favorite_restaurant (restaurant, client, position)
 VALUES (1, 1, 0);

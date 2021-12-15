@@ -67,9 +67,11 @@ func (db *Wrapper) GetRestaurants() (*resPkg.AllRestaurantsPromo, error) {
 	defer tx.Rollback(contextTransaction)
 
 	row, err := tx.Query(contextTransaction,
-		"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating, rc.category, rc.id "+
-			"FROM restaurant r "+
-			"LEFT JOIN restaurant_category rc ON rc.restaurant = r.id ORDER BY random() LIMIT 51")
+		"SELECT t.id, t.avatar, t.name, t.price_delivery, t.min_delivery_time, t.max_delivery_time,"+
+			" t.rating, rc.category, rc.id "+
+			"FROM (SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time,"+
+			" r.rating FROM restaurant r ORDER BY random() LIMIT 51) t "+
+			"LEFT JOIN restaurant_category rc ON rc.restaurant = t.id")
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.RGetRestaurantsRestaurantsNotSelect,
@@ -135,9 +137,11 @@ func (db *Wrapper) GetRecommendedRestaurants() (*resPkg.AllRestaurants, error) {
 	defer tx.Rollback(contextTransaction)
 
 	row, err := tx.Query(contextTransaction,
-		"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating, rc.category, rc.id "+
-			"FROM restaurant r "+
-			"LEFT JOIN restaurant_category rc ON rc.restaurant = r.id ORDER BY rating DESC LIMIT 51")
+		"SELECT t.id, t.avatar, t.name, t.price_delivery, t.min_delivery_time, "+
+			"t.max_delivery_time, t.rating, rc.category, rc.id FROM "+
+			"(SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, "+
+			"r.max_delivery_time, r.rating FROM restaurant r ORDER BY rating DESC LIMIT 51) t "+
+			"LEFT JOIN restaurant_category rc ON rc.restaurant = t.id")
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Alias: errPkg.RGetRecommendedRestaurantsRestaurantsNotSelect,

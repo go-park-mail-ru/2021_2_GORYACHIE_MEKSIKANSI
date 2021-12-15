@@ -47,7 +47,7 @@ type TransactionInterface interface {
 
 type ConnectPromoCodeServiceInterface interface {
 	GetTypePromoCode(ctx context.Context, in *promoProtoPkg.PromoCodeWithRestaurantId, opts ...grpc.CallOption) (*promoProtoPkg.TypePromoCodeResponse, error)
-	ActiveCostForFreeDelivery(ctx context.Context, in *promoProtoPkg.PromoCodeWithRestaurantId, opts ...grpc.CallOption) (*promoProtoPkg.NewCostResponse, error)
+	ActiveFreeDelivery(ctx context.Context, in *promoProtoPkg.PromoCodeWithRestaurantId, opts ...grpc.CallOption) (*promoProtoPkg.FreeDeliveryResponse, error)
 	ActiveCostForFreeDish(ctx context.Context, in *promoProtoPkg.PromoCodeWithRestaurantId, opts ...grpc.CallOption) (*promoProtoPkg.FreeDishResponse, error)
 	ActiveCostForSale(ctx context.Context, in *promoProtoPkg.PromoCodeWithAmount, opts ...grpc.CallOption) (*promoProtoPkg.NewCostResponse, error)
 	ActiveTimeForSale(ctx context.Context, in *promoProtoPkg.PromoCodeWithAmount, opts ...grpc.CallOption) (*promoProtoPkg.NewCostResponse, error)
@@ -393,7 +393,6 @@ func (db *Wrapper) GetPriceDelivery(id int) (int, error) {
 	return price, nil
 }
 
-//TODO: call microservice
 func (db *Wrapper) GetRestaurant(id int) (*cartPkg.RestaurantId, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
@@ -407,8 +406,8 @@ func (db *Wrapper) GetRestaurant(id int) (*cartPkg.RestaurantId, error) {
 
 	var restaurant cartPkg.RestaurantId
 	err = tx.QueryRow(contextTransaction,
-		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant WHERE id = $1", id).Scan(
-		&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery, &restaurant.MinDelivery,
+		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant WHERE id = $1",
+		id).Scan(&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery, &restaurant.MinDelivery,
 		&restaurant.MaxDelivery, &restaurant.Rating)
 	if err != nil {
 		return nil, &errPkg.Errors{
@@ -455,13 +454,12 @@ func (db *Wrapper) AddPromoCode(promoCode string, restaurantId int, clientId int
 	return nil
 }
 
-//TODO: make errors
 func (db *Wrapper) GetPromoCode(id int) (string, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return "", &errPkg.Errors{
-			Alias: errPkg.CAddPromoCodeTransactionNotCreate,
+			Alias: errPkg.CGetPromoCodeTransactionNotCreate,
 		}
 	}
 
@@ -469,20 +467,21 @@ func (db *Wrapper) GetPromoCode(id int) (string, error) {
 
 	var promoCode string
 	err = tx.QueryRow(contextTransaction,
-		"SELECT promo_code FROM cart_user WHERE client_id = $1", id).Scan(&promoCode)
+		"SELECT promo_code FROM cart_user WHERE client_id = $1",
+		id).Scan(&promoCode)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return "", nil
 		}
 		return "", &errPkg.Errors{
-			Alias: errPkg.CAddPromoCodeNotUpsert,
+			Alias: errPkg.CGetPromoCodeNotSelect,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return "", &errPkg.Errors{
-			Alias: errPkg.CAddPromoCodeNotCommit,
+			Alias: errPkg.CGetPromoCodeNotCommit,
 		}
 	}
 	return promoCode, nil
@@ -494,8 +493,14 @@ func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg
 		Restaurant: int64(restaurantId),
 	},
 	)
+
 	if err != nil {
 		return nil, err
+	}
+	if typePromoCode.Error != "" {
+		return nil, &errPkg.Errors{
+			Alias: typePromoCode.Error,
+		}
 	}
 
 	transactionPromoCode := context.Background()
@@ -508,21 +513,29 @@ func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg
 
 	defer tx.Rollback(transactionPromoCode)
 
-	// TODO: make define
 	switch typePromoCode.Type {
-	case 1:
+	case PromoCodeFreeDelivery:
 		{
-			newCost, err := db.ConnPromoService.ActiveCostForFreeDelivery(db.Ctx, &promoProtoPkg.PromoCodeWithRestaurantId{
+			freeDelivery, err := db.ConnPromoService.ActiveFreeDelivery(db.Ctx, &promoProtoPkg.PromoCodeWithRestaurantId{
 				PromoCode:  promoCode,
 				Restaurant: int64(restaurantId),
 			},
 			)
+
 			if err != nil {
 				return nil, err
 			}
-			cart.Cost.DCost = int(newCost.Cost)
+			if freeDelivery.Error != "" {
+				return nil, &errPkg.Errors{
+					Alias: freeDelivery.Error,
+				}
+			}
+
+			if freeDelivery.Have {
+				cart.Cost.DCost = 0
+			}
 		}
-	case 2:
+	case PromoCodeSaleOverCost:
 		{
 			newCost, err := db.ConnPromoService.ActiveCostForSale(db.Ctx, &promoProtoPkg.PromoCodeWithAmount{
 				PromoCode:  promoCode,
@@ -530,12 +543,19 @@ func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg
 				Restaurant: int64(restaurantId),
 			},
 			)
+
 			if err != nil {
 				return nil, err
 			}
+			if newCost.Error != "" {
+				return nil, &errPkg.Errors{
+					Alias: newCost.Error,
+				}
+			}
+
 			cart.Cost.SumCost = int(newCost.Cost)
 		}
-	case 3:
+	case PromoCodeSaleOverTime:
 		{
 			newCost, err := db.ConnPromoService.ActiveTimeForSale(db.Ctx, &promoProtoPkg.PromoCodeWithAmount{
 				PromoCode:  promoCode,
@@ -543,21 +563,34 @@ func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg
 				Restaurant: int64(restaurantId),
 			},
 			)
+
 			if err != nil {
 				return nil, err
 			}
+			if newCost.Error != "" {
+				return nil, &errPkg.Errors{
+					Alias: newCost.Error,
+				}
+			}
 			cart.Cost.SumCost = int(newCost.Cost)
 		}
-	case 4:
+	case PromoCodeFreeDishes:
 		{
 			freeDishId, err := db.ConnPromoService.ActiveCostForFreeDish(db.Ctx, &promoProtoPkg.PromoCodeWithRestaurantId{
 				PromoCode:  promoCode,
 				Restaurant: int64(restaurantId),
 			},
 			)
+
 			if err != nil {
 				return nil, err
 			}
+			if freeDishId.Error != "" {
+				return nil, &errPkg.Errors{
+					Alias: freeDishId.Error,
+				}
+			}
+
 			var newDish cartPkg.DishesCartResponse
 			err = tx.QueryRow(transactionPromoCode,
 				"SELECT avatar, name, kilocalorie, weight, description FROM dishes WHERE id = $1 AND count > 1",

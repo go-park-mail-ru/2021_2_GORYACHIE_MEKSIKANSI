@@ -33,21 +33,6 @@ func (m *MockWrapperPromocodeInterface) EXPECT() *MockWrapperPromocodeInterfaceM
 	return m.recorder
 }
 
-// ActiveCostForFreeDelivery mocks base method.
-func (m *MockWrapperPromocodeInterface) ActiveCostForFreeDelivery(arg0 string, arg1 int) (int, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ActiveCostForFreeDelivery", arg0, arg1)
-	ret0, _ := ret[0].(int)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ActiveCostForFreeDelivery indicates an expected call of ActiveCostForFreeDelivery.
-func (mr *MockWrapperPromocodeInterfaceMockRecorder) ActiveCostForFreeDelivery(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActiveCostForFreeDelivery", reflect.TypeOf((*MockWrapperPromocodeInterface)(nil).ActiveCostForFreeDelivery), arg0, arg1)
-}
-
 // ActiveCostForFreeDish mocks base method.
 func (m *MockWrapperPromocodeInterface) ActiveCostForFreeDish(arg0 string, arg1 int) (int, int, error) {
 	m.ctrl.T.Helper()
@@ -77,6 +62,21 @@ func (m *MockWrapperPromocodeInterface) ActiveCostForSale(arg0 string, arg1, arg
 func (mr *MockWrapperPromocodeInterfaceMockRecorder) ActiveCostForSale(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActiveCostForSale", reflect.TypeOf((*MockWrapperPromocodeInterface)(nil).ActiveCostForSale), arg0, arg1, arg2)
+}
+
+// ActiveFreeDelivery mocks base method.
+func (m *MockWrapperPromocodeInterface) ActiveFreeDelivery(arg0 string, arg1 int) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ActiveFreeDelivery", arg0, arg1)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ActiveFreeDelivery indicates an expected call of ActiveFreeDelivery.
+func (mr *MockWrapperPromocodeInterfaceMockRecorder) ActiveFreeDelivery(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActiveFreeDelivery", reflect.TypeOf((*MockWrapperPromocodeInterface)(nil).ActiveFreeDelivery), arg0, arg1)
 }
 
 // ActiveTimeForSale mocks base method.

@@ -622,6 +622,76 @@ func TestDeleteCart(t *testing.T) {
 	}
 }
 
+var GetPromoCode = []struct {
+	testName                 string
+	input                    int
+	out                      string
+	outErr                   string
+	errBeginTransaction      error
+	inputQuery               int
+	outQuery                 Row
+	countQuery               int
+	errCommitTransaction     error
+	countCommitTransaction   int
+	countRollbackTransaction int
+}{
+	{
+		testName:                 "First",
+		input:                    1,
+		out:                      "promo",
+		outErr:                   "",
+		errBeginTransaction:      nil,
+		inputQuery:               1,
+		outQuery:                 Row{row: []interface{}{"promo"}},
+		countQuery:               1,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		countRollbackTransaction: 1,
+	},
+}
+
+func TestGetPromoCode(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range GetPromoCode {
+		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
+			EXPECT().
+			QueryRow(context.Background(),
+				"SELECT promo_code FROM cart_user WHERE client_id = $1",
+				tt.inputQuery,
+			).
+			Return(&tt.outQuery).
+			Times(tt.countQuery)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.GetPromoCode(tt.input)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
 var UpdateCartStructFood = []struct {
 	testName              string
 	inputIngredient       []cartPkg.IngredientsCartRequest
@@ -1098,6 +1168,88 @@ func TestGetPriceDelivery(t *testing.T) {
 	}
 }
 
+var GetRestaurant = []struct {
+	testName                 string
+	out                      *cartPkg.RestaurantId
+	outErr                   string
+	input                    int
+	outQuery                 Row
+	countQuery               int
+	inputQuery               int
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
+}{
+	{
+		input:      1,
+		inputQuery: 1,
+		outQuery:   Row{row: []interface{}{1, "1", "1", 1, 1, 1, 1.0}},
+		countQuery: 1,
+		testName:   "First",
+		outErr:     "",
+		out: &cartPkg.RestaurantId{
+			Id:                  1,
+			Img:                 "1",
+			Name:                "1",
+			CostForFreeDelivery: 1,
+			MinDelivery:         1,
+			MaxDelivery:         1,
+			Rating:              1,
+			Tags:                []cartPkg.Tag(nil),
+			Menu:                []cartPkg.Menu(nil),
+		},
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+	},
+}
+
+func TestGetRestaurant(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range GetRestaurant {
+		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
+			EXPECT().
+			QueryRow(context.Background(),
+				"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant WHERE id = $1",
+				tt.inputQuery,
+			).
+			Return(&tt.outQuery).
+			Times(tt.countQuery)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.GetRestaurant(tt.input)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
 var AddPromoCode = []struct {
 	testName                 string
 	outErr                   string
@@ -1158,7 +1310,7 @@ func TestAddPromoCode(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"INSERT INTO cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3) ON CONFLICT (promo_code) DO UPDATE SET promo_code = $2",
+				"INSERT INTO cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3) ON CONFLICT (promo_code, client_id) DO UPDATE SET promo_code = $2 WHERE cart_user.client_id =  $1",
 				tt.inputQueryClient, tt.inputQueryPromoCode, tt.inputQueryRestaurant,
 			).
 			Return(nil, tt.errQuery).
@@ -1196,10 +1348,10 @@ var DoPromoCode = []struct {
 	errRollbackTransaction               error
 	countRollbackTransaction             int
 
-	inputActiveCostForFreeDelivery *promoProtoPkg.PromoCodeWithRestaurantId
-	outActiveCostForFreeDelivery   *promoProtoPkg.NewCostResponse
-	errActiveCostForFreeDelivery   error
-	countActiveCostForFreeDelivery int
+	inputActiveFreeDelivery *promoProtoPkg.PromoCodeWithRestaurantId
+	outActiveFreeDelivery   *promoProtoPkg.FreeDeliveryResponse
+	errActiveFreeDelivery   error
+	countActiveFreeDelivery int
 
 	inputActiveCostForSale *promoProtoPkg.PromoCodeWithAmount
 	outActiveCostForSale   *promoProtoPkg.NewCostResponse
@@ -1221,7 +1373,7 @@ var DoPromoCode = []struct {
 	countSelectInfoDish int
 }{
 	{
-		testName:          "Type 1",
+		testName:          "Promo code on free delivery",
 		inputPromoCode:    "promo",
 		inputRestaurantId: 1,
 		inputCart: &cartPkg.ResponseCartErrors{
@@ -1324,7 +1476,7 @@ var DoPromoCode = []struct {
 			PromoCode:  "promo",
 			Restaurant: 1,
 		},
-		outGetTypePromoCode:      &promoProtoPkg.TypePromoCodeResponse{Type: 1},
+		outGetTypePromoCode:      &promoProtoPkg.TypePromoCodeResponse{Type: PromoCodeFreeDelivery},
 		errGetTypePromoCode:      nil,
 		countGetTypePromoCode:    1,
 		errBeginTransaction:      nil,
@@ -1333,22 +1485,52 @@ var DoPromoCode = []struct {
 		errRollbackTransaction:   nil,
 		countRollbackTransaction: 1,
 
-		inputActiveCostForFreeDelivery: &promoProtoPkg.PromoCodeWithRestaurantId{
+		inputActiveFreeDelivery: &promoProtoPkg.PromoCodeWithRestaurantId{
 			Restaurant: 1,
 			PromoCode:  "promo",
 		},
-		outActiveCostForFreeDelivery: &promoProtoPkg.NewCostResponse{
-			Cost: 0,
+		outActiveFreeDelivery: &promoProtoPkg.FreeDeliveryResponse{
+			Have: true,
 		},
-		errActiveCostForFreeDelivery:   nil,
-		countActiveCostForFreeDelivery: 1,
-		countActiveCostForFreeDish:     0,
-		countActiveCostForSale:         0,
-		countActiveTimeForSale:         0,
-		countSelectInfoDish:            0,
+		errActiveFreeDelivery:   nil,
+		countActiveFreeDelivery: 1,
+
+		inputActiveCostForSale: &promoProtoPkg.PromoCodeWithAmount{
+			Amount:     500,
+			PromoCode:  "promo",
+			Restaurant: 1,
+		},
+		outActiveCostForSale:   &promoProtoPkg.NewCostResponse{Cost: 100},
+		errActiveCostForSale:   nil,
+		countActiveCostForSale: 0,
+
+		inputActiveTimeForSale: &promoProtoPkg.PromoCodeWithAmount{
+			Amount:     500,
+			PromoCode:  "promo",
+			Restaurant: 1,
+		},
+		outActiveTimeForSale: &promoProtoPkg.NewCostResponse{
+			Cost: 20,
+		},
+		errActiveTimeForSale:   nil,
+		countActiveTimeForSale: 0,
+
+		inputActiveCostForFreeDish: &promoProtoPkg.PromoCodeWithRestaurantId{
+			PromoCode:  "promo",
+			Restaurant: 1,
+		},
+		outActiveCostForFreeDish: &promoProtoPkg.FreeDishResponse{
+			DishId: 1,
+		},
+		errActiveCostForFreeDish:   nil,
+		countActiveCostForFreeDish: 0,
+
+		inputSelectInfoDish: 1,
+		outSelectInfoDish:   Row{row: []interface{}{"/url/url/", "Бесплатное кофе", 100, 500, "Очень вкусный и очень бесплатный кофе"}},
+		countSelectInfoDish: 0,
 	},
 	{
-		testName:          "Type 2",
+		testName:          "Promo code for sale over cost",
 		inputPromoCode:    "promo",
 		inputRestaurantId: 1,
 		inputCart: &cartPkg.ResponseCartErrors{
@@ -1451,7 +1633,7 @@ var DoPromoCode = []struct {
 			PromoCode:  "promo",
 			Restaurant: 1,
 		},
-		outGetTypePromoCode:      &promoProtoPkg.TypePromoCodeResponse{Type: 2},
+		outGetTypePromoCode:      &promoProtoPkg.TypePromoCodeResponse{Type: PromoCodeSaleOverCost},
 		errGetTypePromoCode:      nil,
 		countGetTypePromoCode:    1,
 		errBeginTransaction:      nil,
@@ -1459,6 +1641,16 @@ var DoPromoCode = []struct {
 		countCommitTransaction:   1,
 		errRollbackTransaction:   nil,
 		countRollbackTransaction: 1,
+
+		inputActiveFreeDelivery: &promoProtoPkg.PromoCodeWithRestaurantId{
+			Restaurant: 1,
+			PromoCode:  "promo",
+		},
+		outActiveFreeDelivery: &promoProtoPkg.FreeDeliveryResponse{
+			Have: false,
+		},
+		errActiveFreeDelivery:   nil,
+		countActiveFreeDelivery: 0,
 
 		inputActiveCostForSale: &promoProtoPkg.PromoCodeWithAmount{
 			Amount:     500,
@@ -1468,9 +1660,34 @@ var DoPromoCode = []struct {
 		outActiveCostForSale:   &promoProtoPkg.NewCostResponse{Cost: 100},
 		errActiveCostForSale:   nil,
 		countActiveCostForSale: 1,
+
+		inputActiveTimeForSale: &promoProtoPkg.PromoCodeWithAmount{
+			Amount:     500,
+			PromoCode:  "promo",
+			Restaurant: 1,
+		},
+		outActiveTimeForSale: &promoProtoPkg.NewCostResponse{
+			Cost: 20,
+		},
+		errActiveTimeForSale:   nil,
+		countActiveTimeForSale: 0,
+
+		inputActiveCostForFreeDish: &promoProtoPkg.PromoCodeWithRestaurantId{
+			PromoCode:  "promo",
+			Restaurant: 1,
+		},
+		outActiveCostForFreeDish: &promoProtoPkg.FreeDishResponse{
+			DishId: 1,
+		},
+		errActiveCostForFreeDish:   nil,
+		countActiveCostForFreeDish: 0,
+
+		inputSelectInfoDish: 1,
+		outSelectInfoDish:   Row{row: []interface{}{"/url/url/", "Бесплатное кофе", 100, 500, "Очень вкусный и очень бесплатный кофе"}},
+		countSelectInfoDish: 0,
 	},
 	{
-		testName:          "Type 3",
+		testName:          "Promo code on sale over time",
 		inputPromoCode:    "promo",
 		inputRestaurantId: 1,
 		inputCart: &cartPkg.ResponseCartErrors{
@@ -1573,7 +1790,7 @@ var DoPromoCode = []struct {
 			PromoCode:  "promo",
 			Restaurant: 1,
 		},
-		outGetTypePromoCode:      &promoProtoPkg.TypePromoCodeResponse{Type: 3},
+		outGetTypePromoCode:      &promoProtoPkg.TypePromoCodeResponse{Type: PromoCodeSaleOverTime},
 		errGetTypePromoCode:      nil,
 		countGetTypePromoCode:    1,
 		errBeginTransaction:      nil,
@@ -1581,6 +1798,25 @@ var DoPromoCode = []struct {
 		countCommitTransaction:   1,
 		errRollbackTransaction:   nil,
 		countRollbackTransaction: 1,
+
+		inputActiveFreeDelivery: &promoProtoPkg.PromoCodeWithRestaurantId{
+			Restaurant: 1,
+			PromoCode:  "promo",
+		},
+		outActiveFreeDelivery: &promoProtoPkg.FreeDeliveryResponse{
+			Have: false,
+		},
+		errActiveFreeDelivery:   nil,
+		countActiveFreeDelivery: 0,
+
+		inputActiveCostForSale: &promoProtoPkg.PromoCodeWithAmount{
+			Amount:     500,
+			PromoCode:  "promo",
+			Restaurant: 1,
+		},
+		outActiveCostForSale:   &promoProtoPkg.NewCostResponse{Cost: 100},
+		errActiveCostForSale:   nil,
+		countActiveCostForSale: 0,
 
 		inputActiveTimeForSale: &promoProtoPkg.PromoCodeWithAmount{
 			Amount:     500,
@@ -1592,9 +1828,23 @@ var DoPromoCode = []struct {
 		},
 		errActiveTimeForSale:   nil,
 		countActiveTimeForSale: 1,
+
+		inputActiveCostForFreeDish: &promoProtoPkg.PromoCodeWithRestaurantId{
+			PromoCode:  "promo",
+			Restaurant: 1,
+		},
+		outActiveCostForFreeDish: &promoProtoPkg.FreeDishResponse{
+			DishId: 1,
+		},
+		errActiveCostForFreeDish:   nil,
+		countActiveCostForFreeDish: 0,
+
+		inputSelectInfoDish: 1,
+		outSelectInfoDish:   Row{row: []interface{}{"/url/url/", "Бесплатное кофе", 100, 500, "Очень вкусный и очень бесплатный кофе"}},
+		countSelectInfoDish: 0,
 	},
 	{
-		testName:          "Type 4",
+		testName:          "Promo code on free dishes",
 		inputPromoCode:    "promo",
 		inputRestaurantId: 1,
 		inputCart: &cartPkg.ResponseCartErrors{
@@ -1710,7 +1960,7 @@ var DoPromoCode = []struct {
 			PromoCode:  "promo",
 			Restaurant: 1,
 		},
-		outGetTypePromoCode:      &promoProtoPkg.TypePromoCodeResponse{Type: 4},
+		outGetTypePromoCode:      &promoProtoPkg.TypePromoCodeResponse{Type: PromoCodeFreeDishes},
 		errGetTypePromoCode:      nil,
 		countGetTypePromoCode:    1,
 		errBeginTransaction:      nil,
@@ -1718,6 +1968,36 @@ var DoPromoCode = []struct {
 		countCommitTransaction:   1,
 		errRollbackTransaction:   nil,
 		countRollbackTransaction: 1,
+
+		inputActiveFreeDelivery: &promoProtoPkg.PromoCodeWithRestaurantId{
+			Restaurant: 1,
+			PromoCode:  "promo",
+		},
+		outActiveFreeDelivery: &promoProtoPkg.FreeDeliveryResponse{
+			Have: false,
+		},
+		errActiveFreeDelivery:   nil,
+		countActiveFreeDelivery: 0,
+
+		inputActiveCostForSale: &promoProtoPkg.PromoCodeWithAmount{
+			Amount:     500,
+			PromoCode:  "promo",
+			Restaurant: 1,
+		},
+		outActiveCostForSale:   &promoProtoPkg.NewCostResponse{Cost: 100},
+		errActiveCostForSale:   nil,
+		countActiveCostForSale: 0,
+
+		inputActiveTimeForSale: &promoProtoPkg.PromoCodeWithAmount{
+			Amount:     500,
+			PromoCode:  "promo",
+			Restaurant: 1,
+		},
+		outActiveTimeForSale: &promoProtoPkg.NewCostResponse{
+			Cost: 20,
+		},
+		errActiveTimeForSale:   nil,
+		countActiveTimeForSale: 0,
 
 		inputActiveCostForFreeDish: &promoProtoPkg.PromoCodeWithRestaurantId{
 			PromoCode:  "promo",
@@ -1773,9 +2053,9 @@ func TestDoPromoCode(t *testing.T) {
 
 		mPromo.
 			EXPECT().
-			ActiveCostForFreeDelivery(gomock.Any(), tt.inputActiveCostForFreeDelivery).
-			Return(tt.outActiveCostForFreeDelivery, tt.errActiveCostForFreeDelivery).
-			Times(tt.countActiveCostForFreeDelivery)
+			ActiveFreeDelivery(gomock.Any(), tt.inputActiveFreeDelivery).
+			Return(tt.outActiveFreeDelivery, tt.errActiveFreeDelivery).
+			Times(tt.countActiveFreeDelivery)
 
 		mPromo.
 			EXPECT().

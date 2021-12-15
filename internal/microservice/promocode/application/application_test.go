@@ -28,9 +28,9 @@ var GetTypePromoCode = []struct {
 		testName:                 "First",
 		outErr:                   "",
 		out:                      1,
-		inputPromoCode:           "promo type 1",
+		inputPromoCode:           "promo free delivery",
 		inputRestaurantId:        1,
-		inputQueryPromoCode:      "promo type 1",
+		inputQueryPromoCode:      "promo free delivery",
 		inputQueryRestaurantId:   1,
 		outQuery:                 1,
 		errQuery:                 nil,
@@ -65,15 +65,15 @@ func TestGetTypePromoCode(t *testing.T) {
 	}
 }
 
-var ActiveCostForFreeDelivery = []struct {
+var ActiveFreeDelivery = []struct {
 	testName                 string
 	inputName                string
 	inputRestaurant          int
-	out                      int
+	out                      bool
 	outErr                   string
 	inputQueryName           string
 	inputQueryRestaurant     int
-	outQuery                 int
+	outQuery                 bool
 	errQuery                 error
 	errBeginTransaction      error
 	errCommitTransaction     error
@@ -83,13 +83,13 @@ var ActiveCostForFreeDelivery = []struct {
 }{
 	{
 		testName:                 "First",
-		out:                      1,
+		out:                      true,
 		outErr:                   "",
 		inputName:                "promo",
 		inputRestaurant:          1,
 		inputQueryName:           "promo",
 		inputQueryRestaurant:     1,
-		outQuery:                 1,
+		outQuery:                 true,
 		errQuery:                 nil,
 		errBeginTransaction:      nil,
 		errCommitTransaction:     nil,
@@ -99,19 +99,19 @@ var ActiveCostForFreeDelivery = []struct {
 	},
 }
 
-func TestActiveCostForFreeDelivery(t *testing.T) {
+func TestActiveFreeDelivery(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	m := mocks.NewMockWrapperPromocodeInterface(ctrl)
-	for _, tt := range ActiveCostForFreeDelivery {
+	for _, tt := range ActiveFreeDelivery {
 		m.
 			EXPECT().
-			ActiveCostForFreeDelivery(tt.inputQueryName, tt.inputQueryRestaurant).
+			ActiveFreeDelivery(tt.inputQueryName, tt.inputQueryRestaurant).
 			Return(tt.outQuery, tt.errQuery)
 		testUser := &Promocode{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := testUser.ActiveCostForFreeDelivery(tt.inputName, tt.inputRestaurant)
+			result, err := testUser.ActiveFreeDelivery(tt.inputName, tt.inputRestaurant)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))

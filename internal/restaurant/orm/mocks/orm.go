@@ -126,6 +126,21 @@ func (mr *MockWrapperRestaurantServerInterfaceMockRecorder) GetReview(arg0, arg1
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetReview", reflect.TypeOf((*MockWrapperRestaurantServerInterface)(nil).GetReview), arg0, arg1)
 }
 
+// RecommendedRestaurants mocks base method.
+func (m *MockWrapperRestaurantServerInterface) RecommendedRestaurants() (*restaurant.AllRestaurants, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RecommendedRestaurants")
+	ret0, _ := ret[0].(*restaurant.AllRestaurants)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// RecommendedRestaurants indicates an expected call of RecommendedRestaurants.
+func (mr *MockWrapperRestaurantServerInterfaceMockRecorder) RecommendedRestaurants() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecommendedRestaurants", reflect.TypeOf((*MockWrapperRestaurantServerInterface)(nil).RecommendedRestaurants))
+}
+
 // RestaurantDishes mocks base method.
 func (m *MockWrapperRestaurantServerInterface) RestaurantDishes(arg0, arg1 int) (*restaurant.Dishes, error) {
 	m.ctrl.T.Helper()
@@ -257,6 +272,26 @@ func (mr *MockConnectRestaurantServiceInterfaceMockRecorder) GetFavoriteRestaura
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFavoriteRestaurants", reflect.TypeOf((*MockConnectRestaurantServiceInterface)(nil).GetFavoriteRestaurants), varargs...)
+}
+
+// GetRecommendedRestaurants mocks base method.
+func (m *MockConnectRestaurantServiceInterface) GetRecommendedRestaurants(arg0 context.Context, arg1 *resProto.Empty, arg2 ...grpc.CallOption) (*resProto.RecommendedRestaurants, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetRecommendedRestaurants", varargs...)
+	ret0, _ := ret[0].(*resProto.RecommendedRestaurants)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRecommendedRestaurants indicates an expected call of GetRecommendedRestaurants.
+func (mr *MockConnectRestaurantServiceInterfaceMockRecorder) GetRecommendedRestaurants(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRecommendedRestaurants", reflect.TypeOf((*MockConnectRestaurantServiceInterface)(nil).GetRecommendedRestaurants), varargs...)
 }
 
 // GetRestaurant mocks base method.

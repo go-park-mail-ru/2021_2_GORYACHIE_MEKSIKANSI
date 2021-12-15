@@ -219,7 +219,7 @@ CREATE TABLE IF NOT EXISTS promocode (
     start_date timestamp DEFAULT NOW(),
     end_date timestamp NOT NULL,
     avatar text NOT NULL,
-    cost_for_free_delivery int,
+    free_delivery bool,
     cost_for_free_dish int,
     free_dish_id int,
     FOREIGN KEY (free_dish_id) REFERENCES dishes (id) ON DELETE CASCADE,

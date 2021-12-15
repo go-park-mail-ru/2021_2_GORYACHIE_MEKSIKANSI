@@ -3,8 +3,8 @@ package main
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/build"
 	confPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/config"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/proto"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
