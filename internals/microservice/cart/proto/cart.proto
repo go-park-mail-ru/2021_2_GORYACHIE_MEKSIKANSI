@@ -1,0 +1,142 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "./";
+
+message CartErrors {
+  RestaurantIdCastResponse restaurant = 1;
+  repeated DishesCartResponse dishes = 2;
+  CostCartResponse cost = 3;
+  repeated CastDishesErrs dishes_errors = 4;
+  RestaurantId restaurant_id = 5;
+}
+
+message ResponseCartErrors {
+  RestaurantIdCastResponse restaurant = 1;
+  repeated DishesCartResponse dishes = 2;
+  CostCartResponse cost = 3;
+  repeated CastDishesErrs dishes_errors = 4;
+  PromoCode promo_code = 5;
+  string error = 6;
+}
+
+message PromoCode {
+  string name = 1;
+  string description = 2;
+  string code = 3;
+}
+
+message RestaurantId {
+  int64 id = 1;
+  string  img = 2;
+  string  name = 3;
+  int64 cost_for_free_delivery = 4;
+  int64 min_delivery = 5;
+  int64 max_delivery = 6;
+  float rating = 7;
+  repeated Tag tags = 8;
+  repeated Menu menu = 9;
+}
+
+message Menu {
+  string name = 1;
+  repeated DishesMenu dishes = 2;
+}
+
+message DishesMenu {
+  int64 id = 1;
+  string name = 2;
+  int64 cost = 3;
+  int64 ccal = 4;
+  string img = 5;
+}
+
+message Tag {
+  int64 id = 1;
+  string name = 2;
+}
+
+message RestaurantIdCastResponse {
+  int64 id = 1;
+  string img = 2;
+  string name = 3;
+  int64 cost_for_free_delivery = 4;
+  int64 min_delivery = 5;
+  int64 max_delivery = 6;
+  float rating = 7;
+}
+
+message DishesCartResponse {
+  int64 id = 1;
+  int64 item_number = 2;
+  string img = 3;
+  string name = 4;
+  int64 count = 5;
+  int64 cost = 6;
+  int64 ccal = 7;
+  int64 weight = 8;
+  string description = 9;
+  repeated RadiosCartResponse radios = 10;
+  repeated IngredientCartResponse ingredients = 11;
+  }
+
+message RadiosCartResponse {
+  string name = 1;
+  int64 radios_id = 2;
+  int64 id = 3;
+}
+
+message IngredientCartResponse {
+  string name = 1;
+  int64 id = 2;
+  int64 cost = 3;
+  }
+
+message CostCartResponse {
+  int64 delivery_cost = 1;
+  int64 sum_cost = 2;
+  }
+
+message CastDishesErrs {
+ int64 item_number = 1;
+ string name_dish = 2;
+ int64 count_avail = 3;
+}
+
+message CartId {
+ int64 id = 1;
+}
+
+message RequestCartDefault {
+  RestaurantRequest restaurant = 1;
+  repeated DishesRequest dishes = 2;
+  string Promo_code = 3;
+  int64 client_id = 4;
+}
+
+message RestaurantRequest {
+  int64 id = 1;
+}
+
+message DishesRequest {
+  int64 id = 1;
+  int64 item_number = 2;
+  int64 count = 3;
+  repeated RadiosCartRequest radios = 4;
+  repeated IngredientsCartRequest ingredients = 5;
+}
+
+message RadiosCartRequest {
+  int64 radios_id = 1;
+  int64 id = 2;
+}
+
+message IngredientsCartRequest {
+  int64 id = 1;
+}
+
+service CartService {
+  rpc GetCart(CartId) returns (ResponseCartErrors);
+  rpc UpdateCart(RequestCartDefault) returns (ResponseCartErrors);
+}

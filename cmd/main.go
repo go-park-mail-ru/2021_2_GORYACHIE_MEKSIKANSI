@@ -3,23 +3,24 @@ package main
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/build"
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
-	auth "2021_2_GORYACHIE_MEKSIKANSI/internal/Authorization/Api"
-	cart "2021_2_GORYACHIE_MEKSIKANSI/internal/Cart/Api"
-	mid "2021_2_GORYACHIE_MEKSIKANSI/internal/Middleware/Api"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/MyError"
-	order "2021_2_GORYACHIE_MEKSIKANSI/internal/Order/Api"
-	profile "2021_2_GORYACHIE_MEKSIKANSI/internal/Profile/Api"
-	restaurant "2021_2_GORYACHIE_MEKSIKANSI/internal/Restaurant/Api"
-	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/Util"
+	authPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/authorization"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/myerror"
+	utils "2021_2_GORYACHIE_MEKSIKANSI/internals/util"
 	cors "github.com/AdhityaRamadhanus/fasthttpcors"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
+	metrics "github.com/w1ck3dg0ph3r/fastprometrics"
 	"go.uber.org/zap"
+	"net/http"
 	"os"
 )
 
-func runServer(port string) {
+func main() {
+	runServer()
+}
+
+func runServer() {
 	var logger utils.Logger
 	logger.Log = utils.NewLogger("./logs.txt")
 
@@ -27,42 +28,47 @@ func runServer(port string) {
 		errLogger := loggerErrWarn.Sync()
 		if errLogger != nil {
 			zap.S().Errorf("LoggerErrWarn the buffer could not be cleared %v", errLogger)
-			os.Exit(1)
+			os.Exit(2)
 		}
 	}(logger.Log)
 
 	errConfig, configStructure := build.InitConfig()
 	if errConfig != nil {
 		logger.Log.Errorf("%s", errConfig.Error())
-		return
+		os.Exit(2)
 	}
 	appConfig := configStructure[0].(config.AppConfig)
 	dbConfig := configStructure[1].(config.DBConfig)
 	awsConfig := configStructure[2].(config.AwsConfig)
+	microserviceConfig := configStructure[3].(config.MicroserviceConfig)
 
 	connectionPostgres, err := build.CreateDb(dbConfig.Db, appConfig.Primary.Debug)
 	defer connectionPostgres.Close()
 	if err != nil {
 		logger.Log.Errorf("Unable to connect to database: %s", err.Error())
-		os.Exit(1)
+		os.Exit(2)
 	}
 
 	errAws, sess := build.ConnectAws(awsConfig.Aws)
 	if errAws != nil {
 		logger.Log.Errorf("AWS: %s", errAws.Error())
-		return
+		os.Exit(2)
 	}
 	uploader := s3manager.NewUploader(sess)
 	nameBucket := awsConfig.Aws.Name
 
-	startStructure := build.SetUp(connectionPostgres, logger.Log, uploader, nameBucket)
+	intCh := make(chan authPkg.WebSocketOrder, 10)
 
-	userInfo := startStructure[0].(auth.UserInfo)
-	cartInfo := startStructure[1].(cart.InfoCart)
-	profileInfo := startStructure[2].(profile.InfoProfile)
-	infoMid := startStructure[3].(mid.InfoMiddleware)
-	restaurantInfo := startStructure[4].(restaurant.InfoRestaurant)
-	orderInfo := startStructure[5].(order.InfoOrder)
+	startStructure := build.SetUp(connectionPostgres, logger.Log, uploader, nameBucket, microserviceConfig, intCh)
+
+	userInfo := startStructure.User
+	cartInfo := startStructure.Cart
+	profileInfo := startStructure.Profile
+	infoMid := startStructure.Midle
+	restaurantInfo := startStructure.Restaraunt
+	orderInfo := startStructure.Order
+
+	userInfo.IntCh = intCh
 
 	myRouter := router.New()
 	apiGroup := myRouter.Group("/api")
@@ -71,6 +77,9 @@ func runServer(port string) {
 	restaurantGroup := versionGroup.Group("/restaurant")
 	cartGroup := userGroup.Group("/cart")
 	orderGroup := userGroup.Group("/order")
+	webSocketGroup := versionGroup.Group("/ws")
+	userWSGroup := userGroup.Group("/ws")
+	favouriteGroup := userGroup.Group("/restaurant/favourite")
 
 	userGroup.POST("/login", userInfo.LoginHandler)
 	userGroup.POST("/signup", userInfo.SignUpHandler)
@@ -85,22 +94,37 @@ func runServer(port string) {
 	userGroup.PUT("/address", infoMid.CheckClient(infoMid.GetIdClient(profileInfo.UpdateUserAddress)))
 	userGroup.POST("/pay", infoMid.CheckClient(infoMid.GetIdClient(userInfo.PayHandler)))
 	userGroup.POST("/review", infoMid.CheckClient(infoMid.GetIdClient(restaurantInfo.CreateReviewHandler)))
+	favouriteGroup.GET("/", infoMid.GetIdClient(restaurantInfo.GetFavouritesHandler))
+	favouriteGroup.PUT("/", infoMid.CheckClient(infoMid.GetIdClient(restaurantInfo.UpdateFavouritesHandler)))
 
 	restaurantGroup.GET("/", restaurantInfo.RestaurantHandler)
 	restaurantGroup.GET("/{idRes}/dish/{idDish}", restaurantInfo.RestaurantDishesHandler)
-	restaurantGroup.GET("/{idRes}", restaurantInfo.RestaurantIdHandler)
-	restaurantGroup.GET("/{idRes}/review", restaurantInfo.GetReviewHandler)
+	restaurantGroup.GET("/{idRes}", infoMid.GetIdClientIgnoreErr(restaurantInfo.RestaurantIdHandler))
+	restaurantGroup.GET("/{idRes}/review", infoMid.GetIdClientIgnoreErr(restaurantInfo.GetReviewHandler))
+	restaurantGroup.GET("/search", restaurantInfo.SearchRestaurantHandler)
+	restaurantGroup.GET("/recommend", infoMid.GetIdClient(restaurantInfo.RecommendedRestaurantsHandler))
 
 	cartGroup.GET("/", infoMid.GetIdClient(cartInfo.GetCartHandler))
 	cartGroup.PUT("/", infoMid.CheckClient(infoMid.GetIdClient(cartInfo.UpdateCartHandler)))
 
 	orderGroup.GET("/", infoMid.GetIdClient(orderInfo.GetOrdersHandler))
 	orderGroup.POST("/", infoMid.CheckClient(infoMid.GetIdClient(orderInfo.CreateOrderHandler)))
+	orderGroup.GET("/{idOrd}/active", infoMid.GetIdClient(orderInfo.GetOrderActiveHandler))
+
+	webSocketGroup.GET("/", infoMid.CheckWebSocketKey(userInfo.UserWebSocket))
+	userWSGroup.GET("/key", infoMid.GetIdClient(userInfo.UserWebSocketNewKey))
+
+	metricsHandler := metrics.Add(func(ctx *fasthttp.RequestCtx) {
+		ctx.SetStatusCode(http.StatusOK)
+	}, metrics.WithPath("/metrics"), metrics.WithSubsystem("http"))
+
+	myRouter.GET("/metrics", metricsHandler)
 
 	printURL := infoMid.LogURL(myRouter.Handler)
 
+	addressAllowedCors := appConfig.Cors.Host + ":" + appConfig.Cors.Port
 	withCors := cors.NewCorsHandler(cors.Options{
-		AllowedOrigins: []string{appConfig.Cors.Host + ":" + appConfig.Cors.Port},
+		AllowedOrigins: []string{addressAllowedCors},
 		AllowedHeaders: []string{"access-control-allow-origin", "content-type",
 			"x-csrf-token", "access-control-expose-headers"},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS", "PUT"},
@@ -109,14 +133,11 @@ func runServer(port string) {
 		AllowMaxAge:      5600,
 		Debug:            true,
 	})
-
+	port := ":" + appConfig.Port
+	logger.Log.Infof("Listen in 127:0.0.1%s", port)
 	err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(printURL))
 	if err != nil {
 		logger.Log.Errorf("Listen and server error: %v", err)
-		os.Exit(1)
+		os.Exit(2)
 	}
-}
-
-func main() {
-	runServer(":5000")
 }

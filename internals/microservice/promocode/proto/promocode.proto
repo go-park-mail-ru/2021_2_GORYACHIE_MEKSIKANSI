@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package promocode;
+
+option go_package = "./";
+
+message PromoCodeWithAmount {
+  string promo_code = 1;
+  int64 amount = 2;
+  int64 restaurant = 3;
+}
+
+message PromoCodeWithRestaurantId {
+  string promo_code = 1;
+  int64 restaurant = 2;
+}
+
+message TypePromoCodeResponse {
+  int64 type = 1;
+  string error = 2;
+}
+
+message NewCostResponse {
+  int64 cost = 1;
+  string error = 2;
+}
+
+message FreeDeliveryResponse {
+  bool have = 1;
+  string error = 2;
+}
+
+message FreeDishResponse {
+  int64 cost = 1;
+  int64 dish_id = 2;
+  string error = 3;
+}
+
+service PromocodeService {
+  rpc GetTypePromoCode(PromoCodeWithRestaurantId) returns (TypePromoCodeResponse);
+  rpc ActiveFreeDelivery(PromoCodeWithRestaurantId) returns (FreeDeliveryResponse);
+  rpc ActiveCostForFreeDish(PromoCodeWithRestaurantId) returns (FreeDishResponse);
+  rpc ActiveCostForSale(PromoCodeWithAmount) returns (NewCostResponse);
+  rpc ActiveTimeForSale(PromoCodeWithAmount) returns (NewCostResponse);
+}
