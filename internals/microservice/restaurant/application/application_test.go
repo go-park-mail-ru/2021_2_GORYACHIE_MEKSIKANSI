@@ -11,31 +11,41 @@ import (
 )
 
 var AllRestaurants = []struct {
-	testName string
-	out      *resPkg.AllRestaurants
-	outErr   string
-	outQuery *resPkg.AllRestaurants
-	errQuery error
+	testName             string
+	out                  *resPkg.AllRestaurantsPromo
+	outErr               string
+	outQueryRestaurant   *resPkg.AllRestaurantsPromo
+	errQueryRestaurant   error
+	countQueryRestaurant int
+	outQueryPromoCodes   []resPkg.Promocode
+	errQueryPromoCodes   error
+	countQueryPromoCodes int
 }{
 	{
 		testName: "First",
-		out: &resPkg.AllRestaurants{
+		out: &resPkg.AllRestaurantsPromo{
 			Restaurant: []resPkg.Restaurants(nil),
 			AllTags:    []resPkg.Tag(nil),
+			AllPromo:   []resPkg.Promocode{},
 		},
-		outErr:   "",
-		outQuery: &resPkg.AllRestaurants{},
-		errQuery: nil,
+		outErr:               "",
+		outQueryRestaurant:   &resPkg.AllRestaurantsPromo{},
+		outQueryPromoCodes:   []resPkg.Promocode{},
+		errQueryRestaurant:   nil,
+		errQueryPromoCodes:   nil,
+		countQueryRestaurant: 1,
+		countQueryPromoCodes: 1,
 	},
 	{
-		testName: "Second",
-		out: &resPkg.AllRestaurants{
-			Restaurant: []resPkg.Restaurants(nil),
-			AllTags:    []resPkg.Tag(nil),
-		},
-		outErr:   "text",
-		outQuery: &resPkg.AllRestaurants{},
-		errQuery: errors.New("text"),
+		testName:             "Second",
+		out:                  nil,
+		outErr:               "text",
+		outQueryRestaurant:   &resPkg.AllRestaurantsPromo{},
+		outQueryPromoCodes:   []resPkg.Promocode{},
+		errQueryRestaurant:   errors.New("text"),
+		errQueryPromoCodes:   nil,
+		countQueryRestaurant: 1,
+		countQueryPromoCodes: 0,
 	},
 }
 
@@ -48,10 +58,16 @@ func TestAllRestaurants(t *testing.T) {
 		m.
 			EXPECT().
 			GetRestaurants().
-			Return(tt.outQuery, tt.errQuery)
+			Return(tt.outQueryRestaurant, tt.errQueryRestaurant).
+			Times(tt.countQueryRestaurant)
+		m.
+			EXPECT().
+			GetPromoCodes().
+			Return(tt.outQueryPromoCodes, tt.errQueryPromoCodes).
+			Times(tt.countQueryPromoCodes)
 		test := Restaurant{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := test.AllRestaurants()
+			result, err := test.AllRestaurantsPromo()
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
@@ -233,7 +249,7 @@ func TestGetRestaurant(t *testing.T) {
 	for _, tt := range GetRestaurant {
 		m.
 			EXPECT().
-			GetRestaurant(tt.inputGetRestaurantRestaurantId, tt.inputGetRestaurantClientId).
+			GetRestaurant(tt.inputGetRestaurantRestaurantId).
 			Return(tt.outGetRestaurant, tt.errGetRestaurant).
 			Times(tt.countGetRestaurant)
 		m.
@@ -492,7 +508,7 @@ func TestGetReview(t *testing.T) {
 			Times(tt.countIsFavoriteRestaurant)
 		m.
 			EXPECT().
-			GetRestaurant(tt.inputGetRestaurantIdRestaurant, tt.inputGetRestaurantIdClient).
+			GetRestaurant(tt.inputGetRestaurantIdRestaurant).
 			Return(tt.outGetRestaurant, tt.errGetRestaurant).
 			Times(tt.countGetRestaurant)
 		m.

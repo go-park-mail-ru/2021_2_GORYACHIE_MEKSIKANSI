@@ -125,7 +125,13 @@ INSERT INTO address_user (client_id, alias, comment, city, street, house, floor,
 VALUES (1, 'Мой дом', 'Есть злая собака', 'Москва', 'Вязов', 2, 5, 28, 2, '28K', 500, 500);
 
 INSERT INTO promocode (id, code, type, restaurant, name, description, end_date, avatar, free_delivery)
-VALUES (1, 'Double Time', 1, 1, 'Тук-тук', 'Кто там?', TIMESTAMP '2022-04-28', 'url/photo/', true);
+VALUES (1, 'HL4D4', 1, 1, 'Бесплатно куда угодно', 'Бесплатная доставка', TIMESTAMP '2022-04-28', 'https://buslik.by/buyers/delivery/images/icon-2.png', true);
+
+INSERT INTO promocode (id, code, type, restaurant, name, description, end_date, avatar, cost_for_sale, sale_percent)
+VALUES (2, 'CMO5S', 2, 1, 'Всем скидку!', 'Скидка 20% от цены 300', TIMESTAMP '2022-04-28', 'http://pes-nv.ru/upload/iblock/eed/eedf46366e565834d5e726873a7ae200.jpg', 300, 20);
+
+INSERT INTO promocode (id, code, type, restaurant, name, description, end_date, avatar, cost_for_free_dish, free_dish_id)
+VALUES (3, 'DBL45', 3, 1, 'Бесплатное тако за покупку!', 'Бесплатно блюдо от 300', TIMESTAMP '2022-04-28', 'https://image.freepik.com/free-photo/fresh-taco_144627-38286.jpg', 300, 1);
 
 INSERT INTO favorite_restaurant (restaurant, client, position)
 VALUES (1, 1, 0);

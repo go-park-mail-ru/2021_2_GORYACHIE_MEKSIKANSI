@@ -621,7 +621,7 @@ func TestGetDishes(t *testing.T) {
 var GetReview = []struct { //TODO:
 	testName                 string
 	input                    int
-	out                      *rest.Dishes
+	out                      []rest.Review
 	outErr                   string
 	inputQuery               int
 	outQuery                 Rows
@@ -634,10 +634,9 @@ var GetReview = []struct { //TODO:
 	countRollbackTransaction int
 }{
 	{
-		testName: "First",
-		input:    1,
-		out: &rest.Dishes{Id: 1, Img: "/url/", Title: "Шоколад", Cost: 100, Ccal: 500, Description: "Очень сладкий, очень вкусный",
-			Radios: nil, Ingredient: nil},
+		testName:                 "First",
+		input:                    1,
+		out:                      []rest.Review([]rest.Review{{Name: "1", Text: "1", Date: "11.10.2020", Time: "00:00", Rate: 5}}),
 		inputQuery:               1,
 		outQuery:                 Rows{rows: 1, row: []interface{}{"1", "1", time.Date(2020, 10, 11, 0, 0, 0, 0, time.UTC), 5}},
 		errQuery:                 nil,

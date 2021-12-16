@@ -1473,7 +1473,7 @@ var DoPromoCode = []struct {
 			},
 			Cost: cartPkg.CostCartResponse{
 				DCost:   0,
-				SumCost: 500,
+				SumCost: 400,
 			},
 			PromoCode: cartPkg.PromoCode{
 				Name:        "Double Time",
@@ -1995,7 +1995,7 @@ var DoPromoCode = []struct {
 		countActiveFreeDelivery: 0,
 
 		inputActiveCostForSale: &promoProtoPkg.PromoCodeWithAmount{
-			Amount:     500,
+			Amount:     400,
 			PromoCode:  "promo",
 			Restaurant: 1,
 		},
