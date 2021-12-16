@@ -190,10 +190,12 @@ func (db *Wrapper) GetProfileClient(id int) (*profile.Profile, error) {
 		}
 	}
 
-	var birthday time.Time
+	var birthday *time.Time
 	err = tx.QueryRow(contextTransaction,
 		"SELECT date_birthday FROM client WHERE client_id = $1", id).Scan(&birthday)
-	profile.Birthday, _ = Utils2.FormatDate(birthday)
+	if birthday != nil {
+		profile.Birthday, _ = Utils2.FormatDate(*birthday)
+	}
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Text: errPkg.PGetProfileClientBirthdayNotScan,

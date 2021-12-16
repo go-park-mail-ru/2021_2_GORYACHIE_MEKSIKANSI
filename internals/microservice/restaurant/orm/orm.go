@@ -140,7 +140,7 @@ func (db *Wrapper) GetRecommendedRestaurants() (*resPkg.AllRestaurants, error) {
 		"SELECT t.id, t.avatar, t.name, t.price_delivery, t.min_delivery_time, "+
 			"t.max_delivery_time, t.rating, rc.category, rc.id FROM "+
 			"(SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, "+
-			"r.max_delivery_time, r.rating FROM restaurant r ORDER BY rating DESC LIMIT 51) t "+
+			"r.max_delivery_time, r.rating FROM restaurant r ORDER BY rating DESC LIMIT 6) t "+
 			"LEFT JOIN restaurant_category rc ON rc.restaurant = t.id")
 	if err != nil {
 		return nil, &errPkg.Errors{

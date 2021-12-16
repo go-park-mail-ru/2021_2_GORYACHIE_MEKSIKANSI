@@ -65,4 +65,5 @@ const (
 	CGetPromoCodeTransactionNotCreate              = "transaction get promo code not create"
 	CGetPromoCodeNotSelect                         = "promo code not select"
 	CGetPromoCodeNotCommit                         = "transaction get promo code not commit"
+	PGetTypePromoCodeRestaurantsNotFound           = "type not found"
 )

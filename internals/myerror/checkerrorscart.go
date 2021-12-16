@@ -25,7 +25,6 @@ func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 					Text: ErrCheck,
 				},
 				result, http.StatusInternalServerError
-
 		case RGetRestaurantRestaurantNotFound, CGetCartCartNotFound:
 			result, errMarshal := json.Marshal(ResultError{
 				Status:  http.StatusNotFound,

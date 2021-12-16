@@ -3,6 +3,7 @@ package application
 
 import (
 	cartPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/cart"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/cart/myerror"
 	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/cart/orm"
 )
 
@@ -121,6 +122,11 @@ func (c *Cart) UpdateCart(dishes cartPkg.RequestCartDefault, clientId int) (*car
 	if dishes.PromoCode != "" {
 		result, err = c.DB.DoPromoCode(dishes.PromoCode, result.Restaurant.Id, result)
 		if err != nil {
+			if err.Error() == errPkg.PGetTypePromoCodeRestaurantsNotFound {
+				_, _, _ = c.DB.UpdateCart(dishes, clientId)
+				c.DB.AddPromoCode("", rest.Id, clientId)
+				return result, nil
+			}
 			return nil, err
 		}
 	}

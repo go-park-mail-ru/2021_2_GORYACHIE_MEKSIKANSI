@@ -56,7 +56,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 
 	err = tx.QueryRow(contextTransaction,
 		"INSERT INTO order_user (client_id, courier_id, address_id, restaurant_id, comment,"+
-			" method_pay, dCost, sumCost) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id",
+			" method_pay, dCost, sumCost) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id",
 		id, courierId, addressId, cart.Restaurant.Id, createOrder.Comment, createOrder.MethodPay,
 		cart.Cost.DCost, cart.Cost.SumCost).Scan(&orderId)
 	if err != nil {
