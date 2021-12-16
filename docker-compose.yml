@@ -20,12 +20,11 @@ services:
       - ./config/bucket.yml:/app/config/bucket.yml
       - ./config/main.yml:/app/config/main.yml
       - ./config/microservice.yml:/app/config/microservice.yml
-      - ./config/prometheus.yml:/app/config/prometheus.yml
+      - ./config/monitoring/prometheus.yml:/app/config/prometheus.yml
       - ./config/database.yml:/app/config/database.yml
       - ./build/postgresql/createtables.sql:/app/build/postgresql/createtables.sql
       - ./build/postgresql/deletetables.sql:/app/build/postgresql/deletetables.sql
-      - ./build/postgresql/fill.sql:/app/build/postgresql/f
-      - ill.sql
+      - ./build/postgresql/fill.sql:/app/build/postgresql/fill.sql
       - ./build/postgresql/fillcategory.sql:/app/build/postgresql/fillcategory.sql
       - ./build/postgresql/filldishes.sql:/app/build/postgresql/filldishes.sql
 
@@ -35,7 +34,7 @@ services:
         condition: service_healthy
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./internals/microservice/authorization/Dockerfile
     container_name: AuthorizationService
     logging:
       driver: syslog
@@ -54,7 +53,7 @@ services:
         condition: service_healthy
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./internals/microservice/cart/Dockerfile
     container_name: CartService
     logging:
       driver: syslog
@@ -73,7 +72,7 @@ services:
         condition: service_healthy
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./internals/microservice/promocode/Dockerfile
     container_name: PromocodeService
     logging:
       driver: syslog
@@ -86,14 +85,13 @@ services:
       - ./internals/microservice/promocode/config/main.yml:/app/internals/microservice/promocode/config/main.yml
       - ./internals/microservice/promocode/config/database.yml:/app/internals/microservice/promocode/config/database.yml
 
-
   service_restaurant:
     depends_on:
       postgres:
         condition: service_healthy
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./internals/microservice/restaurant/Dockerfile
     container_name: RestaurantService
     logging:
       driver: syslog
@@ -126,9 +124,10 @@ services:
     ports:
       - "9091:9091"
     command:
-      - --config.file=/etc/prometheus/prometheus.yml
+      - --config.file=/etc/config/prometheus.yml
+      -  --web.listen-address=:9091
     volumes:
-      - ./config:/etc/config
+      - ./config/monitoring:/etc/config
     depends_on:
       - cadvisor
   cadvisor:
@@ -162,6 +161,7 @@ services:
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+      - --web.listen-address=:9101
     expose:
       - "9101"
     ports:
@@ -169,6 +169,8 @@ services:
 
   grafana:
     image: grafana/grafana
+    environment:
+      - GF_SERVER_HTTP_PORT=3001
     depends_on:
       - prometheus
       - node_exporter

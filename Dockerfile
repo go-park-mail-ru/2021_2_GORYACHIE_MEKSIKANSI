@@ -23,6 +23,5 @@ RUN mkdir postgresql
 RUN cd ..
 RUN cd ..
 
-CMD ["./dlv", "--listen=:40000", "--headless=true", "--api-version=2", "--accept-multiclient", "exec", "/app/engine"]
+CMD ["/app/engine"]
 
-#CMD /app/engine

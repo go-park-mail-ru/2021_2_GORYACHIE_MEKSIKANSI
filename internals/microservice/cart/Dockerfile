@@ -5,9 +5,9 @@ WORKDIR /
 COPY . .
 RUN apk update && apk upgrade && \
     apk --update add git make
-COPY ../../../../go.mod .
+COPY ./go.mod .
 RUN CGO_ENABLED=0 go get -ldflags "-s -w -extldflags '-static'" github.com/go-delve/delve/cmd/dlv
-RUN CGO_ENABLED=0 go build -gcflags "all=-N -l" -o engine ./cmd/main.go
+RUN CGO_ENABLED=0 go build -gcflags "all=-N -l" -o engine ./internals/microservice/cart/cmd/main.go
 
 FROM alpine:latest
 RUN apk update && apk upgrade && \
@@ -29,6 +29,6 @@ RUN cd ..
 RUN cd ..
 
 
-CMD ["./dlv", "--listen=:40002", "--headless=true", "--api-version=2", "--accept-multiclient", "exec", "/app/engine"]
+CMD ["/app/engine"]
 
 #CMD /app/engine

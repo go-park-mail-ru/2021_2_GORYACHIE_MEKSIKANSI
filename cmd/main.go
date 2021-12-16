@@ -10,7 +10,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
+	metrics "github.com/w1ck3dg0ph3r/fastprometrics"
 	"go.uber.org/zap"
+	"net/http"
 	"os"
 )
 
@@ -66,7 +68,7 @@ func runServer() {
 	restaurantInfo := startStructure.Restaraunt
 	orderInfo := startStructure.Order
 
-	userInfo.IntCh = intCh // TODO: сделать нормально все каналы
+	userInfo.IntCh = intCh
 
 	myRouter := router.New()
 	apiGroup := myRouter.Group("/api")
@@ -111,6 +113,12 @@ func runServer() {
 
 	webSocketGroup.GET("/", infoMid.CheckWebSocketKey(userInfo.UserWebSocket))
 	userWSGroup.GET("/key", infoMid.GetIdClient(userInfo.UserWebSocketNewKey))
+
+	metricsHandler := metrics.Add(func(ctx *fasthttp.RequestCtx) {
+		ctx.SetStatusCode(http.StatusOK)
+	}, metrics.WithPath("/metrics"), metrics.WithSubsystem("http"))
+
+	myRouter.GET("/metrics", metricsHandler)
 
 	printURL := infoMid.LogURL(myRouter.Handler)
 
