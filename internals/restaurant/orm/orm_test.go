@@ -20,13 +20,36 @@ var GetPromoCodes = []struct {
 	errQuery   error
 }{
 	{
-		testName:   "First",
-		input:      1,
-		out:        &rest.AllRestaurantsPromo{},
+		testName: "First",
+		input:    1,
+		out: &rest.AllRestaurantsPromo{Restaurant: []rest.Restaurants{
+			{
+				Id:                  1,
+				Img:                 "/url/",
+				Name:                "KFC",
+				CostForFreeDelivery: 250,
+				MinDelivery:         15,
+				MaxDelivery:         30,
+				Rating:              5,
+			},
+		},
+		},
 		outErr:     "",
 		inputQuery: 1,
-		outQuery:   &resProto.RestaurantsTagsPromo{},
-		errQuery:   nil,
+		outQuery: &resProto.RestaurantsTagsPromo{
+			Restaurants: []*resProto.Restaurant{
+				{
+					Id:                  1,
+					Img:                 "/url/",
+					Name:                "KFC",
+					CostForFreeDelivery: 250,
+					MinDelivery:         15,
+					MaxDelivery:         30,
+					Rating:              5,
+				},
+			},
+		},
+		errQuery: nil,
 	},
 }
 
@@ -219,6 +242,135 @@ func TestCreateReview(t *testing.T) {
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := testUser.CreateReview(tt.inputClientId, tt.inputNewReview)
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var SearchRestaurant = []struct {
+	testName   string
+	input      string
+	out        []rest.Restaurants
+	outErr     string
+	inputQuery *resProto.SearchRestaurantText
+	outQuery   *resProto.Restaurants
+	errQuery   error
+}{
+	{
+		testName:   "First",
+		input:      "KFC",
+		outErr:     "",
+		inputQuery: &resProto.SearchRestaurantText{Text: "KFC"},
+		outQuery:   &resProto.Restaurants{},
+		errQuery:   nil,
+	},
+}
+
+func TestSearchRestaurant(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectRestaurantServiceInterface(ctrl)
+	for _, tt := range SearchRestaurant {
+		m.
+			EXPECT().
+			SearchRestaurant(gomock.Any(), tt.inputQuery).
+			Return(tt.outQuery, tt.errQuery)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.SearchRestaurant(tt.input)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var GetFavoriteRestaurants = []struct {
+	testName   string
+	input      int
+	out        []rest.Restaurants
+	outErr     string
+	inputQuery *resProto.UserId
+	outQuery   *resProto.Restaurants
+	errQuery   error
+}{
+	{
+		testName:   "First",
+		input:      1,
+		outErr:     "",
+		inputQuery: &resProto.UserId{Id: 1},
+		outQuery:   &resProto.Restaurants{},
+		errQuery:   nil,
+	},
+}
+
+func TestGetFavoriteRestaurants(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectRestaurantServiceInterface(ctrl)
+	for _, tt := range GetFavoriteRestaurants {
+		m.
+			EXPECT().
+			GetFavoriteRestaurants(gomock.Any(), tt.inputQuery).
+			Return(tt.outQuery, tt.errQuery)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.GetFavoriteRestaurants(tt.input)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" && err != nil {
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var EditRestaurantInFavorite = []struct {
+	testName          string
+	inputRestaurantId int
+	inputClientId     int
+	out               bool
+	outErr            string
+	inputQuery        *resProto.EditRestaurantInFavoriteRequest
+	outQuery          *resProto.ResponseEditRestaurantInFavorite
+	errQuery          error
+}{
+	{
+		testName:          "First",
+		inputRestaurantId: 1,
+		inputClientId:     1,
+		out:               true,
+		outErr:            "",
+		inputQuery:        &resProto.EditRestaurantInFavoriteRequest{IdClient: 1, IdRestaurant: 1},
+		outQuery:          &resProto.ResponseEditRestaurantInFavorite{Status: true},
+		errQuery:          nil,
+	},
+}
+
+func TestEditRestaurantInFavorite(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectRestaurantServiceInterface(ctrl)
+	for _, tt := range EditRestaurantInFavorite {
+		m.
+			EXPECT().
+			EditRestaurantInFavorite(gomock.Any(), tt.inputQuery).
+			Return(tt.outQuery, tt.errQuery)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.EditRestaurantInFavorite(tt.inputRestaurantId, tt.inputClientId)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" && err != nil {
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {

@@ -1,14 +1,11 @@
 package orm
 
 import (
-	cartPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/cart"
-	cartProto "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/cart/proto"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/myerror"
 	orderPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/order"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/order/orm/mocks"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/restaurant"
 	"context"
-	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/jackc/pgconn"
@@ -543,48 +540,3 @@ func TestGetRestaurant(t *testing.T) {
 		})
 	}
 }
-
-var GetCart = []struct {
-	testName   string
-	out        *cartPkg.ResponseCartErrors
-	outErr     string
-	input      int
-	inputQuery *cartProto.CartId
-	outQuery   *cartProto.ResponseCartErrors
-	errQuery   error
-	countQuery int
-}{
-	{
-		input:      1,
-		inputQuery: &cartProto.CartId{Id: 1},
-		outQuery:   nil,
-		errQuery:   errors.New("text"),
-		countQuery: 1,
-		testName:   "First",
-		outErr:     "Text",
-		out:        nil,
-	},
-}
-
-//func TestGetCart(t *testing.T) {
-//	ctrl := gomock.NewController(t)
-//	defer ctrl.Finish()
-//
-//	m := mocks.NewMockConnectCartServiceInterface(ctrl)
-//	for _, tt := range GetCart {
-//		m.
-//			EXPECT().
-//			GetCart(gomock.Any(), tt.inputQuery).
-//			Return(tt.outQuery, tt.errQuery)
-//		testUser := &Wrapper{ConnService: m}
-//		t.Run(tt.testName, func(t *testing.T) {
-//			result, err := testUser.GetCart(tt.input)
-//			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-//			if tt.outErr != "" && err != nil {
-//				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
-//			} else {
-//				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
-//			}
-//		})
-//	}
-//}

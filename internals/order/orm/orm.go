@@ -1,4 +1,4 @@
-//go:generate mockgen -destination=mocks/orm.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/order/orm WrapperOrderInterface,ConnectionInterface,TransactionInterface,ConnectCartServiceInterface
+//go:generate mockgen -destination=mocks/orm.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/order/orm WrapperOrderInterface,ConnectionInterface,TransactionInterface
 package orm
 
 import (
@@ -14,7 +14,6 @@ import (
 	"context"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
-	"google.golang.org/grpc"
 	"time"
 )
 
@@ -50,11 +49,6 @@ type TransactionInterface interface {
 	Prepare(ctx context.Context, name, sql string) (*pgconn.StatementDescription, error)
 	QueryFunc(ctx context.Context, sql string, args []interface{}, scans []interface{}, f func(pgx.QueryFuncRow) error) (pgconn.CommandTag, error)
 	Conn() *pgx.Conn
-}
-
-type ConnectCartServiceInterface interface {
-	GetCart(ctx context.Context, in *cartProto.CartId, opts ...grpc.CallOption) (*cartProto.ResponseCartErrors, error)
-	UpdateCart(ctx context.Context, in *cartProto.RequestCartDefault, opts ...grpc.CallOption) (*cartProto.ResponseCartErrors, error)
 }
 
 type Wrapper struct {
