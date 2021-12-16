@@ -133,7 +133,10 @@ func TestGetProfile(t *testing.T) {
 			result, err := test.GetProfile(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
 			}
@@ -184,7 +187,10 @@ func TestUpdateName(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			err := test.UpdateName(tt.inputId, tt.inputNewName)
 			if tt.outErr != "" {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
 			}
@@ -236,7 +242,10 @@ func TestUpdateEmail(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			err := test.UpdateEmail(tt.inputId, tt.inputNewEmail)
 			if tt.outErr != "" {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
 			}
@@ -287,7 +296,10 @@ func TestUpdatePassword(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			err := test.UpdatePassword(tt.inputId, tt.inputNewPassword)
 			if tt.outErr != "" {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
 			}
@@ -338,7 +350,10 @@ func TestUpdatePhone(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			err := test.UpdatePhone(tt.inputId, tt.inputNewPhone)
 			if tt.outErr != "" {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
 			}
@@ -386,7 +401,10 @@ func TestUpdateAvatar(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			err := test.UpdateAvatar(tt.inputId, tt.inputNewAvatar)
 			if tt.outErr != "" {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
 			}
@@ -437,7 +455,10 @@ func TestUpdateBirthday(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			err := test.UpdateBirthday(tt.inputId, tt.inputNewBirthday)
 			if tt.outErr != "" {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
 			}
@@ -488,7 +509,10 @@ func TestUpdateAddress(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			err := test.UpdateAddress(tt.inputId, tt.inputNewAddress)
 			if tt.outErr != "" {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
 			}

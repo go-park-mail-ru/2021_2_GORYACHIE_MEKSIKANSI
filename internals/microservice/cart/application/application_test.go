@@ -42,7 +42,10 @@ func TestCalculatePriceDelivery(t *testing.T) {
 			result, err := test.CalculatePriceDelivery(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %d\nbut got: %d", tt.out, result))
 			if tt.outErr != "" {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
 			}
@@ -97,7 +100,10 @@ func TestCalculateCost(t *testing.T) {
 			result, err := test.CalculateCost(tt.inputResult, tt.inputRest)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
 			}
@@ -264,7 +270,10 @@ func TestApplicationGetCart(t *testing.T) {
 			result, err := test.GetCart(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
 			}
@@ -457,7 +466,10 @@ func TestApplicationUpdateCart(t *testing.T) {
 			result, err := test.UpdateCart(tt.inputDishes, tt.inputId)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
-				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %s\nbut got: %s", tt.outErr, err.Error()))
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
 			}

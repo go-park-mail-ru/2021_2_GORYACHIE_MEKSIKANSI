@@ -84,6 +84,7 @@ func (r *Rows) RawValues() [][]byte {
 }
 
 func (r *Rows) Scan(dest ...interface{}) error {
+
 	for i := range dest {
 		j := i + len(dest)*(r.currentRow-1)
 		if r.row[j] == nil {
@@ -161,7 +162,7 @@ var GetRestaurants = []struct {
 			row:    []interface{}{1, "/url/", "restaurant", 1, 1, 1, 1.0, "Кафе", 1},
 			errRow: nil,
 		},
-		outErr:                   errorsConst.RGetRestaurantsRestaurantsNotSelect,
+		outErr:                   "",
 		errBeginTransaction:      nil,
 		countQuery:               1,
 		countRollbackTransaction: 1,
@@ -206,7 +207,10 @@ func TestGetRestaurants(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetRestaurants()
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -253,7 +257,7 @@ var GetRecommendedRestaurants = []struct {
 			row:    []interface{}{1, "/url/", "restaurant", 1, 1, 1, 1.0, "Кафе", 1},
 			errRow: nil,
 		},
-		outErr:                   errorsConst.RGetRestaurantsRestaurantsNotSelect,
+		outErr:                   "",
 		errBeginTransaction:      nil,
 		countQuery:               1,
 		countRollbackTransaction: 1,
@@ -298,7 +302,10 @@ func TestGetRecommendedRestaurants(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetRecommendedRestaurants()
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -327,7 +334,7 @@ var GetRestaurant = []struct {
 		out: &rest.RestaurantId{Id: 1, Img: "1", Name: "1",
 			CostForFreeDelivery: 1, MinDelivery: 1, MaxDelivery: 1, Rating: 1, Tags: nil, Menu: nil},
 		row:                      Row{row: []interface{}{1, "1", "1", 1, 1, 1, 1.0}, errRow: nil},
-		outErr:                   errorsConst.RGetRestaurantRestaurantNotFound,
+		outErr:                   "",
 		errBeginTransaction:      nil,
 		errCommitTransaction:     nil,
 		countCommitTransaction:   1,
@@ -382,7 +389,10 @@ func TestGetRestaurant(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetRestaurant(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -412,7 +422,7 @@ var GetTagsRestaurant = []struct {
 		errQuery:                 nil,
 		out:                      []rest.Tag{{Id: 1, Name: "1"}},
 		rowsQuery:                Rows{row: []interface{}{1, "1", 0}, errRow: nil, rows: 1},
-		outErr:                   errorsConst.RGetRestaurantRestaurantNotFound,
+		outErr:                   "",
 		errBeginTransaction:      nil,
 		errCommitTransaction:     nil,
 		countCommitTransaction:   1,
@@ -453,7 +463,10 @@ func TestGetTagsRestaurant(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetTagsRestaurant(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -481,7 +494,7 @@ var GetMenu = []struct {
 		inputId:                  1,
 		inputQuery:               1,
 		out:                      []rest.Menu{{Name: "Сладости", DishesMenu: []rest.DishesMenu{{Id: 1, Name: "Шоколад", Cost: 100, Kilocalorie: 1, Img: "/url"}}}},
-		outErr:                   errorsConst.RGetRestaurantRestaurantNotFound,
+		outErr:                   "",
 		outQuery:                 Rows{row: []interface{}{"Сладости", 1, "/url", "Шоколад", 100, 1, 0, 0}, errRow: nil, rows: 1},
 		errQuery:                 nil,
 		errBeginTransaction:      nil,
@@ -524,7 +537,10 @@ func TestGetMenu(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetMenu(tt.inputId)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -561,7 +577,7 @@ var GetDishes = []struct {
 		outQuery: Rows{rows: 1, row: []interface{}{1, "/url/", "Шоколад", 100, 500,
 			"Очень сладкий, очень вкусный", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil}},
 		errQuery:                 nil,
-		outErr:                   errorsConst.RGetRestaurantRestaurantNotFound,
+		outErr:                   "",
 		countQuery:               1,
 		errBeginTransaction:      nil,
 		errCommitTransaction:     nil,
@@ -609,7 +625,10 @@ func TestGetDishes(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetDishes(tt.inputRestId, tt.inputDishesId)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -618,7 +637,7 @@ func TestGetDishes(t *testing.T) {
 	}
 }
 
-var GetReview = []struct { //TODO:
+var GetReview = []struct {
 	testName                 string
 	input                    int
 	out                      []rest.Review
@@ -636,11 +655,11 @@ var GetReview = []struct { //TODO:
 	{
 		testName:                 "First",
 		input:                    1,
-		out:                      []rest.Review([]rest.Review{{Name: "1", Text: "1", Date: "11.10.2020", Time: "00:00", Rate: 5}}),
+		out:                      []rest.Review{{Name: "1", Text: "1", Date: "11.10.2020", Time: "00:00", Rate: 5}},
 		inputQuery:               1,
 		outQuery:                 Rows{rows: 1, row: []interface{}{"1", "1", time.Date(2020, 10, 11, 0, 0, 0, 0, time.UTC), 5}},
 		errQuery:                 nil,
-		outErr:                   errorsConst.RGetRestaurantRestaurantNotFound,
+		outErr:                   "",
 		countQuery:               1,
 		errBeginTransaction:      nil,
 		errCommitTransaction:     nil,
@@ -685,7 +704,10 @@ func TestGetReview(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetReview(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -762,7 +784,10 @@ func TestCreateReview(t *testing.T) {
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := testUser.CreateReview(tt.inputClientId, tt.inputNewReview)
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -836,7 +861,10 @@ func TestSearchCategory(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.SearchCategory(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -909,7 +937,10 @@ func TestGetGeneralInfoRestaurant(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetGeneralInfoRestaurant(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -985,7 +1016,10 @@ func TestGetFavoriteRestaurants(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetFavoriteRestaurants(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -1061,7 +1095,10 @@ func TestIsFavoriteRestaurant(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.IsFavoriteRestaurant(tt.inputClient, tt.inputRestaurant)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -1133,7 +1170,10 @@ func TestGetPromoCodes(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetPromoCodes()
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))

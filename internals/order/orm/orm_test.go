@@ -208,7 +208,10 @@ func TestGetOrder(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetOrder(tt.inputClientId, tt.inputOrderId)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -302,7 +305,10 @@ func TestGetOrders(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetOrders(tt.inputClientId)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -332,7 +338,7 @@ var UpdateStatusOrder = []struct {
 		testName:                 "First",
 		inputClientId:            1,
 		inputStatus:              1,
-		outErr:                   errPkg.OGetOrdersOrdersIsVoid,
+		outErr:                   "",
 		inputQueryClientId:       1,
 		inputQueryStatus:         1,
 		errQuery:                 nil,
@@ -378,7 +384,10 @@ func TestUpdateStatusOrder(t *testing.T) {
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := testUser.UpdateStatusOrder(tt.inputClientId, tt.inputStatus)
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -405,13 +414,12 @@ var DeleteCart = []struct {
 	{
 		testName:                 "First",
 		input:                    1,
-		outErr:                   errPkg.OGetOrdersOrdersIsVoid,
+		outErr:                   "",
 		inputQuery:               1,
-		errQuery:                 nil,
 		countQuery:               1,
 		errBeginTransaction:      nil,
 		inputDelete:              1,
-		errDelete:                nil,
+		errQuery:                 nil,
 		countDelete:              1,
 		errCommitTransaction:     nil,
 		countCommitTransaction:   1,
@@ -450,7 +458,10 @@ func TestDeleteCart(t *testing.T) {
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := testUser.DeleteCart(tt.input)
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -532,7 +543,10 @@ func TestGetRestaurant(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetRestaurant(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))

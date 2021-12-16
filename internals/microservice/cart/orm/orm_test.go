@@ -104,6 +104,10 @@ func (r *Rows) Scan(dest ...interface{}) error {
 		case **int32:
 			t := int32(r.row[j].(int))
 			*dest[i].(**int32) = &t
+		case *time.Time:
+			*dest[i].(*time.Time) = r.row[j].(time.Time)
+		case *bool:
+			*dest[i].(*bool) = r.row[j].(bool)
 		default:
 			dest[i] = nil
 		}
@@ -562,7 +566,10 @@ func TestGetCart(t *testing.T) {
 			resultOne, resultTwo, err := testUser.GetCart(tt.input)
 			require.Equal(t, tt.outOne, resultOne, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outOne, resultOne))
 			require.Equal(t, tt.outTwo, resultTwo, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outTwo, resultTwo))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -628,7 +635,10 @@ func TestDeleteCart(t *testing.T) {
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := testUser.DeleteCart(tt.input)
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -698,7 +708,10 @@ func TestGetPromoCode(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetPromoCode(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -782,7 +795,10 @@ func TestUpdateCartStructFood(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.updateCartStructFood(tt.inputIngredient, tt.inputClientId, tt.inputCartId, mTx, context.Background())
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -856,7 +872,10 @@ func TestUpdateCartRadios(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.updateCartRadios(tt.inputRadios, tt.inputClientId, tt.inputCartId, mTx, context.Background())
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -1102,7 +1121,10 @@ func TestUpdateCart(t *testing.T) {
 			resultOne, resultTwo, err := testUser.UpdateCart(tt.inputCart, tt.inputClientId)
 			require.Equal(t, tt.outOne, resultOne, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outOne, resultOne))
 			require.Equal(t, tt.outTwo, resultTwo, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outTwo, resultTwo))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -1174,7 +1196,10 @@ func TestGetPriceDelivery(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetPriceDelivery(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -1256,7 +1281,10 @@ func TestGetRestaurant(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetRestaurant(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -1333,7 +1361,10 @@ func TestAddPromoCode(t *testing.T) {
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := testUser.AddPromoCode(tt.inputPromoCode, tt.inputRestaurantId, tt.inputClientId)
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -2100,7 +2131,10 @@ func TestDoPromoCode(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.DoPromoCode(tt.inputPromoCode, tt.inputRestaurantId, tt.inputCart)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))

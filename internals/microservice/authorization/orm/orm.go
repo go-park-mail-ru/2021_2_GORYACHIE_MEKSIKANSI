@@ -64,15 +64,20 @@ func (db *Wrapper) generalSignUp(signup *authPkg.RegistrationRequest, transactio
 	salt := authPkg.RandString(authPkg.LenSalt)
 
 	Sanitize(signup.Phone)
-	if _, err := strconv.Atoi(signup.Phone); err != nil || len(signup.Phone) != PhoneLen {
+	var phone string
+	if signup.Phone != "" && signup.Phone[0] == '+' && signup.Phone[1] == '7' {
+		s := []rune(signup.Phone)
+		s[1] = '8'
+		phone = string(s[1:])
+	} else {
+		phone = signup.Phone
+	}
+
+	if _, err := strconv.Atoi(phone); err != nil || len(phone) != PhoneLen {
 		return 0, &errPkg.Errors{
 			Text: errPkg.AGeneralSignUpIncorrectPhoneFormat,
 		}
 	}
-
-	s := []rune(signup.Phone)
-	s[0] = '8'
-	phone := string(s)
 
 	err := transaction.QueryRow(contextTransaction,
 		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",

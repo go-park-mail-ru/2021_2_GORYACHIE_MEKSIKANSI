@@ -2,7 +2,6 @@ package orm
 
 import (
 	authPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/authorization"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/authorization/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/authorization/orm/mocks"
 	"context"
 	"fmt"
@@ -96,6 +95,23 @@ var GeneralSignUp = []struct {
 		countCommitTransaction:   1,
 		countRollbackTransaction: 1,
 	},
+	{
+		testName: "Second",
+		out:      1,
+		inputSignup: &authPkg.RegistrationRequest{
+			Phone:    "+79165554433",
+			Email:    "1",
+			Password: "1",
+			Name:     "1",
+		},
+		resultQuery:              Row{row: []interface{}{1}, errRow: nil},
+		inputQueryPhone:          "89165554433",
+		inputQueryEmail:          "1",
+		inputQueryName:           "1",
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		countRollbackTransaction: 1,
+	},
 }
 
 func TestGeneralSignUp(t *testing.T) {
@@ -115,7 +131,10 @@ func TestGeneralSignUp(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.generalSignUp(tt.inputSignup, mTx, context.Background())
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -196,7 +215,10 @@ func TestLoginByEmail(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.LoginByEmail(tt.inputEmail, tt.inputPassword)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -277,7 +299,10 @@ func TestLoginByPhone(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.LoginByPhone(tt.inputPhone, tt.inputPassword)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -349,7 +374,10 @@ func TestDeleteCookie(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.DeleteCookie(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -421,7 +449,10 @@ func TestAddCookie(t *testing.T) {
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := testUser.AddCookie(tt.inputCookie, tt.inputId)
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -468,7 +499,10 @@ func TestAddTransactionCookie(t *testing.T) {
 		testUser := &Wrapper{}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := testUser.addTransactionCookie(tt.inputCookie, m, tt.inputId, context.Background())
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -582,7 +616,10 @@ func TestSignupClient(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.SignupClient(tt.inputSignUp, tt.inputCookie)
 			require.NotEqual(t, &authPkg.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &authPkg.Defense{}, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -695,7 +732,10 @@ func TestSignupCourier(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.SignupCourier(tt.inputSignUp, tt.inputCookie)
 			require.NotEqual(t, &authPkg.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &authPkg.Defense{}, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -809,7 +849,10 @@ func TestSignupHost(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.SignupHost(tt.inputSignUp, tt.inputCookie)
 			require.NotEqual(t, &authPkg.Defense{}, result, fmt.Sprintf("Expected: %v\nbut got: %v", &authPkg.Defense{}, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -886,7 +929,10 @@ func TestCheckAccess(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.CheckAccess(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -961,7 +1007,10 @@ func TestNewCSRF(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.NewCSRF(tt.input)
 			require.NotNil(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
@@ -991,7 +1040,7 @@ var GetIdByCookie = []struct {
 			CsrfToken: "1",
 		},
 		out:                1,
-		outErr:             errPkg.MGetIdByCookieCookieExpired,
+		outErr:             "",
 		inputGetIdByCookie: "1",
 		outGetIdByCookie: Row{row: []interface{}{
 			1,
@@ -1040,7 +1089,10 @@ func TestGetIdByCookie(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetIdByCookie(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
-			if tt.outErr != "" && err != nil {
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
 				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
 			} else {
 				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))

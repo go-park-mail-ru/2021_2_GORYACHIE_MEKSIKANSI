@@ -140,5 +140,4 @@ func runServer() {
 		logger.Log.Errorf("Listen and server error: %v", err)
 		os.Exit(2)
 	}
-
 }

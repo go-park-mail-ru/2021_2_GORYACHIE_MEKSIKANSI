@@ -361,17 +361,17 @@ func (db *Wrapper) UpdatePhone(id int, newPhone string) error {
 
 	defer tx.Rollback(contextTransaction)
 
-	if _, err := strconv.Atoi(newPhone); err != nil {
-		return &errPkg.Errors{
-			Text: errPkg.PUpdatePhoneIncorrectPhoneFormat,
-		}
-	}
-
 	profile.Sanitize(newPhone)
+
+	if newPhone != "" && newPhone[0] == '+' && newPhone[1] == '7' {
+		s := []rune(newPhone)
+		s[1] = '8'
+		newPhone = string(s[1:])
+	}
 
 	if _, err := strconv.Atoi(newPhone); err != nil || len(newPhone) != profile.PhoneLen {
 		return &errPkg.Errors{
-			Text: errPkg.AGeneralSignUpIncorrectPhoneFormat,
+			Text: errPkg.PUpdatePhoneIncorrectPhoneFormat,
 		}
 	}
 

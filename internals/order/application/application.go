@@ -50,7 +50,6 @@ func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) (int, error)
 		return 0, err
 	}
 
-	//TODO: delete
 	check, _ := o.DB.CheckRun(order)
 	if check {
 		go o.UpdateStatusOrder(order, 4)
