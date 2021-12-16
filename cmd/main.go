@@ -3,15 +3,22 @@ package main
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/build"
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
-	utils "2021_2_GORYACHIE_MEKSIKANSI/internal/util"
+	authPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/authorization"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/myerror"
+	utils "2021_2_GORYACHIE_MEKSIKANSI/internals/util"
 	cors "github.com/AdhityaRamadhanus/fasthttpcors"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
+	metrics "github.com/w1ck3dg0ph3r/fastprometrics"
 	"go.uber.org/zap"
+	"net/http"
 	"os"
 )
+
+func main() {
+	runServer()
+}
 
 func runServer() {
 	var logger utils.Logger
@@ -50,7 +57,9 @@ func runServer() {
 	uploader := s3manager.NewUploader(sess)
 	nameBucket := awsConfig.Aws.Name
 
-	startStructure := build.SetUp(connectionPostgres, logger.Log, uploader, nameBucket, microserviceConfig)
+	intCh := make(chan authPkg.WebSocketOrder, 10)
+
+	startStructure := build.SetUp(connectionPostgres, logger.Log, uploader, nameBucket, microserviceConfig, intCh)
 
 	userInfo := startStructure.User
 	cartInfo := startStructure.Cart
@@ -59,6 +68,8 @@ func runServer() {
 	restaurantInfo := startStructure.Restaraunt
 	orderInfo := startStructure.Order
 
+	userInfo.IntCh = intCh
+
 	myRouter := router.New()
 	apiGroup := myRouter.Group("/api")
 	versionGroup := apiGroup.Group("/v1")
@@ -66,6 +77,9 @@ func runServer() {
 	restaurantGroup := versionGroup.Group("/restaurant")
 	cartGroup := userGroup.Group("/cart")
 	orderGroup := userGroup.Group("/order")
+	webSocketGroup := versionGroup.Group("/ws")
+	userWSGroup := userGroup.Group("/ws")
+	favouriteGroup := userGroup.Group("/restaurant/favourite")
 
 	userGroup.POST("/login", userInfo.LoginHandler)
 	userGroup.POST("/signup", userInfo.SignUpHandler)
@@ -80,12 +94,15 @@ func runServer() {
 	userGroup.PUT("/address", infoMid.CheckClient(infoMid.GetIdClient(profileInfo.UpdateUserAddress)))
 	userGroup.POST("/pay", infoMid.CheckClient(infoMid.GetIdClient(userInfo.PayHandler)))
 	userGroup.POST("/review", infoMid.CheckClient(infoMid.GetIdClient(restaurantInfo.CreateReviewHandler)))
+	favouriteGroup.GET("/", infoMid.GetIdClient(restaurantInfo.GetFavouritesHandler))
+	favouriteGroup.PUT("/", infoMid.CheckClient(infoMid.GetIdClient(restaurantInfo.UpdateFavouritesHandler)))
 
 	restaurantGroup.GET("/", restaurantInfo.RestaurantHandler)
 	restaurantGroup.GET("/{idRes}/dish/{idDish}", restaurantInfo.RestaurantDishesHandler)
-	restaurantGroup.GET("/{idRes}", restaurantInfo.RestaurantIdHandler)
-	restaurantGroup.GET("/{idRes}/review", restaurantInfo.GetReviewHandler)
+	restaurantGroup.GET("/{idRes}", infoMid.GetIdClientIgnoreErr(restaurantInfo.RestaurantIdHandler))
+	restaurantGroup.GET("/{idRes}/review", infoMid.GetIdClientIgnoreErr(restaurantInfo.GetReviewHandler))
 	restaurantGroup.GET("/search", restaurantInfo.SearchRestaurantHandler)
+	restaurantGroup.GET("/recommend", infoMid.GetIdClient(restaurantInfo.RecommendedRestaurantsHandler))
 
 	cartGroup.GET("/", infoMid.GetIdClient(cartInfo.GetCartHandler))
 	cartGroup.PUT("/", infoMid.CheckClient(infoMid.GetIdClient(cartInfo.UpdateCartHandler)))
@@ -93,6 +110,15 @@ func runServer() {
 	orderGroup.GET("/", infoMid.GetIdClient(orderInfo.GetOrdersHandler))
 	orderGroup.POST("/", infoMid.CheckClient(infoMid.GetIdClient(orderInfo.CreateOrderHandler)))
 	orderGroup.GET("/{idOrd}/active", infoMid.GetIdClient(orderInfo.GetOrderActiveHandler))
+
+	webSocketGroup.GET("/", infoMid.CheckWebSocketKey(userInfo.UserWebSocket))
+	userWSGroup.GET("/key", infoMid.GetIdClient(userInfo.UserWebSocketNewKey))
+
+	metricsHandler := metrics.Add(func(ctx *fasthttp.RequestCtx) {
+		ctx.SetStatusCode(http.StatusOK)
+	}, metrics.WithPath("/metrics"), metrics.WithSubsystem("http"))
+
+	myRouter.GET("/metrics", metricsHandler)
 
 	printURL := infoMid.LogURL(myRouter.Handler)
 
@@ -114,9 +140,4 @@ func runServer() {
 		logger.Log.Errorf("Listen and server error: %v", err)
 		os.Exit(2)
 	}
-
-}
-
-func main() {
-	runServer()
 }
