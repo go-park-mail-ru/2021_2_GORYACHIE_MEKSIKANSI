@@ -2,35 +2,36 @@ package build
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/api"
-	authApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/api"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/application"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/authorization/orm"
-	Api2 "2021_2_GORYACHIE_MEKSIKANSI/internal/cart/api"
-	cartApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/cart/api"
-	Application2 "2021_2_GORYACHIE_MEKSIKANSI/internal/cart/application"
-	Orm2 "2021_2_GORYACHIE_MEKSIKANSI/internal/cart/orm"
-	authProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/authorization/proto"
-	cartProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/cart/proto"
-	resProto "2021_2_GORYACHIE_MEKSIKANSI/internal/microservice/restaurant/proto"
-	Api3 "2021_2_GORYACHIE_MEKSIKANSI/internal/middleware/api"
-	midlApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/middleware/api"
-	Application3 "2021_2_GORYACHIE_MEKSIKANSI/internal/middleware/application"
-	Orm3 "2021_2_GORYACHIE_MEKSIKANSI/internal/middleware/orm"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
-	Api4 "2021_2_GORYACHIE_MEKSIKANSI/internal/order/api"
-	orderApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/order/api"
-	Application4 "2021_2_GORYACHIE_MEKSIKANSI/internal/order/application"
-	Orm4 "2021_2_GORYACHIE_MEKSIKANSI/internal/order/orm"
-	Api5 "2021_2_GORYACHIE_MEKSIKANSI/internal/profile/api"
-	profileApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/profile/api"
-	Application5 "2021_2_GORYACHIE_MEKSIKANSI/internal/profile/application"
-	Orm5 "2021_2_GORYACHIE_MEKSIKANSI/internal/profile/orm"
-	profileOrmPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/profile/orm"
-	Api6 "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant/api"
-	resApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant/api"
-	Application6 "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant/application"
-	Orm6 "2021_2_GORYACHIE_MEKSIKANSI/internal/restaurant/orm"
+	authPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/authorization"
+	"2021_2_GORYACHIE_MEKSIKANSI/internals/authorization/api"
+	authApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/authorization/api"
+	"2021_2_GORYACHIE_MEKSIKANSI/internals/authorization/application"
+	"2021_2_GORYACHIE_MEKSIKANSI/internals/authorization/orm"
+	Api2 "2021_2_GORYACHIE_MEKSIKANSI/internals/cart/api"
+	cartApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/cart/api"
+	Application2 "2021_2_GORYACHIE_MEKSIKANSI/internals/cart/application"
+	Orm2 "2021_2_GORYACHIE_MEKSIKANSI/internals/cart/orm"
+	authProto "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/authorization/proto"
+	cartProto "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/cart/proto"
+	resProto "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/restaurant/proto"
+	Api3 "2021_2_GORYACHIE_MEKSIKANSI/internals/middleware/api"
+	midlApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/middleware/api"
+	Application3 "2021_2_GORYACHIE_MEKSIKANSI/internals/middleware/application"
+	Orm3 "2021_2_GORYACHIE_MEKSIKANSI/internals/middleware/orm"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/myerror"
+	Api4 "2021_2_GORYACHIE_MEKSIKANSI/internals/order/api"
+	orderApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/order/api"
+	Application4 "2021_2_GORYACHIE_MEKSIKANSI/internals/order/application"
+	Orm4 "2021_2_GORYACHIE_MEKSIKANSI/internals/order/orm"
+	Api5 "2021_2_GORYACHIE_MEKSIKANSI/internals/profile/api"
+	profileApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/profile/api"
+	Application5 "2021_2_GORYACHIE_MEKSIKANSI/internals/profile/application"
+	Orm5 "2021_2_GORYACHIE_MEKSIKANSI/internals/profile/orm"
+	profileOrmPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/profile/orm"
+	Api6 "2021_2_GORYACHIE_MEKSIKANSI/internals/restaurant/api"
+	resApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/restaurant/api"
+	Application6 "2021_2_GORYACHIE_MEKSIKANSI/internals/restaurant/application"
+	Orm6 "2021_2_GORYACHIE_MEKSIKANSI/internals/restaurant/orm"
 	"context"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -59,7 +60,7 @@ type installSetUp struct {
 }
 
 func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLogger,
-	uploader *s3manager.Uploader, nameBucket string, microserviceConfig config.MicroserviceConfig) *installSetUp {
+	uploader *s3manager.Uploader, nameBucket string, microserviceConfig config.MicroserviceConfig, IntCh chan authPkg.WebSocketOrder) *installSetUp {
 
 	addressAuth := microserviceConfig.Authorization.Host + ":" + microserviceConfig.Authorization.Port
 	grpcConnAuth, errDialAuth := grpc.Dial(
@@ -73,7 +74,7 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 	authManager := authProto.NewAuthorizationServiceClient(grpcConnAuth)
 	authCtx := context.Background()
 
-	authWrapper := orm.Wrapper{Conn: authManager, Ctx: authCtx}
+	authWrapper := orm.Wrapper{Conn: authManager, Ctx: authCtx, DBConn: connectionDB}
 	authApp := application.Authorization{DB: &authWrapper}
 	userInfo := api.UserInfo{
 		Application: &authApp,
@@ -93,7 +94,7 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 	}
 	var _ profileApiPkg.ProfileApiInterface = &profileInfo
 
-	midWrapper := Orm3.Wrapper{Conn: authManager, Ctx: authCtx}
+	midWrapper := Orm3.Wrapper{DBConn: connectionDB, Conn: authManager, Ctx: authCtx}
 	midApp := Application3.Middleware{DB: &midWrapper}
 	infoMiddleware := Api3.InfoMiddleware{
 		Application: &midApp,
@@ -145,6 +146,7 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 	orderApp := Application4.Order{
 		DB:        &orderWrapper,
 		DBProfile: &profileWrapper,
+		IntCh:     IntCh,
 	}
 	orderInfo := Api4.InfoOrder{
 		Application: &orderApp,
@@ -176,7 +178,7 @@ func ConnectAws(config config.AwsBucket) (error, *session.Session) {
 		})
 	if errNewSess != nil {
 		return &errPkg.Errors{
-			Alias: errNewSess.Error(),
+			Text: errNewSess.Error(),
 		}, nil
 	}
 	return nil, sess
@@ -190,14 +192,14 @@ func InitConfig() (error, []interface{}) {
 	errRead := viper.ReadInConfig()
 	if errRead != nil {
 		return &errPkg.Errors{
-			Alias: errRead.Error(),
+			Text: errRead.Error(),
 		}, nil
 	}
 	appConfig := config.AppConfig{}
 	errUnmarshal := viper.Unmarshal(&appConfig)
 	if errUnmarshal != nil {
 		return &errPkg.Errors{
-			Alias: errUnmarshal.Error(),
+			Text: errUnmarshal.Error(),
 		}, nil
 	}
 
@@ -205,14 +207,14 @@ func InitConfig() (error, []interface{}) {
 	errRead = viper.ReadInConfig()
 	if errRead != nil {
 		return &errPkg.Errors{
-			Alias: errRead.Error(),
+			Text: errRead.Error(),
 		}, nil
 	}
 	microserviceConfig := config.MicroserviceConfig{}
 	errUnmarshal = viper.Unmarshal(&microserviceConfig)
 	if errUnmarshal != nil {
 		return &errPkg.Errors{
-			Alias: errUnmarshal.Error(),
+			Text: errUnmarshal.Error(),
 		}, nil
 	}
 
@@ -220,14 +222,14 @@ func InitConfig() (error, []interface{}) {
 	errRead = viper.ReadInConfig()
 	if errRead != nil {
 		return &errPkg.Errors{
-			Alias: errRead.Error(),
+			Text: errRead.Error(),
 		}, nil
 	}
 	dbConfig := config.DBConfig{}
 	errUnmarshal = viper.Unmarshal(&dbConfig)
 	if errUnmarshal != nil {
 		return &errPkg.Errors{
-			Alias: errUnmarshal.Error(),
+			Text: errUnmarshal.Error(),
 		}, nil
 	}
 
@@ -235,14 +237,14 @@ func InitConfig() (error, []interface{}) {
 	errRead = viper.ReadInConfig()
 	if errRead != nil {
 		return &errPkg.Errors{
-			Alias: errRead.Error(),
+			Text: errRead.Error(),
 		}, nil
 	}
 	awsConfig := config.AwsConfig{}
 	errUnmarshal = viper.Unmarshal(&awsConfig)
 	if errUnmarshal != nil {
 		return &errPkg.Errors{
-			Alias: errUnmarshal.Error(),
+			Text: errUnmarshal.Error(),
 		}, nil
 	}
 

@@ -2,8 +2,8 @@ package build
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/config"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internal/myerror"
-	"2021_2_GORYACHIE_MEKSIKANSI/internal/util"
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/myerror"
+	"2021_2_GORYACHIE_MEKSIKANSI/internals/util"
 	"context"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"io/ioutil"
@@ -11,8 +11,10 @@ import (
 )
 
 const (
-	Restaurants = 53
-	Categories  = 3
+	Restaurants     = 53
+	FirstRestaurant = 2
+	Categories      = 3
+	CountSetups     = 7
 )
 
 type Dish struct {
@@ -68,7 +70,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 	conn, err := pgxpool.Connect(context.Background(), addressPostgres)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.MCreateDBNotConnect,
+			Text: errPkg.MCreateDBNotConnect,
 		}
 	}
 
@@ -76,17 +78,17 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 	tx, err := conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.MCreateDBTransactionNotCreate,
+			Text: errPkg.MCreateDBTransactionNotCreate,
 		}
 	}
 
 	defer tx.Rollback(contextTransaction)
 
 	if debug {
-		file, err := ioutil.ReadFile("./build/postgresql/deletetables.sql")
-		if err != nil {
+		file, errRead := ioutil.ReadFile("./build/postgresql/deletetables.sql")
+		if errRead != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.MCreateDBDeleteFileNotFound,
+				Text: errPkg.MCreateDBDeleteFileNotFound,
 			}
 		}
 
@@ -95,7 +97,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 			_, err = tx.Exec(context.Background(), request)
 			if err != nil {
 				return nil, &errPkg.Errors{
-					Alias: errPkg.MCreateDBNotDeleteTables,
+					Text: errPkg.MCreateDBNotDeleteTables,
 				}
 			}
 		}
@@ -104,7 +106,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 	file, err := ioutil.ReadFile("./build/postgresql/createtables.sql")
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.MCreateDBCreateFileNotFound,
+			Text: errPkg.MCreateDBCreateFileNotFound,
 		}
 	}
 
@@ -113,7 +115,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 		_, err = tx.Exec(context.Background(), request)
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.MCreateDBNotCreateTables,
+				Text: errPkg.MCreateDBNotCreateTables,
 			}
 		}
 	}
@@ -122,7 +124,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 		file, err := ioutil.ReadFile("./build/postgresql/fill.sql")
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.MCreateDBFillFileNotFound,
+				Text: errPkg.MCreateDBFillFileNotFound,
 			}
 		}
 
@@ -131,7 +133,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 			_, err = tx.Exec(context.Background(), request)
 			if err != nil {
 				return nil, &errPkg.Errors{
-					Alias: errPkg.MCreateDBNotFillTables,
+					Text: errPkg.MCreateDBNotFillTables,
 				}
 			}
 		}
@@ -139,7 +141,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 		fileDishes, err := ioutil.ReadFile("./build/postgresql/filldishes.sql")
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.MCreateDBFillFileNotFound,
+				Text: errPkg.MCreateDBFillFileNotFound,
 			}
 		}
 
@@ -148,7 +150,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 		fileCategory, err := ioutil.ReadFile("./build/postgresql/fillcategory.sql")
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.MCreateDBFillFileNotFound,
+				Text: errPkg.MCreateDBFillFileNotFound,
 			}
 		}
 
@@ -2013,13 +2015,9 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 			},
 		}
 
-		dishesSetups = append(dishesSetups, struct{ Setup []Dish }{})
-		dishesSetups = append(dishesSetups, struct{ Setup []Dish }{})
-		dishesSetups = append(dishesSetups, struct{ Setup []Dish }{})
-		dishesSetups = append(dishesSetups, struct{ Setup []Dish }{})
-		dishesSetups = append(dishesSetups, struct{ Setup []Dish }{})
-		dishesSetups = append(dishesSetups, struct{ Setup []Dish }{})
-		dishesSetups = append(dishesSetups, struct{ Setup []Dish }{})
+		for i := 0; i < CountSetups; i++ {
+			dishesSetups = append(dishesSetups, struct{ Setup []Dish }{})
+		}
 		dishesSetups[0].Setup = dishes1
 		dishesSetups[1].Setup = dishes2
 		dishesSetups[2].Setup = dishes3
@@ -2042,19 +2040,19 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 		}
 		var dishId int
 		var radiosId int
-		for i := 1; i <= Restaurants; i++ {
+		for i := FirstRestaurant; i <= Restaurants; i++ {
 			for j := 0; j < Categories; j++ {
 				_, err = tx.Exec(context.Background(), requestsCategory[0], i, categorys[util.RandomInteger(0, len(categorys))], j)
 				if err != nil {
 					return nil, &errPkg.Errors{
-						Alias: errPkg.MCreateDBNotFillTables,
+						Text: errPkg.MCreateDBNotFillTables,
 					}
 				}
 			}
 			_, err = tx.Exec(context.Background(), requestsCategory[1])
 			if err != nil {
 				return nil, &errPkg.Errors{
-					Alias: errPkg.MCreateDBNotFillTables,
+					Text: errPkg.MCreateDBNotFillTables,
 				}
 			}
 
@@ -2066,7 +2064,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 					dish.Avatar, dish.PlaceCategory, dish.Place).Scan(&dishId)
 				if err != nil {
 					return nil, &errPkg.Errors{
-						Alias: errPkg.MCreateDBNotFillTables,
+						Text: errPkg.MCreateDBNotFillTables,
 					}
 				}
 
@@ -2078,7 +2076,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 							ingredient.CountElement, ingredient.Place)
 						if err != nil {
 							return nil, &errPkg.Errors{
-								Alias: errPkg.MCreateDBNotFillTables,
+								Text: errPkg.MCreateDBNotFillTables,
 							}
 						}
 					}
@@ -2090,7 +2088,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 							radios.Name, dishId, radios.Place).Scan(&radiosId)
 						if err != nil {
 							return nil, &errPkg.Errors{
-								Alias: errPkg.MCreateDBNotFillTables,
+								Text: errPkg.MCreateDBNotFillTables,
 							}
 						}
 
@@ -2101,7 +2099,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 								elementRadios.Place)
 							if err != nil {
 								return nil, &errPkg.Errors{
-									Alias: errPkg.MCreateDBNotFillTables,
+									Text: errPkg.MCreateDBNotFillTables,
 								}
 							}
 						}
@@ -2113,7 +2111,7 @@ func CreateDb(configDB config.Database, debug bool) (*pgxpool.Pool, error) {
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.MCreateDBNotCommit,
+			Text: errPkg.MCreateDBNotCommit,
 		}
 	}
 	return conn, nil
