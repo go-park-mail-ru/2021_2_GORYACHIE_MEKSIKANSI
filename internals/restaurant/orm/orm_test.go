@@ -86,13 +86,35 @@ var RecommendedRestaurants = []struct {
 	errQuery   error
 }{
 	{
-		testName:   "First",
-		input:      1,
-		out:        &rest.AllRestaurants{},
+		testName: "First",
+		input:    1,
+		out: &rest.AllRestaurants{
+			Restaurant: []rest.Restaurants{
+				{
+					Id:                  1,
+					Img:                 "/url/",
+					Name:                "KFC",
+					CostForFreeDelivery: 250,
+					MinDelivery:         15,
+					MaxDelivery:         30,
+					Rating:              5,
+				},
+			}},
 		outErr:     "",
 		inputQuery: 1,
-		outQuery:   &resProto.RecommendedRestaurants{},
-		errQuery:   nil,
+		outQuery: &resProto.RecommendedRestaurants{
+			Restaurants: []*resProto.Restaurant{
+				{
+					Id:                  1,
+					Img:                 "/url/",
+					Name:                "KFC",
+					CostForFreeDelivery: 250,
+					MinDelivery:         15,
+					MaxDelivery:         30,
+					Rating:              5,
+				},
+			}},
+		errQuery: nil,
 	},
 }
 
@@ -133,11 +155,27 @@ var GetRestaurant = []struct {
 		testName:          "First",
 		inputClientId:     1,
 		inputRestaurantId: 1,
-		out:               &rest.RestaurantId{},
-		outErr:            "",
-		inputQuery:        &resProto.RestaurantId{Id: 1, IdClient: 1},
-		outQuery:          &resProto.RestaurantInfo{},
-		errQuery:          nil,
+		out: &rest.RestaurantId{
+			Id:                  1,
+			Img:                 "/url/",
+			Name:                "KFC",
+			CostForFreeDelivery: 250,
+			MinDelivery:         15,
+			MaxDelivery:         30,
+			Rating:              5,
+		},
+		outErr:     "",
+		inputQuery: &resProto.RestaurantId{Id: 1, IdClient: 1},
+		outQuery: &resProto.RestaurantInfo{
+			Id:                  1,
+			Img:                 "/url/",
+			Name:                "KFC",
+			CostForFreeDelivery: 250,
+			MinDelivery:         15,
+			MaxDelivery:         30,
+			Rating:              5,
+		},
+		errQuery: nil,
 	},
 }
 
@@ -178,11 +216,29 @@ var RestaurantDishes = []struct {
 		testName:          "First",
 		inputClientId:     1,
 		inputRestaurantId: 1,
-		out:               &rest.Dishes{},
-		outErr:            "",
-		inputQuery:        &resProto.DishInfo{DishId: 1, RestaurantId: 1},
-		outQuery:          &resProto.Dishes{},
-		errQuery:          nil,
+		out: &rest.Dishes{
+			Id:          1,
+			Img:         "/url",
+			Title:       "Шоколад",
+			Cost:        30,
+			Ccal:        500,
+			Description: "Очень вкусно",
+			Radios:      nil,
+			Ingredient:  nil,
+		},
+		outErr:     "",
+		inputQuery: &resProto.DishInfo{DishId: 1, RestaurantId: 1},
+		outQuery: &resProto.Dishes{
+			Id:          1,
+			Img:         "/url",
+			Name:        "Шоколад",
+			Cost:        30,
+			Ccal:        500,
+			Description: "Очень вкусно",
+			Radios:      nil,
+			Ingredients: nil,
+		},
+		errQuery: nil,
 	},
 }
 
@@ -219,13 +275,36 @@ var CreateReview = []struct {
 	errQuery       error
 }{
 	{
-		testName:       "First",
-		inputClientId:  1,
-		inputNewReview: rest.NewReview{},
-		outErr:         "",
-		inputQuery:     &resProto.NewReview{Id: 1, Restaurant: &resProto.RestaurantInfo{}},
-		outQuery:       &resProto.Error{},
-		errQuery:       nil,
+		testName:      "First",
+		inputClientId: 1,
+		inputNewReview: rest.NewReview{
+			Restaurant: rest.RestaurantId{
+				Id:                  1,
+				Img:                 "/url/",
+				Name:                "KFC",
+				CostForFreeDelivery: 250,
+				MinDelivery:         15,
+				MaxDelivery:         30,
+				Rating:              5,
+			},
+			Text: "Very cool dishes",
+			Rate: 5,
+		},
+		outErr: "",
+		inputQuery: &resProto.NewReview{Id: 1,
+			Restaurant: &resProto.RestaurantInfo{
+				Id:                  1,
+				Img:                 "/url/",
+				Name:                "KFC",
+				CostForFreeDelivery: 250,
+				MinDelivery:         15,
+				MaxDelivery:         30,
+				Rating:              5,
+			},
+			Text: "Very cool dishes",
+			Rate: 5},
+		outQuery: &resProto.Error{},
+		errQuery: nil,
 	},
 }
 
@@ -261,12 +340,34 @@ var SearchRestaurant = []struct {
 	errQuery   error
 }{
 	{
-		testName:   "First",
-		input:      "KFC",
+		testName: "First",
+		input:    "KFC",
+		out: []rest.Restaurants{
+			{
+				Id:                  1,
+				Img:                 "/url/",
+				Name:                "KFC",
+				CostForFreeDelivery: 250,
+				MinDelivery:         15,
+				MaxDelivery:         30,
+				Rating:              5,
+			},
+		},
 		outErr:     "",
 		inputQuery: &resProto.SearchRestaurantText{Text: "KFC"},
-		outQuery:   &resProto.Restaurants{},
-		errQuery:   nil,
+		outQuery: &resProto.Restaurants{
+			Restaurants: []*resProto.Restaurant{{
+				Id:                  1,
+				Img:                 "/url/",
+				Name:                "KFC",
+				CostForFreeDelivery: 250,
+				MinDelivery:         15,
+				MaxDelivery:         30,
+				Rating:              5,
+			},
+			},
+		},
+		errQuery: nil,
 	},
 }
 
@@ -303,12 +404,35 @@ var GetFavoriteRestaurants = []struct {
 	errQuery   error
 }{
 	{
-		testName:   "First",
-		input:      1,
+		testName: "First",
+		input:    1,
+		out: []rest.Restaurants{
+			{
+				Id:                  1,
+				Img:                 "/url/",
+				Name:                "KFC",
+				CostForFreeDelivery: 250,
+				MinDelivery:         15,
+				MaxDelivery:         30,
+				Rating:              5,
+			},
+		},
 		outErr:     "",
 		inputQuery: &resProto.UserId{Id: 1},
-		outQuery:   &resProto.Restaurants{},
-		errQuery:   nil,
+		outQuery: &resProto.Restaurants{
+			Restaurants: []*resProto.Restaurant{
+				{
+					Id:                  1,
+					Img:                 "/url/",
+					Name:                "KFC",
+					CostForFreeDelivery: 250,
+					MinDelivery:         15,
+					MaxDelivery:         30,
+					Rating:              5,
+				},
+			},
+		},
+		errQuery: nil,
 	},
 }
 

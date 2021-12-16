@@ -166,6 +166,7 @@ func CastDishesProtoToDishes(d *resProto.Dishes) *restaurant.Dishes {
 	r.Id = int(d.Id)
 	r.Img = d.Img
 	r.Ccal = int(d.Ccal)
+	r.Description = d.Description
 	r.Ingredient = CastIngredientsProtoToIngredients(d.Ingredients)
 	r.Radios = CastRadiosProtoToRadios(d.Radios)
 	return &r
