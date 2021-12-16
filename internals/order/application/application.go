@@ -28,13 +28,6 @@ func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) (int, error)
 		return 0, err
 	}
 
-	//rest, err := o.DB.GetRestaurant(cart.Restaurant.Id)
-	//if err != nil {
-	//	return 0, err
-	//}
-
-	//cart.CastFromRestaurantId(*rest)
-
 	err = o.DB.DeleteCart(id)
 	if err != nil {
 		return 0, err
@@ -51,11 +44,6 @@ func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) (int, error)
 	if err != nil {
 		return 0, err
 	}
-
-	//err = o.DB.DoPromoCode(cart.PromoCode, cart.Restaurant.Id, cart)
-	//if err != nil {
-	//	return nil, err
-	//}
 
 	order, err := o.DB.CreateOrder(id, createOrder, addressId, *cart, courierId)
 	if err != nil {

@@ -532,6 +532,7 @@ func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg
 			}
 
 			if freeDelivery.Have {
+				cart.Cost.SumCost -= cart.Cost.DCost
 				cart.Cost.DCost = 0
 			}
 		}
@@ -591,25 +592,27 @@ func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg
 				}
 			}
 
-			var newDish cartPkg.DishesCartResponse
-			err = tx.QueryRow(transactionPromoCode,
-				"SELECT avatar, name, kilocalorie, weight, description FROM dishes WHERE id = $1 AND count > 1",
-				int(freeDishId.DishId)).Scan(&newDish.Img, &newDish.Name, &newDish.Kilocalorie,
-				&newDish.Weight, &newDish.Description)
-			if err != nil {
-				return nil, &errPkg.Errors{
-					Alias: errPkg.CDoPromoCodeNotSelectInfoDish,
+			if int(freeDishId.Cost) < cart.Cost.SumCost {
+				var newDish cartPkg.DishesCartResponse
+				err = tx.QueryRow(transactionPromoCode,
+					"SELECT avatar, name, kilocalorie, weight, description FROM dishes WHERE id = $1 AND count > 1",
+					int(freeDishId.DishId)).Scan(&newDish.Img, &newDish.Name, &newDish.Kilocalorie,
+					&newDish.Weight, &newDish.Description)
+				if err != nil {
+					return nil, &errPkg.Errors{
+						Alias: errPkg.CDoPromoCodeNotSelectInfoDish,
+					}
 				}
+
+				newDish.Count = 1
+				newDish.Cost = 0
+				newDish.ItemNumber = 0
+				newDish.Id = int(freeDishId.DishId)
+				newDish.RadiosCart = []cartPkg.RadiosCartResponse{}
+				newDish.IngredientCart = []cartPkg.IngredientCartResponse{}
+
+				cart.Dishes = append(cart.Dishes, newDish)
 			}
-
-			newDish.Count = 1
-			newDish.Cost = 0
-			newDish.ItemNumber = 0
-			newDish.Id = int(freeDishId.DishId)
-			newDish.RadiosCart = []cartPkg.RadiosCartResponse{}
-			newDish.IngredientCart = []cartPkg.IngredientCartResponse{}
-
-			cart.Dishes = append(cart.Dishes, newDish)
 		}
 	}
 
