@@ -5,6 +5,10 @@ import (
 	"mime/multipart"
 )
 
+const (
+	PhoneLen = 11
+)
+
 type Profile struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
@@ -74,4 +78,8 @@ func (a *AddressCoordinates) Sanitize() {
 	a.City = util.Sanitize(a.City)
 	a.Street = util.Sanitize(a.Street)
 	a.House = util.Sanitize(a.House)
+}
+
+func Sanitize(str string) string {
+	return util.Sanitize(str)
 }

@@ -33,7 +33,7 @@ func (ap *AuthorizationApplication) SignUp(signup *authPkg.RegistrationRequest) 
 		cookie, err = ap.DB.SignupHost(signup, newCookie)
 	default:
 		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignUpUnknownType,
+			Text: errPkg.ASignUpUnknownType,
 		}
 	}
 
@@ -55,7 +55,7 @@ func (ap *AuthorizationApplication) Login(login *authPkg.Authorization) (*authPk
 		userId, err = ap.DB.LoginByPhone(login.Phone, login.Password)
 	default:
 		return nil, &errPkg.Errors{
-			Alias: errPkg.ALoginVoidLogin,
+			Text: errPkg.ALoginVoidLogin,
 		}
 	}
 

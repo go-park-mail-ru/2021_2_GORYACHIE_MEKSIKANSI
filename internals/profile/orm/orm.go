@@ -190,10 +190,12 @@ func (db *Wrapper) GetProfileClient(id int) (*profile.Profile, error) {
 		}
 	}
 
-	var birthday time.Time
+	var birthday *time.Time
 	err = tx.QueryRow(contextTransaction,
 		"SELECT date_birthday FROM client WHERE client_id = $1", id).Scan(&birthday)
-	profile.Birthday, _ = Utils2.FormatDate(birthday)
+	if birthday != nil {
+		profile.Birthday, _ = Utils2.FormatDate(*birthday)
+	}
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Text: errPkg.PGetProfileClientBirthdayNotScan,
@@ -364,6 +366,18 @@ func (db *Wrapper) UpdatePhone(id int, newPhone string) error {
 			Text: errPkg.PUpdatePhoneIncorrectPhoneFormat,
 		}
 	}
+
+	profile.Sanitize(newPhone)
+
+	if _, err := strconv.Atoi(newPhone); err != nil || len(newPhone) != profile.PhoneLen {
+		return &errPkg.Errors{
+			Text: errPkg.AGeneralSignUpIncorrectPhoneFormat,
+		}
+	}
+
+	s := []rune(newPhone)
+	s[0] = '8'
+	newPhone = string(s)
 
 	_, err = tx.Exec(contextTransaction,
 		"UPDATE general_user_info SET phone = $1 WHERE id = $2",

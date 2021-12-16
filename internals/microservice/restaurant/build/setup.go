@@ -34,14 +34,14 @@ func InitConfig() (error, []interface{}) {
 	errRead := viper.ReadInConfig()
 	if errRead != nil {
 		return &errPkg.Errors{
-			Alias: errRead.Error(),
+			Text: errRead.Error(),
 		}, nil
 	}
 	appConfig := confPkg.AppConfig{}
 	errUnmarshal := viper.Unmarshal(&appConfig)
 	if errUnmarshal != nil {
 		return &errPkg.Errors{
-			Alias: errUnmarshal.Error(),
+			Text: errUnmarshal.Error(),
 		}, nil
 	}
 
@@ -52,14 +52,14 @@ func InitConfig() (error, []interface{}) {
 	errRead = viper.ReadInConfig()
 	if errRead != nil {
 		return &errPkg.Errors{
-			Alias: errRead.Error(),
+			Text: errRead.Error(),
 		}, nil
 	}
 	dbConfig := confPkg.DBConfig{}
 	errUnmarshal = viper.Unmarshal(&dbConfig)
 	if errUnmarshal != nil {
 		return &errPkg.Errors{
-			Alias: errUnmarshal.Error(),
+			Text: errUnmarshal.Error(),
 		}, nil
 	}
 

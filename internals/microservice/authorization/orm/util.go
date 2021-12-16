@@ -6,6 +6,10 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 )
 
+const (
+	PhoneLen = 11
+)
+
 func Sanitize(str string) string {
 	return bluemonday.StrictPolicy().Sanitize(str)
 }

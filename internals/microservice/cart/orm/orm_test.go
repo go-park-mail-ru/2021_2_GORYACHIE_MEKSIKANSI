@@ -1325,7 +1325,7 @@ func TestAddPromoCode(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"INSERT INTO cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3) ON CONFLICT (promo_code, client_id) DO UPDATE SET promo_code = $2 WHERE cart_user.client_id =  $1",
+				"INSERT INTO cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3) ON CONFLICT (client_id) DO UPDATE SET promo_code = $2 WHERE cart_user.client_id =  $1",
 				tt.inputQueryClient, tt.inputQueryPromoCode, tt.inputQueryRestaurant,
 			).
 			Return(nil, tt.errQuery).

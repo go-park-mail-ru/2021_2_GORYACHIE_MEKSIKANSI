@@ -60,7 +60,7 @@ func (db *Wrapper) GetRestaurants() (*resPkg.AllRestaurantsPromo, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRestaurantsTransactionNotCreate,
+			Text: errPkg.RGetRestaurantsTransactionNotCreate,
 		}
 	}
 
@@ -74,7 +74,7 @@ func (db *Wrapper) GetRestaurants() (*resPkg.AllRestaurantsPromo, error) {
 			"LEFT JOIN restaurant_category rc ON rc.restaurant = t.id")
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRestaurantsRestaurantsNotSelect,
+			Text: errPkg.RGetRestaurantsRestaurantsNotSelect,
 		}
 	}
 
@@ -91,7 +91,7 @@ func (db *Wrapper) GetRestaurants() (*resPkg.AllRestaurantsPromo, error) {
 			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating, &category, &categoryId)
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.RGetRestaurantsRestaurantsNotScan,
+				Text: errPkg.RGetRestaurantsRestaurantsNotScan,
 			}
 		}
 
@@ -108,7 +108,7 @@ func (db *Wrapper) GetRestaurants() (*resPkg.AllRestaurantsPromo, error) {
 
 	if restaurants == nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRestaurantsRestaurantsNotFound,
+			Text: errPkg.RGetRestaurantsRestaurantsNotFound,
 		}
 	}
 
@@ -118,7 +118,7 @@ func (db *Wrapper) GetRestaurants() (*resPkg.AllRestaurantsPromo, error) {
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRestaurantsNotCommit,
+			Text: errPkg.RGetRestaurantsNotCommit,
 		}
 	}
 
@@ -130,7 +130,7 @@ func (db *Wrapper) GetRecommendedRestaurants() (*resPkg.AllRestaurants, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRecommendedRestaurantsTransactionNotCreate,
+			Text: errPkg.RGetRecommendedRestaurantsTransactionNotCreate,
 		}
 	}
 
@@ -140,11 +140,11 @@ func (db *Wrapper) GetRecommendedRestaurants() (*resPkg.AllRestaurants, error) {
 		"SELECT t.id, t.avatar, t.name, t.price_delivery, t.min_delivery_time, "+
 			"t.max_delivery_time, t.rating, rc.category, rc.id FROM "+
 			"(SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, "+
-			"r.max_delivery_time, r.rating FROM restaurant r ORDER BY rating DESC LIMIT 51) t "+
+			"r.max_delivery_time, r.rating FROM restaurant r ORDER BY rating DESC LIMIT 6) t "+
 			"LEFT JOIN restaurant_category rc ON rc.restaurant = t.id")
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRecommendedRestaurantsRestaurantsNotSelect,
+			Text: errPkg.RGetRecommendedRestaurantsRestaurantsNotSelect,
 		}
 	}
 
@@ -161,7 +161,7 @@ func (db *Wrapper) GetRecommendedRestaurants() (*resPkg.AllRestaurants, error) {
 			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating, &category, &categoryId)
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.RGetRecommendedRestaurantsRestaurantsNotScan,
+				Text: errPkg.RGetRecommendedRestaurantsRestaurantsNotScan,
 			}
 		}
 
@@ -178,7 +178,7 @@ func (db *Wrapper) GetRecommendedRestaurants() (*resPkg.AllRestaurants, error) {
 
 	if restaurants == nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRecommendedRestaurantsRestaurantsNotFound,
+			Text: errPkg.RGetRecommendedRestaurantsRestaurantsNotFound,
 		}
 	}
 
@@ -188,7 +188,7 @@ func (db *Wrapper) GetRecommendedRestaurants() (*resPkg.AllRestaurants, error) {
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRecommendedRestaurantsNotCommit,
+			Text: errPkg.RGetRecommendedRestaurantsNotCommit,
 		}
 	}
 
@@ -200,7 +200,7 @@ func (db *Wrapper) GetRestaurant(id int) (*resPkg.RestaurantId, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRestaurantTransactionNotCreate,
+			Text: errPkg.RGetRestaurantTransactionNotCreate,
 		}
 	}
 
@@ -213,14 +213,14 @@ func (db *Wrapper) GetRestaurant(id int) (*resPkg.RestaurantId, error) {
 		&restaurant.MaxDelivery, &restaurant.Rating)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRestaurantRestaurantNotFound,
+			Text: errPkg.RGetRestaurantRestaurantNotFound,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRestaurantNotCommit,
+			Text: errPkg.RGetRestaurantNotCommit,
 		}
 	}
 
@@ -232,7 +232,7 @@ func (db *Wrapper) GetTagsRestaurant(id int) ([]resPkg.Tag, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetTagsRestaurantTransactionNotCreate,
+			Text: errPkg.RGetTagsRestaurantTransactionNotCreate,
 		}
 	}
 
@@ -242,7 +242,7 @@ func (db *Wrapper) GetTagsRestaurant(id int) ([]resPkg.Tag, error) {
 		"SELECT id, category, place FROM restaurant_category WHERE restaurant = $1", id)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetTagsRestaurantNotSelect,
+			Text: errPkg.RGetTagsRestaurantNotSelect,
 		}
 	}
 
@@ -255,7 +255,7 @@ func (db *Wrapper) GetTagsRestaurant(id int) ([]resPkg.Tag, error) {
 		err := rowCategory.Scan(&tag.Id, &tag.Name, &placeCategory)
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.RGetTagsRestaurantRestaurantNotScan,
+				Text: errPkg.RGetTagsRestaurantRestaurantNotScan,
 			}
 		}
 		place[placeCategory] = tag
@@ -268,7 +268,7 @@ func (db *Wrapper) GetTagsRestaurant(id int) ([]resPkg.Tag, error) {
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetTagsRestaurantNotCommit,
+			Text: errPkg.RGetTagsRestaurantNotCommit,
 		}
 	}
 
@@ -280,7 +280,7 @@ func (db *Wrapper) GetMenu(id int) ([]resPkg.Menu, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetMenuTransactionNotCreate,
+			Text: errPkg.RGetMenuTransactionNotCreate,
 		}
 	}
 
@@ -292,7 +292,7 @@ func (db *Wrapper) GetMenu(id int) ([]resPkg.Menu, error) {
 		"SELECT category_restaurant, id, avatar, name, cost, kilocalorie, place, place_category FROM dishes WHERE restaurant = $1", id)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetMenuDishesCategoryNotSelect,
+			Text: errPkg.RGetMenuDishesCategoryNotSelect,
 		}
 	}
 
@@ -326,14 +326,14 @@ func (db *Wrapper) GetMenu(id int) ([]resPkg.Menu, error) {
 
 	if result == nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetMenuDishesNotFound,
+			Text: errPkg.RGetMenuDishesNotFound,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetMenuNotCommit,
+			Text: errPkg.RGetMenuNotCommit,
 		}
 	}
 
@@ -345,7 +345,7 @@ func (db *Wrapper) GetDishes(restId int, dishesId int) (*resPkg.Dishes, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetDishesTransactionNotCreate,
+			Text: errPkg.RGetDishesTransactionNotCreate,
 		}
 	}
 
@@ -363,11 +363,11 @@ func (db *Wrapper) GetDishes(restId int, dishesId int) (*resPkg.Dishes, error) {
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.RGetDishesDishesNotFound,
+				Text: errPkg.RGetDishesDishesNotFound,
 			}
 		}
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetDishesDishesNotScan,
+			Text: errPkg.RGetDishesDishesNotScan,
 		}
 	}
 	radiosInfo := make(map[int]resPkg.Radios)
@@ -386,7 +386,7 @@ func (db *Wrapper) GetDishes(restId int, dishesId int) (*resPkg.Dishes, error) {
 			&ingredientId, &ingredientTitle, &ingredientCost, &placeIngredient)
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.RGetRadiosRadiosNotScan,
+				Text: errPkg.RGetRadiosRadiosNotScan,
 			}
 		}
 
@@ -435,7 +435,7 @@ func (db *Wrapper) GetDishes(restId int, dishesId int) (*resPkg.Dishes, error) {
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetDishesNotCommit,
+			Text: errPkg.RGetDishesNotCommit,
 		}
 	}
 
@@ -447,7 +447,7 @@ func (db *Wrapper) GetReview(id int) ([]resPkg.Review, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetReviewTransactionNotCreate,
+			Text: errPkg.RGetReviewTransactionNotCreate,
 		}
 	}
 
@@ -459,7 +459,7 @@ func (db *Wrapper) GetReview(id int) ([]resPkg.Review, error) {
 			"WHERE r.restaurant = $1 ORDER BY r.date_create", id)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetReviewNotSelect,
+			Text: errPkg.RGetReviewNotSelect,
 		}
 	}
 
@@ -470,7 +470,7 @@ func (db *Wrapper) GetReview(id int) ([]resPkg.Review, error) {
 		err := rowDishes.Scan(&review.Name, &review.Text, &date, &review.Rate)
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.RGetReviewNotScan,
+				Text: errPkg.RGetReviewNotScan,
 			}
 		}
 
@@ -481,7 +481,7 @@ func (db *Wrapper) GetReview(id int) ([]resPkg.Review, error) {
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetReviewNotCommit,
+			Text: errPkg.RGetReviewNotCommit,
 		}
 	}
 
@@ -493,7 +493,7 @@ func (db *Wrapper) CreateReview(id int, review resPkg.NewReview) error {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.RCreateReviewTransactionNotCreate,
+			Text: errPkg.RCreateReviewTransactionNotCreate,
 		}
 	}
 
@@ -504,14 +504,14 @@ func (db *Wrapper) CreateReview(id int, review resPkg.NewReview) error {
 		id, review.Restaurant.Id, review.Text, review.Rate)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.RCreateReviewNotInsert,
+			Text: errPkg.RCreateReviewNotInsert,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.RCreateReviewNotCommit,
+			Text: errPkg.RCreateReviewNotCommit,
 		}
 	}
 
@@ -523,7 +523,7 @@ func (db *Wrapper) SearchCategory(name string) ([]int, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RSearchCategoryTransactionNotCreate,
+			Text: errPkg.RSearchCategoryTransactionNotCreate,
 		}
 	}
 
@@ -534,7 +534,7 @@ func (db *Wrapper) SearchCategory(name string) ([]int, error) {
 		name)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RSearchCategoryNotSelect,
+			Text: errPkg.RSearchCategoryNotSelect,
 		}
 	}
 
@@ -544,7 +544,7 @@ func (db *Wrapper) SearchCategory(name string) ([]int, error) {
 		err := rows.Scan(&restaurantId)
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.RSearchCategoryNotScan,
+				Text: errPkg.RSearchCategoryNotScan,
 			}
 		}
 		result = append(result, restaurantId)
@@ -553,7 +553,7 @@ func (db *Wrapper) SearchCategory(name string) ([]int, error) {
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RSearchCategoryNotCommit,
+			Text: errPkg.RSearchCategoryNotCommit,
 		}
 	}
 
@@ -565,7 +565,7 @@ func (db *Wrapper) SearchRestaurant(name string) ([]int, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RSearchRestaurantTransactionNotCreate,
+			Text: errPkg.RSearchRestaurantTransactionNotCreate,
 		}
 	}
 
@@ -576,7 +576,7 @@ func (db *Wrapper) SearchRestaurant(name string) ([]int, error) {
 		name)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RSearchRestaurantNotSelect,
+			Text: errPkg.RSearchRestaurantNotSelect,
 		}
 	}
 
@@ -586,7 +586,7 @@ func (db *Wrapper) SearchRestaurant(name string) ([]int, error) {
 		err := rows.Scan(&restaurantId)
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.RSearchRestaurantNotScan,
+				Text: errPkg.RSearchRestaurantNotScan,
 			}
 		}
 		result = append(result, restaurantId)
@@ -594,14 +594,14 @@ func (db *Wrapper) SearchRestaurant(name string) ([]int, error) {
 
 	if result == nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RSearchRestaurantEmpty,
+			Text: errPkg.RSearchRestaurantEmpty,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RSearchRestaurantNotCommit,
+			Text: errPkg.RSearchRestaurantNotCommit,
 		}
 	}
 
@@ -613,7 +613,7 @@ func (db *Wrapper) GetGeneralInfoRestaurant(id int) (*resPkg.Restaurants, error)
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetGeneralInfoTransactionNotCreate,
+			Text: errPkg.RGetGeneralInfoTransactionNotCreate,
 		}
 	}
 
@@ -626,14 +626,14 @@ func (db *Wrapper) GetGeneralInfoRestaurant(id int) (*resPkg.Restaurants, error)
 		&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetGeneralInfoNotScan,
+			Text: errPkg.RGetGeneralInfoNotScan,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetGeneralInfoNotCommit,
+			Text: errPkg.RGetGeneralInfoNotCommit,
 		}
 	}
 
@@ -645,7 +645,7 @@ func (db *Wrapper) GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error) 
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetFavoriteRestaurantsTransactionNotCreate,
+			Text: errPkg.RGetFavoriteRestaurantsTransactionNotCreate,
 		}
 	}
 
@@ -657,7 +657,7 @@ func (db *Wrapper) GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error) 
 		id)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetFavoriteRestaurantsRestaurantsNotSelect,
+			Text: errPkg.RGetFavoriteRestaurantsRestaurantsNotSelect,
 		}
 	}
 
@@ -671,7 +671,7 @@ func (db *Wrapper) GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error) 
 			&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating, &position)
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.RGetFavoriteRestaurantsRestaurantsNotScan,
+				Text: errPkg.RGetFavoriteRestaurantsRestaurantsNotScan,
 			}
 		}
 
@@ -684,14 +684,14 @@ func (db *Wrapper) GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error) 
 
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetFavoriteRestaurantsRestaurantsNotExist,
+			Text: errPkg.RGetFavoriteRestaurantsRestaurantsNotExist,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetFavoriteRestaurantsInfoNotCommit,
+			Text: errPkg.RGetFavoriteRestaurantsInfoNotCommit,
 		}
 	}
 
@@ -703,7 +703,7 @@ func (db *Wrapper) IsFavoriteRestaurant(idClient int, idRestaurant int) (bool, e
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.RIsFavoriteRestaurantsTransactionNotCreate,
+			Text: errPkg.RIsFavoriteRestaurantsTransactionNotCreate,
 		}
 	}
 
@@ -718,14 +718,14 @@ func (db *Wrapper) IsFavoriteRestaurant(idClient int, idRestaurant int) (bool, e
 			return false, nil
 		}
 		return false, &errPkg.Errors{
-			Alias: errPkg.RIsFavoriteRestaurantsRestaurantsNotSelect,
+			Text: errPkg.RIsFavoriteRestaurantsRestaurantsNotSelect,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.RIsFavoriteRestaurantsInfoNotCommit,
+			Text: errPkg.RIsFavoriteRestaurantsInfoNotCommit,
 		}
 	}
 
@@ -737,7 +737,7 @@ func (db *Wrapper) EditRestaurantInFavorite(idRestaurant int, idClient int) (boo
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.REditRestaurantInFavoriteTransactionNotCreate,
+			Text: errPkg.REditRestaurantInFavoriteTransactionNotCreate,
 		}
 	}
 
@@ -751,7 +751,7 @@ func (db *Wrapper) EditRestaurantInFavorite(idRestaurant int, idClient int) (boo
 		err = tx.Commit(contextTransaction)
 		if err != nil {
 			return false, &errPkg.Errors{
-				Alias: errPkg.REditRestaurantInFavoriteInfoNotCommit,
+				Text: errPkg.REditRestaurantInFavoriteInfoNotCommit,
 			}
 		}
 		return false, nil
@@ -759,7 +759,7 @@ func (db *Wrapper) EditRestaurantInFavorite(idRestaurant int, idClient int) (boo
 
 	if err != nil && err != pgx.ErrNoRows {
 		return false, &errPkg.Errors{
-			Alias: errPkg.REditRestaurantInFavoriteRestaurantsNotDelete,
+			Text: errPkg.REditRestaurantInFavoriteRestaurantsNotDelete,
 		}
 	}
 
@@ -768,7 +768,7 @@ func (db *Wrapper) EditRestaurantInFavorite(idRestaurant int, idClient int) (boo
 		"SELECT MAX(position) FROM favorite_restaurant WHERE client = $1", idClient).Scan(&positionRestaurants)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.REditRestaurantInFavoriteRestaurantsNotSelect,
+			Text: errPkg.REditRestaurantInFavoriteRestaurantsNotSelect,
 		}
 	}
 
@@ -784,14 +784,14 @@ func (db *Wrapper) EditRestaurantInFavorite(idRestaurant int, idClient int) (boo
 		idClient, idRestaurant, pos)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.REditRestaurantInFavoriteRestaurantsNotScan,
+			Text: errPkg.REditRestaurantInFavoriteRestaurantsNotScan,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.REditRestaurantInFavoriteInfoNotCommit,
+			Text: errPkg.REditRestaurantInFavoriteInfoNotCommit,
 		}
 	}
 
@@ -803,7 +803,7 @@ func (db *Wrapper) GetPromoCodes() ([]resPkg.Promocode, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetPromoCodesTransactionNotCreate,
+			Text: errPkg.RGetPromoCodesTransactionNotCreate,
 		}
 	}
 
@@ -813,7 +813,7 @@ func (db *Wrapper) GetPromoCodes() ([]resPkg.Promocode, error) {
 		"SELECT name, description, avatar, restaurant FROM promocode ORDER BY random() LIMIT 5")
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetPromoCodesCodesNotSelect,
+			Text: errPkg.RGetPromoCodesCodesNotSelect,
 		}
 	}
 	var promoCodes []resPkg.Promocode
@@ -822,7 +822,7 @@ func (db *Wrapper) GetPromoCodes() ([]resPkg.Promocode, error) {
 		err := rows.Scan(&promoCode.Name, &promoCode.Description, &promoCode.Img, &promoCode.RestaurantId)
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.RGetRadiosRadiosNotScan,
+				Text: errPkg.RGetRadiosRadiosNotScan,
 			}
 		}
 		promoCodes = append(promoCodes, promoCode)
@@ -831,7 +831,7 @@ func (db *Wrapper) GetPromoCodes() ([]resPkg.Promocode, error) {
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetPromoCodesNotCommit,
+			Text: errPkg.RGetPromoCodesNotCommit,
 		}
 	}
 

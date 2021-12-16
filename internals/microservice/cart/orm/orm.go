@@ -437,7 +437,7 @@ func (db *Wrapper) AddPromoCode(promoCode string, restaurantId int, clientId int
 	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3) ON CONFLICT (promo_code, client_id) DO UPDATE SET promo_code = $2 WHERE cart_user.client_id =  $1",
+		"INSERT INTO cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3) ON CONFLICT (client_id) DO UPDATE SET promo_code = $2 WHERE cart_user.client_id =  $1",
 		clientId, promoCode, restaurantId)
 	if err != nil {
 		return &errPkg.Errors{

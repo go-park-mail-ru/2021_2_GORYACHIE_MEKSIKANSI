@@ -14,12 +14,11 @@ type ResultError struct {
 }
 
 type Errors struct {
-	Alias string
-	Text  string
+	Text string
 }
 
 func (e *Errors) Error() string {
-	return e.Alias
+	return e.Text
 }
 
 // Error of main

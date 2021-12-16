@@ -990,7 +990,7 @@ var GetIdByCookie = []struct {
 			SessionId: "1",
 			CsrfToken: "1",
 		},
-		out:                0,
+		out:                1,
 		outErr:             errPkg.MGetIdByCookieCookieExpired,
 		inputGetIdByCookie: "1",
 		outGetIdByCookie: Row{row: []interface{}{

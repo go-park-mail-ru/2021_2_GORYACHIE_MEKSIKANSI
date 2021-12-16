@@ -12,10 +12,6 @@ import (
 	"time"
 )
 
-const (
-	PhoneLen = 11
-)
-
 type WrapperAuthorizationInterface interface {
 	SignupClient(signup *authPkg.RegistrationRequest, cookie *authPkg.Defense) (*authPkg.Defense, error)
 	SignupCourier(signup *authPkg.RegistrationRequest, cookie *authPkg.Defense) (*authPkg.Defense, error)
@@ -70,7 +66,7 @@ func (db *Wrapper) generalSignUp(signup *authPkg.RegistrationRequest, transactio
 	Sanitize(signup.Phone)
 	if _, err := strconv.Atoi(signup.Phone); err != nil || len(signup.Phone) != PhoneLen {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.AGeneralSignUpIncorrectPhoneFormat,
+			Text: errPkg.AGeneralSignUpIncorrectPhoneFormat,
 		}
 	}
 
@@ -87,11 +83,11 @@ func (db *Wrapper) generalSignUp(signup *authPkg.RegistrationRequest, transactio
 		errorText := err.Error()
 		if strings.Contains(errorText, "duplicate key") {
 			return 0, &errPkg.Errors{
-				Alias: errPkg.AGeneralSignUpLoginNotUnique,
+				Text: errPkg.AGeneralSignUpLoginNotUnique,
 			}
 		}
 		return 0, &errPkg.Errors{
-			Alias: errPkg.AGeneralSignUpNotInsert,
+			Text: errPkg.AGeneralSignUpNotInsert,
 		}
 	}
 	return userId, nil
@@ -102,7 +98,7 @@ func (db *Wrapper) SignupHost(signup *authPkg.RegistrationRequest, cookie *authP
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignupHostTransactionNotCreate,
+			Text: errPkg.ASignupHostTransactionNotCreate,
 		}
 	}
 
@@ -122,13 +118,13 @@ func (db *Wrapper) SignupHost(signup *authPkg.RegistrationRequest, cookie *authP
 		"INSERT INTO host (client_id) VALUES ($1)", userId)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignUpHostHostNotInsert,
+			Text: errPkg.ASignUpHostHostNotInsert,
 		}
 	}
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignUpHostNotCommit,
+			Text: errPkg.ASignUpHostNotCommit,
 		}
 	}
 	return cookie, nil
@@ -139,7 +135,7 @@ func (db *Wrapper) SignupCourier(signup *authPkg.RegistrationRequest, cookie *au
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignupCourierTransactionNotCreate,
+			Text: errPkg.ASignupCourierTransactionNotCreate,
 		}
 	}
 
@@ -159,13 +155,13 @@ func (db *Wrapper) SignupCourier(signup *authPkg.RegistrationRequest, cookie *au
 		"INSERT INTO courier (client_id) VALUES ($1)", userId, contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignUpCourierCourierNotInsert,
+			Text: errPkg.ASignUpCourierCourierNotInsert,
 		}
 	}
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignUpCourierNotCommit,
+			Text: errPkg.ASignUpCourierNotCommit,
 		}
 	}
 
@@ -177,7 +173,7 @@ func (db *Wrapper) SignupClient(signup *authPkg.RegistrationRequest, cookie *aut
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignupClientTransactionNotCreate,
+			Text: errPkg.ASignupClientTransactionNotCreate,
 		}
 	}
 
@@ -197,13 +193,13 @@ func (db *Wrapper) SignupClient(signup *authPkg.RegistrationRequest, cookie *aut
 		"INSERT INTO client (client_id) VALUES ($1)", userId)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignUpClientClientNotInsert,
+			Text: errPkg.ASignUpClientClientNotInsert,
 		}
 	}
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.ASignUpClientNotCommit,
+			Text: errPkg.ASignUpClientNotCommit,
 		}
 	}
 
@@ -216,7 +212,7 @@ func (db *Wrapper) addTransactionCookie(cookie *authPkg.Defense, Transaction Tra
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.AAddTransactionCookieNotInsert,
+			Text: errPkg.AAddTransactionCookieNotInsert,
 		}
 	}
 
@@ -228,7 +224,7 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.ALoginByEmailTransactionNotCreate,
+			Text: errPkg.ALoginByEmailTransactionNotCreate,
 		}
 	}
 
@@ -243,11 +239,11 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return 0, &errPkg.Errors{
-				Alias: errPkg.ALoginNotFound,
+				Text: errPkg.ALoginNotFound,
 			}
 		}
 		return 0, &errPkg.Errors{
-			Alias: errPkg.ASaltNotSelect,
+			Text: errPkg.ASaltNotSelect,
 		}
 	}
 
@@ -256,14 +252,14 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 		email, HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.ALoginOrPasswordIncorrect,
+			Text: errPkg.ALoginOrPasswordIncorrect,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.ALoginByEmailNotCommit,
+			Text: errPkg.ALoginByEmailNotCommit,
 		}
 	}
 
@@ -275,7 +271,7 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.ALoginByPhoneTransactionNotCreate,
+			Text: errPkg.ALoginByPhoneTransactionNotCreate,
 		}
 	}
 
@@ -290,11 +286,11 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return 0, &errPkg.Errors{
-				Alias: errPkg.ALoginNotFound,
+				Text: errPkg.ALoginNotFound,
 			}
 		}
 		return 0, &errPkg.Errors{
-			Alias: errPkg.ASaltNotSelect,
+			Text: errPkg.ASaltNotSelect,
 		}
 	}
 
@@ -303,14 +299,14 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 		phone, HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.ALoginOrPasswordIncorrect,
+			Text: errPkg.ALoginOrPasswordIncorrect,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.ALoginByPhoneNotCommit,
+			Text: errPkg.ALoginByPhoneNotCommit,
 		}
 	}
 
@@ -322,7 +318,7 @@ func (db *Wrapper) DeleteCookie(CSRF string) (string, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return "", &errPkg.Errors{
-			Alias: errPkg.ADeleteCookieTransactionNotCreate,
+			Text: errPkg.ADeleteCookieTransactionNotCreate,
 		}
 	}
 
@@ -334,14 +330,14 @@ func (db *Wrapper) DeleteCookie(CSRF string) (string, error) {
 
 	if err != nil {
 		return "", &errPkg.Errors{
-			Alias: errPkg.ADeleteCookieCookieNotDelete,
+			Text: errPkg.ADeleteCookieCookieNotDelete,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return "", &errPkg.Errors{
-			Alias: errPkg.ADeleteCookieNotCommit,
+			Text: errPkg.ADeleteCookieNotCommit,
 		}
 	}
 	return *sessionId, nil
@@ -352,7 +348,7 @@ func (db *Wrapper) AddCookie(cookie *authPkg.Defense, id int) error {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.AAddCookieTransactionNotCreate,
+			Text: errPkg.AAddCookieTransactionNotCreate,
 		}
 	}
 
@@ -363,14 +359,14 @@ func (db *Wrapper) AddCookie(cookie *authPkg.Defense, id int) error {
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.AAddCookieCookieNotInsert,
+			Text: errPkg.AAddCookieCookieNotInsert,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.AAddCookieNotCommit,
+			Text: errPkg.AAddCookieNotCommit,
 		}
 	}
 
@@ -382,7 +378,7 @@ func (db *Wrapper) CheckAccess(cookie *authPkg.Defense) (bool, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.MCheckAccessTransactionNotCreate,
+			Text: errPkg.MCheckAccessTransactionNotCreate,
 		}
 	}
 
@@ -396,18 +392,18 @@ func (db *Wrapper) CheckAccess(cookie *authPkg.Defense) (bool, error) {
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return false, &errPkg.Errors{
-				Alias: errPkg.MCheckAccessCookieNotFound,
+				Text: errPkg.MCheckAccessCookieNotFound,
 			}
 		}
 		return false, &errPkg.Errors{
-			Alias: errPkg.MCheckAccessCookieNotScan,
+			Text: errPkg.MCheckAccessCookieNotScan,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.MCheckAccessNotCommit,
+			Text: errPkg.MCheckAccessNotCommit,
 		}
 	}
 
@@ -423,7 +419,7 @@ func (db *Wrapper) NewCSRF(cookie *authPkg.Defense) (string, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return "", &errPkg.Errors{
-			Alias: errPkg.MNewCSRFCSRFTransactionNotCreate,
+			Text: errPkg.MNewCSRFCSRFTransactionNotCreate,
 		}
 	}
 
@@ -435,14 +431,14 @@ func (db *Wrapper) NewCSRF(cookie *authPkg.Defense) (string, error) {
 		csrfToken, cookie.SessionId)
 	if err != nil {
 		return "", &errPkg.Errors{
-			Alias: errPkg.MNewCSRFCSRFNotUpdate,
+			Text: errPkg.MNewCSRFCSRFNotUpdate,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return "", &errPkg.Errors{
-			Alias: errPkg.MNewCSRFCSRFNotCommit,
+			Text: errPkg.MNewCSRFCSRFNotCommit,
 		}
 	}
 
@@ -454,7 +450,7 @@ func (db *Wrapper) GetIdByCookie(cookie *authPkg.Defense) (int, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.MGetIdByCookieTransactionNotCreate,
+			Text: errPkg.MGetIdByCookieTransactionNotCreate,
 		}
 	}
 
@@ -468,11 +464,11 @@ func (db *Wrapper) GetIdByCookie(cookie *authPkg.Defense) (int, error) {
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return 0, &errPkg.Errors{
-				Alias: errPkg.MGetIdByCookieCookieNotFound,
+				Text: errPkg.MGetIdByCookieCookieNotFound,
 			}
 		}
 		return 0, &errPkg.Errors{
-			Alias: errPkg.MGetIdByCookieCookieNotScan,
+			Text: errPkg.MGetIdByCookieCookieNotScan,
 		}
 	}
 
@@ -481,7 +477,7 @@ func (db *Wrapper) GetIdByCookie(cookie *authPkg.Defense) (int, error) {
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.MGetIdByCookieNotCommit,
+			Text: errPkg.MGetIdByCookieNotCommit,
 		}
 	}
 
@@ -490,6 +486,6 @@ func (db *Wrapper) GetIdByCookie(cookie *authPkg.Defense) (int, error) {
 	}
 
 	return 0, &errPkg.Errors{
-		Alias: errPkg.MGetIdByCookieCookieExpired,
+		Text: errPkg.MGetIdByCookieCookieExpired,
 	}
 }

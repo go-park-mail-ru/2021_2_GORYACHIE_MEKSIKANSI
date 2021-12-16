@@ -2,7 +2,6 @@ package myerror
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -21,7 +20,6 @@ func (c CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			fmt.Printf("Console: %s\n", AGeneralSignUpLoginNotUnique)
 			c.Logger.Warnf("%s, requestId: %d", AGeneralSignUpLoginNotUnique, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
