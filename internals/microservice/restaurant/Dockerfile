@@ -1,13 +1,15 @@
 # Builder
 FROM golang:1.17.3-alpine3.13 AS builderRes
+WORKDIR /cont
 
-WORKDIR /
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+
 COPY . .
 RUN apk update && apk upgrade && \
     apk --update add git make
-COPY ./go.mod .
-RUN CGO_ENABLED=0 go get -ldflags "-s -w -extldflags '-static'" github.com/go-delve/delve/cmd/dlv
-RUN CGO_ENABLED=0 go build -gcflags "all=-N -l" -o engine ./internals/microservice/restaurant/cmd/main.go
+RUN go build -o engine ./internals/microservice/restaurant/cmd/main.go
 
 FROM alpine:latest
 RUN apk update && apk upgrade && \
@@ -15,8 +17,7 @@ RUN apk update && apk upgrade && \
     mkdir /app
 WORKDIR /app
 
-COPY --from=builderRes ./go/bin/dlv /app/dlv
-COPY --from=builderRes ./engine /app
+COPY --from=builderRes ./cont/engine /app
 RUN mkdir internals
 RUN cd internals
 RUN mkdir microservice
