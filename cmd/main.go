@@ -123,7 +123,7 @@ func runServer() {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 	}))
 
-	printURL := infoMid.LogURL(myRouter.Handler)
+	printURL := infoMid.LogURL(infoMid.MetricsHits(myRouter.Handler))
 
 	addressAllowedCors := appConfig.Cors.Host + ":" + appConfig.Cors.Port
 	withCors := cors.NewCorsHandler(cors.Options{

@@ -99,7 +99,12 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 		Name: "countInternalServer",
 		Help: "Number internal processed",
 	})
-	prometheus.MustRegister(countInternalServer)
+	hitsUrl := prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "hitsUrlApi",
+		Help: "Number connect url",
+	}, []string{"path"})
+
+	prometheus.MustRegister(countInternalServer, hitsUrl)
 
 	midWrapper := Orm3.Wrapper{DBConn: connectionDB, Conn: authManager, Ctx: authCtx}
 	midApp := Application3.Middleware{DB: &midWrapper}
@@ -107,6 +112,7 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 		Application:          &midApp,
 		Logger:               logger,
 		CountInternalMetrics: countInternalServer,
+		Hits:                 hitsUrl,
 	}
 	var _ midlApiPkg.MiddlewareApiInterface = &infoMiddleware
 

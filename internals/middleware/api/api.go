@@ -4,6 +4,7 @@ import (
 	appPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/middleware/application"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/util"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/valyala/fasthttp"
 	"math"
 	"net/http"
@@ -15,17 +16,24 @@ type MiddlewareApiInterface interface {
 	CheckClient(h fasthttp.RequestHandler) fasthttp.RequestHandler
 	CheckWebSocketKey(h fasthttp.RequestHandler) fasthttp.RequestHandler
 	GetIdClientIgnoreErr(h fasthttp.RequestHandler) fasthttp.RequestHandler
+	MetricsInternal(h fasthttp.RequestHandler) fasthttp.RequestHandler
+	MetricsHits(h fasthttp.RequestHandler) fasthttp.RequestHandler
 }
 
-type MetricsInterface interface {
+type CounterMetricInterface interface {
 	Add(float64)
+}
+
+type CounterVecMetricInterface interface {
+	WithLabelValues(lvs ...string) prometheus.Counter
 }
 
 type InfoMiddleware struct {
 	Application          appPkg.MiddlewareApplicationInterface
 	Logger               errPkg.MultiLogger
 	ReqId                int
-	CountInternalMetrics MetricsInterface
+	CountInternalMetrics CounterMetricInterface
+	Hits                 CounterVecMetricInterface
 }
 
 func (m *InfoMiddleware) LogURL(h fasthttp.RequestHandler) fasthttp.RequestHandler {
@@ -196,7 +204,6 @@ func (m *InfoMiddleware) CheckWebSocketKey(h fasthttp.RequestHandler) fasthttp.R
 func (m *InfoMiddleware) MetricsInternal(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
 		h(ctx)
-
 		reqIdCtx := ctx.UserValue("reqId")
 		reqId, errConvert := util.InterfaceConvertInt(reqIdCtx)
 		if errConvert != nil {
@@ -210,6 +217,25 @@ func (m *InfoMiddleware) MetricsInternal(h fasthttp.RequestHandler) fasthttp.Req
 			m.CountInternalMetrics.Add(1)
 			m.Logger.Infof("Metrics code 500 successfully add, requestId: %d", reqId)
 		}
+
+	})
+}
+
+func (m *InfoMiddleware) MetricsHits(h fasthttp.RequestHandler) fasthttp.RequestHandler {
+	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
+		reqIdCtx := ctx.UserValue("reqId")
+		reqId, errConvert := util.InterfaceConvertInt(reqIdCtx)
+		if errConvert != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errConvert.Error()))
+			m.Logger.Errorf("%s", errConvert.Error())
+		}
+
+		url := ctx.URI().String()
+		m.Hits.WithLabelValues(url).Inc()
+		m.Logger.Infof("Metrics HITS successfully add, requestId: %d", reqId)
+
+		h(ctx)
 
 	})
 }
