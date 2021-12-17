@@ -1,5 +1,5 @@
 # Builder
-FROM golang:1.17.3-alpine3.13 AS builderRes
+FROM golang:1.17.3-alpine3.13 AS builderRestaurant
 WORKDIR /cont
 
 COPY go.mod .
@@ -9,7 +9,7 @@ RUN go mod download
 COPY . .
 RUN apk update && apk upgrade && \
     apk --update add git make
-RUN go build -o engine ./internals/microservice/restaurant/cmd/main.go
+RUN go build -o resService ./internals/microservice/restaurant/cmd/main.go
 
 FROM alpine:latest
 RUN apk update && apk upgrade && \
@@ -17,18 +17,6 @@ RUN apk update && apk upgrade && \
     mkdir /app
 WORKDIR /app
 
-COPY --from=builderRes ./cont/engine /app
-RUN mkdir internals
-RUN cd internals
-RUN mkdir microservice
-RUN cd microservice
-RUN mkdir restaurant
-RUN cd restaurant
-RUN mkdir config
-RUN cd ..
-RUN cd ..
-RUN cd ..
+COPY --from=builderRestaurant ./cont/resService /app
 
-CMD ["/app/engine"]
-
-#CMD /app/engine
+CMD ["/app/resService"]

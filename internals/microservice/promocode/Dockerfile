@@ -1,5 +1,5 @@
 # Builder
-FROM golang:1.17.3-alpine3.13 AS builder
+FROM golang:1.17.3-alpine3.13 AS builderPromocode
 
 WORKDIR /cont
 COPY go.mod .
@@ -9,7 +9,7 @@ RUN go mod download
 COPY . .
 RUN apk update && apk upgrade && \
     apk --update add git make
-RUN go build -o engine ./internals/microservice/promocode/cmd/main.go
+RUN go build -o promoService ./internals/microservice/promocode/cmd/main.go
 
 FROM alpine:latest
 RUN apk update && apk upgrade && \
@@ -17,19 +17,6 @@ RUN apk update && apk upgrade && \
     mkdir /app
 WORKDIR /app
 
-COPY --from=builder ./cont/engine /app
-RUN mkdir internals
-RUN cd internals
-RUN mkdir microservice
-RUN cd microservice
-RUN mkdir promocode
-RUN cd promocode
-RUN mkdir config
-RUN cd ..
-RUN cd ..
-RUN cd ..
+COPY --from=builderPromocode ./cont/promoService /app
 
-
-CMD ["/app/engine"]
-
-#CMD /app/engine
+CMD ["/app/promoService"]
