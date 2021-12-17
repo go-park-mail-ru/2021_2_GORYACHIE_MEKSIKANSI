@@ -17,10 +17,15 @@ type MiddlewareApiInterface interface {
 	GetIdClientIgnoreErr(h fasthttp.RequestHandler) fasthttp.RequestHandler
 }
 
+type MetricsInterface interface {
+	Add(float64)
+}
+
 type InfoMiddleware struct {
-	Application appPkg.MiddlewareApplicationInterface
-	Logger      errPkg.MultiLogger
-	ReqId       int
+	Application          appPkg.MiddlewareApplicationInterface
+	Logger               errPkg.MultiLogger
+	ReqId                int
+	CountInternalMetrics MetricsInterface
 }
 
 func (m *InfoMiddleware) LogURL(h fasthttp.RequestHandler) fasthttp.RequestHandler {
@@ -185,5 +190,26 @@ func (m *InfoMiddleware) CheckWebSocketKey(h fasthttp.RequestHandler) fasthttp.R
 		}
 
 		h(ctx)
+	})
+}
+
+func (m *InfoMiddleware) MetricsInternal(h fasthttp.RequestHandler) fasthttp.RequestHandler {
+	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
+		h(ctx)
+
+		reqIdCtx := ctx.UserValue("reqId")
+		reqId, errConvert := util.InterfaceConvertInt(reqIdCtx)
+		if errConvert != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errConvert.Error()))
+			m.Logger.Errorf("%s", errConvert.Error())
+		}
+
+		status := ctx.Response.StatusCode()
+		if status == http.StatusInternalServerError {
+			m.CountInternalMetrics.Add(1)
+			m.Logger.Infof("Metrics code 500 successfully add, requestId: %d", reqId)
+		}
+
 	})
 }

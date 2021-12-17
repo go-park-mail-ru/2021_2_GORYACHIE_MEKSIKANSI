@@ -37,6 +37,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 )
@@ -94,11 +95,18 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 	}
 	var _ profileApiPkg.ProfileApiInterface = &profileInfo
 
+	countInternalServer := prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "countInternalServer",
+		Help: "Number internal processed",
+	})
+	prometheus.MustRegister(countInternalServer)
+
 	midWrapper := Orm3.Wrapper{DBConn: connectionDB, Conn: authManager, Ctx: authCtx}
 	midApp := Application3.Middleware{DB: &midWrapper}
 	infoMiddleware := Api3.InfoMiddleware{
-		Application: &midApp,
-		Logger:      logger,
+		Application:          &midApp,
+		Logger:               logger,
+		CountInternalMetrics: countInternalServer,
 	}
 	var _ midlApiPkg.MiddlewareApiInterface = &infoMiddleware
 

@@ -119,6 +119,9 @@ func runServer() {
 	}, metrics.WithPath("/metrics"), metrics.WithSubsystem("http"))
 
 	myRouter.GET("/metrics", metricsHandler)
+	myRouter.GET("/internal", infoMid.MetricsInternal(func(ctx *fasthttp.RequestCtx) { // TODO(): delete test handler
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+	}))
 
 	printURL := infoMid.LogURL(myRouter.Handler)
 
