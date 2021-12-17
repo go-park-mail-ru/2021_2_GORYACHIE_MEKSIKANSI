@@ -136,9 +136,10 @@ func runServer() {
 		AllowMaxAge:      5600,
 		Debug:            true,
 	})
+
 	port := ":" + appConfig.Port
 	logger.Log.Infof("Listen in 127:0.0.1%s", port)
-	err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(printURL))
+	err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(infoMid.MetricsTiming(printURL)))
 	if err != nil {
 		logger.Log.Errorf("Listen and server error: %v", err)
 		os.Exit(2)

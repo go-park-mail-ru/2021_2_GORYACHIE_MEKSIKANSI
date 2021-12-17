@@ -8,6 +8,8 @@ import (
 	"github.com/valyala/fasthttp"
 	"math"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 type MiddlewareApiInterface interface {
@@ -18,6 +20,7 @@ type MiddlewareApiInterface interface {
 	GetIdClientIgnoreErr(h fasthttp.RequestHandler) fasthttp.RequestHandler
 	MetricsInternal(h fasthttp.RequestHandler) fasthttp.RequestHandler
 	MetricsHits(h fasthttp.RequestHandler) fasthttp.RequestHandler
+	MetricsTiming(h fasthttp.RequestHandler) fasthttp.RequestHandler
 }
 
 type CounterMetricInterface interface {
@@ -29,15 +32,19 @@ type CounterVecMetricInterface interface {
 }
 
 type InfoMiddleware struct {
-	Application          appPkg.MiddlewareApplicationInterface
-	Logger               errPkg.MultiLogger
-	ReqId                int
-	CountInternalMetrics CounterMetricInterface
-	Hits                 CounterVecMetricInterface
+	Application         appPkg.MiddlewareApplicationInterface
+	Logger              errPkg.MultiLogger
+	ReqId               int
+	CountInternalMetric CounterMetricInterface
+	HitsMetric          CounterVecMetricInterface
+	TimingMetric        CounterVecMetricInterface
 }
 
 func (m *InfoMiddleware) LogURL(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
+		timeStart := time.Now()
+		ctx.SetUserValue("timeStart", timeStart)
+
 		if m.ReqId == math.MaxInt {
 			m.ReqId = 0
 		}
@@ -56,6 +63,7 @@ func (m *InfoMiddleware) GetIdClient(h fasthttp.RequestHandler) fasthttp.Request
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errConvert.Error()))
 			m.Logger.Errorf("%s", errConvert.Error())
+			return
 		}
 		ctx.SetUserValue("reqId", reqId)
 
@@ -95,6 +103,7 @@ func (m *InfoMiddleware) GetIdClientIgnoreErr(h fasthttp.RequestHandler) fasthtt
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errConvert.Error()))
 			m.Logger.Errorf("%s", errConvert.Error())
+			return
 		}
 		ctx.SetUserValue("reqId", reqId)
 
@@ -131,6 +140,7 @@ func (m *InfoMiddleware) CheckClient(h fasthttp.RequestHandler) fasthttp.Request
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errConvert.Error()))
 			m.Logger.Errorf("%s", errConvert.Error())
+			return
 		}
 		ctx.SetUserValue("reqId", reqId)
 
@@ -172,6 +182,7 @@ func (m *InfoMiddleware) CheckWebSocketKey(h fasthttp.RequestHandler) fasthttp.R
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errConvert.Error()))
 			m.Logger.Errorf("%s", errConvert.Error())
+			return
 		}
 		ctx.SetUserValue("reqId", reqId)
 
@@ -210,12 +221,14 @@ func (m *InfoMiddleware) MetricsInternal(h fasthttp.RequestHandler) fasthttp.Req
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errConvert.Error()))
 			m.Logger.Errorf("%s", errConvert.Error())
+			return
 		}
 
 		status := ctx.Response.StatusCode()
 		if status == http.StatusInternalServerError {
-			m.CountInternalMetrics.Add(1)
+			m.CountInternalMetric.Add(1)
 			m.Logger.Infof("Metrics code 500 successfully add, requestId: %d", reqId)
+			return
 		}
 
 	})
@@ -229,13 +242,43 @@ func (m *InfoMiddleware) MetricsHits(h fasthttp.RequestHandler) fasthttp.Request
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errConvert.Error()))
 			m.Logger.Errorf("%s", errConvert.Error())
+			return
 		}
 
 		url := ctx.URI().String()
-		m.Hits.WithLabelValues(url).Inc()
+		m.HitsMetric.WithLabelValues(url).Inc()
 		m.Logger.Infof("Metrics HITS successfully add, requestId: %d", reqId)
 
 		h(ctx)
 
+	})
+}
+
+func (m *InfoMiddleware) MetricsTiming(h fasthttp.RequestHandler) fasthttp.RequestHandler {
+	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
+		h(ctx)
+		reqIdCtx := ctx.UserValue("reqId")
+		reqId, errConvert := util.InterfaceConvertInt(reqIdCtx)
+		if errConvert != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errConvert.Error()))
+			m.Logger.Errorf("%s", errConvert.Error())
+			return
+		}
+
+		timeStartCtx := ctx.UserValue("timeStart")
+		timeStart, errConvertTime := util.InterfaceConvertTime(timeStartCtx)
+		if errConvertTime != nil {
+			ctx.Response.SetStatusCode(http.StatusInternalServerError)
+			ctx.Response.SetBody([]byte(errConvert.Error()))
+			m.Logger.Errorf("%s", errConvert.Error())
+			return
+		}
+		timeEnd := time.Now()
+		timing := strconv.Itoa(int(timeEnd.Sub(*timeStart) / time.Millisecond))
+
+		url := ctx.URI().String()
+		m.TimingMetric.WithLabelValues(timing, url).Inc()
+		m.Logger.Infof("Время выполнения %s миллисекунд requestId: %d", timing, reqId)
 	})
 }

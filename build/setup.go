@@ -103,16 +103,21 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 		Name: "hitsUrlApi",
 		Help: "Number connect url",
 	}, []string{"path"})
+	timingUrl := prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "timingUrlApi",
+		Help: "request execution time",
+	}, []string{"time", "path"})
 
-	prometheus.MustRegister(countInternalServer, hitsUrl)
+	prometheus.MustRegister(countInternalServer, hitsUrl, timingUrl)
 
 	midWrapper := Orm3.Wrapper{DBConn: connectionDB, Conn: authManager, Ctx: authCtx}
 	midApp := Application3.Middleware{DB: &midWrapper}
 	infoMiddleware := Api3.InfoMiddleware{
-		Application:          &midApp,
-		Logger:               logger,
-		CountInternalMetrics: countInternalServer,
-		Hits:                 hitsUrl,
+		Application:         &midApp,
+		Logger:              logger,
+		CountInternalMetric: countInternalServer,
+		HitsMetric:          hitsUrl,
+		TimingMetric:        timingUrl,
 	}
 	var _ midlApiPkg.MiddlewareApiInterface = &infoMiddleware
 
