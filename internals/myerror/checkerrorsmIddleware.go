@@ -1,7 +1,7 @@
 package myerror
 
 import (
-	"encoding/json"
+	"github.com/mailru/easyjson"
 	"net/http"
 )
 
@@ -9,7 +9,7 @@ func (c *CheckError) CheckErrorCookie(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case MGetIdByCookieCookieNotScan:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -27,7 +27,7 @@ func (c *CheckError) CheckErrorCookie(err error) (error, []byte, int) {
 				result, http.StatusInternalServerError
 
 		case MGetIdByCookieCookieExpired, MGetIdByCookieCookieNotFound:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: err.Error(),
 			})
@@ -52,7 +52,7 @@ func (c *CheckError) CheckErrorAccess(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case MCheckAccessCookieNotScan:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -70,7 +70,7 @@ func (c *CheckError) CheckErrorAccess(err error) (error, []byte, int) {
 				result, http.StatusInternalServerError
 
 		case MCheckAccessCookieNotFound:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: MCheckAccessCookieNotFound,
 			})
@@ -93,7 +93,7 @@ func (c *CheckError) CheckErrorAccess(err error) (error, []byte, int) {
 
 func (c *CheckError) CheckErrorWsKey(err error) (error, []byte, int) {
 	if err != nil {
-		result, errMarshal := json.Marshal(ResultError{
+		result, errMarshal := easyjson.Marshal(ResultError{
 			Status:  http.StatusInternalServerError,
 			Explain: ErrDB,
 		})

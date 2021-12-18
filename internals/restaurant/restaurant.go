@@ -1,3 +1,4 @@
+//go:generate easyjson -no_std_marshalers restaurant.go
 package restaurant
 
 type RestaurantsResponse struct {
@@ -99,6 +100,7 @@ type Ingredients struct {
 	Cost  int    `json:"cost"`
 }
 
+//easyjson:json
 type NewReview struct {
 	Restaurant RestaurantId `json:"restaurant"`
 	Text       string       `json:"text"`
@@ -134,6 +136,7 @@ type SearchRestaurant struct {
 	SearchText string `json:"searchText"`
 }
 
+//easyjson:json
 type ResFavouriteNew struct {
 	Id int `json:"id"`
 }

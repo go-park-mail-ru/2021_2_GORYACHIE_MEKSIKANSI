@@ -1,7 +1,7 @@
 package myerror
 
 import (
-	"encoding/json"
+	"github.com/mailru/easyjson"
 	"net/http"
 )
 
@@ -10,7 +10,7 @@ func (c *CheckError) CheckErrorProfile(err error) (error, []byte, int) {
 		switch err.Error() {
 		case PGetProfileClientClientNotScan, PGetProfileClientBirthdayNotScan, PGetProfileCourierCourierNotScan, PGetProfileHostHostNotScan,
 			PGetRoleByIdClientNotScan, PGetRoleByIdHostNotScan, PGetRoleByIdCourierNotScan, PGetProfileUnknownRole:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -35,7 +35,7 @@ func (c *CheckError) CheckErrorProfileUpdateName(err error) (error, []byte, int)
 	if err != nil {
 		switch err.Error() {
 		case PUpdateNameNameNotUpdate:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -60,7 +60,7 @@ func (c *CheckError) CheckErrorProfileUpdateEmail(err error) (error, []byte, int
 	if err != nil {
 		switch err.Error() {
 		case PUpdateEmailEmailNotUpdate:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -78,7 +78,7 @@ func (c *CheckError) CheckErrorProfileUpdateEmail(err error) (error, []byte, int
 				result, http.StatusInternalServerError
 
 		case PUpdateEmailEmailRepeat:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: PUpdateEmailEmailRepeat,
 			})
@@ -103,7 +103,7 @@ func (c *CheckError) CheckErrorProfileUpdatePassword(err error) (error, []byte, 
 	if err != nil {
 		switch err.Error() {
 		case PUpdatePasswordPasswordNotUpdate, PUpdatePasswordSaltNotSelect:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -128,7 +128,7 @@ func (c *CheckError) CheckErrorProfileUpdatePhone(err error) (error, []byte, int
 	if err != nil {
 		switch err.Error() {
 		case PUpdatePhonePhoneNotUpdate, PUpdatePhoneIncorrectPhoneFormat:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -146,7 +146,7 @@ func (c *CheckError) CheckErrorProfileUpdatePhone(err error) (error, []byte, int
 				result, http.StatusInternalServerError
 
 		case PUpdatePhonePhoneRepeat:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: PUpdatePhonePhoneRepeat,
 			})
@@ -172,7 +172,7 @@ func (c *CheckError) CheckErrorProfileUpdateAvatar(err error) (error, []byte, in
 		switch err.Error() {
 		case PUpdateAvatarAvatarNotUpdate, PUpdateAvatarAvatarNotOpen, PUpdateAvatarAvatarNotUpload,
 			PUpdateAvatarFileNameEmpty, PUpdateAvatarFileWithoutExtension:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -197,7 +197,7 @@ func (c *CheckError) CheckErrorProfileUpdateBirthday(err error) (error, []byte, 
 	if err != nil {
 		switch err.Error() {
 		case PUpdateBirthdayBirthdayNotUpdate:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -222,7 +222,7 @@ func (c *CheckError) CheckErrorProfileUpdateAddress(err error) (error, []byte, i
 	if err != nil {
 		switch err.Error() {
 		case PUpdateAddressAddressNotUpdate:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})

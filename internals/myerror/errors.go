@@ -1,3 +1,4 @@
+//go:generate easyjson -no_std_marshalers errors.go
 package myerror
 
 type MultiLogger interface {
@@ -8,11 +9,13 @@ type MultiLogger interface {
 	Sync() error
 }
 
+//easyjson:json
 type ResultError struct {
 	Status  int    `json:"status"`
 	Explain string `json:"explain,omitempty"`
 }
 
+//easyjson:json
 type ResultErrorMulti struct {
 	Status  int         `json:"status"`
 	Explain string      `json:"explain,omitempty"`

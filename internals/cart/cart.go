@@ -1,3 +1,4 @@
+//go:generate easyjson -no_std_marshalers cart.go
 package cart
 
 import (
@@ -73,6 +74,7 @@ type CastDishesErrs struct {
 	CountAvail int    `json:"countAvail"`
 }
 
+//easyjson:json
 type CartRequest struct {
 	Cart RequestCartDefault `json:"cart"`
 }

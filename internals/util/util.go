@@ -1,3 +1,4 @@
+//go:generate easyjson -no_std_marshalers util.go
 package util
 
 import (
@@ -18,6 +19,7 @@ const (
 	UnlimitedCount     = -1
 )
 
+//easyjson:json
 type ResponseStatus struct {
 	StatusHTTP int `json:"status"`
 }

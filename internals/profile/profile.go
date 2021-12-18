@@ -1,3 +1,4 @@
+//go:generate easyjson -no_std_marshalers profile.go
 package profile
 
 import (
@@ -21,18 +22,22 @@ type ProfileResponse struct {
 	ProfileUser interface{} `json:"user"`
 }
 
+//easyjson:json
 type UpdateName struct {
 	Name string `json:"name"`
 }
 
+//easyjson:json
 type UpdateEmail struct {
 	Email string `json:"email"`
 }
 
+//easyjson:json
 type UpdatePassword struct {
 	Password string `json:"password"`
 }
 
+//easyjson:json
 type UpdatePhone struct {
 	Phone string `json:"Phone"`
 }
@@ -46,10 +51,12 @@ type UpdateAvatarRequest struct {
 	PathImg string `json:"img"`
 }
 
+//easyjson:json
 type UpdateBirthday struct {
 	Birthday string `json:"birthday"`
 }
 
+//easyjson:json
 type UpdateAddress struct {
 	Address AddressCoordinates `json:"address"`
 }

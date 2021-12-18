@@ -1,3 +1,4 @@
+//go:generate easyjson -no_std_marshalers order.go
 package order
 
 import (
@@ -9,6 +10,7 @@ type ResponseOrder struct {
 	Order interface{} `json:"order"`
 }
 
+//easyjson:json
 type CreateOrder struct {
 	MethodPay string                     `json:"methodPay"`
 	Address   profile.AddressCoordinates `json:"address"`
