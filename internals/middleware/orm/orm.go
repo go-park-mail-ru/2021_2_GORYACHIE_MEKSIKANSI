@@ -93,7 +93,7 @@ func (w *Wrapper) CheckAccessWebsocket(websocket string) (bool, error) {
 	tx, err := w.DBConn.Begin(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Text: errPkg.OGetOrderTransactionNotCreate,
+			Text: errPkg.MCheckAccessWebsocketTransactionNotCreate,
 		}
 	}
 
@@ -104,17 +104,23 @@ func (w *Wrapper) CheckAccessWebsocket(websocket string) (bool, error) {
 		"SELECT id FROM cookie WHERE websocket = $1", websocket).Scan(&exist)
 	if err != nil {
 		if err == pgx.ErrNoRows {
+			err = tx.Commit(contextTransaction)
+			if err != nil {
+				return false, &errPkg.Errors{
+					Text: errPkg.MCheckAccessWebsocketNotCommit,
+				}
+			}
 			return false, nil
 		}
 		return false, &errPkg.Errors{
-			Text: errPkg.OGetOrderNotSelect,
+			Text: errPkg.MCheckAccessWebsocketNotSelect,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Text: errPkg.OGetOrderNotCommit,
+			Text: errPkg.MCheckAccessWebsocketNotCommit,
 		}
 	}
 

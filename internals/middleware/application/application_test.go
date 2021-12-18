@@ -20,7 +20,7 @@ var CheckAccess = []struct {
 	errCheckAccess   error
 }{
 	{
-		testName:         "First",
+		testName:         "Check access",
 		input:            &utils.Defense{},
 		out:              true,
 		outErr:           "",
@@ -29,7 +29,7 @@ var CheckAccess = []struct {
 		errCheckAccess:   nil,
 	},
 	{
-		testName:         "Second",
+		testName:         "Error check",
 		input:            &utils.Defense{},
 		out:              false,
 		outErr:           "text",
@@ -75,7 +75,7 @@ var NewCSRF = []struct {
 	errNewCSRF   error
 }{
 	{
-		testName:     "First",
+		testName:     "Generate new csrf",
 		input:        &utils.Defense{},
 		out:          "CSRF-token",
 		outErr:       "",
@@ -84,7 +84,7 @@ var NewCSRF = []struct {
 		errNewCSRF:   nil,
 	},
 	{
-		testName:     "Second",
+		testName:     "Error generate new csrf",
 		input:        &utils.Defense{},
 		out:          "",
 		outErr:       "text",
@@ -130,7 +130,7 @@ var GetIdByCookie = []struct {
 	errGetIdByCookie   error
 }{
 	{
-		testName:           "First",
+		testName:           "Get id",
 		input:              &utils.Defense{},
 		out:                1,
 		outErr:             "",
@@ -139,7 +139,7 @@ var GetIdByCookie = []struct {
 		errGetIdByCookie:   nil,
 	},
 	{
-		testName:           "Second",
+		testName:           "Error get id",
 		input:              &utils.Defense{},
 		out:                0,
 		outErr:             "text",
@@ -185,7 +185,7 @@ var CheckAccessWebsocket = []struct {
 	errCheckAccessWebsocket   error
 }{
 	{
-		testName:                  "First",
+		testName:                  "Check websocket",
 		input:                     "cookie",
 		out:                       true,
 		outErr:                    "",
@@ -194,7 +194,7 @@ var CheckAccessWebsocket = []struct {
 		errCheckAccessWebsocket:   nil,
 	},
 	{
-		testName:                  "Second",
+		testName:                  "Error check access",
 		input:                     "cookie",
 		out:                       false,
 		outErr:                    "text",

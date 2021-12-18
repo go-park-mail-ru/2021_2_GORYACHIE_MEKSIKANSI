@@ -90,17 +90,20 @@ const (
 
 // Error of middleware
 const (
-	MCheckAccessCookieNotScan          = "cookie not scan"
-	MGetIdByCookieCookieNotScan        = "cookie not scan"
-	MCheckAccessCookieNotFound         = "cookie not found"
-	MGetIdByCookieCookieExpired        = "cookie expired"
-	MGetIdByCookieCookieNotFound       = "cookie not found"
-	MCheckAccessTransactionNotCreate   = "transaction check access not create"
-	MCheckAccessNotCommit              = "transaction check access not commit"
-	MNewCSRFCSRFTransactionNotCreate   = "transaction new csrf not create"
-	MNewCSRFCSRFNotCommit              = "transaction new csrf not commit"
-	MGetIdByCookieTransactionNotCreate = "transaction get id not create"
-	MGetIdByCookieNotCommit            = "transaction get id not commit"
+	MCheckAccessCookieNotScan                 = "cookie not scan"
+	MGetIdByCookieCookieNotScan               = "cookie not scan"
+	MCheckAccessCookieNotFound                = "cookie not found"
+	MGetIdByCookieCookieExpired               = "cookie expired"
+	MGetIdByCookieCookieNotFound              = "cookie not found"
+	MCheckAccessTransactionNotCreate          = "transaction check access not create"
+	MCheckAccessNotCommit                     = "transaction check access not commit"
+	MNewCSRFCSRFTransactionNotCreate          = "transaction new csrf not create"
+	MNewCSRFCSRFNotCommit                     = "transaction new csrf not commit"
+	MGetIdByCookieTransactionNotCreate        = "transaction get id not create"
+	MGetIdByCookieNotCommit                   = "transaction get id not commit"
+	MCheckAccessWebsocketTransactionNotCreate = "transaction check websocket not create"
+	MCheckAccessWebsocketNotCommit            = "transaction check websocket not commit"
+	MCheckAccessWebsocketNotSelect            = "check websocket not select"
 )
 
 // Error of main
