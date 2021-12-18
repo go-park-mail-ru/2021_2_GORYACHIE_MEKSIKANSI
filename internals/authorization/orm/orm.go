@@ -1,4 +1,4 @@
-//go:generate mockgen -destination=mocks/orm.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/authorization/orm WrapperAuthorizationInterface,ConnectionInterface,ConnectAuthServiceInterface
+//go:generate mockgen -destination=mocks/orm.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/authorization/orm WrapperAuthorizationInterface,ConnectionInterface,ConnectAuthServiceInterface,TransactionInterface
 package orm
 
 import (
@@ -31,6 +31,22 @@ type ConnectAuthServiceInterface interface {
 	SignUp(ctx context.Context, in *authProto.RegistrationRequest, opts ...grpc.CallOption) (*authProto.DefenseResponse, error)
 	Login(ctx context.Context, in *authProto.Authorization, opts ...grpc.CallOption) (*authProto.DefenseResponse, error)
 	Logout(ctx context.Context, in *authProto.CSRF, opts ...grpc.CallOption) (*authProto.CSRFResponse, error)
+}
+
+type TransactionInterface interface {
+	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
+	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
+	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
+	Begin(ctx context.Context) (pgx.Tx, error)
+	BeginFunc(ctx context.Context, f func(pgx.Tx) error) error
+	Commit(ctx context.Context) error
+	Rollback(ctx context.Context) error
+	CopyFrom(ctx context.Context, tableName pgx.Identifier, columnNames []string, rowSrc pgx.CopyFromSource) (int64, error)
+	SendBatch(ctx context.Context, b *pgx.Batch) pgx.BatchResults
+	LargeObjects() pgx.LargeObjects
+	Prepare(ctx context.Context, name, sql string) (*pgconn.StatementDescription, error)
+	QueryFunc(ctx context.Context, sql string, args []interface{}, scans []interface{}, f func(pgx.QueryFuncRow) error) (pgconn.CommandTag, error)
+	Conn() *pgx.Conn
 }
 
 type Wrapper struct {
@@ -79,7 +95,7 @@ func (w *Wrapper) NewCSRFWebsocket(id int) (string, error) {
 	tx, err := w.DBConn.Begin(contextTransaction)
 	if err != nil {
 		return "", &errPkg.Errors{
-			Text: errPkg.OGetOrderTransactionNotCreate,
+			Text: errPkg.ANewCSRFWebsocketTransactionNotCreate,
 		}
 	}
 
@@ -91,14 +107,14 @@ func (w *Wrapper) NewCSRFWebsocket(id int) (string, error) {
 		"UPDATE cookie SET websocket = $1 WHERE client_id = $2", websocket, id)
 	if err != nil {
 		return "", &errPkg.Errors{
-			Text: errPkg.OGetOrderNotSelect,
+			Text: errPkg.ANewCSRFWebsocketNotUpdate,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return "", &errPkg.Errors{
-			Text: errPkg.OGetOrderNotCommit,
+			Text: errPkg.ANewCSRFWebsocketNotCommit,
 		}
 	}
 

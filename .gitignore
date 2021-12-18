@@ -35,4 +35,3 @@ go.sum
 
 #tests files
 cover
-cover_wo_mock

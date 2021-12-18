@@ -28,31 +28,31 @@ type Wrapper struct {
 func (db *Wrapper) GetCart(id int) (*cart.ResponseCartErrors, error) {
 	var a cartProto.CartId
 	a.Id = int64(id)
-	cart, err := db.Conn.GetCart(db.Ctx, &a)
+	cartUser, err := db.Conn.GetCart(db.Ctx, &a)
 	if err != nil {
 		return nil, err
 	}
-	if cart.Error != "" {
-		return nil, &errPkg.Errors{Text: cart.Error}
+	if cartUser.Error != "" {
+		return nil, &errPkg.Errors{Text: cartUser.Error}
 	}
-	return cast.CastResponseCartErrorsProtoToResponseCartErrors(cart), nil
+	return cast.CastResponseCartErrorsProtoToResponseCartErrors(cartUser), nil
 }
 
 func (db *Wrapper) UpdateCart(dishes cart.RequestCartDefault, clientId int) (*cart.ResponseCartErrors, error) {
 	var a cartProto.RequestCartDefault
 	a = *cast.CastRequestCartDefaultToRequestCartDefaultProto(&dishes)
 	a.ClientId = int64(clientId)
-	cart, err := db.Conn.UpdateCart(db.Ctx, &a)
+	cartUser, err := db.Conn.UpdateCart(db.Ctx, &a)
 	if err != nil {
 		return nil, err
 	}
-	if cart.Error != "" {
-		return nil, &errPkg.Errors{Text: cart.Error}
+	if cartUser.Error != "" {
+		return nil, &errPkg.Errors{Text: cartUser.Error}
 	}
 
-	if cart.Restaurant == nil {
+	if cartUser.Restaurant == nil {
 		return nil, nil
 	}
 
-	return cast.CastResponseCartErrorsProtoToResponseCartErrors(cart), nil
+	return cast.CastResponseCartErrorsProtoToResponseCartErrors(cartUser), nil
 }

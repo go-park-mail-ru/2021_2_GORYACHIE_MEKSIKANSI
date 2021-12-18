@@ -66,6 +66,7 @@ func CastResponseCartErrorsProtoToResponseCartErrors(result *proto.ResponseCartE
 		dishes.Cost = int(dish.Cost)
 		dishes.IngredientCart = ingredient
 		dishes.Weight = int(dish.Weight)
+		dishes.Kilocalorie = int(dish.Ccal)
 		dishes.Count = int(dish.Count)
 		dishes.ItemNumber = int(dish.ItemNumber)
 		dishes.Description = dish.Description
