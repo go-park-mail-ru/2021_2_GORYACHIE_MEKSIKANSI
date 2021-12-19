@@ -37,3 +37,4 @@ cover_wo_mock
 .git
 go.sum
 *.pem
+/vendor

@@ -23,6 +23,7 @@ jobs:
         run: |
           export PATH=$PATH:$(go env GOPATH)/bin
           go get github.com/golangci/golangci-lint/cmd/golangci-lint
+          go mod vendor
           golangci-lint run -c configCi.yml ./...
 
 #  build:
