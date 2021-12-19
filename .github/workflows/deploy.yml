@@ -1,33 +1,36 @@
-#name: Docker Build
-#
-#on:
-#  push:
-#    branches:
-#      - main
-#  pull_request:
-#    branches:
-#      - main
-#
-#jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: pull docker image
-#        uses: appleboy/ssh-action@master
-#        with:
-##          envs: GITHUB_SHA
-#          host: ${{ secrets.HOST }}
-#          username: ${{ secrets.USERNAME }}
-#          key: ${{ secrets.PRIVATE_KEY }}
-#          script: sudo docker pull matros71239/monolith
-#      - name: deploy docker image
-#        uses: appleboy/ssh-action@master
-#        with:
-#          envs: GITHUB_SHA
-#          host: ${{ secrets.HOST }}
-#          username: ${{ secrets.USERNAME }}
-#          key: ${{ secrets.PRIVATE_KEY }}
-#          script: |
-#            sudo docker rm -f $(sudo docker ps -aq)
-#            sudo docker run -e VERSION=${GITHUB_SHA::8} -d -p 8080:8080 matros71239/hmeats:${GITHUB_SHA::8}
-#            sudo docker-compose -e VERSION=${GITHUB_SHA::8} -f /usr/local/go/src/2021_2_GORYACHIE_MEKSIKANSI/docker-compose.yml -d -p 8080:8080 matros71239/hmeats:${GITHUB_SHA::8}
+name: Docker Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: pull docker image
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            sudo docker pull matros71239/monolith:latest 
+            sudo docker pull matros71239/auth:latest 
+            sudo docker pull matros71239/cart:latest 
+            sudo docker pull matros71239/res:latest 
+            sudo docker pull matros71239/promo:latest
+      - name: deploy docker image
+        uses: appleboy/ssh-action@master
+        with:
+          envs: GITHUB_SHA
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            sudo docker rm -f $(sudo docker ps -aq)
+            sudo docker-compose -e -f /usr/local/go/src/2021_2_GORYACHIE_MEKSIKANSI/docker-compose.yml -d -p 8080:8080 matros71239/hmeats:${GITHUB_SHA::8}
