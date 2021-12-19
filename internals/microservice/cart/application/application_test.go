@@ -18,7 +18,7 @@ var CalculatePriceDelivery = []struct {
 	errGetPriceDelivery error
 }{
 	{
-		testName:            "First",
+		testName:            "Get price",
 		input:               1,
 		out:                 1,
 		outErr:              "",
@@ -65,7 +65,7 @@ var CalculateCost = []struct {
 	countGetPriceDelivery int
 }{
 	{
-		testName: "First",
+		testName: "Calculate",
 		inputResult: &cartPkg.ResponseCartErrors{
 			Dishes:     []cartPkg.DishesCartResponse{{Cost: 1, Count: 1}},
 			Cost:       cartPkg.CostCartResponse{SumCost: 1},
@@ -140,7 +140,7 @@ var GetCart = []struct {
 	countGetPromoCode          int
 }{
 	{
-		testName: "First",
+		testName: "Get cart",
 		input:    1,
 		out: &cartPkg.ResponseCartErrors{
 			Restaurant: cartPkg.RestaurantIdCastResponse{
@@ -158,9 +158,9 @@ var GetCart = []struct {
 			},
 			DishErr: []cartPkg.CastDishesErrs{},
 			PromoCode: cartPkg.PromoCode{
-				Name:        "promocode",
-				Description: "a",
-				Code:        "code",
+				Name:        "",
+				Description: "",
+				Code:        "promo",
 			},
 		},
 		outErr:       "",
@@ -220,9 +220,9 @@ var GetCart = []struct {
 			},
 			DishErr: []cartPkg.CastDishesErrs{},
 			PromoCode: cartPkg.PromoCode{
-				Name:        "promocode",
-				Code:        "code",
-				Description: "a",
+				Name:        "",
+				Code:        "promo",
+				Description: "",
 			},
 		},
 		errDoPromoCode:    nil,
@@ -282,41 +282,40 @@ func TestApplicationGetCart(t *testing.T) {
 }
 
 var UpdateCart = []struct {
-	testName                    string
-	inputDishes                 cartPkg.RequestCartDefault
-	inputId                     int
-	out                         *cartPkg.ResponseCartErrors
-	outErr                      string
-	inputDeleteCart             int
-	errDeleteCart               error
-	inputUpdateCartDishes       cartPkg.RequestCartDefault
-	inputUpdateCartId           int
-	outUpdateCartResult         *cartPkg.ResponseCartErrors
-	outUpdateCartErrorDishes    []cartPkg.CastDishesErrs
-	errUpdateCart               error
-	countUpdateCart             int
-	inputGetRestaurant          int
-	outGetRestaurant            *cartPkg.RestaurantId
-	errGetRestaurant            error
-	countGetRestaurant          int
-	inputGetPriceDelivery       int
-	outGetPriceDelivery         int
-	errGetPriceDelivery         error
-	countGetPriceDelivery       int
-	inputAddPromoCodeCode       string
-	inputAddPromoCodeRestaurant int
-	inputAddPromoCodeClientId   int
-	errAddPromoCode             error
-	countAddPromoCode           int
-	inputDoPromoCodeCode        string
-	inputDoPromoCodeRestaurant  int
-	inputDoPromoCodeResult      *cartPkg.ResponseCartErrors
-	outDoPromoCode              *cartPkg.ResponseCartErrors
-	errDoPromoCode              error
-	countDoPromoCode            int
+	testName                   string
+	inputDishes                cartPkg.RequestCartDefault
+	inputId                    int
+	out                        *cartPkg.ResponseCartErrors
+	outErr                     string
+	inputDeleteCart            int
+	errDeleteCart              error
+	inputUpdateCartDishes      cartPkg.RequestCartDefault
+	inputUpdateCartId          int
+	outUpdateCartResult        *cartPkg.ResponseCartErrors
+	outUpdateCartErrorDishes   []cartPkg.CastDishesErrs
+	errUpdateCart              error
+	countUpdateCart            int
+	inputGetRestaurant         int
+	outGetRestaurant           *cartPkg.RestaurantId
+	errGetRestaurant           error
+	countGetRestaurant         int
+	inputGetPriceDelivery      int
+	outGetPriceDelivery        int
+	errGetPriceDelivery        error
+	countGetPriceDelivery      int
+	inputGetPromoCodeClient    int
+	outGetPromoCode            string
+	errGetPromoCode            error
+	countGetPromoCode          int
+	inputDoPromoCodeCode       string
+	inputDoPromoCodeRestaurant int
+	inputDoPromoCodeResult     *cartPkg.ResponseCartErrors
+	outDoPromoCode             *cartPkg.ResponseCartErrors
+	errDoPromoCode             error
+	countDoPromoCode           int
 }{
 	{
-		testName: "First",
+		testName: "Update cart",
 		inputDishes: cartPkg.RequestCartDefault{
 			Restaurant: cartPkg.RestaurantRequest{
 				Id: 1,
@@ -341,9 +340,9 @@ var UpdateCart = []struct {
 			},
 			DishErr: []cartPkg.CastDishesErrs{},
 			PromoCode: cartPkg.PromoCode{
-				Name:        "promocode",
-				Code:        "code",
-				Description: "a",
+				Name:        "",
+				Code:        "promo",
+				Description: "",
 			},
 		},
 		outErr:          "",
@@ -367,20 +366,19 @@ var UpdateCart = []struct {
 		outGetRestaurant: &cartPkg.RestaurantId{
 			Id: 1,
 		},
-		errGetRestaurant:            nil,
-		countGetRestaurant:          1,
-		countUpdateCart:             1,
-		inputGetPriceDelivery:       1,
-		outGetPriceDelivery:         1,
-		errGetPriceDelivery:         nil,
-		countGetPriceDelivery:       0,
-		inputAddPromoCodeCode:       "promo",
-		inputAddPromoCodeRestaurant: 1,
-		inputAddPromoCodeClientId:   1,
-		errAddPromoCode:             nil,
-		countAddPromoCode:           1,
-		inputDoPromoCodeCode:        "promo",
-		inputDoPromoCodeRestaurant:  1,
+		errGetRestaurant:           nil,
+		countGetRestaurant:         1,
+		countUpdateCart:            1,
+		inputGetPriceDelivery:      1,
+		outGetPriceDelivery:        1,
+		errGetPriceDelivery:        nil,
+		countGetPriceDelivery:      0,
+		inputGetPromoCodeClient:    1,
+		outGetPromoCode:            "promo",
+		errGetPromoCode:            nil,
+		countGetPromoCode:          1,
+		inputDoPromoCodeCode:       "promo",
+		inputDoPromoCodeRestaurant: 1,
 		inputDoPromoCodeResult: &cartPkg.ResponseCartErrors{
 			Restaurant: cartPkg.RestaurantIdCastResponse{
 				Id:                  1,
@@ -397,6 +395,9 @@ var UpdateCart = []struct {
 				SumCost: 0,
 			},
 			DishErr: []cartPkg.CastDishesErrs{},
+			PromoCode: cartPkg.PromoCode{
+				Code: "promo",
+			},
 		},
 		outDoPromoCode: &cartPkg.ResponseCartErrors{
 			Restaurant: cartPkg.RestaurantIdCastResponse{
@@ -416,7 +417,7 @@ var UpdateCart = []struct {
 			DishErr: []cartPkg.CastDishesErrs{},
 			PromoCode: cartPkg.PromoCode{
 				Name:        "promocode",
-				Code:        "code",
+				Code:        "promo",
 				Description: "a",
 			},
 		},
@@ -452,9 +453,9 @@ func TestApplicationUpdateCart(t *testing.T) {
 			Times(tt.countGetPriceDelivery)
 		m.
 			EXPECT().
-			AddPromoCode(tt.inputAddPromoCodeCode, tt.inputAddPromoCodeRestaurant, tt.inputAddPromoCodeClientId).
-			Return(tt.errAddPromoCode).
-			Times(tt.countAddPromoCode)
+			GetPromoCode(tt.inputGetPromoCodeClient).
+			Return(tt.outGetPromoCode, tt.errGetPromoCode).
+			Times(tt.countGetPromoCode)
 		m.
 			EXPECT().
 			DoPromoCode(tt.inputDoPromoCodeCode, tt.inputDoPromoCodeRestaurant, tt.inputDoPromoCodeResult).

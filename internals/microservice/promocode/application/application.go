@@ -12,6 +12,8 @@ type PromocodeApplicationInterface interface {
 	ActiveCostForFreeDish(promoCode string, restaurantId int) (int, int, error)
 	ActiveCostForSale(promoCode string, amount int, restaurantId int) (int, error)
 	ActiveTimeForSale(promoCode string, amount int, restaurantId int) (int, error)
+	AddPromoCode(promoCode string, restaurantId int, clientId int) error
+	GetPromoCode(id int) (string, error)
 }
 
 type Promocode struct {
@@ -36,4 +38,12 @@ func (db *Promocode) ActiveCostForSale(promoCode string, amount int, restaurantI
 
 func (db *Promocode) ActiveTimeForSale(promoCode string, amount int, restaurantId int) (int, error) {
 	return db.DB.ActiveTimeForSale(promoCode, amount, restaurantId)
+}
+
+func (db *Promocode) AddPromoCode(promoCode string, restaurantId int, clientId int) error {
+	return db.DB.AddPromoCode(promoCode, restaurantId, clientId)
+}
+
+func (db *Promocode) GetPromoCode(id int) (string, error) {
+	return db.DB.GetPromoCode(id)
 }

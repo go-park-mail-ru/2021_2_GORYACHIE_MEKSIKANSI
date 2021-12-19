@@ -3,7 +3,6 @@ package application
 
 import (
 	cartPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/cart"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/cart/myerror"
 	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/cart/orm"
 )
 
@@ -48,6 +47,22 @@ func (c *Cart) CalculateCost(result *cartPkg.ResponseCartErrors, rest *cartPkg.R
 	return &cost, nil
 }
 
+func (c *Cart) activePromoCode(clientId int, result *cartPkg.ResponseCartErrors) error {
+	promoCode, err := c.DB.GetPromoCode(clientId)
+	if err != nil {
+		return err
+	}
+
+	if promoCode != "" {
+		result.PromoCode.Code = promoCode
+		result, err = c.DB.DoPromoCode(result.PromoCode.Code, result.Restaurant.Id, result)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (c *Cart) GetCart(id int) (*cartPkg.ResponseCartErrors, error) {
 	result, errorDishes, err := c.DB.GetCart(id)
 	if err != nil {
@@ -68,18 +83,11 @@ func (c *Cart) GetCart(id int) (*cartPkg.ResponseCartErrors, error) {
 	result.Cost = *cost
 	result.DishErr = errorDishes
 
-	promoCode, err := c.DB.GetPromoCode(id)
+	err = c.activePromoCode(id, result)
 	if err != nil {
 		return nil, err
 	}
 
-	if promoCode != "" {
-		result.PromoCode.Code = promoCode
-		result, err = c.DB.DoPromoCode(result.PromoCode.Code, result.Restaurant.Id, result)
-		if err != nil {
-			return nil, err
-		}
-	}
 	return result, nil
 }
 
@@ -114,21 +122,9 @@ func (c *Cart) UpdateCart(dishes cartPkg.RequestCartDefault, clientId int) (*car
 	result.Cost = *cost
 	result.DishErr = errorDishes
 
-	err = c.DB.AddPromoCode(dishes.PromoCode, result.Restaurant.Id, clientId)
+	err = c.activePromoCode(clientId, result)
 	if err != nil {
 		return nil, err
-	}
-
-	if dishes.PromoCode != "" {
-		result, err = c.DB.DoPromoCode(dishes.PromoCode, result.Restaurant.Id, result)
-		if err != nil {
-			if err.Error() == errPkg.PGetTypePromoCodeRestaurantsNotFound {
-				_, _, _ = c.DB.UpdateCart(dishes, clientId)
-				c.DB.AddPromoCode("", rest.Id, clientId)
-				return result, nil
-			}
-			return nil, err
-		}
 	}
 	return result, nil
 }

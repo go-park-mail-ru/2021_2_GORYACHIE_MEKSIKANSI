@@ -49,4 +49,10 @@ const (
 	PActiveCostForFreeDishRestaurantsNotFound  = "free dish not found"
 	PActiveCostForFreeDishRestaurantsNotSelect = "free dish not select"
 	PActiveCostForFreeDishNotCommit            = "transaction for free dish not commit"
+	PAddPromoCodeTransactionNotCreate          = "transaction add promo code not create"
+	PAddPromoCodeNotUpsert                     = "promo not upsert"
+	PAddPromoCodeNotCommit                     = "transaction add promo code not commit"
+	PGetPromoCodeTransactionNotCreate          = "transaction get promo code not create"
+	PGetPromoCodeNotSelect                     = "promo code not select"
+	PGetPromoCodeNotCommit                     = "transaction get promo code not commit"
 )

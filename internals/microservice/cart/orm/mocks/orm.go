@@ -585,6 +585,46 @@ func (mr *MockConnectPromoCodeServiceInterfaceMockRecorder) ActiveTimeForSale(ar
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActiveTimeForSale", reflect.TypeOf((*MockConnectPromoCodeServiceInterface)(nil).ActiveTimeForSale), varargs...)
 }
 
+// AddPromoCode mocks base method.
+func (m *MockConnectPromoCodeServiceInterface) AddPromoCode(arg0 context.Context, arg1 *proto.PromoCodeWithRestaurantIdAndClient, arg2 ...grpc.CallOption) (*proto.Error, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "AddPromoCode", varargs...)
+	ret0, _ := ret[0].(*proto.Error)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AddPromoCode indicates an expected call of AddPromoCode.
+func (mr *MockConnectPromoCodeServiceInterfaceMockRecorder) AddPromoCode(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddPromoCode", reflect.TypeOf((*MockConnectPromoCodeServiceInterface)(nil).AddPromoCode), varargs...)
+}
+
+// GetPromoCode mocks base method.
+func (m *MockConnectPromoCodeServiceInterface) GetPromoCode(arg0 context.Context, arg1 *proto.ClientId, arg2 ...grpc.CallOption) (*proto.PromoCodeText, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetPromoCode", varargs...)
+	ret0, _ := ret[0].(*proto.PromoCodeText)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPromoCode indicates an expected call of GetPromoCode.
+func (mr *MockConnectPromoCodeServiceInterfaceMockRecorder) GetPromoCode(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPromoCode", reflect.TypeOf((*MockConnectPromoCodeServiceInterface)(nil).GetPromoCode), varargs...)
+}
+
 // GetTypePromoCode mocks base method.
 func (m *MockConnectPromoCodeServiceInterface) GetTypePromoCode(arg0 context.Context, arg1 *proto.PromoCodeWithRestaurantId, arg2 ...grpc.CallOption) (*proto.TypePromoCodeResponse, error) {
 	m.ctrl.T.Helper()

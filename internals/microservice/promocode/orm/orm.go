@@ -16,6 +16,8 @@ type WrapperPromocodeInterface interface {
 	ActiveCostForFreeDish(promoCode string, restaurantId int) (int, int, error)
 	ActiveCostForSale(promoCode string, amount int, restaurantId int) (int, error)
 	ActiveTimeForSale(promoCode string, amount int, restaurantId int) (int, error)
+	AddPromoCode(promoCode string, restaurantId int, clientId int) error
+	GetPromoCode(id int) (string, error)
 }
 
 type ConnectionInterface interface {
@@ -242,4 +244,66 @@ func (db *Wrapper) ActiveTimeForSale(promoCode string, amount int, restaurantId 
 		}
 	}
 	return newSum, nil
+}
+
+func (db *Wrapper) AddPromoCode(promoCode string, restaurantId int, clientId int) error {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.PAddPromoCodeTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	_, err = tx.Exec(contextTransaction,
+		"INSERT INTO cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3) ON CONFLICT (client_id) DO UPDATE SET promo_code = $2 WHERE cart_user.client_id =  $1",
+		clientId, promoCode, restaurantId)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.PAddPromoCodeNotUpsert,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Alias: errPkg.PAddPromoCodeNotCommit,
+		}
+	}
+	return nil
+}
+
+func (db *Wrapper) GetPromoCode(id int) (string, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return "", &errPkg.Errors{
+			Alias: errPkg.PGetPromoCodeTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	var promoCode string
+	err = tx.QueryRow(contextTransaction,
+		"SELECT promo_code FROM cart_user WHERE client_id = $1",
+		id).Scan(&promoCode)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return "", nil
+		}
+		return "", &errPkg.Errors{
+			Alias: errPkg.PGetPromoCodeNotSelect,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return "", &errPkg.Errors{
+			Alias: errPkg.PGetPromoCodeNotCommit,
+		}
+	}
+	return promoCode, nil
 }

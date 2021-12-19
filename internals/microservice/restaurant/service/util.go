@@ -97,6 +97,7 @@ func CastDishesToDishesProto(d *resPkg.Dishes) *resProto.Dishes {
 	p.Id = int64(d.Id)
 	p.Img = d.Img
 	p.Ccal = int64(d.Ccal)
+	p.Description = d.Description
 	return &p
 }
 

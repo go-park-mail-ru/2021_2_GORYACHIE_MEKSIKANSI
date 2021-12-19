@@ -309,8 +309,29 @@ var RestaurantDishes = []struct {
 			Cost:        100,
 			Ccal:        500,
 			Description: "Вкусно",
-			Radios:      nil,
-			Ingredient:  nil,
+			Radios: []resPkg.Radios{
+				{
+					Title: "Тип шоколада",
+					Id:    1,
+					Rows: []resPkg.CheckboxesRows{
+						{
+							Id:   1,
+							Name: "Белый",
+						},
+						{
+							Id:   2,
+							Name: "Чёрный",
+						},
+					},
+				},
+			},
+			Ingredient: []resPkg.Ingredients{
+				{
+					Id:    1,
+					Title: "Орехи",
+					Cost:  20,
+				},
+			},
 		},
 		outErr:               "",
 		inputQueryRestaurant: 1,
@@ -322,8 +343,29 @@ var RestaurantDishes = []struct {
 			Cost:        100,
 			Ccal:        500,
 			Description: "Вкусно",
-			Radios:      nil,
-			Ingredient:  nil,
+			Radios: []resPkg.Radios{
+				{
+					Title: "Тип шоколада",
+					Id:    1,
+					Rows: []resPkg.CheckboxesRows{
+						{
+							Id:   1,
+							Name: "Белый",
+						},
+						{
+							Id:   2,
+							Name: "Чёрный",
+						},
+					},
+				},
+			},
+			Ingredient: []resPkg.Ingredients{
+				{
+					Id:    1,
+					Title: "Орехи",
+					Cost:  20,
+				},
+			},
 		},
 		errQuery: nil,
 	},
@@ -489,7 +531,12 @@ var GetReview = []struct {
 			MinDelivery:         15,
 			MaxDelivery:         30,
 			Rating:              3.0,
-			Tags:                nil,
+			Tags: []resPkg.Tag{
+				{
+					Id:   1,
+					Name: "Кафе",
+				},
+			},
 			Reviews: []resPkg.Review{
 				{
 					Name: "Good user",
@@ -512,7 +559,12 @@ var GetReview = []struct {
 			MinDelivery:         15,
 			MaxDelivery:         30,
 			Rating:              3.0,
-			Tags:                nil,
+			Tags: []resPkg.Tag{
+				{
+					Id:   1,
+					Name: "Кафе",
+				},
+			},
 			Reviews: []resPkg.Review{
 				{
 					Name: "Good user",

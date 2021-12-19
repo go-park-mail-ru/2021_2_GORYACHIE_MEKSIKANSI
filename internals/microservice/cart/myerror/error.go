@@ -14,12 +14,11 @@ type ResultError struct {
 }
 
 type Errors struct {
-	Alias string
-	Text  string
+	Text string
 }
 
 func (e *Errors) Error() string {
-	return e.Alias
+	return e.Text
 }
 
 // Error of main
@@ -57,13 +56,6 @@ const (
 	CDeleteCartNotCommit                           = "transaction delete cart not commit"
 	CGetPriceDeliveryTransactionNotCreate          = "transaction get price delivery not create"
 	CGetPriceDeliveryNotCommit                     = "transaction get price delivery not commit"
-	CAddPromoCodeTransactionNotCreate              = "transaction add promo code not create"
-	CAddPromoCodeNotCommit                         = "transaction add promo code not commit"
-	CAddPromoCodeNotUpsert                         = "promo not upsert"
 	CDoPromoCodeNotSelectInfo                      = "promo code info not select"
 	CDoPromoCodeNotSelectInfoDish                  = "info about free dish not select"
-	CGetPromoCodeTransactionNotCreate              = "transaction get promo code not create"
-	CGetPromoCodeNotSelect                         = "promo code not select"
-	CGetPromoCodeNotCommit                         = "transaction get promo code not commit"
-	PGetTypePromoCodeRestaurantsNotFound           = "type not found"
 )

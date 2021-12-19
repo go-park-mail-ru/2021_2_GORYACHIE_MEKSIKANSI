@@ -51,6 +51,8 @@ type ConnectPromoCodeServiceInterface interface {
 	ActiveCostForFreeDish(ctx context.Context, in *promoProtoPkg.PromoCodeWithRestaurantId, opts ...grpc.CallOption) (*promoProtoPkg.FreeDishResponse, error)
 	ActiveCostForSale(ctx context.Context, in *promoProtoPkg.PromoCodeWithAmount, opts ...grpc.CallOption) (*promoProtoPkg.NewCostResponse, error)
 	ActiveTimeForSale(ctx context.Context, in *promoProtoPkg.PromoCodeWithAmount, opts ...grpc.CallOption) (*promoProtoPkg.NewCostResponse, error)
+	AddPromoCode(ctx context.Context, in *promoProtoPkg.PromoCodeWithRestaurantIdAndClient, opts ...grpc.CallOption) (*promoProtoPkg.Error, error)
+	GetPromoCode(ctx context.Context, in *promoProtoPkg.ClientId, opts ...grpc.CallOption) (*promoProtoPkg.PromoCodeText, error)
 }
 
 type Wrapper struct {
@@ -64,7 +66,7 @@ func (db *Wrapper) GetCart(id int) (*cartPkg.ResponseCartErrors, []cartPkg.CastD
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, nil, &errPkg.Errors{
-			Alias: errPkg.CGetCartTransactionNotCreate,
+			Text: errPkg.CGetCartTransactionNotCreate,
 		}
 	}
 
@@ -85,7 +87,7 @@ func (db *Wrapper) GetCart(id int) (*cartPkg.ResponseCartErrors, []cartPkg.CastD
 		id)
 	if err != nil {
 		return nil, nil, &errPkg.Errors{
-			Alias: errPkg.CGetCartNotSelect,
+			Text: errPkg.CGetCartNotSelect,
 		}
 	}
 
@@ -109,7 +111,7 @@ func (db *Wrapper) GetCart(id int) (*cartPkg.ResponseCartErrors, []cartPkg.CastD
 
 		if err != nil {
 			return nil, nil, &errPkg.Errors{
-				Alias: errPkg.CGetCartNotScan,
+				Text: errPkg.CGetCartNotScan,
 			}
 		}
 
@@ -180,7 +182,7 @@ func (db *Wrapper) GetCart(id int) (*cartPkg.ResponseCartErrors, []cartPkg.CastD
 
 	if len(infoDishes) == 0 {
 		return nil, nil, &errPkg.Errors{
-			Alias: errPkg.CGetCartCartNotFound,
+			Text: errPkg.CGetCartCartNotFound,
 		}
 	}
 
@@ -189,7 +191,7 @@ func (db *Wrapper) GetCart(id int) (*cartPkg.ResponseCartErrors, []cartPkg.CastD
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, nil, &errPkg.Errors{
-			Alias: errPkg.CGetCartNotCommit,
+			Text: errPkg.CGetCartNotCommit,
 		}
 	}
 
@@ -201,7 +203,7 @@ func (db *Wrapper) DeleteCart(id int) error {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.CDeleteCartTransactionNotCreate,
+			Text: errPkg.CDeleteCartTransactionNotCreate,
 		}
 	}
 
@@ -211,14 +213,14 @@ func (db *Wrapper) DeleteCart(id int) error {
 		"DELETE FROM cart_food CASCADE WHERE client_id = $1", id)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.CDeleteCartCartNotDelete,
+			Text: errPkg.CDeleteCartCartNotDelete,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return &errPkg.Errors{
-			Alias: errPkg.CDeleteCartNotCommit,
+			Text: errPkg.CDeleteCartNotCommit,
 		}
 	}
 	return nil
@@ -235,7 +237,7 @@ func (db *Wrapper) updateCartStructFood(ingredients []cartPkg.IngredientsCartReq
 			&checkedIngredient.Id, &checkedIngredient.Name, &checkedIngredient.Cost, &dishId)
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.CUpdateCartStructureFoodStructureFoodNotSelect,
+				Text: errPkg.CUpdateCartStructureFoodStructureFoodNotSelect,
 			}
 		}
 		result = append(result, checkedIngredient)
@@ -245,7 +247,7 @@ func (db *Wrapper) updateCartStructFood(ingredients []cartPkg.IngredientsCartReq
 			ingredient.Id, clientId, dishId, cartId, place)
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.CUpdateCartStructFoodStructureFoodNotInsert,
+				Text: errPkg.CUpdateCartStructFoodStructureFoodNotInsert,
 			}
 		}
 		place++
@@ -263,7 +265,7 @@ func (db *Wrapper) updateCartRadios(radios []cartPkg.RadiosCartRequest, clientId
 			&checkedRadios.Id, &checkedRadios.Name)
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.CUpdateCartStructRadiosStructRadiosNotSelect,
+				Text: errPkg.CUpdateCartStructRadiosStructRadiosNotSelect,
 			}
 		}
 		result = append(result, checkedRadios)
@@ -273,7 +275,7 @@ func (db *Wrapper) updateCartRadios(radios []cartPkg.RadiosCartRequest, clientId
 			radio.RadiosId, radio.Id, clientId, cartId, radiosPlace)
 		if err != nil {
 			return nil, &errPkg.Errors{
-				Alias: errPkg.CUpdateCartRadiosRadiosNotInsert,
+				Text: errPkg.CUpdateCartRadiosRadiosNotInsert,
 			}
 		}
 		radiosPlace++
@@ -286,7 +288,7 @@ func (db *Wrapper) UpdateCart(newCart cartPkg.RequestCartDefault, clientId int) 
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, nil, &errPkg.Errors{
-			Alias: errPkg.CUpdateCartTransactionNotCreate,
+			Text: errPkg.CUpdateCartTransactionNotCreate,
 		}
 	}
 
@@ -305,11 +307,11 @@ func (db *Wrapper) UpdateCart(newCart cartPkg.RequestCartDefault, clientId int) 
 		if err != nil {
 			if err == pgx.ErrNoRows {
 				return nil, nil, &errPkg.Errors{
-					Alias: errPkg.CUpdateCartCartNotFound,
+					Text: errPkg.CUpdateCartCartNotFound,
 				}
 			}
 			return nil, nil, &errPkg.Errors{
-				Alias: errPkg.CUpdateCartCartNotScan,
+				Text: errPkg.CUpdateCartCartNotScan,
 			}
 		}
 
@@ -336,7 +338,7 @@ func (db *Wrapper) UpdateCart(newCart cartPkg.RequestCartDefault, clientId int) 
 			clientId, dish.Id, dish.Count, newCart.Restaurant.Id, newCart.Dishes[i].ItemNumber, i).Scan(&idCart)
 		if err != nil {
 			return nil, nil, &errPkg.Errors{
-				Alias: errPkg.CUpdateCartCartNotInsert,
+				Text: errPkg.CUpdateCartCartNotInsert,
 			}
 		}
 		cart.Dishes[i].RadiosCart, err = db.updateCartRadios(dish.Radios, clientId, idCart, tx, contextTransaction)
@@ -352,7 +354,7 @@ func (db *Wrapper) UpdateCart(newCart cartPkg.RequestCartDefault, clientId int) 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, nil, &errPkg.Errors{
-			Alias: errPkg.CUpdateCartNotCommit,
+			Text: errPkg.CUpdateCartNotCommit,
 		}
 	}
 	return &cart, dishesErrors, nil
@@ -363,7 +365,7 @@ func (db *Wrapper) GetPriceDelivery(id int) (int, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.CGetPriceDeliveryTransactionNotCreate,
+			Text: errPkg.CGetPriceDeliveryTransactionNotCreate,
 		}
 	}
 
@@ -375,18 +377,18 @@ func (db *Wrapper) GetPriceDelivery(id int) (int, error) {
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return 0, &errPkg.Errors{
-				Alias: errPkg.CGetPriceDeliveryPriceNotFound,
+				Text: errPkg.CGetPriceDeliveryPriceNotFound,
 			}
 		}
 		return 0, &errPkg.Errors{
-			Alias: errPkg.CGetPriceDeliveryPriceNotScan,
+			Text: errPkg.CGetPriceDeliveryPriceNotScan,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.CGetPriceDeliveryNotCommit,
+			Text: errPkg.CGetPriceDeliveryNotCommit,
 		}
 	}
 
@@ -398,7 +400,7 @@ func (db *Wrapper) GetRestaurant(id int) (*cartPkg.RestaurantId, error) {
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRestaurantTransactionNotCreate,
+			Text: errPkg.RGetRestaurantTransactionNotCreate,
 		}
 	}
 
@@ -411,14 +413,14 @@ func (db *Wrapper) GetRestaurant(id int) (*cartPkg.RestaurantId, error) {
 		&restaurant.MaxDelivery, &restaurant.Rating)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRestaurantRestaurantNotFound,
+			Text: errPkg.RGetRestaurantRestaurantNotFound,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.RGetRestaurantNotCommit,
+			Text: errPkg.RGetRestaurantNotCommit,
 		}
 	}
 
@@ -426,65 +428,33 @@ func (db *Wrapper) GetRestaurant(id int) (*cartPkg.RestaurantId, error) {
 }
 
 func (db *Wrapper) AddPromoCode(promoCode string, restaurantId int, clientId int) error {
-	contextTransaction := context.Background()
-	tx, err := db.Conn.Begin(contextTransaction)
+	errorMicroservice, err := db.ConnPromoService.AddPromoCode(db.Ctx, &promoProtoPkg.PromoCodeWithRestaurantIdAndClient{
+		PromoCode:  promoCode,
+		Restaurant: int64(restaurantId),
+		Client:     int64(clientId),
+	})
 	if err != nil {
-		return &errPkg.Errors{
-			Alias: errPkg.CAddPromoCodeTransactionNotCreate,
-		}
+		return err
 	}
-
-	defer tx.Rollback(contextTransaction)
-
-	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3) ON CONFLICT (client_id) DO UPDATE SET promo_code = $2 WHERE cart_user.client_id =  $1",
-		clientId, promoCode, restaurantId)
-	if err != nil {
+	if errorMicroservice.Error != "" {
 		return &errPkg.Errors{
-			Alias: errPkg.CAddPromoCodeNotUpsert,
-		}
-	}
-
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return &errPkg.Errors{
-			Alias: errPkg.CAddPromoCodeNotCommit,
+			Text: errorMicroservice.Error,
 		}
 	}
 	return nil
 }
 
 func (db *Wrapper) GetPromoCode(id int) (string, error) {
-	contextTransaction := context.Background()
-	tx, err := db.Conn.Begin(contextTransaction)
+	promoCodeText, err := db.ConnPromoService.GetPromoCode(db.Ctx, &promoProtoPkg.ClientId{ClientId: int64(id)})
 	if err != nil {
+		return "", err
+	}
+	if promoCodeText.Error != "" {
 		return "", &errPkg.Errors{
-			Alias: errPkg.CGetPromoCodeTransactionNotCreate,
+			Text: promoCodeText.Error,
 		}
 	}
-
-	defer tx.Rollback(contextTransaction)
-
-	var promoCode string
-	err = tx.QueryRow(contextTransaction,
-		"SELECT promo_code FROM cart_user WHERE client_id = $1",
-		id).Scan(&promoCode)
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return "", nil
-		}
-		return "", &errPkg.Errors{
-			Alias: errPkg.CGetPromoCodeNotSelect,
-		}
-	}
-
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return "", &errPkg.Errors{
-			Alias: errPkg.CGetPromoCodeNotCommit,
-		}
-	}
-	return promoCode, nil
+	return promoCodeText.PromoCodeText, nil
 }
 
 func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg.ResponseCartErrors) (*cartPkg.ResponseCartErrors, error) {
@@ -499,7 +469,7 @@ func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg
 	}
 	if typePromoCode.Error != "" {
 		return nil, &errPkg.Errors{
-			Alias: typePromoCode.Error,
+			Text: typePromoCode.Error,
 		}
 	}
 
@@ -507,7 +477,7 @@ func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg
 	tx, err := db.Conn.Begin(transactionPromoCode)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.CDoPromoCodeNotSelectInfo,
+			Text: errPkg.CDoPromoCodeNotSelectInfo,
 		}
 	}
 
@@ -527,7 +497,7 @@ func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg
 			}
 			if freeDelivery.Error != "" {
 				return nil, &errPkg.Errors{
-					Alias: freeDelivery.Error,
+					Text: freeDelivery.Error,
 				}
 			}
 
@@ -550,7 +520,7 @@ func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg
 			}
 			if newCost.Error != "" {
 				return nil, &errPkg.Errors{
-					Alias: newCost.Error,
+					Text: newCost.Error,
 				}
 			}
 
@@ -570,7 +540,7 @@ func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg
 			}
 			if newCost.Error != "" {
 				return nil, &errPkg.Errors{
-					Alias: newCost.Error,
+					Text: newCost.Error,
 				}
 			}
 			cart.Cost.SumCost = int(newCost.Cost)
@@ -588,7 +558,7 @@ func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg
 			}
 			if freeDishId.Error != "" {
 				return nil, &errPkg.Errors{
-					Alias: freeDishId.Error,
+					Text: freeDishId.Error,
 				}
 			}
 
@@ -600,7 +570,7 @@ func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg
 					&newDish.Weight, &newDish.Description)
 				if err != nil {
 					return nil, &errPkg.Errors{
-						Alias: errPkg.CDoPromoCodeNotSelectInfoDish,
+						Text: errPkg.CDoPromoCodeNotSelectInfoDish,
 					}
 				}
 
@@ -621,13 +591,13 @@ func (db *Wrapper) DoPromoCode(promoCode string, restaurantId int, cart *cartPkg
 		promoCode, restaurantId).Scan(&cart.PromoCode.Name, &cart.PromoCode.Description)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.CDoPromoCodeNotSelectInfo,
+			Text: errPkg.CDoPromoCodeNotSelectInfo,
 		}
 	}
 	err = tx.Commit(transactionPromoCode)
 	if err != nil {
 		return nil, &errPkg.Errors{
-			Alias: errPkg.CDoPromoCodeNotSelectInfo,
+			Text: errPkg.CDoPromoCodeNotSelectInfo,
 		}
 	}
 	cart.PromoCode.Code = promoCode
