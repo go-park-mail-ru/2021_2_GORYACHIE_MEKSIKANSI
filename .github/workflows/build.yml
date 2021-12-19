@@ -26,66 +26,71 @@ jobs:
 #          go mod vendor
 #          golangci-lint run -c configCi.yml ./...
 
-  build:
+#  build:
+#    runs-on: ubuntu-latest
+##    needs: linter
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#      - name: Install Go
+#        uses: actions/setup-go@v2
+#        with:
+#          go-version: '1.17.x'
+#      - name: add go.sum
+#        run: go mod tidy
+#      - name: Login to DockerHub Registry
+#        uses: docker/login-action@v1
+#        with:
+#            username: ${{ secrets.DOCKERHUB_USERNAME }}
+#            password: ${{ secrets.DOCKERHUB_PASSWORD }}
+#      - name: Build and push monolith
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: .
+#          file: Dockerfile
+#          platforms: linux/amd64
+#          push: true
+#          tags: matros71239/monolith:latest
+#      - name: Build and push authorization
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: .
+#          file: ./internals/microservice/authorization/Dockerfile
+#          platforms: linux/amd64
+#          push: true
+#          tags: matros71239/auth:latest
+#      - name: Build and push cart
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: .
+#          file: ./internals/microservice/cart/Dockerfile
+#          platforms: linux/amd64
+#          push: true
+#          tags: matros71239/cart:latest
+#      - name: Build and push promocode
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: .
+#          file: ./internals/microservice/promocode/Dockerfile
+#          platforms: linux/amd64
+#          push: true
+#          tags: matros71239/promo:latest
+#      - name: Build and push restaurant
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: .
+#          file: ./internals/microservice/restaurant/Dockerfile
+#          platforms: linux/amd64
+#          push: true
+#          tags: matros71239/res:latest
+  deploy:
     runs-on: ubuntu-latest
-#    needs: linter
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Install Go
-        uses: actions/setup-go@v2
+      - name: pull docker image
+        uses: appleboy/ssh-action@master
         with:
-          go-version: '1.17.x'
-      - name: add go.sum
-        run: go mod tidy
-      - name: Login to DockerHub Registry
-        uses: docker/login-action@v1
-        with:
-            username: ${{ secrets.DOCKERHUB_USERNAME }}
-            password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - name: Build and push monolith
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: Dockerfile
-          platforms: linux/amd64
-          push: true
-          tags: matros71239/monolith:latest
-      - name: Build and push authorization
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./internals/microservice/authorization/Dockerfile
-          platforms: linux/amd64
-          push: true
-          tags: matros71239/auth:latest
-      - name: Build and push cart
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./internals/microservice/cart/Dockerfile
-          platforms: linux/amd64
-          push: true
-          tags: matros71239/cart:latest
-      - name: Build and push promocode
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./internals/microservice/promocode/Dockerfile
-          platforms: linux/amd64
-          push: true
-          tags: matros71239/promo:latest
-      - name: Build and push restaurant
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./internals/microservice/restaurant/Dockerfile
-          platforms: linux/amd64
-          push: true
-          tags: matros71239/res:latest
-
-
-#      - name: Build Docker image
-#        run: docker-compose up --build -t matros71239/hmeats:${GITHUB_SHA::8} .
-#      - name: Push the image
-#        run: docker push matros71239/hmeats:${GITHUB_SHA::8}
+          envs: GITHUB_SHA
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: sudo docker pull matros71239/hmeats:${GITHUB_SHA::8}
