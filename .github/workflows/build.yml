@@ -99,16 +99,25 @@ jobs:
             sudo docker pull matros71239/cart:latest 
             sudo docker pull matros71239/res:latest 
             sudo docker pull matros71239/promo:latest
-            
-      - name: rsync deployments
-        uses: burnett01/rsync-deployments@5.1
+
+      - name: Transfer build files to server
+        uses: appleboy/scp-action@master
         with:
-          switches: -avzr
-          path: ./docker-compose-ci.yml
-          remote_path: .
-          remote_host: ${{ secrets.HOST }}
-          remote_user: ${{ secrets.USERNAME }}
-          remote_key:: ${{ secrets.PRIVATE_KEY }}
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          source: "./docker-compose-ci.yml"
+          target: "/home/"
+
+      - name: Reload docker-compose
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+              cd /home/
+              screen -dmS backend sudo docker-compose up
 #      - name: deploy docker image
 #        uses: appleboy/ssh-action@master
 #        with:
