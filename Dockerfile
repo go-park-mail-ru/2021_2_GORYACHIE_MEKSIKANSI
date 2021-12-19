@@ -6,12 +6,13 @@ COPY go.sum .
 RUN go mod download
 
 COPY . .
-RUN apk --no-cache update && apk --no-cache upgrade && \
-    apk --update --no-cache add git make
+
+RUN apk update && apk upgrade && \
+    apk --update add git make
 RUN go build -o monolith ./cmd/main.go
 
 FROM alpine:latest
-RUN apk --no-cache update && apk --no-cache upgrade && \
+RUN apk update && apk upgrade && \
     apk --update --no-cache add tzdata && \
     mkdir /app
 WORKDIR /app
