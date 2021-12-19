@@ -3,124 +3,85 @@ name: Docker Build
 on:
   push:
     branches:
-      - metrics_easyjson_ci
+      - main
+      - dev
   pull_request:
     branches:
-      - metrics_easyjson_ci
+      - main
+      - dev
 
 jobs:
-#  linter:
-#    name: Linter
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Install Go
-#        uses: actions/setup-go@v2
-#        with:
-#          go-version: '1.17.x'
-#      - name: Checkout code
-#        uses: actions/checkout@v2
-#      - name: Run linter
-#        run: |
-#          export PATH=$PATH:$(go env GOPATH)/bin
-#          go get github.com/golangci/golangci-lint/cmd/golangci-lint
-#          go mod vendor
-#          golangci-lint run -c configCi.yml ./...
-
-#  build:
-#    runs-on: ubuntu-latest
-##    needs: linter
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v2
-#      - name: Install Go
-#        uses: actions/setup-go@v2
-#        with:
-#          go-version: '1.17.x'
-#      - name: add go.sum
-#        run: go mod tidy
-#      - name: Login to DockerHub Registry
-#        uses: docker/login-action@v1
-#        with:
-#            username: ${{ secrets.DOCKERHUB_USERNAME }}
-#            password: ${{ secrets.DOCKERHUB_PASSWORD }}
-#      - name: Build and push monolith
-#        uses: docker/build-push-action@v2
-#        with:
-#          context: .
-#          file: Dockerfile
-#          platforms: linux/amd64
-#          push: true
-#          tags: matros71239/monolith:latest
-#      - name: Build and push authorization
-#        uses: docker/build-push-action@v2
-#        with:
-#          context: .
-#          file: ./internals/microservice/authorization/Dockerfile
-#          platforms: linux/amd64
-#          push: true
-#          tags: matros71239/auth:latest
-#      - name: Build and push cart
-#        uses: docker/build-push-action@v2
-#        with:
-#          context: .
-#          file: ./internals/microservice/cart/Dockerfile
-#          platforms: linux/amd64
-#          push: true
-#          tags: matros71239/cart:latest
-#      - name: Build and push promocode
-#        uses: docker/build-push-action@v2
-#        with:
-#          context: .
-#          file: ./internals/microservice/promocode/Dockerfile
-#          platforms: linux/amd64
-#          push: true
-#          tags: matros71239/promo:latest
-#      - name: Build and push restaurant
-#        uses: docker/build-push-action@v2
-#        with:
-#          context: .
-#          file: ./internals/microservice/restaurant/Dockerfile
-#          platforms: linux/amd64
-#          push: true
-#          tags: matros71239/res:latest
-  deploy:
+  linter:
+    name: Linter
     runs-on: ubuntu-latest
     steps:
-#      - name: pull docker image
-#        uses: appleboy/ssh-action@master
-#        with:
-##          envs: GITHUB_SHA
-#          host: ${{ secrets.HOST }}
-#          username: ${{ secrets.USERNAME }}
-#          password: ${{ secrets.PASSWORD }}
-#          script: |
-#            sudo docker pull matros71239/monolith:latest
-#            sudo docker pull matros71239/auth:latest
-#            sudo docker pull matros71239/cart:latest
-#            sudo docker pull matros71239/res:latest
-#            sudo docker pull matros71239/promo:latest
-      - name: checkoutToBranch
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.x'
+      - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          ref: metrics_easyjson_ci
-      - name: check ls
+      - name: Run linter
         run: |
-          ls -R
-      - name: Transfer build files to server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          source: "docker-compose-ci.yml"
-          target: "."
+          export PATH=$PATH:$(go env GOPATH)/bin
+          go get github.com/golangci/golangci-lint/cmd/golangci-lint
+          go mod vendor
+          golangci-lint run -c configCi.yml ./...
 
-      - name: Reload docker-compose
-        uses: appleboy/ssh-action@master
+  build:
+    runs-on: ubuntu-latest
+    needs: linter
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install Go
+        uses: actions/setup-go@v2
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          script: |
-              docker rm -f $(docker ps -a -q)
-              sudo docker-compose -f docker-compose-ci.yml up --build -d
+          go-version: '1.17.x'
+      - name: add go.sum
+        run: go mod tidy
+      - name: Login to DockerHub Registry
+        uses: docker/login-action@v1
+        with:
+            username: ${{ secrets.DOCKERHUB_USERNAME }}
+            password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Build and push monolith
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: matros71239/monolith:latest
+      - name: Build and push authorization
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./internals/microservice/authorization/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: matros71239/auth:latest
+      - name: Build and push cart
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./internals/microservice/cart/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: matros71239/cart:latest
+      - name: Build and push promocode
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./internals/microservice/promocode/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: matros71239/promo:latest
+      - name: Build and push restaurant
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./internals/microservice/restaurant/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: matros71239/res:latest

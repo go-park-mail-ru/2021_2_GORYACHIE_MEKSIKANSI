@@ -1,36 +1,51 @@
-#name: Docker Build
-#
-#on:
-#  push:
-#    branches:
-#      - main
-#  pull_request:
-#    branches:
-#      - main
-#
-#jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: pull docker image
-#        uses: appleboy/ssh-action@master
-#        with:
-#          host: ${{ secrets.HOST }}
-#          username: ${{ secrets.USERNAME }}
-#          password: ${{ secrets.PASSWORD }}
-#          script: |
-#            sudo docker pull matros71239/monolith:latest
-#            sudo docker pull matros71239/auth:latest
-#            sudo docker pull matros71239/cart:latest
-#            sudo docker pull matros71239/res:latest
-#            sudo docker pull matros71239/promo:latest
-#      - name: deploy docker image
-#        uses: appleboy/ssh-action@master
-#        with:
-#          envs: GITHUB_SHA
-#          host: ${{ secrets.HOST }}
-#          username: ${{ secrets.USERNAME }}
-#          password: ${{ secrets.PASSWORD }}
-#          script: |
-#            sudo docker rm -f $(sudo docker ps -aq)
-#            sudo docker-compose -e -f /usr/local/go/src/2021_2_GORYACHIE_MEKSIKANSI/docker-compose.yml -d -p 8080:8080 matros71239/hmeats:${GITHUB_SHA::8}
+name: Docker Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: pull docker image
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            sudo docker pull matros71239/monolith:latest
+            sudo docker pull matros71239/auth:latest
+            sudo docker pull matros71239/cart:latest
+            sudo docker pull matros71239/res:latest
+            sudo docker pull matros71239/promo:latest
+      - name: checkoutToBranch
+        uses: actions/checkout@v2
+        with:
+          ref: metrics_easyjson_ci
+      - name: check ls
+        run: |
+          ls -R
+      - name: Transfer build files to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          source: "docker-compose-ci.yml"
+          target: "."
+
+      - name: Reload docker-compose
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            docker rm -f $(docker ps -a -q)
+            sudo docker-compose -f docker-compose-ci.yml up --build -d
