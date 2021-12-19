@@ -96,7 +96,7 @@ jobs:
           script: |
             sudo docker pull matros71239/monolith:latest 
             sudo docker pull matros71239/auth:latest 
-            sudo docker pull matros71239/authorization:latest 
+            sudo docker pull matros71239/cart:latest 
             sudo docker pull matros71239/res:latest 
             sudo docker pull matros71239/promo:latest
 
