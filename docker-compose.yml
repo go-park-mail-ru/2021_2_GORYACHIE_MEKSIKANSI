@@ -108,8 +108,8 @@ services:
     container_name: BackInfo
     image: postgres:latest
     environment:
-      - POSTGRES_USER=Captain-matroskin
-      - POSTGRES_PASSWORD=74tbr6r54f78
+      - POSTGRES_USER=constantil
+      - POSTGRES_PASSWORD=293456QwErty
     ports:
       - "5432:5432"
     healthcheck:
