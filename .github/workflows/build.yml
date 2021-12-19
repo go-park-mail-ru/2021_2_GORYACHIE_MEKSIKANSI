@@ -122,5 +122,4 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-              cd /home/
               sudo docker-compose -f docker-compose-ci.yml up --build -d
