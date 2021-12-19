@@ -102,7 +102,7 @@ jobs:
 
       - name: Display structure of downloaded files
         run: |
-          - cd .
+          - cd ./
           - ls -R
       - name: Transfer build files to server
         uses: appleboy/scp-action@master
@@ -110,8 +110,8 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          source: "./*"
-          target: "/home/"
+          source: "docker-compose-ci.yml"
+          target: "."
 
       - name: Reload docker-compose
         uses: appleboy/ssh-action@master
