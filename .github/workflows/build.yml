@@ -106,7 +106,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          source: "docker-compose-ci.yml"
+          source: "./docker-compose-ci.yml"
           target: "."
 
       - name: Reload docker-compose
