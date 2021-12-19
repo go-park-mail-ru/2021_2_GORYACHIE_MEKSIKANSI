@@ -164,6 +164,7 @@ linters:
     - revive
     - goimports
     - dupl
+    - typecheck
   fast: false
 
 
