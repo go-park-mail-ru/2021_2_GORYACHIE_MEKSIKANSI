@@ -3,19 +3,35 @@ name: Docker Build
 on:
   push:
     branches:
-      - main
+      - metrics_easyjson_ci
   pull_request:
     branches:
-      - main
+      - metrics_easyjson_ci
 
 jobs:
-  build:
+  linter:
+    name: Linter
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Login to DockerHub Registry
-        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-      - name: Build Docker image
-        run: docker build -t matros71239/hmeats:${GITHUB_SHA::8} .
-      - name: Push the image
-        run: docker push matros71239/hmeats:${GITHUB_SHA::8}
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.x'
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run linter
+        run: |
+          export PATH=$PATH:$(go env GOPATH)/bin
+          go get github.com/golangci/golangci-lint/cmd/golangci-lint
+          golangci-lint run -c configCi.yml ./...
+
+#  build:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v1
+#      - name: Login to DockerHub Registry
+#        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+#      - name: Build Docker image
+#        run: docker build -t matros71239/hmeats:${GITHUB_SHA::8} .
+#      - name: Push the image
+#        run: docker push matros71239/hmeats:${GITHUB_SHA::8}
