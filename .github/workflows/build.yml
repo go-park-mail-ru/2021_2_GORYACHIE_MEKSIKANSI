@@ -93,4 +93,9 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          script: sudo docker pull matros71239/monolith:latest
+          script: sudo docker pull matros71239/monolith:latest &&
+            sudo docker pull matros71239/auth:latest &&
+            sudo docker pull matros71239/authorization:latest &&
+            sudo docker pull matros71239/res:latest &&
+            sudo docker pull matros71239/promo:latest
+
