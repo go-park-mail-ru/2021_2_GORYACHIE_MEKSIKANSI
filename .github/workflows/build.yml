@@ -100,10 +100,10 @@ jobs:
 #            sudo docker pull matros71239/res:latest
 #            sudo docker pull matros71239/promo:latest
       - name: checkoutToBranch
-      uses: actions/checkout@v2
-      with:
-        ref: metrics_easyjson_ci
-      - name: check ls
+        uses: actions/checkout@v2
+        with:
+          ref: metrics_easyjson_ci
+        - name: check ls
       run: |
         ls -R
       - name: Transfer build files to server
