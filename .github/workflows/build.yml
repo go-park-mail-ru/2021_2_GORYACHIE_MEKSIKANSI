@@ -101,7 +101,9 @@ jobs:
 #            sudo docker pull matros71239/promo:latest
 
       - name: Display structure of downloaded files
-        run: ls -R
+        run: |
+          - cd .
+          - ls -R
       - name: Transfer build files to server
         uses: appleboy/scp-action@master
         with:
