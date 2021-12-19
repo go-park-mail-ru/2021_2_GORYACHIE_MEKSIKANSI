@@ -10,7 +10,7 @@ COPY . .
 RUN apk --update add git make
 RUN go build -o monolith ./cmd/main.go
 
-FROM alpine:latest
+FROM alpine3.13
 RUN apk --update --no-cache add tzdata && \
     mkdir /app
 WORKDIR /app
