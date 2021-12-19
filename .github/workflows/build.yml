@@ -48,9 +48,10 @@ jobs:
         with:
           context: .
           file: Dockerfile
-          platforms: linux/arm86
+          platforms: linux/arm64
           push: true
           tags: matros71239/monolith:latest
+          driver-opts: no-cache=true
       - name: Build and push authorization
         uses: docker/build-push-action@v2
         with:
