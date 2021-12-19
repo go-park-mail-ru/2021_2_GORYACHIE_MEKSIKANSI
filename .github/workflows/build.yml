@@ -99,8 +99,7 @@ jobs:
 #            sudo docker pull matros71239/cart:latest
 #            sudo docker pull matros71239/res:latest
 #            sudo docker pull matros71239/promo:latest
-
-      - name: checkout to branch
+      - name: checkoutToBranch
       uses: actions/checkout@v2
       with:
         ref: metrics_easyjson_ci
