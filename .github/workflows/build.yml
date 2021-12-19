@@ -117,7 +117,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           script: |
               cd /home/
-              screen -dmS backend sudo docker-compose up
+              sudo docker-compose -f docker-compose-cd.yml up --build -d
 #      - name: deploy docker image
 #        uses: appleboy/ssh-action@master
 #        with:
