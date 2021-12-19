@@ -91,6 +91,6 @@ jobs:
         with:
 #          envs: GITHUB_SHA
           host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
+          username: ubuntu
           key: ${{ secrets.PRIVATE_KEY }}
           script: sudo docker pull matros71239/monolith
