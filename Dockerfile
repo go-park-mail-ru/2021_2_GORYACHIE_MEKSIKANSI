@@ -11,7 +11,7 @@ RUN apk --update add git make
 RUN go build -o monolith ./cmd/main.go
 
 FROM alpine:latest
-RUN sudo mkdir /app
+RUN mkdir -p /app
 WORKDIR /app
 
 COPY --from=builderMonolith ./cont/monolith /app
