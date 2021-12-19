@@ -106,7 +106,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          source: "./"
+          source: "./*"
           target: "/home/"
 
       - name: Reload docker-compose
