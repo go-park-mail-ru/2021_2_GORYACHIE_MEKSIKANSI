@@ -6,6 +6,7 @@ COPY go.sum .
 RUN go mod download
 
 COPY . .
+RUN apk add --no-cache git
 RUN apk update && apk upgrade && \
     apk --update add git make
 RUN go build -o monolith ./cmd/main.go

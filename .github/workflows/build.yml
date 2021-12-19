@@ -9,22 +9,22 @@ on:
       - metrics_easyjson_ci
 
 jobs:
-  linter:
-    name: Linter
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: '1.17.x'
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Run linter
-        run: |
-          export PATH=$PATH:$(go env GOPATH)/bin
-          go get github.com/golangci/golangci-lint/cmd/golangci-lint
-          go mod vendor
-          golangci-lint run -c configCi.yml ./...
+#  linter:
+#    name: Linter
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Install Go
+#        uses: actions/setup-go@v2
+#        with:
+#          go-version: '1.17.x'
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#      - name: Run linter
+#        run: |
+#          export PATH=$PATH:$(go env GOPATH)/bin
+#          go get github.com/golangci/golangci-lint/cmd/golangci-lint
+#          go mod vendor
+#          golangci-lint run -c configCi.yml ./...
 
   build:
     runs-on: ubuntu-latest
