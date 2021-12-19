@@ -29,5 +29,5 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
             sudo docker rm -f $(sudo docker ps -aq)
-#            sudo docker run -e VERSION=${GITHUB_SHA::8} -d -p 8080:8080 matros71239/hmeats:${GITHUB_SHA::8}
-            sudo docker-compose -e VERSION=${GITHUB_SHA::8} -f /usr/local/go/src/2021_2_GORYACHIE_MEKSIKANSI/docker-compose.yml -d -p 8080:8080 matros71239/hmeats:${GITHUB_SHA::8}
+            sudo docker run -e VERSION=${GITHUB_SHA::8} -d -p 8080:8080 matros71239/hmeats:${GITHUB_SHA::8}
+#            sudo docker-compose -e VERSION=${GITHUB_SHA::8} -f /usr/local/go/src/2021_2_GORYACHIE_MEKSIKANSI/docker-compose.yml -d -p 8080:8080 matros71239/hmeats:${GITHUB_SHA::8}
