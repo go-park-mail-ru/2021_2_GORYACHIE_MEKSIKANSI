@@ -61,7 +61,7 @@ type installSetUp struct {
 }
 
 func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLogger,
-	uploader *s3manager.Uploader, nameBucket string, microserviceConfig config.MicroserviceConfig, IntCh chan authPkg.WebSocketOrder) *installSetUp {
+	uploader *s3manager.Uploader, nameBucket string, microserviceConfig config.MicroserviceConfig, intCh chan authPkg.WebSocketOrder) *installSetUp {
 
 	addressAuth := microserviceConfig.Authorization.Host + ":" + microserviceConfig.Authorization.Port
 	grpcConnAuth, errDialAuth := grpc.Dial(
@@ -165,7 +165,7 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 	orderApp := Application4.Order{
 		DB:        &orderWrapper,
 		DBProfile: &profileWrapper,
-		IntCh:     IntCh,
+		IntCh:     intCh,
 	}
 	orderInfo := Api4.InfoOrder{
 		Application: &orderApp,

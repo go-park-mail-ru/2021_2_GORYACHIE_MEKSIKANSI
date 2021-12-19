@@ -2,7 +2,7 @@ package main
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/build"
-	"2021_2_GORYACHIE_MEKSIKANSI/config"
+	configPkg "2021_2_GORYACHIE_MEKSIKANSI/config"
 	authPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/authorization"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/myerror"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/internals/util"
@@ -37,10 +37,10 @@ func runServer() {
 		logger.Log.Errorf("%s", errConfig.Error())
 		os.Exit(2)
 	}
-	appConfig := configStructure[0].(config.AppConfig)
-	dbConfig := configStructure[1].(config.DBConfig)
-	awsConfig := configStructure[2].(config.AwsConfig)
-	microserviceConfig := configStructure[3].(config.MicroserviceConfig)
+	appConfig := configStructure[0].(configPkg.AppConfig)
+	dbConfig := configStructure[1].(configPkg.DBConfig)
+	awsConfig := configStructure[2].(configPkg.AwsConfig)
+	microserviceConfig := configStructure[3].(configPkg.MicroserviceConfig)
 
 	connectionPostgres, err := build.CreateDb(dbConfig.Db, appConfig.Primary.Debug)
 	defer connectionPostgres.Close()
