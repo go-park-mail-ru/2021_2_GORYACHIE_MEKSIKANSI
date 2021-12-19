@@ -15,11 +15,11 @@ jobs:
       - name: pull docker image
         uses: appleboy/ssh-action@master
         with:
-          envs: GITHUB_SHA
+#          envs: GITHUB_SHA
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
-          script: sudo docker pull matros71239/hmeats:${GITHUB_SHA::8}
+          script: sudo docker pull matros71239/monolith
 #      - name: deploy docker image
 #        uses: appleboy/ssh-action@master
 #        with:
