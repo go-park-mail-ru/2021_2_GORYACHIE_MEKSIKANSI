@@ -1,9 +1,11 @@
 package orm
 
 import (
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/profile"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/profile/orm/mocks"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
@@ -947,6 +949,295 @@ func TestUpdateAddress(t *testing.T) {
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := testUser.UpdateAddress(tt.inputId, tt.inputAddress)
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var AddAddress = []struct {
+	testName                 string
+	inputId                  int
+	inputAddress             profile.AddressCoordinates
+	out                      int
+	outErr                   string
+	inputQueryId             int
+	inputQueryAddress        profile.AddressCoordinates
+	outQuery                 Row
+	countQuery               int
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
+}{
+	{
+		testName: "Add address",
+		inputId:  1,
+		inputAddress: profile.AddressCoordinates{
+			City: "Москва", Street: "Вязов", House: "2",
+			Floor: 5, Flat: "28", Porch: 2, Intercom: "28к",
+			Coordinates: profile.Coordinates{Latitude: 5.0, Longitude: 7.0},
+		},
+		out:          1,
+		outErr:       "",
+		inputQueryId: 1,
+		inputQueryAddress: profile.AddressCoordinates{
+			City: "Москва", Street: "Вязов", House: "2",
+			Floor: 5, Flat: "28", Porch: 2, Intercom: "28к",
+			Coordinates: profile.Coordinates{Latitude: 5.0, Longitude: 7.0},
+		},
+		outQuery:                 Row{row: []interface{}{1}},
+		countQuery:               1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+	},
+	{
+		testName: "Error create transaction",
+		inputId:  1,
+		inputAddress: profile.AddressCoordinates{
+			City: "Москва", Street: "Вязов", House: "2",
+			Floor: 5, Flat: "28", Porch: 2, Intercom: "28к",
+			Coordinates: profile.Coordinates{Latitude: 5.0, Longitude: 7.0},
+		},
+		out:          0,
+		outErr:       errPkg.PAddAddressNotCreate,
+		inputQueryId: 1,
+		inputQueryAddress: profile.AddressCoordinates{
+			City: "Москва", Street: "Вязов", House: "2",
+			Floor: 5, Flat: "28", Porch: 2, Intercom: "28к",
+			Coordinates: profile.Coordinates{Latitude: 5.0, Longitude: 7.0},
+		},
+		outQuery:                 Row{row: []interface{}{1}},
+		countQuery:               0,
+		errBeginTransaction:      errors.New("text"),
+		errCommitTransaction:     nil,
+		countCommitTransaction:   0,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 0,
+	},
+	{
+		testName: "Error insert",
+		inputId:  1,
+		inputAddress: profile.AddressCoordinates{
+			City: "Москва", Street: "Вязов", House: "2",
+			Floor: 5, Flat: "28", Porch: 2, Intercom: "28к",
+			Coordinates: profile.Coordinates{Latitude: 5.0, Longitude: 7.0},
+		},
+		out:          0,
+		outErr:       errPkg.PAddAddressAddressNotAdd,
+		inputQueryId: 1,
+		inputQueryAddress: profile.AddressCoordinates{
+			City: "Москва", Street: "Вязов", House: "2",
+			Floor: 5, Flat: "28", Porch: 2, Intercom: "28к",
+			Coordinates: profile.Coordinates{Latitude: 5.0, Longitude: 7.0},
+		},
+		outQuery:                 Row{row: []interface{}{1}, errRow: errors.New("text")},
+		countQuery:               1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   0,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+	},
+	{
+		testName: "Error commit",
+		inputId:  1,
+		inputAddress: profile.AddressCoordinates{
+			City: "Москва", Street: "Вязов", House: "2",
+			Floor: 5, Flat: "28", Porch: 2, Intercom: "28к",
+			Coordinates: profile.Coordinates{Latitude: 5.0, Longitude: 7.0},
+		},
+		out:          0,
+		outErr:       errPkg.PAddAddressNotCommit,
+		inputQueryId: 1,
+		inputQueryAddress: profile.AddressCoordinates{
+			City: "Москва", Street: "Вязов", House: "2",
+			Floor: 5, Flat: "28", Porch: 2, Intercom: "28к",
+			Coordinates: profile.Coordinates{Latitude: 5.0, Longitude: 7.0},
+		},
+		outQuery:                 Row{row: []interface{}{1}},
+		countQuery:               1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     errors.New("text"),
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+	},
+}
+
+func TestAddAddress(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range AddAddress {
+		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
+			EXPECT().
+			QueryRow(gomock.Any(),
+				"INSERT INTO address_user (city, street, house, floor, flat, porch, intercom, latitude, longitude, client_id, deleted)"+
+					" VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true) RETURNING id",
+				tt.inputQueryAddress.City, tt.inputQueryAddress.Street, tt.inputQueryAddress.House,
+				tt.inputQueryAddress.Floor, tt.inputQueryAddress.Flat, tt.inputQueryAddress.Porch,
+				tt.inputQueryAddress.Intercom, tt.inputQueryAddress.Coordinates.Latitude,
+				tt.inputQueryAddress.Coordinates.Longitude, tt.inputQueryId,
+			).
+			Return(&tt.outQuery).
+			Times(tt.countQuery)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.AddAddress(tt.inputId, tt.inputAddress)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var DeleteAddress = []struct {
+	testName                 string
+	inputId                  int
+	inputAddress             int
+	out                      int
+	outErr                   string
+	inputQueryClientId       int
+	inputQueryAddressId      int
+	errQuery                 error
+	countQuery               int
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
+}{
+	{
+		testName:                 "Delete address",
+		inputId:                  1,
+		inputAddress:             1,
+		out:                      1,
+		outErr:                   "",
+		inputQueryClientId:       1,
+		inputQueryAddressId:      1,
+		errQuery:                 nil,
+		countQuery:               1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+	},
+	{
+		testName:                 "Error create transaction",
+		inputId:                  1,
+		inputAddress:             1,
+		out:                      0,
+		outErr:                   errPkg.PDeleteAddressTransactionNotCreate,
+		inputQueryClientId:       1,
+		inputQueryAddressId:      1,
+		errQuery:                 nil,
+		countQuery:               0,
+		errBeginTransaction:      errors.New("text"),
+		errCommitTransaction:     nil,
+		countCommitTransaction:   0,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 0,
+	},
+	{
+		testName:                 "Error delete",
+		inputId:                  1,
+		inputAddress:             1,
+		out:                      0,
+		outErr:                   errPkg.PDeleteAddressNotDelete,
+		inputQueryClientId:       1,
+		inputQueryAddressId:      1,
+		errQuery:                 errors.New("text"),
+		countQuery:               1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   0,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+	},
+	{
+		testName:                 "Error commit",
+		inputId:                  1,
+		inputAddress:             1,
+		out:                      0,
+		outErr:                   errPkg.PDeleteAddressNotCommit,
+		inputQueryClientId:       1,
+		inputQueryAddressId:      1,
+		errQuery:                 nil,
+		countQuery:               1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     errors.New("text"),
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+	},
+}
+
+func TestDeleteAddress(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectionInterface(ctrl)
+	mTx := mocks.NewMockTransactionInterface(ctrl)
+	for _, tt := range DeleteAddress {
+		m.
+			EXPECT().
+			Begin(gomock.Any()).
+			Return(mTx, tt.errBeginTransaction)
+		mTx.
+			EXPECT().
+			Commit(gomock.Any()).
+			Return(tt.errCommitTransaction).
+			Times(tt.countCommitTransaction)
+		mTx.
+			EXPECT().
+			Rollback(gomock.Any()).
+			Return(nil).
+			Times(tt.countRollbackTransaction)
+		mTx.
+			EXPECT().
+			Exec(gomock.Any(),
+				"UPDATE address_user SET deleted = true WHERE client_id = $1 AND id = $2",
+				tt.inputQueryClientId, tt.inputQueryAddressId,
+			).
+			Return(nil, tt.errQuery).
+			Times(tt.countQuery)
+		testUser := &Wrapper{Conn: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			err := testUser.DeleteAddress(tt.inputId, tt.inputAddress)
 			if tt.outErr != "" {
 				if err == nil {
 					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))

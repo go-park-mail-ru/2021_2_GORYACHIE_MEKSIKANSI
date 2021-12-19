@@ -519,3 +519,110 @@ func TestUpdateAddress(t *testing.T) {
 		})
 	}
 }
+
+var AddAddress = []struct {
+	testName                     string
+	inputId                      int
+	inputNewAddress              profilePkg.AddressCoordinates
+	out                          int
+	outErr                       string
+	inputUpdateAddressId         int
+	inputUpdateAddressNewAddress profilePkg.AddressCoordinates
+	outQuery                     int
+	errUpdateAddress             error
+}{
+	{
+		testName: "Add address",
+		inputId:  1,
+		inputNewAddress: profilePkg.AddressCoordinates{
+			City: "Москва", Street: "Вязов", House: "2",
+			Floor: 5, Flat: "28", Porch: 2, Intercom: "28к",
+			Coordinates: profilePkg.Coordinates{Latitude: 5.0, Longitude: 7.0},
+		},
+		out:                  1,
+		outErr:               "",
+		inputUpdateAddressId: 1,
+		inputUpdateAddressNewAddress: profilePkg.AddressCoordinates{
+			City: "Москва", Street: "Вязов", House: "2",
+			Floor: 5, Flat: "28", Porch: 2, Intercom: "28к",
+			Coordinates: profilePkg.Coordinates{Latitude: 5.0, Longitude: 7.0},
+		},
+		outQuery:         1,
+		errUpdateAddress: nil,
+	},
+}
+
+func TestAddAddress(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockWrapperProfileInterface(ctrl)
+	for _, tt := range AddAddress {
+		m.
+			EXPECT().
+			AddAddress(tt.inputUpdateAddressId, tt.inputUpdateAddressNewAddress).
+			Return(tt.outQuery, tt.errUpdateAddress)
+		test := Profile{DB: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := test.AddAddress(tt.inputId, tt.inputNewAddress)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var DeleteAddress = []struct {
+	testName                     string
+	inputId                      int
+	inputNewAddress              int
+	out                          int
+	outErr                       string
+	inputUpdateAddressId         int
+	inputUpdateAddressNewAddress int
+	outQuery                     int
+	errUpdateAddress             error
+}{
+	{
+		testName:                     "Add address",
+		inputId:                      1,
+		inputNewAddress:              1,
+		out:                          1,
+		outErr:                       "",
+		inputUpdateAddressId:         1,
+		inputUpdateAddressNewAddress: 1,
+		outQuery:                     1,
+		errUpdateAddress:             nil,
+	},
+}
+
+func TestDeleteAddress(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockWrapperProfileInterface(ctrl)
+	for _, tt := range DeleteAddress {
+		m.
+			EXPECT().
+			DeleteAddress(tt.inputUpdateAddressId, tt.inputUpdateAddressNewAddress).
+			Return(tt.errUpdateAddress)
+		test := Profile{DB: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			err := test.DeleteAddress(tt.inputId, tt.inputNewAddress)
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}

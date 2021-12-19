@@ -9,7 +9,6 @@ import (
 	"github.com/valyala/fasthttp"
 	"math/big"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -37,17 +36,6 @@ func RandomInteger(min int, max int) int {
 	}
 	n := nBig.Int64()
 	return int(n) + min
-}
-
-func RandString(length int) string {
-	chars := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
-	var b strings.Builder
-
-	for i := 0; i < length; i++ {
-		b.WriteRune(chars[RandomInteger(0, len(chars))])
-	}
-
-	return b.String()
 }
 
 func HashPassword(password string, salt string) string {

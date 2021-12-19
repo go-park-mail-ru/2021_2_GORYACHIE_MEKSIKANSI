@@ -151,7 +151,7 @@ const (
 	PUpdatePasswordTransactionNotCreate    = "transaction update password not create"
 	PUpdatePasswordNotCommit               = "update password not commit"
 	PAddAddressAddressNotAdd               = "address not insert"
-	PAddDeleteAddressNotDelete             = "address not delete"
+	PDeleteAddressNotDelete                = "address not delete"
 	PGetProfileHostTransactionNotCreate    = "transaction get profile host not create"
 	PGetProfileHostNotCommit               = "transaction get profile host not commit"
 	PGetProfileCourierTransactionNotCreate = "transaction get profile courier not create"
@@ -170,8 +170,8 @@ const (
 	PUpdateAddressNotCommit                = "transaction update address not commit"
 	PAddAddressNotCreate                   = "transaction add address not create"
 	PAddAddressNotCommit                   = "transaction add address not commit"
-	PAddDeleteAddressTransactionNotCreate  = "transaction delete address not create"
-	PAddDeleteAddressNotCommit             = "transaction delete address not commit"
+	PDeleteAddressTransactionNotCreate     = "transaction delete address not create"
+	PDeleteAddressNotCommit                = "transaction delete address not commit"
 	PUpdateBirthdayNotParse                = "birthday not parse"
 )
 

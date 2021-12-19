@@ -320,3 +320,120 @@ func TestActiveTimeForSale(t *testing.T) {
 		})
 	}
 }
+
+var AddPromoCode = []struct {
+	testName                 string
+	inputPromoCode           string
+	inputRestaurantId        int
+	inputClient              int
+	out                      int
+	outErr                   string
+	inputQueryPromoCode      string
+	inputQueryRestaurantId   int
+	inputQueryClient         int
+	errQuery                 error
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
+}{
+	{
+		testName:                 "Add promo code",
+		inputPromoCode:           "promo free delivery",
+		inputRestaurantId:        1,
+		inputClient:              1,
+		outErr:                   "",
+		out:                      1,
+		inputQueryPromoCode:      "promo free delivery",
+		inputQueryRestaurantId:   1,
+		inputQueryClient:         1,
+		errQuery:                 nil,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+	},
+}
+
+func TestAddPromoCode(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockWrapperPromocodeInterface(ctrl)
+	for _, tt := range AddPromoCode {
+		m.
+			EXPECT().
+			AddPromoCode(tt.inputQueryPromoCode, tt.inputQueryRestaurantId, tt.inputQueryClient).
+			Return(tt.errQuery)
+		testUser := &Promocode{DB: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			err := testUser.AddPromoCode(tt.inputPromoCode, tt.inputRestaurantId, tt.inputClient)
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var GetPromoCode = []struct {
+	testName                 string
+	input                    int
+	out                      string
+	outErr                   string
+	inputQuery               int
+	outQuery                 string
+	errQuery                 error
+	errBeginTransaction      error
+	errCommitTransaction     error
+	countCommitTransaction   int
+	errRollbackTransaction   error
+	countRollbackTransaction int
+}{
+	{
+		testName:                 "Get promo code",
+		outErr:                   "",
+		out:                      "promo",
+		input:                    1,
+		inputQuery:               1,
+		outQuery:                 "promo",
+		errQuery:                 nil,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+	},
+}
+
+func TestGetPromoCode(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockWrapperPromocodeInterface(ctrl)
+	for _, tt := range GetPromoCode {
+		m.
+			EXPECT().
+			GetPromoCode(tt.inputQuery).
+			Return(tt.outQuery, tt.errQuery)
+		testUser := &Promocode{DB: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := testUser.GetPromoCode(tt.input)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}

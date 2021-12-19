@@ -22,29 +22,112 @@ var AllRestaurants = []struct {
 	countQueryPromoCodes int
 }{
 	{
-		testName: "First",
+		testName: "Get restaurants",
 		out: &resPkg.AllRestaurantsPromo{
-			Restaurant: []resPkg.Restaurants(nil),
-			AllTags:    []resPkg.Tag(nil),
-			AllPromo:   []resPkg.Promocode{},
+			Restaurant: []resPkg.Restaurants{
+				{
+					Id:                  1,
+					Img:                 "/url/",
+					Name:                "KFC",
+					CostForFreeDelivery: 150,
+					MinDelivery:         15,
+					MaxDelivery:         30,
+					Rating:              5.0,
+				},
+			},
+			AllTags: []resPkg.Tag{
+				{
+					Name: "Cafe",
+					Id:   1,
+				},
+			},
+			AllPromo: []resPkg.Promocode{
+				{
+					Name:         "promo",
+					Description:  "free delivery",
+					Img:          "/url/",
+					RestaurantId: 1,
+				},
+			},
 		},
-		outErr:               "",
-		outQueryRestaurant:   &resPkg.AllRestaurantsPromo{},
-		outQueryPromoCodes:   []resPkg.Promocode{},
+		outErr: "",
+		outQueryRestaurant: &resPkg.AllRestaurantsPromo{
+			Restaurant: []resPkg.Restaurants{
+				{
+					Id:                  1,
+					Img:                 "/url/",
+					Name:                "KFC",
+					CostForFreeDelivery: 150,
+					MinDelivery:         15,
+					MaxDelivery:         30,
+					Rating:              5.0,
+				},
+			},
+			AllTags: []resPkg.Tag{
+				{
+					Name: "Cafe",
+					Id:   1,
+				},
+			},
+		},
+		outQueryPromoCodes: []resPkg.Promocode{
+			{
+				Name:         "promo",
+				Description:  "free delivery",
+				Img:          "/url/",
+				RestaurantId: 1,
+			},
+		},
 		errQueryRestaurant:   nil,
 		errQueryPromoCodes:   nil,
 		countQueryRestaurant: 1,
 		countQueryPromoCodes: 1,
 	},
 	{
-		testName:             "Second",
+		testName: "Error get promo code",
+		out:      nil,
+		outErr:   "text",
+		outQueryRestaurant: &resPkg.AllRestaurantsPromo{
+			Restaurant: []resPkg.Restaurants{
+				{
+					Id:                  1,
+					Img:                 "/url/",
+					Name:                "KFC",
+					CostForFreeDelivery: 150,
+					MinDelivery:         15,
+					MaxDelivery:         30,
+					Rating:              5.0,
+				},
+			},
+			AllTags: []resPkg.Tag{
+				{
+					Name: "Cafe",
+					Id:   1,
+				},
+			},
+		},
+		outQueryPromoCodes: []resPkg.Promocode{
+			{
+				Name:         "promo",
+				Description:  "free delivery",
+				Img:          "/url/",
+				RestaurantId: 1,
+			},
+		},
+		errQueryRestaurant:   nil,
+		errQueryPromoCodes:   errors.New("text"),
+		countQueryRestaurant: 1,
+		countQueryPromoCodes: 1,
+	},
+	{
+		testName:             "Error get restaurants",
 		out:                  nil,
 		outErr:               "text",
 		outQueryRestaurant:   &resPkg.AllRestaurantsPromo{},
-		outQueryPromoCodes:   []resPkg.Promocode{},
 		errQueryRestaurant:   errors.New("text"),
-		errQueryPromoCodes:   nil,
 		countQueryRestaurant: 1,
+		outQueryPromoCodes:   []resPkg.Promocode{},
+		errQueryPromoCodes:   nil,
 		countQueryPromoCodes: 0,
 	},
 }
@@ -68,6 +151,87 @@ func TestAllRestaurants(t *testing.T) {
 		test := Restaurant{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := test.AllRestaurantsPromo()
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var RecommendedRestaurants = []struct {
+	testName             string
+	out                  *resPkg.AllRestaurants
+	outErr               string
+	outQueryRestaurant   *resPkg.AllRestaurants
+	errQueryRestaurant   error
+	countQueryRestaurant int
+}{
+	{
+		testName: "Get recommended restaurants",
+		out: &resPkg.AllRestaurants{
+			Restaurant: []resPkg.Restaurants{
+				{
+					Id:                  1,
+					Img:                 "/url/",
+					Name:                "KFC",
+					CostForFreeDelivery: 150,
+					MinDelivery:         15,
+					MaxDelivery:         30,
+					Rating:              5.0,
+				},
+			},
+			AllTags: []resPkg.Tag{
+				{
+					Name: "Cafe",
+					Id:   1,
+				},
+			},
+		},
+		outErr: "",
+		outQueryRestaurant: &resPkg.AllRestaurants{
+			Restaurant: []resPkg.Restaurants{
+				{
+					Id:                  1,
+					Img:                 "/url/",
+					Name:                "KFC",
+					CostForFreeDelivery: 150,
+					MinDelivery:         15,
+					MaxDelivery:         30,
+					Rating:              5.0,
+				},
+			},
+			AllTags: []resPkg.Tag{
+				{
+					Name: "Cafe",
+					Id:   1,
+				},
+			},
+		},
+		errQueryRestaurant:   nil,
+		countQueryRestaurant: 1,
+	},
+}
+
+func TestRecommendedRestaurants(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockWrapperRestaurantInterface(ctrl)
+	for _, tt := range RecommendedRestaurants {
+		m.
+			EXPECT().
+			GetRecommendedRestaurants().
+			Return(tt.outQueryRestaurant, tt.errQueryRestaurant).
+			Times(tt.countQueryRestaurant)
+		test := Restaurant{DB: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := test.RecommendedRestaurants()
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
 				if err == nil {
