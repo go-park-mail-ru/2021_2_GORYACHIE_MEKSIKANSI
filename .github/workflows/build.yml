@@ -100,13 +100,20 @@ jobs:
 #            sudo docker pull matros71239/res:latest
 #            sudo docker pull matros71239/promo:latest
 
+      - name: checkout to branch
+      uses: actions/checkout@v2
+      with:
+        ref: metrics_easyjson_ci
+      - name: check ls
+      run: |
+        ls -R
       - name: Transfer build files to server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          source: "2021_2_GORYACHIE_MEKSIKANSI/docker-compose-ci.yml"
+          source: "docker-compose-ci.yml"
           target: "."
 
       - name: Reload docker-compose
