@@ -1,3 +1,5 @@
+//go:generate mockgen -destination=mocks/api.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/myerror MultiLogger
+//go:generate mockgen -destination=mocks/apiApplication.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/authorization/application AuthorizationApplicationInterface
 package api
 
 import (
@@ -35,6 +37,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		u.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	checkError := &errPkg.CheckError{

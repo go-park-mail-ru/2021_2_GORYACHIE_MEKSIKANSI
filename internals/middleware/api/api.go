@@ -256,6 +256,7 @@ func (m *InfoMiddleware) MetricsHits(h fasthttp.RequestHandler) fasthttp.Request
 
 func (m *InfoMiddleware) MetricsTiming(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return fasthttp.RequestHandler(func(ctx *fasthttp.RequestCtx) {
+		timeStart := time.Now()
 		h(ctx)
 		reqIdCtx := ctx.UserValue("reqId")
 		reqId, errConvert := util.InterfaceConvertInt(reqIdCtx)
@@ -266,19 +267,11 @@ func (m *InfoMiddleware) MetricsTiming(h fasthttp.RequestHandler) fasthttp.Reque
 			return
 		}
 
-		timeStartCtx := ctx.UserValue("timeStart")
-		timeStart, errConvertTime := util.InterfaceConvertTime(timeStartCtx)
-		if errConvertTime != nil {
-			ctx.Response.SetStatusCode(http.StatusInternalServerError)
-			ctx.Response.SetBody([]byte(errConvert.Error()))
-			m.Logger.Errorf("%s", errConvert.Error())
-			return
-		}
 		timeEnd := time.Now()
-		timing := strconv.Itoa(int(timeEnd.Sub(*timeStart) / time.Millisecond))
+		timing := strconv.Itoa(int(timeEnd.Sub(timeStart) / time.Millisecond))
 
 		url := ctx.URI().String()
-		m.TimingMetric.WithLabelValues(timing, url).Inc()
+		m.TimingMetric.WithLabelValues(timeStart.String(), url).Inc()
 		m.Logger.Infof("Время выполнения %s миллисекунд requestId: %d", timing, reqId)
 	})
 }
