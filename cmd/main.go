@@ -2,7 +2,7 @@ package main
 
 import (
 	"2021_2_GORYACHIE_MEKSIKANSI/build"
-	"2021_2_GORYACHIE_MEKSIKANSI/config"
+	configPkg "2021_2_GORYACHIE_MEKSIKANSI/config"
 	authPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/authorization"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/myerror"
 	utils "2021_2_GORYACHIE_MEKSIKANSI/internals/util"
@@ -37,10 +37,10 @@ func runServer() {
 		logger.Log.Errorf("%s", errConfig.Error())
 		os.Exit(2)
 	}
-	appConfig := configStructure[0].(config.AppConfig)
-	dbConfig := configStructure[1].(config.DBConfig)
-	awsConfig := configStructure[2].(config.AwsConfig)
-	microserviceConfig := configStructure[3].(config.MicroserviceConfig)
+	appConfig := configStructure[0].(configPkg.AppConfig)
+	dbConfig := configStructure[1].(configPkg.DBConfig)
+	awsConfig := configStructure[2].(configPkg.AwsConfig)
+	microserviceConfig := configStructure[3].(configPkg.MicroserviceConfig)
 
 	connectionPostgres, err := build.CreateDb(dbConfig.Db, appConfig.Primary.Debug)
 	defer connectionPostgres.Close()
@@ -119,8 +119,11 @@ func runServer() {
 	}, metrics.WithPath("/metrics"), metrics.WithSubsystem("http"))
 
 	myRouter.GET("/metrics", metricsHandler)
+	myRouter.GET("/internal", infoMid.MetricsInternal(func(ctx *fasthttp.RequestCtx) { // TODO(): delete test handler
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+	}))
 
-	printURL := infoMid.LogURL(myRouter.Handler)
+	printURL := infoMid.LogURL(infoMid.MetricsHits(myRouter.Handler))
 
 	addressAllowedCors := appConfig.Cors.Host + ":" + appConfig.Cors.Port
 	withCors := cors.NewCorsHandler(cors.Options{
@@ -133,9 +136,10 @@ func runServer() {
 		AllowMaxAge:      5600,
 		Debug:            true,
 	})
+
 	port := ":" + appConfig.Port
 	logger.Log.Infof("Listen in 127:0.0.1%s", port)
-	err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(printURL))
+	err = fasthttp.ListenAndServeTLS(port, "fullchain.pem", "privkey.pem", withCors.CorsMiddleware(infoMid.MetricsTiming(printURL)))
 	if err != nil {
 		logger.Log.Errorf("Listen and server error: %v", err)
 		os.Exit(2)

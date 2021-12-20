@@ -7,6 +7,7 @@ import (
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/util"
 	"encoding/json"
+	"github.com/mailru/easyjson"
 	"github.com/valyala/fasthttp"
 	"net/http"
 )
@@ -58,19 +59,21 @@ func (c *InfoCart) GetCartHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+	response, errResponse := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
 		Body: &cart.ResponseCart{
 			Cart: result,
 		},
 	})
-	if err != nil {
+	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		c.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		c.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errResponse, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(response)
+	json.NewEncoder(ctx)
 	ctx.Response.SetStatusCode(http.StatusOK)
 }
 
@@ -89,7 +92,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	var cartRequest cart.CartRequest
-	err := json.Unmarshal(ctx.Request.Body(), &cartRequest)
+	err := easyjson.Unmarshal(ctx.Request.Body(), &cartRequest)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
@@ -128,31 +131,37 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	if result != nil {
-		err = json.NewEncoder(ctx).Encode(&authorization.Result{
+		response, errResponse := easyjson.Marshal(&authorization.Result{
 			Status: http.StatusOK,
 			Body: &cart.ResponseCart{
 				Cart: result,
 			},
 		})
-		if err != nil {
+		if errResponse != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-			c.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+			c.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errResponse, reqId)
 			return
 		}
+
+		ctx.Response.SetBody(response)
+		json.NewEncoder(ctx)
 		return
 	}
 
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+	response, errResponse := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
 		Body:   cartRequest,
 	})
-	if err != nil {
+	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		c.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		c.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errResponse, reqId)
 		return
 	}
+
+	ctx.Response.SetBody(response)
+	json.NewEncoder(ctx)
 	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 }

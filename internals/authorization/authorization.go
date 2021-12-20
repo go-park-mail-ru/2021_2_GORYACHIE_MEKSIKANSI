@@ -1,5 +1,7 @@
+//go:generate easyjson -no_std_marshalers authorization.go
 package authorization
 
+//easyjson:json
 type RegistrationRequest struct {
 	TypeUser string `json:"type"`
 	Name     string `json:"name"`
@@ -19,12 +21,14 @@ type User struct {
 	Phone    string `json:"phone"`
 }
 
+//easyjson:json
 type Authorization struct {
 	Email    string `json:"email"`
 	Phone    string `json:"phone"`
 	Password string `json:"password"`
 }
 
+//easyjson:json
 type Result struct {
 	Status int         `json:"status"`
 	Body   interface{} `json:"body,omitempty"`

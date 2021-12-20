@@ -1,7 +1,7 @@
 package myerror
 
 import (
-	"encoding/json"
+	"github.com/mailru/easyjson"
 	"net/http"
 )
 
@@ -9,7 +9,7 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case RGetRestaurantsRestaurantsNotFound:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusNotFound,
 				Explain: RGetRestaurantsRestaurantsNotFound,
 			})
@@ -27,7 +27,7 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 				result, http.StatusOK
 
 		case RGetRestaurantsRestaurantsNotScan, RGetRestaurantsRestaurantsNotSelect:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -52,7 +52,7 @@ func (c *CheckError) CheckErrorRestaurantId(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case RGetRestaurantRestaurantNotFound, RGetTagsRestaurantRestaurantNotScan, RGetMenuDishesNotFound:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -78,7 +78,7 @@ func (c *CheckError) CheckErrorRestaurantDishes(err error) (error, []byte, int) 
 		switch err.Error() {
 		case RGetDishesDishesNotFound, RGetStructDishesStructDishesNotSelect, RGetStructDishesStructDishesNotScan,
 			RGetRadiosRadiosNotScan, RGetTagsRestaurantNotSelect, RGetRadiosRadiosNotSelect, RGetTagsTagsNotFound:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -101,7 +101,7 @@ func (c *CheckError) CheckErrorRestaurantDishes(err error) (error, []byte, int) 
 
 func (c *CheckError) CheckErrorCreateReview(err error) (error, []byte, int) {
 	if err != nil {
-		result, errMarshal := json.Marshal(ResultError{
+		result, errMarshal := easyjson.Marshal(ResultError{
 			Status:  http.StatusInternalServerError,
 			Explain: ErrDB,
 		})
@@ -125,7 +125,7 @@ func (c *CheckError) CheckErrorGetReview(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		default:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -151,7 +151,7 @@ func (c *CheckError) CheckErrorSearchRes(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case RSearchRestaurantEmpty:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusNotFound,
 				Explain: ErrSearchRes,
 			})
@@ -169,7 +169,7 @@ func (c *CheckError) CheckErrorSearchRes(err error) (error, []byte, int) {
 				result, http.StatusOK
 
 		default:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -195,7 +195,7 @@ func (c *CheckError) CheckErrorGetFavorite(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case RGetFavoriteRestaurantsRestaurantsNotExist:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusNotFound,
 				Explain: ErrFavoriteNull,
 			})
@@ -212,7 +212,7 @@ func (c *CheckError) CheckErrorGetFavorite(err error) (error, []byte, int) {
 				},
 				result, http.StatusOK
 		default:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -238,7 +238,7 @@ func (c *CheckError) CheckErrorUpdateFavorite(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		default:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})

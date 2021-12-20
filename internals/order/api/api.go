@@ -7,6 +7,7 @@ import (
 	appPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/order/application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/util"
 	"encoding/json"
+	"github.com/mailru/easyjson"
 	"github.com/valyala/fasthttp"
 	"net/http"
 )
@@ -74,17 +75,19 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+	request, errRequest := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
 		Body:   order.ConvertCreateOrderIdToOrderResponse(idOrder),
 	})
-	if err != nil {
+	if errRequest != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errRequest, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(request)
+	json.NewEncoder(ctx)
 	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 }

@@ -1,3 +1,5 @@
+//go:generate mockgen -destination=mocks/api.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/myerror MultiLogger
+//go:generate mockgen -destination=mocks/apiApplication.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/authorization/application AuthorizationApplicationInterface
 package api
 
 import (
@@ -7,6 +9,7 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/util"
 	"encoding/json"
 	"github.com/fasthttp/websocket"
+	"github.com/mailru/easyjson"
 	"github.com/valyala/fasthttp"
 	"net/http"
 	"time"
@@ -34,6 +37,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		u.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	checkError := &errPkg.CheckError{
@@ -42,7 +46,7 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	var signUpAll authorization.RegistrationRequest
-	err := json.Unmarshal(ctx.Request.Body(), &signUpAll)
+	err := easyjson.Unmarshal(ctx.Request.Body(), &signUpAll)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
@@ -66,20 +70,21 @@ func (u *UserInfo) SignUpHandler(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	}
-
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+	response, errResponse := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusCreated,
 		Body: &authorization.RegistrationResponse{
 			User: authorization.UserConvertRegistration(&signUpAll),
 		},
 	})
-	if err != nil {
+	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrEncode, err.Error(), reqId)
+		u.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrEncode, errResponse.Error(), reqId)
 		return
 	}
 
+	ctx.Response.SetBody(response)
+	json.NewEncoder(ctx)
 	util.SetCookieResponse(&cookieHTTP, *cookieDB, util.KeyCookieSessionId)
 	ctx.Response.Header.SetCookie(&cookieHTTP)
 	ctx.Response.Header.Set("X-Csrf-Token", cookieDB.CsrfToken)
@@ -94,6 +99,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		u.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	checkError := &errPkg.CheckError{
@@ -102,7 +108,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	var userLogin authorization.Authorization
-	err := json.Unmarshal(ctx.Request.Body(), &userLogin)
+	err := easyjson.Unmarshal(ctx.Request.Body(), &userLogin)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
@@ -126,16 +132,18 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+	response, errResponse := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
 	})
-	if err != nil {
+	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrEncode, err.Error(), reqId)
+		u.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrEncode, errResponse.Error(), reqId)
 		return
 	}
 
+	ctx.Response.SetBody(response)
+	json.NewEncoder(ctx)
 	util.SetCookieResponse(&cookieHTTP, *cookieDB, util.KeyCookieSessionId)
 	ctx.Response.Header.SetCookie(&cookieHTTP)
 	ctx.Response.Header.Set("X-CSRF-Token", cookieDB.CsrfToken)
@@ -149,6 +157,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		u.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	checkError := &errPkg.CheckError{
@@ -160,10 +169,11 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	var cookieDB util.Defense
 
 	tokenContext := ctx.UserValue("X-Csrf-Token")
-	xCsrfToken, errConvert := util.InterfaceConvertString(tokenContext)
-	if errConvert != nil {
+	xCsrfToken, errConvertToken := util.InterfaceConvertString(tokenContext)
+	if errConvertToken != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errConvert.Error()))
+		ctx.Response.SetBody([]byte(errConvertToken.Error()))
+		u.Logger.Errorf("%s, requestId: %d", errConvertToken.Error(), reqId)
 		return
 	}
 
@@ -183,21 +193,22 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
+	response, errResponse := easyjson.Marshal(&authorization.Result{
+		Status: http.StatusOK,
+	})
+	if errResponse != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
+		u.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrEncode, errResponse.Error(), reqId)
+		return
+	}
+
+	ctx.Response.SetBody(response)
+	json.NewEncoder(ctx)
 	cookieDB.DateLife = time.Now().Add(time.Hour * -3)
 	util.SetCookieResponse(&cookieHTTP, cookieDB, util.KeyCookieSessionId)
 	ctx.Response.Header.SetCookie(&cookieHTTP)
 	ctx.Response.SetStatusCode(http.StatusOK)
-
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
-		Status: http.StatusOK,
-	})
-	if err != nil {
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrEncode, err.Error(), reqId)
-		return
-	}
-
 }
 
 func (u *UserInfo) PayHandler(ctx *fasthttp.RequestCtx) {
@@ -207,25 +218,30 @@ func (u *UserInfo) PayHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		u.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	tokenContext := ctx.UserValue("X-Csrf-Token")
-	xCsrfToken, errConvert := util.InterfaceConvertString(tokenContext)
-	if errConvert != nil {
+	xCsrfToken, errConvertToken := util.InterfaceConvertString(tokenContext)
+	if errConvertToken != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errConvert.Error()))
+		ctx.Response.SetBody([]byte(errConvertToken.Error()))
+		u.Logger.Errorf("%s, requestId: %d", errConvertToken.Error(), reqId)
 		return
 	}
 
-	err := json.NewEncoder(ctx).Encode(&authorization.Result{
+	response, errResponse := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
 	})
-	if err != nil {
+	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errResponse, reqId)
 		return
 	}
+
+	ctx.Response.SetBody(response)
+	json.NewEncoder(ctx)
 	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 }
@@ -268,7 +284,7 @@ func (u *UserInfo) UserWebSocketNewKey(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+	response, errResponse := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
 		Body: &authorization.WebSocket{
 			Socket: authorization.KeyWebSocket{
@@ -276,13 +292,15 @@ func (u *UserInfo) UserWebSocketNewKey(ctx *fasthttp.RequestCtx) {
 			},
 		},
 	})
-	if err != nil {
+	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrEncode, err.Error(), reqId)
+		u.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrEncode, errResponse.Error(), reqId)
 		return
 	}
 
+	ctx.Response.SetBody(response)
+	json.NewEncoder(ctx)
 	ctx.Response.SetStatusCode(http.StatusOK)
 }
 

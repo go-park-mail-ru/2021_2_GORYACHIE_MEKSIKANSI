@@ -1,0 +1,53 @@
+name: Docker Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: pull docker image
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            sudo docker pull matros71239/monolith:latest
+            sudo docker pull matros71239/auth:latest
+            sudo docker pull matros71239/cart:latest
+            sudo docker pull matros71239/res:latest
+            sudo docker pull matros71239/promo:latest
+      - name: checkoutToBranch
+        uses: actions/checkout@v2
+        with:
+          ref: metrics_easyjson_ci
+      - name: check ls
+        run: |
+          ls -R
+      - name: Transfer build files to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          source: "docker-compose-ci.yml"
+          target: "/home/backend"
+
+      - name: Reload docker-compose
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd ../home/backend
+            mv docker-compose-ci.yml docker-compose.yml
+            docker rm -f $(docker ps -a -q)
+            sudo docker-compose up -d
