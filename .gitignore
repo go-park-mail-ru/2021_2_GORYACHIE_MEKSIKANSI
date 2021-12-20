@@ -30,6 +30,7 @@
 
 #tests files
 cover
+result
 cover_wo_mock
 
 # other files

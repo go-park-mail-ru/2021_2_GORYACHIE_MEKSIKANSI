@@ -226,7 +226,8 @@ CREATE TABLE IF NOT EXISTS promocode (
     cost_for_sale int,
     sale_percent int,
     sale_amount int,
-    time_for_sale timestamp,
+    time_for_sale_start time,
+    time_for_sale_finish time,
     sale_in_time_percent int,
     sale_in_time_amount int
 );

@@ -90,17 +90,20 @@ const (
 
 // Error of middleware
 const (
-	MCheckAccessCookieNotScan          = "cookie not scan"
-	MGetIdByCookieCookieNotScan        = "cookie not scan"
-	MCheckAccessCookieNotFound         = "cookie not found"
-	MGetIdByCookieCookieExpired        = "cookie expired"
-	MGetIdByCookieCookieNotFound       = "cookie not found"
-	MCheckAccessTransactionNotCreate   = "transaction check access not create"
-	MCheckAccessNotCommit              = "transaction check access not commit"
-	MNewCSRFCSRFTransactionNotCreate   = "transaction new csrf not create"
-	MNewCSRFCSRFNotCommit              = "transaction new csrf not commit"
-	MGetIdByCookieTransactionNotCreate = "transaction get id not create"
-	MGetIdByCookieNotCommit            = "transaction get id not commit"
+	MCheckAccessCookieNotScan                 = "cookie not scan"
+	MGetIdByCookieCookieNotScan               = "cookie not scan"
+	MCheckAccessCookieNotFound                = "cookie not found"
+	MGetIdByCookieCookieExpired               = "cookie expired"
+	MGetIdByCookieCookieNotFound              = "cookie not found"
+	MCheckAccessTransactionNotCreate          = "transaction check access not create"
+	MCheckAccessNotCommit                     = "transaction check access not commit"
+	MNewCSRFCSRFTransactionNotCreate          = "transaction new csrf not create"
+	MNewCSRFCSRFNotCommit                     = "transaction new csrf not commit"
+	MGetIdByCookieTransactionNotCreate        = "transaction get id not create"
+	MGetIdByCookieNotCommit                   = "transaction get id not commit"
+	MCheckAccessWebsocketTransactionNotCreate = "transaction check websocket not create"
+	MCheckAccessWebsocketNotCommit            = "transaction check websocket not commit"
+	MCheckAccessWebsocketNotSelect            = "check websocket not select"
 )
 
 // Error of main
@@ -148,7 +151,7 @@ const (
 	PUpdatePasswordTransactionNotCreate    = "transaction update password not create"
 	PUpdatePasswordNotCommit               = "update password not commit"
 	PAddAddressAddressNotAdd               = "address not insert"
-	PAddDeleteAddressNotDelete             = "address not delete"
+	PDeleteAddressNotDelete                = "address not delete"
 	PGetProfileHostTransactionNotCreate    = "transaction get profile host not create"
 	PGetProfileHostNotCommit               = "transaction get profile host not commit"
 	PGetProfileCourierTransactionNotCreate = "transaction get profile courier not create"
@@ -167,8 +170,8 @@ const (
 	PUpdateAddressNotCommit                = "transaction update address not commit"
 	PAddAddressNotCreate                   = "transaction add address not create"
 	PAddAddressNotCommit                   = "transaction add address not commit"
-	PAddDeleteAddressTransactionNotCreate  = "transaction delete address not create"
-	PAddDeleteAddressNotCommit             = "transaction delete address not commit"
+	PDeleteAddressTransactionNotCreate     = "transaction delete address not create"
+	PDeleteAddressNotCommit                = "transaction delete address not commit"
 	PUpdateBirthdayNotParse                = "birthday not parse"
 )
 

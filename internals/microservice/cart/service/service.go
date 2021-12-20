@@ -1,3 +1,4 @@
+//go:generate mockgen -destination=mocks/service.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/cart/application CartInterface
 package service
 
 import (

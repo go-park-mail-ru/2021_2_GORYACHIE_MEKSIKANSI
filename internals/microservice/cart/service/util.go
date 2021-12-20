@@ -78,6 +78,7 @@ func CastResponseCartErrorsToResponseCartErrorsProto(result *cartPkg.ResponseCar
 		dish.NameDish = errDish.NameDish
 		dish.ItemNumber = int64(errDish.ItemNumber)
 		dish.CountAvail = int64(errDish.CountAvail)
+		end.DishesErrors = append(end.DishesErrors, dish)
 	}
 	end.PromoCode.Code = result.PromoCode.Code
 	end.PromoCode.Name = result.PromoCode.Name

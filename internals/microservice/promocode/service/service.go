@@ -1,3 +1,4 @@
+//go:generate mockgen -destination=mocks/service.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/promocode/application PromocodeApplicationInterface
 package service
 
 import (
@@ -12,6 +13,8 @@ type PromocodeManagerInterface interface {
 	ActiveCostForFreeDish(ctx context.Context, promoCode *proto.PromoCodeWithRestaurantId) (*proto.FreeDishResponse, error)
 	ActiveCostForSale(ctx context.Context, promoCode *proto.PromoCodeWithAmount) (*proto.NewCostResponse, error)
 	ActiveTimeForSale(ctx context.Context, promoCode *proto.PromoCodeWithAmount) (*proto.NewCostResponse, error)
+	AddPromoCode(ctx context.Context, promoCode *proto.PromoCodeWithRestaurantIdAndClient) (*proto.Error, error)
+	GetPromoCode(ctx context.Context, promoCode *proto.ClientId) (*proto.PromoCodeText, error)
 }
 
 type PromocodeManager struct {
@@ -56,4 +59,22 @@ func (pm *PromocodeManager) ActiveTimeForSale(ctx context.Context, promoCode *pr
 		return &proto.NewCostResponse{Error: err.Error()}, nil
 	}
 	return &proto.NewCostResponse{Cost: int64(result)}, nil
+}
+
+func (pm *PromocodeManager) AddPromoCode(ctx context.Context, promoCode *proto.PromoCodeWithRestaurantIdAndClient) (*proto.Error, error) {
+	err := pm.Application.AddPromoCode(promoCode.PromoCode, int(promoCode.Restaurant), int(promoCode.Client))
+	if err != nil {
+		return &proto.Error{Error: err.Error()}, nil
+	}
+	return &proto.Error{}, nil
+}
+
+func (pm *PromocodeManager) GetPromoCode(ctx context.Context, promoCode *proto.ClientId) (*proto.PromoCodeText, error) {
+	promoCodeText, err := pm.Application.GetPromoCode(int(promoCode.ClientId))
+	if err != nil {
+		return &proto.PromoCodeText{Error: err.Error()}, nil
+	}
+	return &proto.PromoCodeText{
+		PromoCodeText: promoCodeText,
+	}, nil
 }

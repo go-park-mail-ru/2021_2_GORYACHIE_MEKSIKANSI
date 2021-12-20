@@ -15,6 +15,16 @@ message PromoCodeWithRestaurantId {
   int64 restaurant = 2;
 }
 
+message PromoCodeWithRestaurantIdAndClient {
+  string promo_code = 1;
+  int64 restaurant = 2;
+  int64 client = 3;
+}
+
+message ClientId {
+  int64 client_id = 1;
+}
+
 message TypePromoCodeResponse {
   int64 type = 1;
   string error = 2;
@@ -36,10 +46,21 @@ message FreeDishResponse {
   string error = 3;
 }
 
+message Error {
+  string error = 1;
+}
+
+message PromoCodeText {
+  string promo_code_text = 1;
+  string error = 2;
+}
+
 service PromocodeService {
   rpc GetTypePromoCode(PromoCodeWithRestaurantId) returns (TypePromoCodeResponse);
   rpc ActiveFreeDelivery(PromoCodeWithRestaurantId) returns (FreeDeliveryResponse);
   rpc ActiveCostForFreeDish(PromoCodeWithRestaurantId) returns (FreeDishResponse);
   rpc ActiveCostForSale(PromoCodeWithAmount) returns (NewCostResponse);
   rpc ActiveTimeForSale(PromoCodeWithAmount) returns (NewCostResponse);
+  rpc AddPromoCode(PromoCodeWithRestaurantIdAndClient) returns (Error);
+  rpc GetPromoCode(ClientId) returns (PromoCodeText);
 }

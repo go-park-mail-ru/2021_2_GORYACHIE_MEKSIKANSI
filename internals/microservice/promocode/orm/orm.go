@@ -15,7 +15,9 @@ type WrapperPromocodeInterface interface {
 	ActiveFreeDelivery(promoCode string, restaurantId int) (bool, error)
 	ActiveCostForFreeDish(promoCode string, restaurantId int) (int, int, error)
 	ActiveCostForSale(promoCode string, amount int, restaurantId int) (int, error)
-	ActiveTimeForSale(promoCode string, amount int, restaurantId int) (int, error)
+	ActiveTimeForSale(promoCode string, amount int, restaurantId int, currentTime time.Time) (int, error)
+	AddPromoCode(promoCode string, restaurantId int, clientId int) error
+	GetPromoCode(id int) (string, error)
 }
 
 type ConnectionInterface interface {
@@ -50,7 +52,7 @@ func (db *Wrapper) GetTypePromoCode(promoCode string, restaurantId int) (int, er
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.PGetTypePromoCodeTransactionNotCreate,
+			Text: errPkg.PGetTypePromoCodeTransactionNotCreate,
 		}
 	}
 
@@ -63,18 +65,18 @@ func (db *Wrapper) GetTypePromoCode(promoCode string, restaurantId int) (int, er
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return 0, &errPkg.Errors{
-				Alias: errPkg.PGetTypePromoCodeRestaurantsNotFound,
+				Text: errPkg.PGetTypePromoCodeRestaurantsNotFound,
 			}
 		}
 		return 0, &errPkg.Errors{
-			Alias: errPkg.PGetTypePromoCodeRestaurantsNotSelect,
+			Text: errPkg.PGetTypePromoCodeRestaurantsNotSelect,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.PGetTypePromoCodeNotCommit,
+			Text: errPkg.PGetTypePromoCodeNotCommit,
 		}
 	}
 	return typePromoCode, nil
@@ -85,7 +87,7 @@ func (db *Wrapper) ActiveFreeDelivery(promoCode string, restaurantId int) (bool,
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.PActiveFreeDeliveryTransactionNotCreate,
+			Text: errPkg.PActiveFreeDeliveryTransactionNotCreate,
 		}
 	}
 
@@ -98,18 +100,18 @@ func (db *Wrapper) ActiveFreeDelivery(promoCode string, restaurantId int) (bool,
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return false, &errPkg.Errors{
-				Alias: errPkg.PActiveFreeDeliveryRestaurantsNotFound,
+				Text: errPkg.PActiveFreeDeliveryRestaurantsNotFound,
 			}
 		}
 		return false, &errPkg.Errors{
-			Alias: errPkg.PActiveFreeDeliveryRestaurantsNotSelect,
+			Text: errPkg.PActiveFreeDeliveryRestaurantsNotSelect,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return false, &errPkg.Errors{
-			Alias: errPkg.PActiveFreeDeliveryNotCommit,
+			Text: errPkg.PActiveFreeDeliveryNotCommit,
 		}
 	}
 	return freeDelivery, nil
@@ -120,7 +122,7 @@ func (db *Wrapper) ActiveCostForFreeDish(promoCode string, restaurantId int) (in
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return 0, 0, &errPkg.Errors{
-			Alias: errPkg.PActiveCostForFreeDishTransactionNotCreate,
+			Text: errPkg.PActiveCostForFreeDishTransactionNotCreate,
 		}
 	}
 
@@ -134,18 +136,18 @@ func (db *Wrapper) ActiveCostForFreeDish(promoCode string, restaurantId int) (in
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return 0, 0, &errPkg.Errors{
-				Alias: errPkg.PActiveCostForFreeDishRestaurantsNotFound,
+				Text: errPkg.PActiveCostForFreeDishRestaurantsNotFound,
 			}
 		}
 		return 0, 0, &errPkg.Errors{
-			Alias: errPkg.PActiveCostForFreeDishRestaurantsNotSelect,
+			Text: errPkg.PActiveCostForFreeDishRestaurantsNotSelect,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return 0, 0, &errPkg.Errors{
-			Alias: errPkg.PActiveCostForFreeDishNotCommit,
+			Text: errPkg.PActiveCostForFreeDishNotCommit,
 		}
 	}
 	return costForFreeDish, dishId, nil
@@ -156,7 +158,7 @@ func (db *Wrapper) ActiveCostForSale(promoCode string, amount int, restaurantId 
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.PActiveCostForSaleTransactionNotCreate,
+			Text: errPkg.PActiveCostForSaleTransactionNotCreate,
 		}
 	}
 
@@ -170,11 +172,11 @@ func (db *Wrapper) ActiveCostForSale(promoCode string, amount int, restaurantId 
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return 0, &errPkg.Errors{
-				Alias: errPkg.PActiveCostForSaleRestaurantsNotFound,
+				Text: errPkg.PActiveCostForSaleRestaurantsNotFound,
 			}
 		}
 		return 0, &errPkg.Errors{
-			Alias: errPkg.PActiveCostForSaleRestaurantsNotSelect,
+			Text: errPkg.PActiveCostForSaleRestaurantsNotSelect,
 		}
 	}
 
@@ -190,41 +192,42 @@ func (db *Wrapper) ActiveCostForSale(promoCode string, amount int, restaurantId 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.PActiveCostForSaleNotCommit,
+			Text: errPkg.PActiveCostForSaleNotCommit,
 		}
 	}
 	return newSum, nil
 }
 
-func (db *Wrapper) ActiveTimeForSale(promoCode string, amount int, restaurantId int) (int, error) {
+func (db *Wrapper) ActiveTimeForSale(promoCode string, amount int, restaurantId int, currentTime time.Time) (int, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.PActiveTimeForSaleTransactionNotCreate,
+			Text: errPkg.PActiveTimeForSaleTransactionNotCreate,
 		}
 	}
 
 	defer tx.Rollback(contextTransaction)
 
-	var timeSale time.Time
+	var timeSaleStart time.Time
+	var timeSaleFinish time.Time
 	var salePercent, saleAmount *int32
 	err = tx.QueryRow(contextTransaction,
-		"SELECT time_for_sale, sale_in_time_percent, sale_in_time_amount FROM promocode WHERE code = $1 AND restaurant = $2",
-		promoCode, restaurantId).Scan(&timeSale, &salePercent, &saleAmount)
+		"SELECT time_for_sale_start, time_for_sale_finish, sale_in_time_percent, sale_in_time_amount FROM promocode WHERE code = $1 AND restaurant = $2",
+		promoCode, restaurantId).Scan(&timeSaleStart, &timeSaleFinish, &salePercent, &saleAmount)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return 0, &errPkg.Errors{
-				Alias: errPkg.PActiveTimeForSaleRestaurantsNotFound,
+				Text: errPkg.PActiveTimeForSaleRestaurantsNotFound,
 			}
 		}
 		return 0, &errPkg.Errors{
-			Alias: errPkg.PActiveTimeForSaleRestaurantsNotSelect,
+			Text: errPkg.PActiveTimeForSaleRestaurantsNotSelect,
 		}
 	}
 
 	var newSum int
-	if time.Now().Before(timeSale) {
+	if currentTime.Before(timeSaleFinish) && currentTime.After(timeSaleStart) {
 		if salePercent != nil {
 			newSum = amount - amount*int(*salePercent)/100
 		} else {
@@ -233,13 +236,77 @@ func (db *Wrapper) ActiveTimeForSale(promoCode string, amount int, restaurantId 
 				newSum = 0
 			}
 		}
+	} else {
+		newSum = amount
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
 		return 0, &errPkg.Errors{
-			Alias: errPkg.PActiveTimeForSaleNotCommit,
+			Text: errPkg.PActiveTimeForSaleNotCommit,
 		}
 	}
 	return newSum, nil
+}
+
+func (db *Wrapper) AddPromoCode(promoCode string, restaurantId int, clientId int) error {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.PAddPromoCodeTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	_, err = tx.Exec(contextTransaction,
+		"INSERT INTO cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3) ON CONFLICT (client_id) DO UPDATE SET promo_code = $2 WHERE cart_user.client_id =  $1",
+		clientId, promoCode, restaurantId)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.PAddPromoCodeNotUpsert,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.PAddPromoCodeNotCommit,
+		}
+	}
+	return nil
+}
+
+func (db *Wrapper) GetPromoCode(id int) (string, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return "", &errPkg.Errors{
+			Text: errPkg.PGetPromoCodeTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	var promoCode string
+	err = tx.QueryRow(contextTransaction,
+		"SELECT promo_code FROM cart_user WHERE client_id = $1",
+		id).Scan(&promoCode)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return "", nil
+		}
+		return "", &errPkg.Errors{
+			Text: errPkg.PGetPromoCodeNotSelect,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return "", &errPkg.Errors{
+			Text: errPkg.PGetPromoCodeNotCommit,
+		}
+	}
+	return promoCode, nil
 }

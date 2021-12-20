@@ -6,6 +6,7 @@ package mocks
 
 import (
 	reflect "reflect"
+	time "time"
 
 	gomock "github.com/golang/mock/gomock"
 )
@@ -80,18 +81,47 @@ func (mr *MockWrapperPromocodeInterfaceMockRecorder) ActiveFreeDelivery(arg0, ar
 }
 
 // ActiveTimeForSale mocks base method.
-func (m *MockWrapperPromocodeInterface) ActiveTimeForSale(arg0 string, arg1, arg2 int) (int, error) {
+func (m *MockWrapperPromocodeInterface) ActiveTimeForSale(arg0 string, arg1, arg2 int, arg3 time.Time) (int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ActiveTimeForSale", arg0, arg1, arg2)
+	ret := m.ctrl.Call(m, "ActiveTimeForSale", arg0, arg1, arg2, arg3)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ActiveTimeForSale indicates an expected call of ActiveTimeForSale.
-func (mr *MockWrapperPromocodeInterfaceMockRecorder) ActiveTimeForSale(arg0, arg1, arg2 interface{}) *gomock.Call {
+func (mr *MockWrapperPromocodeInterfaceMockRecorder) ActiveTimeForSale(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActiveTimeForSale", reflect.TypeOf((*MockWrapperPromocodeInterface)(nil).ActiveTimeForSale), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActiveTimeForSale", reflect.TypeOf((*MockWrapperPromocodeInterface)(nil).ActiveTimeForSale), arg0, arg1, arg2, arg3)
+}
+
+// AddPromoCode mocks base method.
+func (m *MockWrapperPromocodeInterface) AddPromoCode(arg0 string, arg1, arg2 int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddPromoCode", arg0, arg1, arg2)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AddPromoCode indicates an expected call of AddPromoCode.
+func (mr *MockWrapperPromocodeInterfaceMockRecorder) AddPromoCode(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddPromoCode", reflect.TypeOf((*MockWrapperPromocodeInterface)(nil).AddPromoCode), arg0, arg1, arg2)
+}
+
+// GetPromoCode mocks base method.
+func (m *MockWrapperPromocodeInterface) GetPromoCode(arg0 int) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPromoCode", arg0)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPromoCode indicates an expected call of GetPromoCode.
+func (mr *MockWrapperPromocodeInterfaceMockRecorder) GetPromoCode(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPromoCode", reflect.TypeOf((*MockWrapperPromocodeInterface)(nil).GetPromoCode), arg0)
 }
 
 // GetTypePromoCode mocks base method.

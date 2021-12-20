@@ -27,11 +27,10 @@ func (r *Restaurant) AllRestaurantsPromo() (*resPkg.AllRestaurantsPromo, error) 
 	if err != nil {
 		return nil, err
 	}
-	promoCodes, err := r.DB.GetPromoCodes()
+	restaurants.AllPromo, err = r.DB.GetPromoCodes()
 	if err != nil {
 		return nil, err
 	}
-	restaurants.AllPromo = promoCodes
 	return restaurants, nil
 }
 

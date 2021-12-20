@@ -26,6 +26,10 @@ func (r *Restaurant) AllRestaurants() (*resPkg.AllRestaurantsPromo, error) {
 	return r.DB.AllRestaurants()
 }
 
+func (r *Restaurant) RecommendedRestaurants() (*resPkg.AllRestaurants, error) {
+	return r.DB.RecommendedRestaurants()
+}
+
 func (r *Restaurant) GetRestaurant(id int, idClient int) (*resPkg.RestaurantId, error) {
 	return r.DB.GetRestaurant(id, idClient)
 }
@@ -52,8 +56,4 @@ func (r *Restaurant) GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error
 
 func (r *Restaurant) EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error) {
 	return r.DB.EditRestaurantInFavorite(idRestaurant, idClient)
-}
-
-func (r *Restaurant) RecommendedRestaurants() (*resPkg.AllRestaurants, error) {
-	return r.DB.RecommendedRestaurants()
 }

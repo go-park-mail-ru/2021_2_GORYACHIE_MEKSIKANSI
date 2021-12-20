@@ -75,7 +75,7 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 	authManager := authProto.NewAuthorizationServiceClient(grpcConnAuth)
 	authCtx := context.Background()
 
-	authWrapper := orm.Wrapper{Conn: authManager, Ctx: authCtx, DBConn: connectionDB}
+	authWrapper := orm.Wrapper{Conn: authManager, Ctx: authCtx}
 	authApp := application.Authorization{DB: &authWrapper}
 	userInfo := api.UserInfo{
 		Application: &authApp,

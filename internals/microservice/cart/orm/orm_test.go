@@ -648,30 +648,57 @@ func TestDeleteCart(t *testing.T) {
 }
 
 var GetPromoCode = []struct {
-	testName                 string
-	input                    int
-	out                      string
-	outErr                   string
-	errBeginTransaction      error
-	inputQuery               int
-	outQuery                 Row
-	countQuery               int
-	errCommitTransaction     error
-	countCommitTransaction   int
-	countRollbackTransaction int
+	testName   string
+	input      int
+	out        string
+	outErr     string
+	inputQuery *promoProtoPkg.ClientId
+	outQuery   *promoProtoPkg.PromoCodeText
+	errQuery   error
+	countQuery int
 }{
 	{
-		testName:                 "First",
-		input:                    1,
-		out:                      "promo",
-		outErr:                   "",
-		errBeginTransaction:      nil,
-		inputQuery:               1,
-		outQuery:                 Row{row: []interface{}{"promo"}},
-		countQuery:               1,
-		errCommitTransaction:     nil,
-		countCommitTransaction:   1,
-		countRollbackTransaction: 1,
+		testName: "Get promo code",
+		input:    1,
+		out:      "promo",
+		outErr:   "",
+		inputQuery: &promoProtoPkg.ClientId{
+			ClientId: 1,
+		},
+		outQuery: &promoProtoPkg.PromoCodeText{
+			PromoCodeText: "promo",
+		},
+		errQuery:   nil,
+		countQuery: 1,
+	},
+	{
+		testName: "Error get promo code",
+		input:    1,
+		out:      "",
+		outErr:   "text",
+		inputQuery: &promoProtoPkg.ClientId{
+			ClientId: 1,
+		},
+		outQuery: &promoProtoPkg.PromoCodeText{
+			PromoCodeText: "promo",
+			Error:         "text",
+		},
+		errQuery:   nil,
+		countQuery: 1,
+	},
+	{
+		testName: "Error microservice",
+		input:    1,
+		out:      "",
+		outErr:   "text",
+		inputQuery: &promoProtoPkg.ClientId{
+			ClientId: 1,
+		},
+		outQuery: &promoProtoPkg.PromoCodeText{
+			PromoCodeText: "promo",
+		},
+		errQuery:   errors.New("text"),
+		countQuery: 1,
 	},
 }
 
@@ -679,32 +706,14 @@ func TestGetPromoCode(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockConnectionInterface(ctrl)
-	mTx := mocks.NewMockTransactionInterface(ctrl)
+	m := mocks.NewMockConnectPromoCodeServiceInterface(ctrl)
 	for _, tt := range GetPromoCode {
 		m.
 			EXPECT().
-			Begin(gomock.Any()).
-			Return(mTx, tt.errBeginTransaction)
-		mTx.
-			EXPECT().
-			Commit(gomock.Any()).
-			Return(tt.errCommitTransaction).
-			Times(tt.countCommitTransaction)
-		mTx.
-			EXPECT().
-			Rollback(gomock.Any()).
-			Return(nil).
-			Times(tt.countRollbackTransaction)
-		mTx.
-			EXPECT().
-			QueryRow(context.Background(),
-				"SELECT promo_code FROM cart_user WHERE client_id = $1",
-				tt.inputQuery,
-			).
-			Return(&tt.outQuery).
+			GetPromoCode(gomock.Any(), tt.inputQuery).
+			Return(tt.outQuery, tt.errQuery).
 			Times(tt.countQuery)
-		testUser := &Wrapper{Conn: m}
+		testUser := &Wrapper{ConnPromoService: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetPromoCode(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
@@ -1294,38 +1303,64 @@ func TestGetRestaurant(t *testing.T) {
 }
 
 var AddPromoCode = []struct {
-	testName                 string
-	outErr                   string
-	inputQueryClient         int
-	inputQueryPromoCode      string
-	inputQueryRestaurant     int
-	inputPromoCode           string
-	inputRestaurantId        int
-	inputClientId            int
-	errQuery                 error
-	countQuery               int
-	errBeginTransaction      error
-	errCommitTransaction     error
-	countCommitTransaction   int
-	errRollbackTransaction   error
-	countRollbackTransaction int
+	testName          string
+	outErr            string
+	inputQuery        *promoProtoPkg.PromoCodeWithRestaurantIdAndClient
+	inputPromoCode    string
+	inputRestaurantId int
+	inputClientId     int
+	outQuery          *promoProtoPkg.Error
+	errQuery          error
+	countQuery        int
 }{
 	{
-		testName:                 "First",
-		outErr:                   "",
-		inputQueryClient:         1,
-		inputQueryPromoCode:      "promo",
-		inputQueryRestaurant:     1,
-		inputPromoCode:           "promo",
-		inputRestaurantId:        1,
-		inputClientId:            1,
-		errQuery:                 nil,
-		countQuery:               1,
-		errBeginTransaction:      nil,
-		errCommitTransaction:     nil,
-		countCommitTransaction:   1,
-		errRollbackTransaction:   nil,
-		countRollbackTransaction: 1,
+		testName:          "Add promo code",
+		inputRestaurantId: 1,
+		inputPromoCode:    "promo",
+		inputClientId:     1,
+		outErr:            "",
+		inputQuery: &promoProtoPkg.PromoCodeWithRestaurantIdAndClient{
+			Restaurant: 1,
+			Client:     1,
+			PromoCode:  "promo",
+		},
+		outQuery:   &promoProtoPkg.Error{},
+		errQuery:   nil,
+		countQuery: 1,
+	},
+	{
+		testName:          "Error add promo code",
+		inputRestaurantId: 1,
+		inputPromoCode:    "promo",
+		inputClientId:     1,
+		outErr:            "text",
+		inputQuery: &promoProtoPkg.PromoCodeWithRestaurantIdAndClient{
+			Restaurant: 1,
+			Client:     1,
+			PromoCode:  "promo",
+		},
+		outQuery: &promoProtoPkg.Error{
+			Error: "text",
+		},
+		errQuery:   nil,
+		countQuery: 1,
+	},
+	{
+		testName:          "Error microservice",
+		inputRestaurantId: 1,
+		inputPromoCode:    "promo",
+		inputClientId:     1,
+		outErr:            "text",
+		inputQuery: &promoProtoPkg.PromoCodeWithRestaurantIdAndClient{
+			Restaurant: 1,
+			Client:     1,
+			PromoCode:  "promo",
+		},
+		outQuery: &promoProtoPkg.Error{
+			Error: "",
+		},
+		errQuery:   errors.New("text"),
+		countQuery: 1,
 	},
 }
 
@@ -1333,32 +1368,14 @@ func TestAddPromoCode(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockConnectionInterface(ctrl)
-	mTx := mocks.NewMockTransactionInterface(ctrl)
+	m := mocks.NewMockConnectPromoCodeServiceInterface(ctrl)
 	for _, tt := range AddPromoCode {
 		m.
 			EXPECT().
-			Begin(gomock.Any()).
-			Return(mTx, tt.errBeginTransaction)
-		mTx.
-			EXPECT().
-			Commit(gomock.Any()).
-			Return(tt.errCommitTransaction).
-			Times(tt.countCommitTransaction)
-		mTx.
-			EXPECT().
-			Rollback(gomock.Any()).
-			Return(nil).
-			Times(tt.countRollbackTransaction)
-		mTx.
-			EXPECT().
-			Exec(context.Background(),
-				"INSERT INTO cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3) ON CONFLICT (client_id) DO UPDATE SET promo_code = $2 WHERE cart_user.client_id =  $1",
-				tt.inputQueryClient, tt.inputQueryPromoCode, tt.inputQueryRestaurant,
-			).
-			Return(nil, tt.errQuery).
+			AddPromoCode(gomock.Any(), tt.inputQuery).
+			Return(tt.outQuery, tt.errQuery).
 			Times(tt.countQuery)
-		testUser := &Wrapper{Conn: m}
+		testUser := &Wrapper{ConnPromoService: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			err := testUser.AddPromoCode(tt.inputPromoCode, tt.inputRestaurantId, tt.inputClientId)
 			if tt.outErr != "" {
