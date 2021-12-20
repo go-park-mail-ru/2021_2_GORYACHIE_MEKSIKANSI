@@ -14,6 +14,7 @@ type AuthorizationInterface interface {
 	CheckAccess(cookie *authPkg.Defense) (bool, error)
 	NewCSRF(cookie *authPkg.Defense) (string, error)
 	GetIdByCookie(cookie *authPkg.Defense) (int, error)
+	NewCSRFWebsocket(id int) (string, error)
 }
 
 type AuthorizationApplication struct {
@@ -90,4 +91,8 @@ func (ap *AuthorizationApplication) NewCSRF(cookie *authPkg.Defense) (string, er
 
 func (ap *AuthorizationApplication) GetIdByCookie(cookie *authPkg.Defense) (int, error) {
 	return ap.DB.GetIdByCookie(cookie)
+}
+
+func (ap *AuthorizationApplication) NewCSRFWebsocket(id int) (string, error) {
+	return ap.DB.NewCSRFWebsocket(id)
 }

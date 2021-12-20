@@ -11,7 +11,6 @@ import (
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -289,8 +288,7 @@ func (db *Wrapper) UpdateEmail(id int, newEmail string) error {
 		"UPDATE general_user_info SET email = $1 WHERE id = $2",
 		Utils2.Sanitize(newEmail), id)
 	if err != nil {
-		textError := err.Error()
-		if strings.Contains(textError, "duplicate key") {
+		if err == pgx.ErrNoRows {
 			return &errPkg.Errors{
 				Text: errPkg.PUpdateEmailEmailRepeat,
 			}
@@ -383,8 +381,7 @@ func (db *Wrapper) UpdatePhone(id int, newPhone string) error {
 		"UPDATE general_user_info SET phone = $1 WHERE id = $2",
 		newPhone, id)
 	if err != nil {
-		errText := err.Error()
-		if strings.Contains(errText, "duplicate key") {
+		if err == pgx.ErrNoRows {
 			return &errPkg.Errors{
 				Text: errPkg.PUpdatePhonePhoneRepeat,
 			}
@@ -426,7 +423,7 @@ func (db *Wrapper) UpdateAvatar(id int, newAvatar *profile.UpdateAvatar, newFile
 	_, err = db.Uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(db.NameBucket),
 		ACL:    aws.String("public-read"),
-		Key:    aws.String(newFileName),
+		Key:    aws.String(Utils2.Sanitize(newFileName)),
 		Body:   file,
 	})
 	if err != nil {

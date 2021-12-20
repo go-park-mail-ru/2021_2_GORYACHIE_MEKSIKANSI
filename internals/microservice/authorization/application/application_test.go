@@ -465,3 +465,52 @@ func TestGetIdByCookie(t *testing.T) {
 		})
 	}
 }
+
+var NewCSRFWebsocket = []struct {
+	testName   string
+	input      int
+	out        string
+	outErr     string
+	inputQuery int
+	outQuery   string
+	errQuery   error
+	countQuery int
+}{
+	{
+		testName:   "New CSRF websocket",
+		input:      1,
+		out:        "gfhgf-fghfgh-dhghfh-fgdf",
+		outErr:     "",
+		inputQuery: 1,
+		outQuery:   "gfhgf-fghfgh-dhghfh-fgdf",
+		errQuery:   nil,
+		countQuery: 1,
+	},
+}
+
+func TestNewCSRFWebsocket(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockWrapperAuthorizationInterface(ctrl)
+	for _, tt := range NewCSRFWebsocket {
+		m.
+			EXPECT().
+			NewCSRFWebsocket(tt.inputQuery).
+			Return(tt.outQuery, tt.errQuery).
+			Times(tt.countQuery)
+		test := AuthorizationApplication{DB: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := test.NewCSRFWebsocket(tt.input)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}

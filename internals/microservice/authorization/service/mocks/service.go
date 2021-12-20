@@ -109,6 +109,21 @@ func (mr *MockAuthorizationInterfaceMockRecorder) NewCSRF(arg0 interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewCSRF", reflect.TypeOf((*MockAuthorizationInterface)(nil).NewCSRF), arg0)
 }
 
+// NewCSRFWebsocket mocks base method.
+func (m *MockAuthorizationInterface) NewCSRFWebsocket(arg0 int) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NewCSRFWebsocket", arg0)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// NewCSRFWebsocket indicates an expected call of NewCSRFWebsocket.
+func (mr *MockAuthorizationInterfaceMockRecorder) NewCSRFWebsocket(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewCSRFWebsocket", reflect.TypeOf((*MockAuthorizationInterface)(nil).NewCSRFWebsocket), arg0)
+}
+
 // SignUp mocks base method.
 func (m *MockAuthorizationInterface) SignUp(arg0 *authorization.RegistrationRequest) (*authorization.Defense, error) {
 	m.ctrl.T.Helper()

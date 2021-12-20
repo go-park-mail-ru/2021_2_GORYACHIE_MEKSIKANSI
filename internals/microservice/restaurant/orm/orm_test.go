@@ -1123,12 +1123,21 @@ var GetPromoCodes = []struct {
 	countRollbackTransaction int
 }{
 	{
-		testName:                 "First",
-		input:                    1,
-		out:                      []rest.Promocode{{RestaurantId: 1, Description: "free", Img: "/url/", Name: "freedelivery"}},
-		outErr:                   "",
-		inputQuery:               1,
-		outQuery:                 Rows{rows: 1, row: []interface{}{"freedelivery", "free", "/url/", 1}},
+		testName: "First",
+		input:    1,
+		out: []rest.Promocode{
+			{
+				RestaurantId: 1,
+				Description:  "free",
+				Img:          "/url/",
+				Name:         "freedelivery",
+				//Code: "promo",
+			},
+		},
+		outErr:     "",
+		inputQuery: 1,
+		outQuery:   Rows{rows: 1, row: []interface{}{"freedelivery", "free", "/url/", 1}},
+		//outQuery:                 Rows{rows: 1, row: []interface{}{"freedelivery", "free", "/url/", 1, "promo"}},
 		errQuery:                 nil,
 		countQuery:               1,
 		errBeginTransaction:      nil,

@@ -4,7 +4,6 @@ import (
 	auth "2021_2_GORYACHIE_MEKSIKANSI/internals/authorization"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/authorization/orm/mocks"
 	authProto "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/authorization/proto"
-	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/util"
 	"errors"
 	"fmt"
@@ -339,74 +338,55 @@ func TestLogout(t *testing.T) {
 }
 
 var NewCSRFWebsocket = []struct {
-	testName                 string
-	input                    int
-	out                      string
-	outErr                   string
-	inputQuery               int
-	errQuery                 error
-	countQuery               int
-	errBeginTransaction      error
-	errCommitTransaction     error
-	countCommitTransaction   int
-	errRollbackTransaction   error
-	countRollbackTransaction int
+	testName   string
+	input      int
+	out        string
+	outErr     string
+	inputQuery *authProto.IdClient
+	outQuery   *authProto.WebsocketResponse
+	errQuery   error
 }{
 	{
-		testName:                 "New CSRF websocket",
-		input:                    1,
-		out:                      "",
-		outErr:                   "",
-		inputQuery:               1,
-		errQuery:                 nil,
-		countQuery:               1,
-		errBeginTransaction:      nil,
-		errCommitTransaction:     nil,
-		countCommitTransaction:   1,
-		errRollbackTransaction:   nil,
-		countRollbackTransaction: 1,
+		testName: "New CSRF websocket",
+		input:    1,
+		out:      "asdadfsgd",
+		outErr:   "",
+		inputQuery: &authProto.IdClient{
+			ClientId: 1,
+		},
+		outQuery: &authProto.WebsocketResponse{
+			Websocket: "asdadfsgd",
+			Error:     "",
+		},
+		errQuery: nil,
 	},
 	{
-		testName:                 "Error begin transaction",
-		input:                    1,
-		out:                      "text",
-		outErr:                   errPkg.ANewCSRFWebsocketTransactionNotCreate,
-		inputQuery:               1,
-		errQuery:                 nil,
-		countQuery:               0,
-		errBeginTransaction:      errors.New("text"),
-		errCommitTransaction:     nil,
-		countCommitTransaction:   0,
-		errRollbackTransaction:   nil,
-		countRollbackTransaction: 0,
+		testName: "Error new web socket",
+		input:    1,
+		out:      "",
+		outErr:   "text",
+		inputQuery: &authProto.IdClient{
+			ClientId: 1,
+		},
+		outQuery: &authProto.WebsocketResponse{
+			Websocket: "asdadfsgd",
+			Error:     "text",
+		},
+		errQuery: nil,
 	},
 	{
-		testName:                 "Error query",
-		input:                    1,
-		out:                      "text",
-		outErr:                   errPkg.ANewCSRFWebsocketNotUpdate,
-		inputQuery:               1,
-		errQuery:                 errors.New("text"),
-		countQuery:               1,
-		errBeginTransaction:      nil,
-		errCommitTransaction:     nil,
-		countCommitTransaction:   0,
-		errRollbackTransaction:   nil,
-		countRollbackTransaction: 1,
-	},
-	{
-		testName:                 "Error commit",
-		input:                    1,
-		out:                      "text",
-		outErr:                   errPkg.ANewCSRFWebsocketNotCommit,
-		inputQuery:               1,
-		errQuery:                 nil,
-		countQuery:               1,
-		errBeginTransaction:      nil,
-		errCommitTransaction:     errors.New("text"),
-		countCommitTransaction:   1,
-		errRollbackTransaction:   nil,
-		countRollbackTransaction: 1,
+		testName: "Error microservice",
+		input:    1,
+		out:      "",
+		outErr:   "text",
+		inputQuery: &authProto.IdClient{
+			ClientId: 1,
+		},
+		outQuery: &authProto.WebsocketResponse{
+			Websocket: "asdadfsgd",
+			Error:     "",
+		},
+		errQuery: errors.New("text"),
 	},
 }
 
@@ -414,32 +394,16 @@ func TestNewCSRFWebsocket(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockConnectionInterface(ctrl)
-	mTx := mocks.NewMockTransactionInterface(ctrl)
+	m := mocks.NewMockConnectAuthServiceInterface(ctrl)
 	for _, tt := range NewCSRFWebsocket {
 		m.
 			EXPECT().
-			Begin(gomock.Any()).
-			Return(mTx, tt.errBeginTransaction)
-		mTx.
-			EXPECT().
-			Commit(gomock.Any()).
-			Return(tt.errCommitTransaction).
-			Times(tt.countCommitTransaction)
-		mTx.
-			EXPECT().
-			Rollback(gomock.Any()).
-			Return(nil).
-			Times(tt.countRollbackTransaction)
-		mTx.
-			EXPECT().
-			Exec(gomock.Any(), "UPDATE cookie SET websocket = $1 WHERE client_id = $2", gomock.Any(), tt.inputQuery).
-			Return(nil, tt.errQuery).
-			Times(tt.countQuery)
-		testUser := &Wrapper{DBConn: m}
+			NewCSRFWebsocket(gomock.Any(), tt.inputQuery).
+			Return(tt.outQuery, tt.errQuery)
+		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.NewCSRFWebsocket(tt.input)
-			require.NotEqual(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
 				if err == nil {
 					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))

@@ -14,6 +14,7 @@ type AuthorizationManagerInterface interface {
 	SignUp(ctx context.Context, signup *authProto.RegistrationRequest) (*authProto.DefenseResponse, error)
 	Login(ctx context.Context, login *authProto.Authorization) (*authProto.DefenseResponse, error)
 	Logout(ctx context.Context, CSRF *authProto.CSRF) (*authProto.CSRFResponse, error)
+	NewCSRFWebsocket(ctx context.Context, client *authProto.IdClient) (*authProto.WebsocketResponse, error)
 }
 
 type AuthorizationManager struct {
@@ -97,5 +98,18 @@ func (am *AuthorizationManager) Logout(ctx context.Context, CSRF *authProto.CSRF
 	return &authProto.CSRFResponse{XCsrfToken: &authProto.CSRF{
 		XCsrfToken: cookie,
 	},
+	}, nil
+}
+
+func (am *AuthorizationManager) NewCSRFWebsocket(ctx context.Context, client *authProto.IdClient) (*authProto.WebsocketResponse, error) {
+	CSRF, err := am.Application.NewCSRFWebsocket(int(client.ClientId))
+	if err != nil {
+		return &authProto.WebsocketResponse{
+			Error: err.Error(),
+		}, nil
+	}
+
+	return &authProto.WebsocketResponse{
+		Websocket: CSRF,
 	}, nil
 }

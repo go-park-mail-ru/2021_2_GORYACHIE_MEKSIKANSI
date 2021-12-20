@@ -1,8 +1,8 @@
 package service
 
 import (
-	"2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/promocode/orm/mocks"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/promocode/proto"
+	"2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/promocode/service/mocks"
 	"context"
 	"errors"
 	"fmt"
@@ -61,7 +61,7 @@ func TestGetTypePromoCode(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperPromocodeInterface(ctrl)
+	m := mocks.NewMockPromocodeApplicationInterface(ctrl)
 	for _, tt := range GetTypePromoCode {
 		m.
 			EXPECT().
@@ -134,7 +134,7 @@ func TestActiveFreeDelivery(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperPromocodeInterface(ctrl)
+	m := mocks.NewMockPromocodeApplicationInterface(ctrl)
 	for _, tt := range ActiveFreeDelivery {
 		m.
 			EXPECT().
@@ -211,7 +211,7 @@ func TestActiveCostForFreeDish(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperPromocodeInterface(ctrl)
+	m := mocks.NewMockPromocodeApplicationInterface(ctrl)
 	for _, tt := range ActiveCostForFreeDish {
 		m.
 			EXPECT().
@@ -289,7 +289,7 @@ func TestActiveCostForSale(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperPromocodeInterface(ctrl)
+	m := mocks.NewMockPromocodeApplicationInterface(ctrl)
 	for _, tt := range ActiveCostForSale {
 		m.
 			EXPECT().
@@ -367,7 +367,7 @@ func TestActiveTimeForSale(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperPromocodeInterface(ctrl)
+	m := mocks.NewMockPromocodeApplicationInterface(ctrl)
 	for _, tt := range ActiveTimeForSale {
 		m.
 			EXPECT().
@@ -441,7 +441,7 @@ func TestAddPromoCode(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperPromocodeInterface(ctrl)
+	m := mocks.NewMockPromocodeApplicationInterface(ctrl)
 	for _, tt := range AddPromoCode {
 		m.
 			EXPECT().
@@ -509,7 +509,7 @@ func TestGetPromoCode(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mocks.NewMockWrapperPromocodeInterface(ctrl)
+	m := mocks.NewMockPromocodeApplicationInterface(ctrl)
 	for _, tt := range GetPromoCode {
 		m.
 			EXPECT().

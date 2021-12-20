@@ -120,18 +120,17 @@ VALUES
 UPDATE restaurant_category
     SET fts = to_tsvector(category);
 
-
-INSERT INTO address_user (client_id, alias, comment, city, street, house, floor, flat, porch, intercom, latitude, longitude)
-VALUES (1, 'Мой дом', 'Есть злая собака', 'Москва', 'Вязов', 2, 5, 28, 2, '28K', 500, 500);
-
 INSERT INTO promocode (id, code, type, restaurant, name, description, end_date, avatar, free_delivery)
-VALUES (1, 'HL4D4', 1, 1, 'Бесплатно куда угодно', 'Бесплатная доставка', TIMESTAMP '2022-04-28', 'https://buslik.by/buyers/delivery/images/icon-2.png', true);
+VALUES (1, 'FREED', 1, 1, 'Бесплатно куда угодно', 'Бесплатная доставка', TIMESTAMP '2022-04-28', 'https://buslik.by/buyers/delivery/images/icon-2.png', true);
 
 INSERT INTO promocode (id, code, type, restaurant, name, description, end_date, avatar, cost_for_sale, sale_percent)
-VALUES (2, 'CMO5S', 2, 1, 'Всем скидку!', 'Скидка 20% от цены 300', TIMESTAMP '2022-04-28', 'http://pes-nv.ru/upload/iblock/eed/eedf46366e565834d5e726873a7ae200.jpg', 300, 20);
+VALUES (2, 'Sales', 2, 1, 'Всем скидку!', 'Скидка 20% от цены 300', TIMESTAMP '2022-04-28', 'http://pes-nv.ru/upload/iblock/eed/eedf46366e565834d5e726873a7ae200.jpg', 300, 20);
 
 INSERT INTO promocode (id, code, type, restaurant, name, description, end_date, avatar, cost_for_free_dish, free_dish_id)
-VALUES (3, 'DBL45', 3, 1, 'Бесплатное тако за покупку!', 'Бесплатно блюдо от 300', TIMESTAMP '2022-04-28', 'https://image.freepik.com/free-photo/fresh-taco_144627-38286.jpg', 300, 1);
+VALUES (3, 'Tacooo', 3, 1, 'Бесплатное тако за покупку!', 'Бесплатно блюдо от 300', TIMESTAMP '2022-04-28', 'https://image.freepik.com/free-photo/fresh-taco_144627-38286.jpg', 300, 1);
+
+INSERT INTO promocode (id, code, type, restaurant, name, description, end_date, avatar, time_for_sale_start, time_for_sale_finish, sale_in_time_percent)
+VALUES (4, 'TimeSale', 4, 1, 'Время скидок', 'Скидка 30% с 17 до 21', TIMESTAMP '2022-04-28', '', TIME '17:00', TIME '21:00', 30);
 
 INSERT INTO favorite_restaurant (restaurant, client, position)
 VALUES (1, 1, 0);

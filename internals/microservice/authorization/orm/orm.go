@@ -8,7 +8,6 @@ import (
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -24,6 +23,7 @@ type WrapperAuthorizationInterface interface {
 	CheckAccess(cookie *authPkg.Defense) (bool, error)
 	NewCSRF(cookie *authPkg.Defense) (string, error)
 	GetIdByCookie(cookie *authPkg.Defense) (int, error)
+	NewCSRFWebsocket(id int) (string, error)
 }
 
 type ConnectionInterface interface {
@@ -85,8 +85,7 @@ func (db *Wrapper) generalSignUp(signup *authPkg.RegistrationRequest, transactio
 		phone, HashPassword(signup.Password, salt), salt).Scan(&userId)
 
 	if err != nil {
-		errorText := err.Error()
-		if strings.Contains(errorText, "duplicate key") {
+		if err == pgx.ErrNoRows {
 			return 0, &errPkg.Errors{
 				Text: errPkg.AGeneralSignUpLoginNotUnique,
 			}
@@ -493,4 +492,35 @@ func (db *Wrapper) GetIdByCookie(cookie *authPkg.Defense) (int, error) {
 	return 0, &errPkg.Errors{
 		Text: errPkg.MGetIdByCookieCookieExpired,
 	}
+}
+
+func (db *Wrapper) NewCSRFWebsocket(id int) (string, error) {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return "", &errPkg.Errors{
+			Text: errPkg.MNewCSRFWebsocketTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	websocket := generateWebsocket()
+
+	_, err = tx.Exec(contextTransaction,
+		"UPDATE cookie SET websocket = $1 WHERE client_id = $2", websocket, id)
+	if err != nil {
+		return "", &errPkg.Errors{
+			Text: errPkg.MNewCSRFWebsocketNotUpdate,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return "", &errPkg.Errors{
+			Text: errPkg.MNewCSRFWebsocketNotCommit,
+		}
+	}
+
+	return websocket, nil
 }

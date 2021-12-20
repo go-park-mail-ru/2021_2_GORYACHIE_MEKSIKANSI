@@ -1,4 +1,4 @@
-//go:generate mockgen -destination=mocks/orm.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/authorization/orm WrapperAuthorizationInterface,ConnectionInterface,ConnectAuthServiceInterface,TransactionInterface
+//go:generate mockgen -destination=mocks/orm.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/authorization/orm WrapperAuthorizationInterface,ConnectAuthServiceInterface
 package orm
 
 import (
@@ -8,8 +8,6 @@ import (
 	Utils2 "2021_2_GORYACHIE_MEKSIKANSI/internals/util"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/util/cast"
 	"context"
-	"github.com/jackc/pgconn"
-	"github.com/jackc/pgx/v4"
 	"google.golang.org/grpc"
 )
 
@@ -20,39 +18,16 @@ type WrapperAuthorizationInterface interface {
 	NewCSRFWebsocket(id int) (string, error)
 }
 
-type ConnectionInterface interface {
-	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
-	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
-	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
-	Begin(ctx context.Context) (pgx.Tx, error)
-}
-
 type ConnectAuthServiceInterface interface {
 	SignUp(ctx context.Context, in *authProto.RegistrationRequest, opts ...grpc.CallOption) (*authProto.DefenseResponse, error)
 	Login(ctx context.Context, in *authProto.Authorization, opts ...grpc.CallOption) (*authProto.DefenseResponse, error)
 	Logout(ctx context.Context, in *authProto.CSRF, opts ...grpc.CallOption) (*authProto.CSRFResponse, error)
-}
-
-type TransactionInterface interface {
-	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
-	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
-	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
-	Begin(ctx context.Context) (pgx.Tx, error)
-	BeginFunc(ctx context.Context, f func(pgx.Tx) error) error
-	Commit(ctx context.Context) error
-	Rollback(ctx context.Context) error
-	CopyFrom(ctx context.Context, tableName pgx.Identifier, columnNames []string, rowSrc pgx.CopyFromSource) (int64, error)
-	SendBatch(ctx context.Context, b *pgx.Batch) pgx.BatchResults
-	LargeObjects() pgx.LargeObjects
-	Prepare(ctx context.Context, name, sql string) (*pgconn.StatementDescription, error)
-	QueryFunc(ctx context.Context, sql string, args []interface{}, scans []interface{}, f func(pgx.QueryFuncRow) error) (pgconn.CommandTag, error)
-	Conn() *pgx.Conn
+	NewCSRFWebsocket(ctx context.Context, client *authProto.IdClient, opts ...grpc.CallOption) (*authProto.WebsocketResponse, error)
 }
 
 type Wrapper struct {
-	Conn   ConnectAuthServiceInterface
-	DBConn ConnectionInterface
-	Ctx    context.Context
+	Conn ConnectAuthServiceInterface
+	Ctx  context.Context
 }
 
 func (w *Wrapper) SignUp(signup *authorization.RegistrationRequest) (*Utils2.Defense, error) {
@@ -91,32 +66,16 @@ func (w *Wrapper) Logout(CSRF string) (string, error) {
 }
 
 func (w *Wrapper) NewCSRFWebsocket(id int) (string, error) {
-	contextTransaction := context.Background()
-	tx, err := w.DBConn.Begin(contextTransaction)
+	var idClient authProto.IdClient
+	idClient.ClientId = int64(id)
+	websocket, err := w.Conn.NewCSRFWebsocket(w.Ctx, &idClient)
 	if err != nil {
+		return "", err
+	}
+	if websocket.Error != "" {
 		return "", &errPkg.Errors{
-			Text: errPkg.ANewCSRFWebsocketTransactionNotCreate,
+			Text: websocket.Error,
 		}
 	}
-
-	defer tx.Rollback(contextTransaction)
-
-	websocket := generateWebsocket()
-
-	_, err = tx.Exec(contextTransaction,
-		"UPDATE cookie SET websocket = $1 WHERE client_id = $2", websocket, id)
-	if err != nil {
-		return "", &errPkg.Errors{
-			Text: errPkg.ANewCSRFWebsocketNotUpdate,
-		}
-	}
-
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return "", &errPkg.Errors{
-			Text: errPkg.ANewCSRFWebsocketNotCommit,
-		}
-	}
-
-	return websocket, nil
+	return websocket.Websocket, nil
 }

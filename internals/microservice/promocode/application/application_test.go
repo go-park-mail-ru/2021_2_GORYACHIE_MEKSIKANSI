@@ -276,7 +276,7 @@ var ActiveTimeForSale = []struct {
 	countRollbackTransaction int
 }{
 	{
-		testName:                 "First",
+		testName:                 "Active time sale promo code",
 		out:                      1,
 		outErr:                   "",
 		inputPromoCode:           "promo",
@@ -303,7 +303,7 @@ func TestActiveTimeForSale(t *testing.T) {
 	for _, tt := range ActiveTimeForSale {
 		m.
 			EXPECT().
-			ActiveTimeForSale(tt.inputQueryPromoCode, tt.inputQueryAmount, tt.inputQueryRestaurant).
+			ActiveTimeForSale(tt.inputQueryPromoCode, tt.inputQueryAmount, tt.inputQueryRestaurant, gomock.Any()).
 			Return(tt.outQuery, tt.errQuery)
 		testUser := &Promocode{DB: m}
 		t.Run(tt.testName, func(t *testing.T) {

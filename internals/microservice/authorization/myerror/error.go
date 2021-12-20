@@ -60,18 +60,21 @@ const (
 
 // Error of middleware
 const (
-	MCheckAccessCookieNotScan          = "cookie not scan"
-	MGetIdByCookieCookieNotScan        = "cookie not scan"
-	MCheckAccessCookieNotFound         = "cookie not found"
-	MNewCSRFCSRFNotUpdate              = "csrf not updated"
-	MGetIdByCookieCookieExpired        = "cookie expired"
-	MGetIdByCookieCookieNotFound       = "cookie not found"
-	MCheckAccessTransactionNotCreate   = "transaction check access not create"
-	MCheckAccessNotCommit              = "transaction check access not commit"
-	MNewCSRFCSRFTransactionNotCreate   = "transaction new csrf not create"
-	MNewCSRFCSRFNotCommit              = "transaction new csrf not commit"
-	MGetIdByCookieTransactionNotCreate = "transaction get id not create"
-	MGetIdByCookieNotCommit            = "transaction get id not commit"
+	MCheckAccessCookieNotScan             = "cookie not scan"
+	MGetIdByCookieCookieNotScan           = "cookie not scan"
+	MCheckAccessCookieNotFound            = "cookie not found"
+	MNewCSRFCSRFNotUpdate                 = "csrf not updated"
+	MGetIdByCookieCookieExpired           = "cookie expired"
+	MGetIdByCookieCookieNotFound          = "cookie not found"
+	MCheckAccessTransactionNotCreate      = "transaction check access not create"
+	MCheckAccessNotCommit                 = "transaction check access not commit"
+	MNewCSRFCSRFTransactionNotCreate      = "transaction new csrf not create"
+	MNewCSRFCSRFNotCommit                 = "transaction new csrf not commit"
+	MGetIdByCookieTransactionNotCreate    = "transaction get id not create"
+	MGetIdByCookieNotCommit               = "transaction get id not commit"
+	MNewCSRFWebsocketTransactionNotCreate = "transaction create websocket not create"
+	MNewCSRFWebsocketNotCommit            = "transaction create websocket not commit"
+	MNewCSRFWebsocketNotUpdate            = "update websocket not update"
 )
 
 // Error of main

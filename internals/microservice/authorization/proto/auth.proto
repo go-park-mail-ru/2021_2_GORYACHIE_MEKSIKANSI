@@ -5,17 +5,16 @@ package proto;
 option go_package = "./";
 import "google/protobuf/timestamp.proto";
 
-//message ExampleArray {
-//  int64 id_client = 1;
-//  repeated string Error = 2;
-//}
-
 message RegistrationRequest {
  string type_user = 1;
  string name = 2;
  string email = 3;
  string phone = 4;
  string password = 5;
+}
+
+message IdClient {
+ int64 client_id = 1;
 }
 
 message DefenseResponse {
@@ -35,6 +34,11 @@ message CSRF {
 
 message CSRFResponse {
   CSRF x_csrf_token = 1;
+  string error = 2;
+}
+
+message WebsocketResponse {
+  string Websocket = 1;
   string error = 2;
 }
 
@@ -62,4 +66,5 @@ service AuthorizationService {
   rpc SignUp(RegistrationRequest) returns (DefenseResponse);
   rpc Login(Authorization) returns (DefenseResponse);
   rpc Logout(CSRF) returns (CSRFResponse);
+  rpc NewCSRFWebsocket(IdClient) returns (WebsocketResponse);
 }

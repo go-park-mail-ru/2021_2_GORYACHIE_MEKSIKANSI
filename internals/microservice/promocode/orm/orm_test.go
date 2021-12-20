@@ -1,10 +1,13 @@
 package orm
 
 import (
+	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/promocode/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/promocode/orm/mocks"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
+	"github.com/jackc/pgx/v4"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
@@ -386,10 +389,13 @@ var ActiveTimeForSale = []struct {
 	inputPromoCode           string
 	inputAmount              int
 	inputRestaurant          int
+	inputTime                time.Time
 	out                      int
 	outErr                   string
+	inputQueryCode           string
+	inputQueryRestaurant     int
 	outQuery                 Row
-	inputQuery               string
+	countQuery               int
 	errBeginTransaction      error
 	errCommitTransaction     error
 	countCommitTransaction   int
@@ -397,19 +403,23 @@ var ActiveTimeForSale = []struct {
 	countRollbackTransaction int
 }{
 	{
-		testName:        "First",
-		out:             0,
-		outErr:          "",
-		inputPromoCode:  "promo",
-		inputAmount:     1,
-		inputRestaurant: 1,
-		inputQuery:      "promo",
+		testName:             "Active time sale percent",
+		out:                  50,
+		outErr:               "",
+		inputPromoCode:       "promo",
+		inputAmount:          100,
+		inputRestaurant:      1,
+		inputTime:            time.Date(0, 0, 0, 18, 0, 0, 0, time.Local),
+		inputQueryCode:       "promo",
+		inputQueryRestaurant: 1,
 		outQuery: Row{row: []interface{}{
-			time.Date(2022, 1, 1, 1, 1, 1, 1, time.Local),
-			nil,
+			time.Date(0, 0, 0, 17, 0, 0, 0, time.Local),
+			time.Date(0, 0, 0, 21, 0, 0, 0, time.Local),
 			50,
+			nil,
 		},
 		},
+		countQuery:               1,
 		errBeginTransaction:      nil,
 		errCommitTransaction:     nil,
 		countCommitTransaction:   1,
@@ -417,19 +427,23 @@ var ActiveTimeForSale = []struct {
 		countRollbackTransaction: 1,
 	},
 	{
-		testName:        "Second",
-		out:             100,
-		outErr:          "",
-		inputPromoCode:  "promo",
-		inputAmount:     150,
-		inputRestaurant: 1,
-		inputQuery:      "promo",
+		testName:             "Non active time",
+		out:                  100,
+		outErr:               "",
+		inputPromoCode:       "promo",
+		inputAmount:          100,
+		inputRestaurant:      1,
+		inputTime:            time.Date(0, 0, 0, 16, 0, 0, 0, time.Local),
+		inputQueryCode:       "promo",
+		inputQueryRestaurant: 1,
 		outQuery: Row{row: []interface{}{
-			time.Date(2022, 1, 1, 1, 1, 1, 1, time.Local),
+			time.Date(0, 0, 0, 17, 0, 0, 0, time.Local),
+			time.Date(0, 0, 0, 21, 0, 0, 0, time.Local),
 			nil,
 			50,
 		},
 		},
+		countQuery:               1,
 		errBeginTransaction:      nil,
 		errCommitTransaction:     nil,
 		countCommitTransaction:   1,
@@ -437,21 +451,153 @@ var ActiveTimeForSale = []struct {
 		countRollbackTransaction: 1,
 	},
 	{
-		testName:        "Third",
-		out:             75,
-		outErr:          "",
-		inputPromoCode:  "promo",
-		inputAmount:     150,
-		inputRestaurant: 1,
-		inputQuery:      "promo",
-		outQuery: Row{row: []interface{}{
-			time.Date(2022, 1, 1, 1, 1, 1, 1, time.Local),
-			50,
-			nil,
+		testName:             "Active time sale amount",
+		out:                  100,
+		outErr:               "",
+		inputPromoCode:       "promo",
+		inputAmount:          150,
+		inputTime:            time.Date(0, 0, 0, 18, 0, 0, 0, time.Local),
+		inputRestaurant:      1,
+		inputQueryCode:       "promo",
+		inputQueryRestaurant: 1,
+		outQuery: Row{
+			row: []interface{}{
+				time.Date(0, 0, 0, 17, 0, 0, 0, time.Local),
+				time.Date(0, 0, 0, 21, 0, 0, 0, time.Local),
+				nil,
+				50,
+			},
 		},
-		},
+		countQuery:               1,
 		errBeginTransaction:      nil,
 		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+	},
+	{
+		testName:             "Active time sale amount more user amount",
+		out:                  0,
+		outErr:               "",
+		inputPromoCode:       "promo",
+		inputAmount:          10,
+		inputTime:            time.Date(0, 0, 0, 18, 0, 0, 0, time.Local),
+		inputRestaurant:      1,
+		inputQueryCode:       "promo",
+		inputQueryRestaurant: 1,
+		outQuery: Row{
+			row: []interface{}{
+				time.Date(0, 0, 0, 17, 0, 0, 0, time.Local),
+				time.Date(0, 0, 0, 21, 0, 0, 0, time.Local),
+				nil,
+				50,
+			},
+		},
+		countQuery:               1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   1,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+	},
+	{
+		testName:             "Error begin transaction",
+		out:                  0,
+		outErr:               errPkg.PActiveTimeForSaleTransactionNotCreate,
+		inputPromoCode:       "promo",
+		inputAmount:          10,
+		inputTime:            time.Date(0, 0, 0, 18, 0, 0, 0, time.Local),
+		inputRestaurant:      1,
+		inputQueryCode:       "promo",
+		inputQueryRestaurant: 1,
+		outQuery: Row{
+			row: []interface{}{
+				time.Date(0, 0, 0, 17, 0, 0, 0, time.Local),
+				time.Date(0, 0, 0, 21, 0, 0, 0, time.Local),
+				nil,
+				50,
+			},
+		},
+		countQuery:               0,
+		errBeginTransaction:      errors.New("text"),
+		errCommitTransaction:     nil,
+		countCommitTransaction:   0,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 0,
+	},
+	{
+		testName:             "Error query",
+		out:                  0,
+		outErr:               errPkg.PActiveTimeForSaleRestaurantsNotSelect,
+		inputPromoCode:       "promo",
+		inputAmount:          10,
+		inputTime:            time.Date(0, 0, 0, 18, 0, 0, 0, time.Local),
+		inputRestaurant:      1,
+		inputQueryCode:       "promo",
+		inputQueryRestaurant: 1,
+		outQuery: Row{
+			errRow: errors.New("text"),
+			row: []interface{}{
+				time.Date(0, 0, 0, 17, 0, 0, 0, time.Local),
+				time.Date(0, 0, 0, 21, 0, 0, 0, time.Local),
+				nil,
+				50,
+			},
+		},
+		countQuery:               1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   0,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+	},
+	{
+		testName:             "Promo code not found",
+		out:                  0,
+		outErr:               errPkg.PActiveTimeForSaleRestaurantsNotFound,
+		inputPromoCode:       "promo",
+		inputAmount:          10,
+		inputTime:            time.Date(0, 0, 0, 18, 0, 0, 0, time.Local),
+		inputRestaurant:      1,
+		inputQueryCode:       "promo",
+		inputQueryRestaurant: 1,
+		outQuery: Row{
+			errRow: pgx.ErrNoRows,
+			row: []interface{}{
+				time.Date(0, 0, 0, 17, 0, 0, 0, time.Local),
+				time.Date(0, 0, 0, 21, 0, 0, 0, time.Local),
+				nil,
+				50,
+			},
+		},
+		countQuery:               1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     nil,
+		countCommitTransaction:   0,
+		errRollbackTransaction:   nil,
+		countRollbackTransaction: 1,
+	},
+	{
+		testName:             "Error commit",
+		out:                  0,
+		outErr:               errPkg.PActiveTimeForSaleNotCommit,
+		inputPromoCode:       "promo",
+		inputAmount:          10,
+		inputTime:            time.Date(0, 0, 0, 18, 0, 0, 0, time.Local),
+		inputRestaurant:      1,
+		inputQueryCode:       "promo",
+		inputQueryRestaurant: 1,
+		outQuery: Row{
+			row: []interface{}{
+				time.Date(0, 0, 0, 17, 0, 0, 0, time.Local),
+				time.Date(0, 0, 0, 21, 0, 0, 0, time.Local),
+				nil,
+				50,
+			},
+		},
+		countQuery:               1,
+		errBeginTransaction:      nil,
+		errCommitTransaction:     errors.New("text"),
 		countCommitTransaction:   1,
 		errRollbackTransaction:   nil,
 		countRollbackTransaction: 1,
@@ -482,13 +628,14 @@ func TestActiveTimeForSale(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT time_for_sale, sale_in_time_percent, sale_in_time_amount FROM promocode WHERE code = $1 AND restaurant = $2",
-				tt.inputQuery,
+				"SELECT time_for_sale_start, time_for_sale_finish, sale_in_time_percent, sale_in_time_amount FROM promocode WHERE code = $1 AND restaurant = $2",
+				tt.inputQueryCode, tt.inputQueryRestaurant,
 			).
-			Return(&tt.outQuery)
+			Return(&tt.outQuery).
+			Times(tt.countQuery)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			result, err := testUser.ActiveTimeForSale(tt.inputPromoCode, tt.inputAmount, tt.inputRestaurant)
+			result, err := testUser.ActiveTimeForSale(tt.inputPromoCode, tt.inputAmount, tt.inputRestaurant, tt.inputTime)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
 				if err == nil {

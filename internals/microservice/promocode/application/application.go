@@ -4,6 +4,7 @@ package application
 
 import (
 	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/promocode/orm"
+	"time"
 )
 
 type PromocodeApplicationInterface interface {
@@ -37,7 +38,7 @@ func (db *Promocode) ActiveCostForSale(promoCode string, amount int, restaurantI
 }
 
 func (db *Promocode) ActiveTimeForSale(promoCode string, amount int, restaurantId int) (int, error) {
-	return db.DB.ActiveTimeForSale(promoCode, amount, restaurantId)
+	return db.DB.ActiveTimeForSale(promoCode, amount, restaurantId, time.Now())
 }
 
 func (db *Promocode) AddPromoCode(promoCode string, restaurantId int, clientId int) error {

@@ -811,6 +811,7 @@ func (db *Wrapper) GetPromoCodes() ([]resPkg.Promocode, error) {
 
 	rows, err := tx.Query(contextTransaction,
 		"SELECT name, description, avatar, restaurant FROM promocode ORDER BY random() LIMIT 5")
+	//"SELECT name, description, avatar, restaurant, code FROM promocode ORDER BY random() LIMIT 5")
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Text: errPkg.RGetPromoCodesCodesNotSelect,
@@ -819,6 +820,7 @@ func (db *Wrapper) GetPromoCodes() ([]resPkg.Promocode, error) {
 	var promoCodes []resPkg.Promocode
 	for rows.Next() {
 		var promoCode resPkg.Promocode
+		//err := rows.Scan(&promoCode.Name, &promoCode.Description, &promoCode.Img, &promoCode.RestaurantId, promoCode.Code)
 		err := rows.Scan(&promoCode.Name, &promoCode.Description, &promoCode.Img, &promoCode.RestaurantId)
 		if err != nil {
 			return nil, &errPkg.Errors{

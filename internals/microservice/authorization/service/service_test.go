@@ -515,3 +515,72 @@ func TestLogout(t *testing.T) {
 		})
 	}
 }
+
+var NewCSRFWebsocket = []struct {
+	testName   string
+	input      *authProto.IdClient
+	out        *authProto.WebsocketResponse
+	outErr     string
+	inputQuery int
+	outQuery   string
+	errQuery   error
+	countQuery int
+}{
+	{
+		testName: "New CSRF websocket",
+		input: &authProto.IdClient{
+			ClientId: 1,
+		},
+		out: &authProto.WebsocketResponse{
+			Websocket: "gfhgf-fghfgh-dhghfh-fgdf",
+			Error:     "",
+		},
+		outErr:     "",
+		inputQuery: 1,
+		outQuery:   "gfhgf-fghfgh-dhghfh-fgdf",
+		errQuery:   nil,
+		countQuery: 1,
+	},
+	{
+		testName: "Error new CSRF websocket",
+		input: &authProto.IdClient{
+			ClientId: 1,
+		},
+		out: &authProto.WebsocketResponse{
+			Websocket: "",
+			Error:     "text",
+		},
+		outErr:     "",
+		inputQuery: 1,
+		outQuery:   "gfhgf-fghfgh-dhghfh-fgdf",
+		errQuery:   errors.New("text"),
+		countQuery: 1,
+	},
+}
+
+func TestNewCSRFWebsocket(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockAuthorizationInterface(ctrl)
+	for _, tt := range NewCSRFWebsocket {
+		m.
+			EXPECT().
+			NewCSRFWebsocket(tt.inputQuery).
+			Return(tt.outQuery, tt.errQuery).
+			Times(tt.countQuery)
+		test := AuthorizationManager{Application: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			result, err := test.NewCSRFWebsocket(context.Background(), tt.input)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
