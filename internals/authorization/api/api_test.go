@@ -136,7 +136,7 @@ func TestSignUpHandler(t *testing.T) {
 		userInfo := UserInfo{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			userInfo.SignUpHandler(&ctxIn)
-			println(string(ctxIn.Response.Body()))
+			//println(string(ctxIn.Response.Body()))
 			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
@@ -255,7 +255,7 @@ func TestLoginHandler(t *testing.T) {
 		userInfo := UserInfo{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			userInfo.LoginHandler(&ctxIn)
-			println(string(ctxIn.Response.Body()))
+			//println(string(ctxIn.Response.Body()))
 			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
@@ -366,7 +366,7 @@ func TestLogoutHandler(t *testing.T) {
 		userInfo := UserInfo{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			userInfo.LogoutHandler(&ctxIn)
-			println(string(ctxIn.Response.Body()))
+			//println(string(ctxIn.Response.Body()))
 			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
