@@ -38,7 +38,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           source: "docker-compose-ci.yml"
-          target: "."
+          target: "/home/backend"
 
       - name: Reload docker-compose
         uses: appleboy/ssh-action@master
