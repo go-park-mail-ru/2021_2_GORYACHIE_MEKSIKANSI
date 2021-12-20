@@ -38,3 +38,4 @@ cover_wo_mock
 go.sum
 *.pem
 /vendor
+conf
