@@ -20,11 +20,6 @@
 # logs
 /*.txt
 
-# other files
-.idea
-.git
-go.sum
-
 # configs
 **/*.env
 /config/*.yml
@@ -36,3 +31,11 @@ go.sum
 #tests files
 cover
 cover_wo_mock
+
+# other files
+.idea
+.git
+go.sum
+*.pem
+/vendor
+conf

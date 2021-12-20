@@ -1,7 +1,7 @@
 package myerror
 
 import (
-	"encoding/json"
+	"github.com/mailru/easyjson"
 	"net/http"
 )
 
@@ -9,7 +9,7 @@ func (c *CheckError) CheckErrorCreateOrder(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case CGetCartCartNotFound:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusNotFound,
 				Explain: ErrOrderNull,
 			})
@@ -26,7 +26,7 @@ func (c *CheckError) CheckErrorCreateOrder(err error) (error, []byte, int) {
 				},
 				result, http.StatusOK
 		default:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -51,7 +51,7 @@ func (c *CheckError) CheckErrorGetOrders(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case OGetOrdersOrdersIsVoid:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusNotFound,
 				Explain: ErrGerOrderNull,
 			})
@@ -68,7 +68,7 @@ func (c *CheckError) CheckErrorGetOrders(err error) (error, []byte, int) {
 				},
 				result, http.StatusOK
 		default:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -94,7 +94,7 @@ func (c *CheckError) CheckErrorGetOrderActive(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case OGetOrderNotExist:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusNotFound,
 				Explain: OrderNotExist,
 			})
@@ -112,7 +112,7 @@ func (c *CheckError) CheckErrorGetOrderActive(err error) (error, []byte, int) {
 				result, http.StatusOK
 
 		default:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})

@@ -1,7 +1,7 @@
 package myerror
 
 import (
-	"encoding/json"
+	"github.com/mailru/easyjson"
 	"net/http"
 )
 
@@ -9,7 +9,7 @@ func (c CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 	if errIn != nil {
 		switch errIn.Error() {
 		case AGeneralSignUpLoginNotUnique:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusConflict,
 				Explain: AGeneralSignUpLoginNotUnique,
 			})
@@ -27,7 +27,7 @@ func (c CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 				result, http.StatusOK
 
 		case AGeneralSignUpIncorrectPhoneFormat:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: AGeneralSignUpIncorrectPhoneFormat,
 			})
@@ -48,7 +48,7 @@ func (c CheckError) CheckErrorSignUp(errIn error) (error, []byte, int) {
 			ASignUpCourierCourierNotInsert, ASignUpClientClientNotInsert, ASignupHostTransactionNotCreate,
 			ASignupCourierTransactionNotCreate, ASignupClientTransactionNotCreate, ASignUpUnknownType,
 			ASignUpHostNotCommit, ASignUpCourierNotCommit, ASignUpClientNotCommit:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -73,7 +73,7 @@ func (c *CheckError) CheckErrorLogin(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case ALoginOrPasswordIncorrect, ALoginNotFound:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusUnauthorized,
 				Explain: ALoginOrPasswordIncorrect,
 			})
@@ -92,7 +92,7 @@ func (c *CheckError) CheckErrorLogin(err error) (error, []byte, int) {
 
 		case AAddCookieCookieNotInsert, ASaltNotSelect, ALoginVoidLogin, ALoginByEmailTransactionNotCreate,
 			ALoginByEmailNotCommit, ALoginByPhoneTransactionNotCreate, ALoginByPhoneNotCommit:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -115,7 +115,7 @@ func (c *CheckError) CheckErrorLogin(err error) (error, []byte, int) {
 
 func (c *CheckError) CheckErrorLogout(err error) (error, []byte, int) {
 	if err != nil && err.Error() == ADeleteCookieCookieNotDelete {
-		result, errMarshal := json.Marshal(ResultError{
+		result, errMarshal := easyjson.Marshal(ResultError{
 			Status:  http.StatusInternalServerError,
 			Explain: ErrDB,
 		})
@@ -137,7 +137,7 @@ func (c *CheckError) CheckErrorLogout(err error) (error, []byte, int) {
 
 func (c *CheckError) CheckErrorNewWsKey(err error) (error, []byte, int) {
 	if err != nil {
-		result, errMarshal := json.Marshal(ResultError{
+		result, errMarshal := easyjson.Marshal(ResultError{
 			Status:  http.StatusInternalServerError,
 			Explain: ErrDB,
 		})

@@ -1,3 +1,4 @@
+//go:generate easyjson -no_std_marshalers util.go
 package util
 
 import (
@@ -18,6 +19,7 @@ const (
 	UnlimitedCount     = -1
 )
 
+//easyjson:json
 type ResponseStatus struct {
 	StatusHTTP int `json:"status"`
 }
@@ -74,6 +76,19 @@ func InterfaceConvertInt(value interface{}) (int, error) {
 		return intConvert, nil
 	default:
 		return errors.IntNil, &errors.Errors{
+			Text: errors.ErrNotStringAndInt,
+		}
+	}
+}
+
+func InterfaceConvertTime(value interface{}) (*time.Time, error) {
+	var timeNew time.Time
+	switch value.(type) {
+	case time.Time:
+		timeNew = value.(time.Time)
+		return &timeNew, nil
+	default:
+		return nil, &errors.Errors{
 			Text: errors.ErrNotStringAndInt,
 		}
 	}

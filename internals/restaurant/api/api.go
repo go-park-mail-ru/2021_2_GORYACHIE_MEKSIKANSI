@@ -7,6 +7,7 @@ import (
 	appPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/restaurant/application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/util"
 	"encoding/json"
+	"github.com/mailru/easyjson"
 	"github.com/valyala/fasthttp"
 	"net/http"
 )
@@ -57,19 +58,21 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+	response, errResponse := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
 		Body: &resPkg.RestaurantsResponse{
 			RestaurantsGet: restaurant,
 		},
 	})
-	if err != nil {
+	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errResponse, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(response)
+	json.NewEncoder(ctx)
 	ctx.SetStatusCode(http.StatusOK)
 }
 
@@ -102,19 +105,21 @@ func (r *InfoRestaurant) RecommendedRestaurantsHandler(ctx *fasthttp.RequestCtx)
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+	response, errResponse := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
 		Body: &resPkg.RestaurantsResponse{
 			RestaurantsGet: restaurant,
 		},
 	})
-	if err != nil {
+	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errResponse, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(response)
+	json.NewEncoder(ctx)
 	ctx.SetStatusCode(http.StatusOK)
 }
 
@@ -164,19 +169,21 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+	response, errResponse := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
 		Body: &resPkg.RestaurantIdResponse{
 			RestaurantsGet: restaurant,
 		},
 	})
-	if err != nil {
+	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errResponse, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(response)
+	json.NewEncoder(ctx)
 	ctx.SetStatusCode(http.StatusOK)
 }
 
@@ -225,19 +232,21 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+	response, errResponse := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
 		Body: &resPkg.DishesResponse{
 			DishesGet: dishes,
 		},
 	})
-	if err != nil {
+	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errResponse, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(response)
+	json.NewEncoder(ctx)
 	ctx.SetStatusCode(http.StatusOK)
 }
 
@@ -256,7 +265,7 @@ func (r *InfoRestaurant) CreateReviewHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	newReview := resPkg.NewReview{}
-	err := json.Unmarshal(ctx.Request.Body(), &newReview)
+	err := easyjson.Unmarshal(ctx.Request.Body(), &newReview)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
@@ -294,16 +303,18 @@ func (r *InfoRestaurant) CreateReviewHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&util.ResponseStatus{
+	response, errResponse := easyjson.Marshal(&util.ResponseStatus{
 		StatusHTTP: http.StatusOK,
 	})
-	if err != nil {
+	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errResponse, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(response)
+	json.NewEncoder(ctx)
 	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 }
@@ -355,35 +366,39 @@ func (r *InfoRestaurant) GetReviewHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	if restaurant.Reviews == nil {
-		err = json.NewEncoder(ctx).Encode(&errPkg.ResultErrorMulti{
+		response, errResponse := easyjson.Marshal(&errPkg.ResultErrorMulti{
 			Status:  http.StatusNotFound,
 			Explain: errPkg.RGetReviewEmpty,
 			Body: &resPkg.RestaurantsResponse{
 				RestaurantsGet: restaurant,
 			},
 		})
-		if err != nil {
+		ctx.Response.SetBody(response)
+		json.NewEncoder(ctx)
+		if errResponse != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-			r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+			r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errResponse, reqId)
 			return
 		}
 		return
 	}
 
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+	response, errResponse := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
 		Body: &resPkg.RestaurantsResponse{
 			RestaurantsGet: restaurant,
 		},
 	})
-	if err != nil {
+	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errResponse, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(response)
+	json.NewEncoder(ctx)
 	ctx.SetStatusCode(http.StatusOK)
 }
 
@@ -419,19 +434,21 @@ func (r *InfoRestaurant) SearchRestaurantHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+	response, errResponse := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
 		Body: &resPkg.RestaurantsResponse{
 			RestaurantsGet: restaurant,
 		},
 	})
-	if err != nil {
+	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errResponse, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(response)
+	json.NewEncoder(ctx)
 	ctx.SetStatusCode(http.StatusOK)
 }
 
@@ -473,19 +490,21 @@ func (r *InfoRestaurant) GetFavouritesHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+	response, errResponse := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
 		Body: &resPkg.RestaurantsResponse{
 			RestaurantsGet: restaurant,
 		},
 	})
-	if err != nil {
+	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errResponse, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(response)
+	json.NewEncoder(ctx)
 	ctx.SetStatusCode(http.StatusOK)
 }
 
@@ -513,7 +532,7 @@ func (r *InfoRestaurant) UpdateFavouritesHandler(ctx *fasthttp.RequestCtx) {
 	}
 
 	var userFavourite resPkg.ResFavouriteNew
-	err := json.Unmarshal(ctx.Request.Body(), &userFavourite)
+	err := easyjson.Unmarshal(ctx.Request.Body(), &userFavourite)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
@@ -544,19 +563,21 @@ func (r *InfoRestaurant) UpdateFavouritesHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+	response, errResponse := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
 		Body: &resPkg.RestaurantsResponse{
 			RestaurantsGet: resPkg.ResFavouriteStatus{Status: statusFavourite},
 		},
 	})
-	if err != nil {
+	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errResponse, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(response)
+	json.NewEncoder(ctx)
 	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 	ctx.SetStatusCode(http.StatusOK)
 }

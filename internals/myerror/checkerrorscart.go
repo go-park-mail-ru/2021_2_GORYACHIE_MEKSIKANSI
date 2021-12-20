@@ -1,7 +1,7 @@
 package myerror
 
 import (
-	"encoding/json"
+	"github.com/mailru/easyjson"
 	"net/http"
 )
 
@@ -9,7 +9,7 @@ func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 	if err != nil {
 		switch err.Error() {
 		case CGetCartDishesNotFound:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -26,7 +26,7 @@ func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 				},
 				result, http.StatusInternalServerError
 		case RGetRestaurantRestaurantNotFound, CGetCartCartNotFound:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusNotFound,
 				Explain: ErrCartNull,
 			})
@@ -43,7 +43,7 @@ func (c *CheckError) CheckErrorGetCart(err error) (error, []byte, int) {
 				},
 				result, http.StatusOK
 		default:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -71,7 +71,7 @@ func (c *CheckError) CheckErrorUpdateCart(err error) (error, []byte, int) {
 			CGetPriceDeliveryPriceNotFound, CGetPriceDeliveryPriceNotScan, CUpdateCartCartNotFound,
 			CUpdateCartCartNotScan, CUpdateCartStructureFoodStructureFoodNotSelect,
 			CUpdateCartStructRadiosStructRadiosNotSelect, CUpdateCartTransactionNotCreate, CUpdateCartNotCommit:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})
@@ -88,7 +88,7 @@ func (c *CheckError) CheckErrorUpdateCart(err error) (error, []byte, int) {
 				},
 				result, http.StatusInternalServerError
 		default:
-			result, errMarshal := json.Marshal(ResultError{
+			result, errMarshal := easyjson.Marshal(ResultError{
 				Status:  http.StatusInternalServerError,
 				Explain: ErrDB,
 			})

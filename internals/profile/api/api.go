@@ -7,6 +7,7 @@ import (
 	appPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/profile/application"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/util"
 	"encoding/json"
+	"github.com/mailru/easyjson"
 	"github.com/valyala/fasthttp"
 	"net/http"
 )
@@ -64,19 +65,21 @@ func (u *InfoProfile) ProfileHandler(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+	request, errRequest := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
 		Body: &profile.ProfileResponse{
 			ProfileUser: profileUser,
 		},
 	})
-	if err != nil {
+	if errRequest != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errRequest, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(request)
+	json.NewEncoder(ctx)
 	ctx.Response.SetStatusCode(http.StatusOK)
 }
 
@@ -95,7 +98,7 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 	}
 
 	var userName profile.UpdateName
-	err := json.Unmarshal(ctx.Request.Body(), &userName)
+	err := easyjson.Unmarshal(ctx.Request.Body(), &userName)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
@@ -133,16 +136,18 @@ func (u *InfoProfile) UpdateUserName(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&util.ResponseStatus{
+	request, errRequest := easyjson.Marshal(&util.ResponseStatus{
 		StatusHTTP: http.StatusOK,
 	})
-	if err != nil {
+	if errRequest != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errRequest, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(request)
+	json.NewEncoder(ctx)
 	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 }
@@ -162,7 +167,7 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 	}
 
 	var userEmail profile.UpdateEmail
-	err := json.Unmarshal(ctx.Request.Body(), &userEmail)
+	err := easyjson.Unmarshal(ctx.Request.Body(), &userEmail)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
@@ -200,16 +205,18 @@ func (u *InfoProfile) UpdateUserEmail(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&util.ResponseStatus{
+	request, errRequest := easyjson.Marshal(&util.ResponseStatus{
 		StatusHTTP: http.StatusOK,
 	})
-	if err != nil {
+	if errRequest != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errRequest, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(request)
+	json.NewEncoder(ctx)
 	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 }
@@ -228,7 +235,7 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 	}
 
 	userPassword := profile.UpdatePassword{}
-	err := json.Unmarshal(ctx.Request.Body(), &userPassword)
+	err := easyjson.Unmarshal(ctx.Request.Body(), &userPassword)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
@@ -266,16 +273,18 @@ func (u *InfoProfile) UpdateUserPassword(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&util.ResponseStatus{
+	request, errRequest := easyjson.Marshal(&util.ResponseStatus{
 		StatusHTTP: http.StatusOK,
 	})
-	if err != nil {
+	if errRequest != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errRequest, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(request)
+	json.NewEncoder(ctx)
 	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 }
@@ -295,7 +304,7 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 	}
 
 	var userPhone profile.UpdatePhone
-	err := json.Unmarshal(ctx.Request.Body(), &userPhone)
+	err := easyjson.Unmarshal(ctx.Request.Body(), &userPhone)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
@@ -333,16 +342,18 @@ func (u *InfoProfile) UpdateUserPhone(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&util.ResponseStatus{
+	request, errRequest := easyjson.Marshal(&util.ResponseStatus{
 		StatusHTTP: http.StatusOK,
 	})
-	if err != nil {
+	if errRequest != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errRequest, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(request)
+	json.NewEncoder(ctx)
 	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 }
@@ -399,19 +410,21 @@ func (u *InfoProfile) UpdateUserAvatar(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&authorization.Result{
+	request, errRequest := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
 		Body: &profile.UpdateAvatarRequest{
 			PathImg: userAvatar.Avatar,
 		},
 	})
-	if err != nil {
+	if errRequest != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errRequest, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(request)
+	json.NewEncoder(ctx)
 	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 }
@@ -431,7 +444,7 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 	}
 
 	var userBirthday profile.UpdateBirthday
-	err := json.Unmarshal(ctx.Request.Body(), &userBirthday)
+	err := easyjson.Unmarshal(ctx.Request.Body(), &userBirthday)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
@@ -469,16 +482,18 @@ func (u *InfoProfile) UpdateUserBirthday(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&util.ResponseStatus{
+	request, errRequest := easyjson.Marshal(&util.ResponseStatus{
 		StatusHTTP: http.StatusOK,
 	})
-	if err != nil {
+	if errRequest != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errRequest, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(request)
+	json.NewEncoder(ctx)
 	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 }
@@ -498,7 +513,7 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 	}
 
 	userAddress := profile.UpdateAddress{}
-	err := json.Unmarshal(ctx.Request.Body(), &userAddress)
+	err := easyjson.Unmarshal(ctx.Request.Body(), &userAddress)
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
@@ -536,16 +551,18 @@ func (u *InfoProfile) UpdateUserAddress(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	err = json.NewEncoder(ctx).Encode(&util.ResponseStatus{
+	request, errRequest := easyjson.Marshal(&util.ResponseStatus{
 		StatusHTTP: http.StatusOK,
 	})
-	if err != nil {
+	if errRequest != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, err, reqId)
+		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errRequest, reqId)
 		return
 	}
 
+	ctx.Response.SetBody(request)
+	json.NewEncoder(ctx)
 	ctx.Response.Header.Set("X-CSRF-Token", xCsrfToken)
 	ctx.Response.SetStatusCode(http.StatusOK)
 }

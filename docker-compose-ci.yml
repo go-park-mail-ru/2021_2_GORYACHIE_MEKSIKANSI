@@ -2,12 +2,10 @@ version: "2.3"
 
 services:
   monolith:
+    image: matros71239/monolith:latest
     depends_on:
       postgres:
         condition: service_healthy
-    build:
-      context: .
-      dockerfile: Dockerfile
     container_name: Monolith
     logging:
       driver: syslog
@@ -17,6 +15,8 @@ services:
       - "5000:5000"
       - "40000:40000"
     volumes:
+      - ./fullchain.pem:/app/fullchain.pem
+      - ./privkey.pem:/app/privkey.pem
       - ./config/bucket.yml:/app/config/bucket.yml
       - ./config/main.yml:/app/config/main.yml
       - ./config/microservice.yml:/app/config/microservice.yml
@@ -29,12 +29,10 @@ services:
       - ./build/postgresql/filldishes.sql:/app/build/postgresql/filldishes.sql
 
   service_authorization:
+    image: matros71239/auth:latest
     depends_on:
       postgres:
         condition: service_healthy
-    build:
-      context: .
-      dockerfile: ./internals/microservice/authorization/Dockerfile
     container_name: AuthorizationService
     logging:
       driver: syslog
@@ -48,12 +46,10 @@ services:
       - ./internals/microservice/authorization/config/database.yml:/app/internals/microservice/authorization/config/database.yml
 
   service_cart:
+    image: matros71239/cart:latest
     depends_on:
       postgres:
         condition: service_healthy
-    build:
-      context: .
-      dockerfile: ./internals/microservice/cart/Dockerfile
     container_name: CartService
     logging:
       driver: syslog
@@ -67,12 +63,10 @@ services:
       - ./internals/microservice/cart/config/database.yml:/app/internals/microservice/cart/config/database.yml
 
   service_promocode:
+    image: matros71239/promo:latest
     depends_on:
       postgres:
         condition: service_healthy
-    build:
-      context: .
-      dockerfile: ./internals/microservice/promocode/Dockerfile
     container_name: PromocodeService
     logging:
       driver: syslog
@@ -86,12 +80,10 @@ services:
       - ./internals/microservice/promocode/config/database.yml:/app/internals/microservice/promocode/config/database.yml
 
   service_restaurant:
+    image: matros71239/res:latest
     depends_on:
       postgres:
         condition: service_healthy
-    build:
-      context: .
-      dockerfile: ./internals/microservice/restaurant/Dockerfile
     container_name: RestaurantService
     logging:
       driver: syslog

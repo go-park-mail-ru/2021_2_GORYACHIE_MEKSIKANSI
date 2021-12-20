@@ -21,16 +21,16 @@ const (
 
 func SetUp(connectionDB ormPkg.ConnectionInterface, logger errPkg.MultiLogger) *servicePkg.CartManager {
 
-	addressCart := "127.0.0.1:8085"
-	grpcConnCart, errDialCart := grpc.Dial(
-		addressCart,
+	addressPromocode := "PromocodeService:8085"
+	grpcConnPromocode, errDialCart := grpc.Dial(
+		addressPromocode,
 		grpc.WithInsecure(),
 	)
 	if errDialCart != nil {
-		logger.Errorf("Not connect %s , %s", addressCart, errDialCart.Error())
+		logger.Errorf("Not connect %s , %s", addressPromocode, errDialCart.Error())
 		return nil
 	}
-	promoManager := promoProto.NewPromocodeServiceClient(grpcConnCart)
+	promoManager := promoProto.NewPromocodeServiceClient(grpcConnPromocode)
 	promoCtx := context.Background()
 
 	cartWrapper := ormPkg.Wrapper{Conn: connectionDB, ConnPromoService: promoManager, Ctx: promoCtx}
