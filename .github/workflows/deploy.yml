@@ -49,6 +49,6 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            mv docker-compose-ci.yml docker-compose.yml
+            mv ./docker-compose-ci.yml ./docker-compose.yml
             docker rm -f $(docker ps -a -q)
             sudo docker-compose up -d
