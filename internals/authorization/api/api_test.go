@@ -472,6 +472,8 @@ var UserWebSocketNewKey = []struct {
 	out                 []byte
 	inputLogoutCSRF     string
 	inputLogoutCSRFCtx  interface{}
+	inputSocketNKIdCtx  interface{}
+	inputSocketNKId     int
 	inputErrorfArgs     []interface{}
 	inputErrorfFormat   string
 	countErrorf         int
@@ -479,20 +481,21 @@ var UserWebSocketNewKey = []struct {
 	inputWarnfFormat    string
 	countWarnf          int
 	outLogoutXCSRF      string
-	errLogout           error
+	outSocketNK         string
+	errScoketNK         error
 	countSignUp         int
 }{
 	{
-		testName:            "Successful Login handler",
+		testName:            "Successful UserWebSocketNewKey handler",
 		inputValueReqId:     10,
-		inputLogoutCSRF:     "token",
-		inputLogoutCSRFCtx:  "token",
 		inputValueUnmarshal: []byte("{\"id\":1}"),
-		out:                 []byte("{\"status\":200}"),
+		inputSocketNKIdCtx:  "1",
+		inputSocketNKId:     1,
+		out:                 []byte("{\"status\":200,\"body\":{\"web_socket\":{\"key\":\"sessionid\"}}}"),
 		countErrorf:         0,
 		countWarnf:          0,
 		outLogoutXCSRF:      "sessionid",
-		errLogout:           nil,
+		errScoketNK:         nil,
 		countSignUp:         1,
 	},
 	{
@@ -506,29 +509,28 @@ var UserWebSocketNewKey = []struct {
 		countSignUp:       0,
 	},
 	{
-		testName:           "Error XSCRF interfaceConvertString",
-		out:                []byte(errPkg.ErrNotStringAndInt),
-		inputValueReqId:    1,
-		inputLogoutCSRFCtx: nil,
-		inputErrorfArgs:    []interface{}{errPkg.ErrNotStringAndInt, 1},
-		inputErrorfFormat:  "%s, requestId: %d",
-		countErrorf:        1,
-		countWarnf:         0,
-		countSignUp:        0,
+		testName:          "Error id interfaceConvertString",
+		out:               []byte(errPkg.ErrNotStringAndInt),
+		inputValueReqId:   1,
+		inputErrorfArgs:   []interface{}{errPkg.ErrNotStringAndInt, 1},
+		inputErrorfFormat: "%s, requestId: %d",
+		countErrorf:       1,
+		countWarnf:        0,
+		countSignUp:       0,
 	},
 	{
 		testName:            "Error checkError-ErrCheck-500",
 		out:                 []byte("{\"status\":500,\"explain\":\"database is not responding\"}"),
+		inputSocketNKIdCtx:  "1",
+		inputSocketNKId:     1,
 		inputValueReqId:     1,
-		inputLogoutCSRF:     "token",
-		inputLogoutCSRFCtx:  "token",
 		inputValueUnmarshal: []byte("{\"id\":1}"),
 		inputErrorfArgs:     []interface{}{errPkg.ADeleteCookieCookieNotDelete, 1},
 		inputErrorfFormat:   "%s, requestId: %d",
 		countErrorf:         1,
 		countWarnf:          0,
 		outLogoutXCSRF:      "nil",
-		errLogout:           errors.New(errPkg.ADeleteCookieCookieNotDelete),
+		errScoketNK:         errors.New(errPkg.ADeleteCookieCookieNotDelete),
 		countSignUp:         1,
 	},
 }
@@ -545,6 +547,7 @@ func TestUserWebSocketNewKey(t *testing.T) {
 		ctxIn := fasthttp.RequestCtx{}
 		ctxIn.SetUserValue("reqId", tt.inputValueReqId)
 		ctxIn.SetUserValue("X-Csrf-Token", tt.inputLogoutCSRFCtx)
+		ctxIn.SetUserValue("id", tt.inputSocketNKIdCtx)
 		ctxIn.Request.SetBody(tt.inputValueUnmarshal)
 		ctxExpected := fasthttp.RequestCtx{}
 		ctxExpected.Response.SetBody(tt.out)
@@ -560,8 +563,8 @@ func TestUserWebSocketNewKey(t *testing.T) {
 
 		mockApplication.
 			EXPECT().
-			NewCSRFWebsocket(tt.inputLogoutCSRF).
-			Return(tt.outLogoutXCSRF, tt.errLogout).
+			NewCSRFWebsocket(tt.inputSocketNKId).
+			Return(tt.outLogoutXCSRF, tt.errScoketNK).
 			Times(tt.countSignUp)
 
 		userInfo := UserInfo{Logger: mockMultilogger, Application: mockApplication}

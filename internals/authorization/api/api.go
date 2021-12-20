@@ -253,6 +253,7 @@ func (u *UserInfo) UserWebSocketNewKey(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		u.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	checkError := &errPkg.CheckError{
@@ -261,11 +262,12 @@ func (u *UserInfo) UserWebSocketNewKey(ctx *fasthttp.RequestCtx) {
 	}
 
 	idCtx := ctx.UserValue("id")
-	id, errConvert := util.InterfaceConvertInt(idCtx)
-	if errConvert != nil {
+	id, errConvertId := util.InterfaceConvertInt(idCtx)
+	if errConvertId != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("%s", errConvert.Error())
+		ctx.Response.SetBody([]byte(errConvertId.Error()))
+		u.Logger.Errorf("%s, requestId: %d", errConvertId.Error(), reqId)
+		return
 	}
 
 	newKey, err := u.Application.NewCSRFWebsocket(id)
