@@ -99,6 +99,7 @@ func (u *UserInfo) LoginHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		u.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	checkError := &errPkg.CheckError{
@@ -156,6 +157,7 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		u.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	checkError := &errPkg.CheckError{
@@ -167,10 +169,11 @@ func (u *UserInfo) LogoutHandler(ctx *fasthttp.RequestCtx) {
 	var cookieDB util.Defense
 
 	tokenContext := ctx.UserValue("X-Csrf-Token")
-	xCsrfToken, errConvert := util.InterfaceConvertString(tokenContext)
-	if errConvert != nil {
+	xCsrfToken, errConvertToken := util.InterfaceConvertString(tokenContext)
+	if errConvertToken != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errConvert.Error()))
+		ctx.Response.SetBody([]byte(errConvertToken.Error()))
+		u.Logger.Errorf("%s, requestId: %d", errConvertToken.Error(), reqId)
 		return
 	}
 
@@ -215,13 +218,15 @@ func (u *UserInfo) PayHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		u.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	tokenContext := ctx.UserValue("X-Csrf-Token")
-	xCsrfToken, errConvert := util.InterfaceConvertString(tokenContext)
-	if errConvert != nil {
+	xCsrfToken, errConvertToken := util.InterfaceConvertString(tokenContext)
+	if errConvertToken != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errConvert.Error()))
+		ctx.Response.SetBody([]byte(errConvertToken.Error()))
+		u.Logger.Errorf("%s, requestId: %d", errConvertToken.Error(), reqId)
 		return
 	}
 
