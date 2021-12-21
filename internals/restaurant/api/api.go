@@ -487,7 +487,8 @@ func (r *InfoRestaurant) GetFavouritesHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("%s", errConvert.Error())
+		r.Logger.Errorf("%s, requestId: %d", errConvert.Error(), reqId)
+		return
 	}
 
 	restaurant, err := r.Application.GetFavoriteRestaurants(id)

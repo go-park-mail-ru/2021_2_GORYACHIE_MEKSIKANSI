@@ -68,7 +68,7 @@ func (o *Order) GetActiveOrder(idClient int, idOrder int) (*Order2.ActiveOrder, 
 
 func (o *Order) UpdateStatusOrder(id int, status int) error {
 	for i := 1; i <= 4; i++ {
-		time.Sleep(time.Second * 0)
+		time.Sleep(time.Second * 15)
 		o.IntCh <- authPkg.WebSocketOrder{Id: id, Status: i}
 		o.DB.UpdateStatusOrder(id, i)
 	}

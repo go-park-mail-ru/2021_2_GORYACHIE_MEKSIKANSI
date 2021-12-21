@@ -269,8 +269,6 @@ func TestRestaurantIdHandler(t *testing.T) {
 		profileInfo := InfoRestaurant{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			profileInfo.RestaurantIdHandler(&ctxIn)
-			println(string(ctxIn.Response.Body()))
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
@@ -417,8 +415,6 @@ func TestRestaurantDishesHandler(t *testing.T) {
 		profileInfo := InfoRestaurant{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			profileInfo.RestaurantDishesHandler(&ctxIn)
-			println(string(ctxIn.Response.Body()))
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
@@ -582,8 +578,6 @@ func TestCreateReviewHandler(t *testing.T) {
 		profileInfo := InfoRestaurant{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			profileInfo.CreateReviewHandler(&ctxIn)
-			println(string(ctxIn.Response.Body()))
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
@@ -722,8 +716,165 @@ func TestGetReviewHandler(t *testing.T) {
 		profileInfo := InfoRestaurant{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			profileInfo.GetReviewHandler(&ctxIn)
-			println(string(ctxIn.Response.Body()))
-			//println(string(ctxExpected.Response.Body()))
+			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
+
+		})
+	}
+
+}
+
+var GetFavouritesHandler = []struct {
+	testName                     string
+	inputValueReqId              interface{}
+	inputValueUnmarshal          []byte
+	inputGetOrderHandlerIdCtx    interface{}
+	inputGetOrderHandlerId       int
+	inputGetOrderHandlerIdOrdCtx interface{}
+	inputGetOrderHandlerIdOrd    int
+	inputUpdateName              string
+	inputGetOrderHandlerDishes   int
+	inputRestaurantIdIdResCtx    interface{}
+	inputRestaurantIdIdRes       int
+	inputRestaurantIdidDishCtx   interface{}
+	inputRestaurantIdidDish      int
+	inputRestaurantidDishRes     int
+	out                          []byte
+	inputGetOrderCSRFCtx         interface{}
+	inputErrorfArgs              []interface{}
+	inputErrorfFormat            string
+	countErrorf                  int
+	inputWarnfArgs               []interface{}
+	inputWarnfFormat             string
+	countWarnf                   int
+	outGetProfile                []restaurant.Restaurants
+	inputGerProfile              restaurant.NewReview
+	errGetOrder                  error
+	countGetOrder                int
+}{
+	{
+		testName:                     "Successful UpdateUserName handler",
+		inputValueReqId:              10,
+		inputGetOrderHandlerIdCtx:    1,
+		inputGetOrderHandlerId:       1,
+		inputGetOrderHandlerIdOrdCtx: 1,
+		inputGetOrderHandlerIdOrd:    1,
+		inputRestaurantIdIdResCtx:    1,
+		inputRestaurantIdIdRes:       1,
+		inputUpdateName:              "",
+		inputRestaurantIdidDishCtx:   1,
+		inputRestaurantIdidDish:      1,
+		inputValueUnmarshal:          []byte("{\"id\":1}"),
+		inputGetOrderCSRFCtx:         "token",
+		out:                          []byte("{\"status\":200,\"body\":{\"restaurants\":null}}"),
+		countErrorf:                  0,
+		countWarnf:                   0,
+		errGetOrder:                  nil,
+		countGetOrder:                1,
+	},
+	{
+		testName:          "Error reqId interfaceConvertInt",
+		out:               []byte(errPkg.ErrNotStringAndInt),
+		inputValueReqId:   nil,
+		inputErrorfArgs:   []interface{}{errPkg.ErrNotStringAndInt},
+		inputErrorfFormat: "%s",
+		countErrorf:       1,
+		countWarnf:        0,
+		countGetOrder:     0,
+	},
+	{
+		testName:            "Error id interfaceConvertInt",
+		out:                 []byte(errPkg.ErrNotStringAndInt),
+		inputValueUnmarshal: []byte("{\"text\":\"1\"}"),
+		inputValueReqId:     1,
+		inputErrorfArgs:     []interface{}{errPkg.ErrNotStringAndInt, 1},
+		inputErrorfFormat:   "%s, requestId: %d",
+		countErrorf:         1,
+		countWarnf:          0,
+		countGetOrder:       0,
+	},
+	{
+		testName:                     "Error checkError-ErrCheck-500",
+		out:                          []byte("{\"status\":404,\"explain\":\"избранные рестораны не найдены\"}"),
+		inputGetOrderCSRFCtx:         "token",
+		inputValueUnmarshal:          []byte("{\"text\":\"1\"}"),
+		inputValueReqId:              1,
+		inputRestaurantIdIdResCtx:    1,
+		inputGetOrderHandlerIdCtx:    1,
+		inputGetOrderHandlerId:       1,
+		inputGetOrderHandlerIdOrdCtx: 1,
+		inputRestaurantIdIdRes:       1,
+		inputGetOrderHandlerIdOrd:    1,
+		inputRestaurantIdidDishCtx:   1,
+		inputGerProfile:              restaurant.NewReview{Text: "1"},
+		inputRestaurantIdidDish:      1,
+		inputErrorfArgs:              []interface{}{errPkg.RGetFavoriteRestaurantsRestaurantsNotExist, 1},
+		inputErrorfFormat:            "%s, requestId: %d",
+		countErrorf:                  1,
+		countWarnf:                   0,
+		errGetOrder:                  errors.New(errPkg.RGetFavoriteRestaurantsRestaurantsNotExist),
+		countGetOrder:                1,
+	},
+	{
+		testName:                     "Error checkError-ErrCheck-500",
+		out:                          []byte("{\"status\":500,\"explain\":\"database is not responding\"}"),
+		inputGetOrderCSRFCtx:         "token",
+		inputValueUnmarshal:          []byte("{\"text\":\"1\"}"),
+		inputValueReqId:              1,
+		inputRestaurantIdIdResCtx:    1,
+		inputGetOrderHandlerIdCtx:    1,
+		inputGetOrderHandlerId:       1,
+		inputGetOrderHandlerIdOrdCtx: 1,
+		inputRestaurantIdIdRes:       1,
+		inputGetOrderHandlerIdOrd:    1,
+		inputRestaurantIdidDishCtx:   1,
+		inputGerProfile:              restaurant.NewReview{Text: "1"},
+		inputRestaurantIdidDish:      1,
+		inputErrorfArgs:              []interface{}{errPkg.RGetDishesDishesNotFound, 1},
+		inputErrorfFormat:            "%s, requestId: %d",
+		countErrorf:                  1,
+		countWarnf:                   0,
+		errGetOrder:                  errors.New(errPkg.RGetDishesDishesNotFound),
+		countGetOrder:                1,
+	},
+}
+
+func TestGetFavouritesHandler(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	ctrlApp := gomock.NewController(t)
+	defer ctrl.Finish()
+	defer ctrlApp.Finish()
+
+	mockMultilogger := mocks.NewMockMultiLogger(ctrl)
+	mockApplication := mocks.NewMockRestaurantApplicationInterface(ctrlApp)
+	for _, tt := range GetFavouritesHandler {
+		ctxIn := fasthttp.RequestCtx{}
+		ctxIn.SetUserValue("reqId", tt.inputValueReqId)
+		ctxIn.SetUserValue("X-Csrf-Token", tt.inputGetOrderCSRFCtx)
+		ctxIn.SetUserValue("id", tt.inputGetOrderHandlerIdCtx)
+		ctxIn.SetUserValue("idRes", tt.inputRestaurantIdIdResCtx)
+		ctxIn.SetUserValue("idDish", tt.inputRestaurantIdidDishCtx)
+		ctxIn.Request.SetBody(tt.inputValueUnmarshal)
+		ctxExpected := fasthttp.RequestCtx{}
+		ctxExpected.Response.SetBody(tt.out)
+		mockMultilogger.
+			EXPECT().
+			Errorf(tt.inputErrorfFormat, tt.inputErrorfArgs).
+			Times(tt.countErrorf)
+
+		mockMultilogger.
+			EXPECT().
+			Warnf(tt.inputWarnfFormat, tt.inputWarnfArgs).
+			Times(tt.countWarnf)
+
+		mockApplication.
+			EXPECT().
+			GetFavoriteRestaurants(tt.inputGetOrderHandlerId).
+			Return(tt.outGetProfile, tt.errGetOrder).
+			Times(tt.countGetOrder)
+
+		profileInfo := InfoRestaurant{Logger: mockMultilogger, Application: mockApplication}
+		t.Run(tt.testName, func(t *testing.T) {
+			profileInfo.GetFavouritesHandler(&ctxIn)
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
