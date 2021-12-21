@@ -85,6 +85,12 @@ type RequestCartDefault struct {
 	PromoCode  string            `json:"promo_code"`
 }
 
+//easyjson:json
+type CreatePromoCode struct {
+	Code         string `json:"code"`
+	RestaurantId int    `json:"restaurantId"`
+}
+
 type RestaurantRequest struct {
 	Id int `json:"id"`
 }

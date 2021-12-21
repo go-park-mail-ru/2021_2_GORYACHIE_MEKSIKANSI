@@ -11,6 +11,7 @@ type CartInterface interface {
 	CalculateCost(result *cartPkg.ResponseCartErrors, rest *cartPkg.RestaurantId) (*cartPkg.CostCartResponse, error)
 	GetCart(id int) (*cartPkg.ResponseCartErrors, error)
 	UpdateCart(dishes cartPkg.RequestCartDefault, clientId int) (*cartPkg.ResponseCartErrors, error)
+	AddPromoCode(promoCode string, restaurantId int, clientId int) error
 }
 
 type Cart struct {
@@ -127,4 +128,12 @@ func (c *Cart) UpdateCart(dishes cartPkg.RequestCartDefault, clientId int) (*car
 		return nil, err
 	}
 	return result, nil
+}
+
+func (c *Cart) AddPromoCode(promoCode string, restaurantId int, clientId int) error {
+	err := c.DB.AddPromoCode(promoCode, restaurantId, clientId)
+	if err != nil {
+		return err
+	}
+	return nil
 }

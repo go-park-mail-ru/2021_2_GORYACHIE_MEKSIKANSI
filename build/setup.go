@@ -13,6 +13,7 @@ import (
 	Orm2 "2021_2_GORYACHIE_MEKSIKANSI/internals/cart/orm"
 	authProto "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/authorization/proto"
 	cartProto "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/cart/proto"
+	promoProto "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/promocode/proto"
 	resProto "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/restaurant/proto"
 	Api3 "2021_2_GORYACHIE_MEKSIKANSI/internals/middleware/api"
 	midlApiPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/middleware/api"
@@ -153,7 +154,19 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 	cartManager := cartProto.NewCartServiceClient(grpcConnCart)
 	cartCtx := context.Background()
 
-	cartWrapper := Orm2.Wrapper{Conn: cartManager, Ctx: cartCtx}
+	addressPromo := microserviceConfig.Promocode.Host + ":" + microserviceConfig.Promocode.Port
+	grpcConnPromo, errDialPromo := grpc.Dial(
+		addressPromo,
+		grpc.WithInsecure(),
+	)
+	if errDialPromo != nil {
+		logger.Errorf("Not connect %s , %s", addressPromo, errDialPromo.Error())
+		return nil
+	}
+	promoManager := promoProto.NewPromocodeServiceClient(grpcConnPromo)
+	promoCtx := context.Background()
+
+	cartWrapper := Orm2.Wrapper{ConnCart: cartManager, CtxCart: cartCtx, ConnPromo: promoManager, CtxPromo: promoCtx}
 	cartApp := Application2.Cart{DB: &cartWrapper}
 	cartInfo := Api2.InfoCart{
 		Application: &cartApp,

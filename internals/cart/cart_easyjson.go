@@ -17,7 +17,66 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart(in *jlexer.Lexer, out *CartRequest) {
+func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart(in *jlexer.Lexer, out *CreatePromoCode) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "code":
+			out.Code = string(in.String())
+		case "restaurantId":
+			out.RestaurantId = int(in.Int())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart(out *jwriter.Writer, in CreatePromoCode) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"code\":"
+		out.RawString(prefix[1:])
+		out.String(string(in.Code))
+	}
+	{
+		const prefix string = ",\"restaurantId\":"
+		out.RawString(prefix)
+		out.Int(int(in.RestaurantId))
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v CreatePromoCode) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *CreatePromoCode) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart(l, v)
+}
+func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart1(in *jlexer.Lexer, out *CartRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -37,7 +96,7 @@ func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart(in *jlexer.Lexe
 		}
 		switch key {
 		case "cart":
-			easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart1(in, &out.Cart)
+			easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart2(in, &out.Cart)
 		default:
 			in.SkipRecursive()
 		}
@@ -48,28 +107,28 @@ func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart(in *jlexer.Lexe
 		in.Consumed()
 	}
 }
-func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart(out *jwriter.Writer, in CartRequest) {
+func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart1(out *jwriter.Writer, in CartRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
 	{
 		const prefix string = ",\"cart\":"
 		out.RawString(prefix[1:])
-		easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart1(out, in.Cart)
+		easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart2(out, in.Cart)
 	}
 	out.RawByte('}')
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v CartRequest) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart(w, v)
+	easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart1(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *CartRequest) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart(l, v)
+	easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart1(l, v)
 }
-func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart1(in *jlexer.Lexer, out *RequestCartDefault) {
+func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart2(in *jlexer.Lexer, out *RequestCartDefault) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -89,7 +148,7 @@ func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart1(in *jlexer.Lex
 		}
 		switch key {
 		case "restaurant":
-			easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart2(in, &out.Restaurant)
+			easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart3(in, &out.Restaurant)
 		case "dishes":
 			if in.IsNull() {
 				in.Skip()
@@ -107,7 +166,7 @@ func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart1(in *jlexer.Lex
 				}
 				for !in.IsDelim(']') {
 					var v1 DishesRequest
-					easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart3(in, &v1)
+					easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart4(in, &v1)
 					out.Dishes = append(out.Dishes, v1)
 					in.WantComma()
 				}
@@ -125,14 +184,14 @@ func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart1(in *jlexer.Lex
 		in.Consumed()
 	}
 }
-func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart1(out *jwriter.Writer, in RequestCartDefault) {
+func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart2(out *jwriter.Writer, in RequestCartDefault) {
 	out.RawByte('{')
 	first := true
 	_ = first
 	{
 		const prefix string = ",\"restaurant\":"
 		out.RawString(prefix[1:])
-		easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart2(out, in.Restaurant)
+		easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart3(out, in.Restaurant)
 	}
 	{
 		const prefix string = ",\"dishes\":"
@@ -145,7 +204,7 @@ func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart1(out *jwriter.W
 				if v2 > 0 {
 					out.RawByte(',')
 				}
-				easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart3(out, v3)
+				easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart4(out, v3)
 			}
 			out.RawByte(']')
 		}
@@ -157,7 +216,7 @@ func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart1(out *jwriter.W
 	}
 	out.RawByte('}')
 }
-func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart3(in *jlexer.Lexer, out *DishesRequest) {
+func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart4(in *jlexer.Lexer, out *DishesRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -199,7 +258,7 @@ func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart3(in *jlexer.Lex
 				}
 				for !in.IsDelim(']') {
 					var v4 RadiosCartRequest
-					easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart4(in, &v4)
+					easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart5(in, &v4)
 					out.Radios = append(out.Radios, v4)
 					in.WantComma()
 				}
@@ -222,7 +281,7 @@ func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart3(in *jlexer.Lex
 				}
 				for !in.IsDelim(']') {
 					var v5 IngredientsCartRequest
-					easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart5(in, &v5)
+					easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart6(in, &v5)
 					out.Ingredients = append(out.Ingredients, v5)
 					in.WantComma()
 				}
@@ -238,7 +297,7 @@ func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart3(in *jlexer.Lex
 		in.Consumed()
 	}
 }
-func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart3(out *jwriter.Writer, in DishesRequest) {
+func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart4(out *jwriter.Writer, in DishesRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -268,7 +327,7 @@ func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart3(out *jwriter.W
 				if v6 > 0 {
 					out.RawByte(',')
 				}
-				easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart4(out, v7)
+				easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart5(out, v7)
 			}
 			out.RawByte(']')
 		}
@@ -284,14 +343,14 @@ func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart3(out *jwriter.W
 				if v8 > 0 {
 					out.RawByte(',')
 				}
-				easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart5(out, v9)
+				easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart6(out, v9)
 			}
 			out.RawByte(']')
 		}
 	}
 	out.RawByte('}')
 }
-func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart5(in *jlexer.Lexer, out *IngredientsCartRequest) {
+func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart6(in *jlexer.Lexer, out *IngredientsCartRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -322,7 +381,7 @@ func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart5(in *jlexer.Lex
 		in.Consumed()
 	}
 }
-func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart5(out *jwriter.Writer, in IngredientsCartRequest) {
+func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart6(out *jwriter.Writer, in IngredientsCartRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -333,7 +392,7 @@ func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart5(out *jwriter.W
 	}
 	out.RawByte('}')
 }
-func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart4(in *jlexer.Lexer, out *RadiosCartRequest) {
+func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart5(in *jlexer.Lexer, out *RadiosCartRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -366,7 +425,7 @@ func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart4(in *jlexer.Lex
 		in.Consumed()
 	}
 }
-func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart4(out *jwriter.Writer, in RadiosCartRequest) {
+func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart5(out *jwriter.Writer, in RadiosCartRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -382,7 +441,7 @@ func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart4(out *jwriter.W
 	}
 	out.RawByte('}')
 }
-func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart2(in *jlexer.Lexer, out *RestaurantRequest) {
+func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart3(in *jlexer.Lexer, out *RestaurantRequest) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -413,7 +472,7 @@ func easyjsonDdb0949aDecode20212GORYACHIEMEKSIKANSIInternalsCart2(in *jlexer.Lex
 		in.Consumed()
 	}
 }
-func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart2(out *jwriter.Writer, in RestaurantRequest) {
+func easyjsonDdb0949aEncode20212GORYACHIEMEKSIKANSIInternalsCart3(out *jwriter.Writer, in RestaurantRequest) {
 	out.RawByte('{')
 	first := true
 	_ = first

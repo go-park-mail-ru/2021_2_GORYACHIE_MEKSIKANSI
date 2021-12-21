@@ -4,6 +4,7 @@ import (
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/cart"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/cart/orm/mocks"
 	cartProto "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/cart/proto"
+	promoProto "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/promocode/proto"
 	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
@@ -203,7 +204,7 @@ func TestGetCart(t *testing.T) {
 			EXPECT().
 			GetCart(gomock.Any(), tt.inputQuery).
 			Return(tt.outQuery, tt.errQuery)
-		testUser := &Wrapper{Conn: m}
+		testUser := &Wrapper{ConnCart: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.GetCart(tt.input)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
@@ -540,10 +541,95 @@ func TestUpdateCart(t *testing.T) {
 			EXPECT().
 			UpdateCart(gomock.Any(), tt.inputQuery).
 			Return(tt.outQuery, tt.errQuery)
-		testUser := &Wrapper{Conn: m}
+		testUser := &Wrapper{ConnCart: m}
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := testUser.UpdateCart(tt.inputDishes, tt.inputClient)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var AddPromoCode = []struct {
+	testName        string
+	inputCode       string
+	inputRestaurant int
+	inputClient     int
+	outErr          string
+	inputQuery      *promoProto.PromoCodeWithRestaurantIdAndClient
+	outQuery        *promoProto.Error
+	errQuery        error
+}{
+	{
+		testName:        "Add promo code",
+		inputCode:       "promo",
+		inputRestaurant: 1,
+		inputClient:     1,
+		outErr:          "",
+		inputQuery: &promoProto.PromoCodeWithRestaurantIdAndClient{
+			PromoCode:  "promo",
+			Restaurant: 1,
+			Client:     1,
+		},
+		outQuery: &promoProto.Error{
+			Error: "",
+		},
+		errQuery: nil,
+	},
+	{
+		testName:        "Error add promo code",
+		inputCode:       "promo",
+		inputRestaurant: 1,
+		inputClient:     1,
+		outErr:          "text",
+		inputQuery: &promoProto.PromoCodeWithRestaurantIdAndClient{
+			PromoCode:  "promo",
+			Restaurant: 1,
+			Client:     1,
+		},
+		outQuery: &promoProto.Error{
+			Error: "text",
+		},
+		errQuery: nil,
+	},
+	{
+		testName:        "Error microservice",
+		inputCode:       "promo",
+		inputRestaurant: 1,
+		inputClient:     1,
+		inputQuery: &promoProto.PromoCodeWithRestaurantIdAndClient{
+			PromoCode:  "promo",
+			Restaurant: 1,
+			Client:     1,
+		},
+		outErr: "text",
+		outQuery: &promoProto.Error{
+			Error: "text",
+		},
+		errQuery: errors.New("text"),
+	},
+}
+
+func TestAddPromoCode(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockConnectPromocodeServiceInterface(ctrl)
+	for _, tt := range AddPromoCode {
+		m.
+			EXPECT().
+			AddPromoCode(gomock.Any(), tt.inputQuery).
+			Return(tt.outQuery, tt.errQuery)
+		testUser := &Wrapper{ConnPromo: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			err := testUser.AddPromoCode(tt.inputCode, tt.inputRestaurant, tt.inputClient)
 			if tt.outErr != "" {
 				if err == nil {
 					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))

@@ -34,6 +34,20 @@ func (m *MockWrapperCartServerInterface) EXPECT() *MockWrapperCartServerInterfac
 	return m.recorder
 }
 
+// AddPromoCode mocks base method.
+func (m *MockWrapperCartServerInterface) AddPromoCode(arg0 string, arg1, arg2 int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddPromoCode", arg0, arg1, arg2)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AddPromoCode indicates an expected call of AddPromoCode.
+func (mr *MockWrapperCartServerInterfaceMockRecorder) AddPromoCode(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddPromoCode", reflect.TypeOf((*MockWrapperCartServerInterface)(nil).AddPromoCode), arg0, arg1, arg2)
+}
+
 // GetCart mocks base method.
 func (m *MockWrapperCartServerInterface) GetCart(arg0 int) (*cart.ResponseCartErrors, error) {
 	m.ctrl.T.Helper()

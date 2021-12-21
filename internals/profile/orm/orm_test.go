@@ -796,7 +796,7 @@ func TestUpdatePhone(t *testing.T) {
 //			Upload(gomock.Any()).
 //			Return(nil, tt.errUpload).
 //			Times(tt.countUpload)
-//		testUser := &Wrapper{Conn: m}
+//		testUser := &Wrapper{ConnCart: m}
 //		t.Run(tt.testName, func(t *testing.T) {
 //			err := testUser.UpdateAvatar(tt.inputId, tt.inputAvatar, tt.inputNewFileName)
 //			if tt.outErr != "" && err != nil {

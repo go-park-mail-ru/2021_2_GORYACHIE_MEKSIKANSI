@@ -88,6 +88,7 @@ func runServer() {
 	webSocketGroup := versionGroup.Group("/ws")
 	userWSGroup := userGroup.Group("/ws")
 	favouriteGroup := userGroup.Group("/restaurant/favourite")
+	promoCodeGroup := userGroup.Group("/promocode")
 
 	userGroup.POST("/login", userInfo.LoginHandler)
 	userGroup.POST("/signup", userInfo.SignUpHandler)
@@ -121,6 +122,8 @@ func runServer() {
 
 	webSocketGroup.GET("/", infoMid.CheckWebSocketKey(userInfo.UserWebSocket))
 	userWSGroup.GET("/key", infoMid.GetIdClient(userInfo.UserWebSocketNewKey))
+
+	promoCodeGroup.PUT("/", infoMid.GetIdClient(infoMid.CheckClient(cartInfo.AddPromocodeHandler)))
 
 	metricsHandler := metrics.Add(func(ctx *fasthttp.RequestCtx) {
 		ctx.SetStatusCode(http.StatusOK)

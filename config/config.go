@@ -44,6 +44,7 @@ type MicroserviceConfig struct {
 	Authorization AuthorizationMicroservice `mapstructure:"authorization"`
 	Cart          CartMicroservice          `mapstructure:"cart"`
 	Restaurant    RestaurantMicroservice    `mapstructure:"restaurant"`
+	Promocode     PromocodeMicroservice     `mapstructure:"promocode"`
 }
 
 type AuthorizationMicroservice struct {
@@ -59,6 +60,12 @@ type CartMicroservice struct {
 }
 
 type RestaurantMicroservice struct {
+	Host    string
+	Port    string
+	Network string
+}
+
+type PromocodeMicroservice struct {
 	Host    string
 	Port    string
 	Network string

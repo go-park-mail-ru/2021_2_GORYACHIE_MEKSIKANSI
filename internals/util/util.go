@@ -69,19 +69,6 @@ func InterfaceConvertInt(value interface{}) (int, error) {
 	}
 }
 
-func InterfaceConvertTime(value interface{}) (*time.Time, error) {
-	var timeNew time.Time
-	switch value.(type) {
-	case time.Time:
-		timeNew = value.(time.Time)
-		return &timeNew, nil
-	default:
-		return nil, &errors.Errors{
-			Text: errors.ErrNotStringAndInt,
-		}
-	}
-}
-
 func InterfaceConvertString(value interface{}) (string, error) {
 	var StringConvert string
 	switch value.(type) {
