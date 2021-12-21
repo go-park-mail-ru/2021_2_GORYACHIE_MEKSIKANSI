@@ -6,10 +6,9 @@ test:
 	go tool cover -func cover
 	rm cover_wo_mock
 
-fill:
+.PHONY: save_db
+save_db:
+	pg_dump hot_mexicans_db -f ./build/postgresql/fill --inserts
 	grep -v "\-\-['\n'|' ']" ./build/postgresql/fill > ./build/postgresql/fill.sql
-	rm fill
-
-save_db: fill
-	pg_dump hot_mexicans_db -f fill --inserts
+	rm ./build/postgresql/fill
 

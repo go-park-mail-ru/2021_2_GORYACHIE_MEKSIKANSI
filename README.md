@@ -7,18 +7,17 @@
 
 ## Team
 - Full Fullstacks
-    - [Сергей Щербаков](https://github.com/F4lkr4m)
-    - [Эрик Мкртчян](https://github.com/Constantilation)
-    - [Николай Журавлев](https://github.com/a1i5k)
-    - [Никита Жданов](https://github.com/Captain-Matroskin)
+    - [Журавлев Николай](https://github.com/a1i5k)
+    - [Жданов Никита](https://github.com/Captain-Matroskin)
+    - [Мкртчян Эрик](https://github.com/Constantilation)
+    - [Щербаков Сергей](https://github.com/F4lkr4m)
 
 ## Mentors
-- Frontend
-    - [Константин Волков](https://github.com/doomwastaken)
 - Backend
     - [Михаил Агличеев](https://github.com/ChocolaterToba)
+- Frontend
+    - [Константин Волков](https://github.com/doomwastaken)
 
-## Backend repo
+## Frontend repo
 
 [Frontend](https://github.com/frontend-park-mail-ru/2021_2_GORYACHIE_MEKSIKANSI)
-
