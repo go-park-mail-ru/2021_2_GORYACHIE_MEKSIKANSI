@@ -1205,7 +1205,7 @@ INSERT INTO public.client VALUES (1, 1, '2021-12-21 22:12:10.689883');
 --
 --
 
-INSERT INTO public.cookie VALUES (1, 1, '1', '2021-12-21 22:12:10.689883', '', NULL);
+INSERT INTO public.cookie VALUES (1, 1, '1', '2022-12-21 22:12:10.689', '', NULL);
 
 
 --
