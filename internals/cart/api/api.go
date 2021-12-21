@@ -232,7 +232,6 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 
 	response, errResponse := easyjson.Marshal(&authorization.Result{
 		Status: http.StatusOK,
-		Body:   cartRequest,
 	})
 	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
