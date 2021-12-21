@@ -25,6 +25,7 @@ type Promocode struct {
 	Name         string `json:"name"`
 	Description  string `json:"desc"`
 	Img          string `json:"img"`
+	Code         string `json:"code"`
 	RestaurantId int    `json:"restId"`
 }
 

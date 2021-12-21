@@ -42,7 +42,15 @@ func runServer() {
 	awsConfig := configStructure[2].(configPkg.AwsConfig)
 	microserviceConfig := configStructure[3].(configPkg.MicroserviceConfig)
 
-	connectionPostgres, err := build.CreateDb(dbConfig.Db, appConfig.Primary.Debug)
+	connectionPostgres, err := build.CreateDb(dbConfig.Db)
+	if appConfig.Primary.Debug {
+		err := build.FillDb(connectionPostgres)
+		if err != nil {
+			logger.Log.Errorf("Unable fill database: %s", err.Error())
+			os.Exit(2)
+		}
+
+	}
 	defer connectionPostgres.Close()
 	if err != nil {
 		logger.Log.Errorf("Unable to connect to database: %s", err.Error())
@@ -80,6 +88,7 @@ func runServer() {
 	webSocketGroup := versionGroup.Group("/ws")
 	userWSGroup := userGroup.Group("/ws")
 	favouriteGroup := userGroup.Group("/restaurant/favourite")
+	promoCodeGroup := userGroup.Group("/promocode")
 
 	userGroup.POST("/login", userInfo.LoginHandler)
 	userGroup.POST("/signup", userInfo.SignUpHandler)
@@ -113,6 +122,8 @@ func runServer() {
 
 	webSocketGroup.GET("/", infoMid.CheckWebSocketKey(userInfo.UserWebSocket))
 	userWSGroup.GET("/key", infoMid.GetIdClient(userInfo.UserWebSocketNewKey))
+
+	promoCodeGroup.PUT("/", infoMid.GetIdClient(infoMid.CheckClient(cartInfo.AddPromocodeHandler)))
 
 	metricsHandler := metrics.Add(func(ctx *fasthttp.RequestCtx) {
 		ctx.SetStatusCode(http.StatusOK)

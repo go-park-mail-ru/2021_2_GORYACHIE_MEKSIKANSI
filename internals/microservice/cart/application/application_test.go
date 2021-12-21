@@ -3,6 +3,7 @@ package application
 import (
 	cartPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/cart"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/cart/application/mocks"
+	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
@@ -466,6 +467,66 @@ func TestApplicationUpdateCart(t *testing.T) {
 		t.Run(tt.testName, func(t *testing.T) {
 			result, err := test.UpdateCart(tt.inputDishes, tt.inputId)
 			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}
+
+var AddPromoCode = []struct {
+	testName         string
+	inputPromo       string
+	inputClient      int
+	inputRest        int
+	outErr           string
+	inputQueryPromo  string
+	inputQueryRest   int
+	inputQueryClient int
+	errQuery         error
+}{
+	{
+		testName:         "Add promo",
+		inputPromo:       "promo",
+		inputClient:      1,
+		inputRest:        1,
+		outErr:           "",
+		inputQueryPromo:  "promo",
+		inputQueryRest:   1,
+		inputQueryClient: 1,
+		errQuery:         nil,
+	},
+	{
+		testName:         "Error add promo",
+		inputPromo:       "promo",
+		inputClient:      1,
+		inputRest:        1,
+		outErr:           "text",
+		inputQueryPromo:  "promo",
+		inputQueryRest:   1,
+		inputQueryClient: 1,
+		errQuery:         errors.New("text"),
+	},
+}
+
+func TestAddPromoCode(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockWrapperCartInterface(ctrl)
+	for _, tt := range AddPromoCode {
+		m.
+			EXPECT().
+			AddPromoCode(tt.inputQueryPromo, tt.inputQueryRest, tt.inputQueryClient).
+			Return(tt.errQuery)
+		test := Cart{DB: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			err := test.AddPromoCode(tt.inputPromo, tt.inputRest, tt.inputClient)
 			if tt.outErr != "" {
 				if err == nil {
 					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))

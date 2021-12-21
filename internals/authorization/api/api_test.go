@@ -136,10 +136,7 @@ func TestSignUpHandler(t *testing.T) {
 		userInfo := UserInfo{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			userInfo.SignUpHandler(&ctxIn)
-			//println(string(ctxIn.Response.Body()))
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
-
 		})
 	}
 
@@ -255,8 +252,6 @@ func TestLoginHandler(t *testing.T) {
 		userInfo := UserInfo{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			userInfo.LoginHandler(&ctxIn)
-			//println(string(ctxIn.Response.Body()))
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
@@ -366,8 +361,6 @@ func TestLogoutHandler(t *testing.T) {
 		userInfo := UserInfo{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			userInfo.LogoutHandler(&ctxIn)
-			//println(string(ctxIn.Response.Body()))
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
@@ -456,8 +449,6 @@ func TestPayHandler(t *testing.T) {
 		userInfo := UserInfo{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			userInfo.PayHandler(&ctxIn)
-			//println(string(ctxIn.Response.Body()))
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
@@ -570,8 +561,83 @@ func TestUserWebSocketNewKey(t *testing.T) {
 		userInfo := UserInfo{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			userInfo.UserWebSocketNewKey(&ctxIn)
-			//println(string(ctxIn.Response.Body()))
-			//println(string(ctxExpected.Response.Body()))
+			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
+
+		})
+	}
+
+}
+
+var UserWebSocket = []struct {
+	testName            string
+	inputValueReqId     interface{}
+	inputValueUnmarshal []byte
+	out                 []byte
+	inputLogoutCSRF     string
+	inputLogoutCSRFCtx  interface{}
+	inputSocketNKIdCtx  interface{}
+	inputSocketNKId     int
+	inputErrorfArgs     []interface{}
+	inputErrorfFormat   string
+	countErrorf         int
+	inputWarnfArgs      []interface{}
+	inputWarnfFormat    string
+	countWarnf          int
+	outLogoutXCSRF      string
+	outSocketNK         string
+	errScoketNK         error
+	countSignUp         int
+}{
+	{
+		testName:          "Error reqId interfaceConvertInt",
+		out:               []byte(errPkg.ErrNotStringAndInt),
+		inputValueReqId:   nil,
+		inputErrorfArgs:   []interface{}{errPkg.ErrNotStringAndInt},
+		inputErrorfFormat: "%s",
+		countErrorf:       1,
+		countWarnf:        0,
+		countSignUp:       0,
+	}, {
+		testName:          "Error upgrade to ws",
+		out:               []byte("Bad Request"),
+		inputValueReqId:   1,
+		inputErrorfArgs:   []interface{}{"websocket: the client is not using the websocket protocol:  'upgrade' token not found in 'Connection' header", 1},
+		inputErrorfFormat: "UpgradeWS %s, requestId: %d",
+		countErrorf:       1,
+		countWarnf:        0,
+		countSignUp:       0,
+	},
+}
+
+func TestUserWebSocket(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	ctrlApp := gomock.NewController(t)
+	defer ctrl.Finish()
+	defer ctrlApp.Finish()
+
+	mockMultilogger := mocks.NewMockMultiLogger(ctrl)
+	mockApplication := mocks.NewMockAuthorizationApplicationInterface(ctrlApp)
+	for _, tt := range UserWebSocket {
+		ctxIn := fasthttp.RequestCtx{}
+		ctxIn.SetUserValue("reqId", tt.inputValueReqId)
+		ctxIn.SetUserValue("X-Csrf-Token", tt.inputLogoutCSRFCtx)
+		ctxIn.SetUserValue("id", tt.inputSocketNKIdCtx)
+		ctxIn.Request.SetBody(tt.inputValueUnmarshal)
+		ctxExpected := fasthttp.RequestCtx{}
+		ctxExpected.Response.SetBody(tt.out)
+		mockMultilogger.
+			EXPECT().
+			Errorf(tt.inputErrorfFormat, tt.inputErrorfArgs).
+			Times(tt.countErrorf)
+
+		mockMultilogger.
+			EXPECT().
+			Warnf(tt.inputWarnfFormat, tt.inputWarnfArgs).
+			Times(tt.countWarnf)
+
+		userInfo := UserInfo{Logger: mockMultilogger, Application: mockApplication}
+		t.Run(tt.testName, func(t *testing.T) {
+			userInfo.UserWebSocket(&ctxIn)
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})

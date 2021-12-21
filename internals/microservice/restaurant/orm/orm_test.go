@@ -1131,13 +1131,12 @@ var GetPromoCodes = []struct {
 				Description:  "free",
 				Img:          "/url/",
 				Name:         "freedelivery",
-				//Code: "promo",
+				Code:         "promo",
 			},
 		},
-		outErr:     "",
-		inputQuery: 1,
-		outQuery:   Rows{rows: 1, row: []interface{}{"freedelivery", "free", "/url/", 1}},
-		//outQuery:                 Rows{rows: 1, row: []interface{}{"freedelivery", "free", "/url/", 1, "promo"}},
+		outErr:                   "",
+		inputQuery:               1,
+		outQuery:                 Rows{rows: 1, row: []interface{}{"freedelivery", "free", "/url/", 1, "promo"}},
 		errQuery:                 nil,
 		countQuery:               1,
 		errBeginTransaction:      nil,
@@ -1172,7 +1171,7 @@ func TestGetPromoCodes(t *testing.T) {
 		mTx.
 			EXPECT().
 			Query(context.Background(),
-				"SELECT name, description, avatar, restaurant FROM promocode ORDER BY random() LIMIT 5").
+				"SELECT name, description, avatar, restaurant, code FROM promocode ORDER BY random() LIMIT 5").
 			Return(&tt.outQuery, tt.errQuery).
 			Times(tt.countQuery)
 		testUser := &Wrapper{Conn: m}

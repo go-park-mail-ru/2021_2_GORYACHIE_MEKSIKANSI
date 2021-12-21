@@ -90,6 +90,7 @@ func CastRestaurantsTagsProtoToAllRestaurants(restaurants *resProto.RestaurantsT
 		res.Img = code.Img
 		res.Name = code.Name
 		res.Description = code.Desc
+		res.Code = code.Code
 		r.AllPromo = append(r.AllPromo, res)
 	}
 	return &r

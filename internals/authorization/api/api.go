@@ -313,6 +313,7 @@ func (u *UserInfo) UserWebSocket(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		u.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 	upgrade := websocket.FastHTTPUpgrader{
 		ReadBufferSize:  1024,

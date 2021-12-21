@@ -171,6 +171,7 @@ func CastAllRestaurantsPromoToRestaurantsTagsPromoProto(restaurants *resPkg.AllR
 		res.Img = code.Img
 		res.Desc = code.Description
 		res.Name = code.Name
+		res.Code = code.Code
 		protoPromoCodes = append(protoPromoCodes, res)
 	}
 	p.Promocode = protoPromoCodes

@@ -1,3 +1,6 @@
+//go:generate mockgen -destination=mocks/api.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/myerror MultiLogger
+//go:generate mockgen -destination=mocks/apiApplication.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/order/application OrderApplicationInterface
+
 package api
 
 import (
@@ -29,6 +32,7 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		u.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	checkError := &errPkg.CheckError{
@@ -41,7 +45,16 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
-		u.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
+		u.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrUnmarshal, err.Error(), reqId)
+		return
+	}
+
+	tokenContext := ctx.UserValue("X-Csrf-Token")
+	xCsrfToken, errConvert := util.InterfaceConvertString(tokenContext)
+	if errConvert != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		u.Logger.Errorf("%s, requestId: %d", errConvert.Error(), reqId)
 		return
 	}
 
@@ -50,15 +63,10 @@ func (u *InfoOrder) CreateOrderHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("%s", errConvert.Error())
-	}
-	tokenContext := ctx.UserValue("X-Csrf-Token")
-	xCsrfToken, errConvert := util.InterfaceConvertString(tokenContext)
-	if errConvert != nil {
-		ctx.Response.SetStatusCode(http.StatusInternalServerError)
-		ctx.Response.SetBody([]byte(errConvert.Error()))
+		u.Logger.Errorf("%s, requestId: %d", errConvert.Error(), reqId)
 		return
 	}
+
 	idOrder, err := u.Application.CreateOrder(id, createOrder)
 
 	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorCreateOrder(err)
@@ -99,6 +107,7 @@ func (u *InfoOrder) GetOrdersHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		u.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	checkError := &errPkg.CheckError{
@@ -110,7 +119,8 @@ func (u *InfoOrder) GetOrdersHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("%s", errConvert.Error())
+		u.Logger.Errorf("%s, requestId: %d", errConvert.Error(), reqId)
+		return
 	}
 
 	historyOrders, err := u.Application.GetOrders(id)
@@ -148,6 +158,7 @@ func (u *InfoOrder) GetOrderActiveHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		u.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	checkError := &errPkg.CheckError{
@@ -160,7 +171,8 @@ func (u *InfoOrder) GetOrderActiveHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("%s", errConvert.Error())
+		u.Logger.Errorf("%s, requestId: %d", errConvert.Error(), reqId)
+		return
 	}
 
 	idCtxOrd := ctx.UserValue("idOrd")
@@ -168,7 +180,8 @@ func (u *InfoOrder) GetOrderActiveHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		u.Logger.Errorf("%s", errConvert.Error())
+		u.Logger.Errorf("%s, requestId: %d", errConvert.Error(), reqId)
+		return
 	}
 
 	activeOrder, err := u.Application.GetActiveOrder(id, idOrd)

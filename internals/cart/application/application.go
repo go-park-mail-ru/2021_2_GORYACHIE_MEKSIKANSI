@@ -9,6 +9,7 @@ import (
 type CartApplicationInterface interface {
 	GetCart(id int) (*Cart2.ResponseCartErrors, error)
 	UpdateCart(dishes Cart2.RequestCartDefault, clientId int) (*Cart2.ResponseCartErrors, error)
+	AddPromoCode(promoCode string, restaurantId int, clientId int) error
 }
 
 type Cart struct {
@@ -21,4 +22,8 @@ func (c *Cart) GetCart(id int) (*Cart2.ResponseCartErrors, error) {
 
 func (c *Cart) UpdateCart(dishes Cart2.RequestCartDefault, clientId int) (*Cart2.ResponseCartErrors, error) {
 	return c.DB.UpdateCart(dishes, clientId)
+}
+
+func (c *Cart) AddPromoCode(promoCode string, restaurantId int, clientId int) error {
+	return c.DB.AddPromoCode(promoCode, restaurantId, clientId)
 }

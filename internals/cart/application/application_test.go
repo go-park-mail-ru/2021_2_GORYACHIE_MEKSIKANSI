@@ -262,3 +262,52 @@ func TestUpdateCart(t *testing.T) {
 		})
 	}
 }
+
+var AddPromoCode = []struct {
+	testName         string
+	inputPromo       string
+	inputClient      int
+	inputRest        int
+	outErr           string
+	inputQueryPromo  string
+	inputQueryRest   int
+	inputQueryClient int
+	errQuery         error
+}{
+	{
+		testName:         "Add promo",
+		inputPromo:       "promo",
+		inputClient:      1,
+		inputRest:        1,
+		outErr:           "",
+		inputQueryPromo:  "promo",
+		inputQueryRest:   1,
+		inputQueryClient: 1,
+		errQuery:         nil,
+	},
+}
+
+func TestAddPromoCode(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockWrapperCartServerInterface(ctrl)
+	for _, tt := range AddPromoCode {
+		m.
+			EXPECT().
+			AddPromoCode(tt.inputQueryPromo, tt.inputQueryRest, tt.inputQueryClient).
+			Return(tt.errQuery)
+		testUser := &Cart{DB: m}
+		t.Run(tt.testName, func(t *testing.T) {
+			err := testUser.AddPromoCode(tt.inputPromo, tt.inputRest, tt.inputClient)
+			if tt.outErr != "" {
+				if err == nil {
+					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
+				}
+				require.EqualError(t, err, tt.outErr, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outErr, err.Error()))
+			} else {
+				require.Nil(t, err, fmt.Sprintf("Expected: nil\nbut got: %s", err))
+			}
+		})
+	}
+}

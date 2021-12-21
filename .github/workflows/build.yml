@@ -27,10 +27,25 @@ jobs:
           go get github.com/golangci/golangci-lint/cmd/golangci-lint
           go mod vendor
           golangci-lint run -c configCi.yml ./...
+  tests:
+    name: tests
+    runs-on: ubuntu-latest
+    needs: linter
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.x'
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run test
+        run: |
+          go mod vendor
+          make test
 
   build:
     runs-on: ubuntu-latest
-    needs: linter
+    needs: tests
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
