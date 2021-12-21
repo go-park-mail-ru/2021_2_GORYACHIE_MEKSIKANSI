@@ -133,6 +133,7 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		r.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	checkError := &errPkg.CheckError{
@@ -145,7 +146,8 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("%s", errConvert.Error())
+		r.Logger.Errorf("%s, requestId: %d", errConvert.Error(), reqId)
+		return
 	}
 
 	idCtx = ctx.UserValue("id")
@@ -153,12 +155,13 @@ func (r *InfoRestaurant) RestaurantIdHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("%s", errConvert.Error())
+		r.Logger.Errorf("%s, requestId: %d", errConvert.Error(), reqId)
+		return
 	}
 
 	restaurant, err := r.Application.GetRestaurant(id, idClient)
 
-	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorRestaurantId(err) // должна появиться новая ошибка +1
+	errOut, resultOutAccess, codeHTTP := checkError.CheckErrorRestaurantId(err)
 	if errOut != nil {
 		switch errOut.Error() {
 		case errPkg.ErrMarshal:
@@ -197,6 +200,7 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		r.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	checkError := &errPkg.CheckError{
@@ -209,7 +213,8 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("%s", errConvert.Error())
+		r.Logger.Errorf("%s, requestId: %d", errConvert.Error(), reqId)
+		return
 	}
 
 	idDishCtx := ctx.UserValue("idDish")
@@ -217,7 +222,8 @@ func (r *InfoRestaurant) RestaurantDishesHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("%s", errConvert.Error())
+		r.Logger.Errorf("%s, requestId: %d", errConvert.Error(), reqId)
+		return
 	}
 
 	dishes, err := r.Application.RestaurantDishes(idRes, idDish)
@@ -260,6 +266,7 @@ func (r *InfoRestaurant) CreateReviewHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		r.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	checkError := &errPkg.CheckError{
@@ -272,7 +279,7 @@ func (r *InfoRestaurant) CreateReviewHandler(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrUnmarshal))
-		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrUnmarshal, err, reqId)
+		r.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrUnmarshal, err.Error(), reqId)
 		return
 	}
 
@@ -281,13 +288,15 @@ func (r *InfoRestaurant) CreateReviewHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("%s", errConvert.Error())
+		r.Logger.Errorf("%s, requestId: %d", errConvert.Error(), reqId)
+		return
 	}
 	tokenContext := ctx.UserValue("X-Csrf-Token")
 	xCsrfToken, errConvert := util.InterfaceConvertString(tokenContext)
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
+		r.Logger.Errorf("%s, requestId: %d", errConvert.Error(), reqId)
 		return
 	}
 
@@ -329,6 +338,7 @@ func (r *InfoRestaurant) GetReviewHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		r.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	checkError := &errPkg.CheckError{
@@ -341,7 +351,8 @@ func (r *InfoRestaurant) GetReviewHandler(ctx *fasthttp.RequestCtx) {
 	if errConvert != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
-		r.Logger.Errorf("%s", errConvert.Error())
+		r.Logger.Errorf("%s, requestId: %d", errConvert.Error(), reqId)
+		return
 	}
 	var idClient = 0
 	idCleintCtx := ctx.UserValue("id")
@@ -350,7 +361,8 @@ func (r *InfoRestaurant) GetReviewHandler(ctx *fasthttp.RequestCtx) {
 		if errConvert != nil {
 			ctx.Response.SetStatusCode(http.StatusInternalServerError)
 			ctx.Response.SetBody([]byte(errConvert.Error()))
-			r.Logger.Errorf("%s", errConvert.Error())
+			r.Logger.Errorf("%s, requestId: %d", errConvert.Error(), reqId)
+			return
 		}
 	}
 	restaurant, err := r.Application.GetReview(id, idClient)

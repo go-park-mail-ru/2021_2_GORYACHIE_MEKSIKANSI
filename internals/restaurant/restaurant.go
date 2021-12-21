@@ -145,14 +145,3 @@ type ResFavouriteNew struct {
 type ResFavouriteStatus struct {
 	Status bool `json:"status"`
 }
-
-func (r *ResReview) CastFromRestaurantId(rest RestaurantId) {
-	r.Id = rest.Id
-	r.Img = rest.Img
-	r.Name = rest.Name
-	r.CostForFreeDelivery = rest.CostForFreeDelivery
-	r.MinDelivery = rest.MinDelivery
-	r.MaxDelivery = rest.MaxDelivery
-	r.Rating = rest.Rating
-	r.Tags = rest.Tags
-}

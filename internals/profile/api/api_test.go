@@ -126,8 +126,6 @@ func TestProfileHandler(t *testing.T) {
 		profileInfo := InfoProfile{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			profileInfo.ProfileHandler(&ctxIn)
-			println(string(ctxIn.Response.Body()))
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
@@ -277,8 +275,6 @@ func TestUpdateUserName(t *testing.T) {
 		profileInfo := InfoProfile{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			profileInfo.UpdateUserName(&ctxIn)
-			println(string(ctxIn.Response.Body()))
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
@@ -445,8 +441,6 @@ func TestUpdateUserEmail(t *testing.T) {
 		profileInfo := InfoProfile{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			profileInfo.UpdateUserEmail(&ctxIn)
-			println(string(ctxIn.Response.Body()))
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
@@ -596,7 +590,6 @@ func TestUpdateUserPassword(t *testing.T) {
 		profileInfo := InfoProfile{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			profileInfo.UpdateUserPassword(&ctxIn)
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
@@ -763,7 +756,6 @@ func TestUpdateUserPhone(t *testing.T) {
 		profileInfo := InfoProfile{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			profileInfo.UpdateUserPhone(&ctxIn)
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
@@ -870,7 +862,6 @@ func TestUpdateUserAvatar(t *testing.T) {
 		profileInfo := InfoProfile{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			profileInfo.UpdateUserPhone(&ctxIn)
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
@@ -1019,7 +1010,6 @@ func TestUpdateUserAddress(t *testing.T) {
 		profileInfo := InfoProfile{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			profileInfo.UpdateUserAddress(&ctxIn)
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})

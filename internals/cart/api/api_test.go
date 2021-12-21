@@ -143,8 +143,6 @@ func TestGetCartHandler(t *testing.T) {
 		userInfo := InfoCart{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			userInfo.GetCartHandler(&ctxIn)
-			//println(string(ctxIn.Response.Body()))
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
@@ -313,8 +311,6 @@ func TestUpdateCartHandler(t *testing.T) {
 		userInfo := InfoCart{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			userInfo.UpdateCartHandler(&ctxIn)
-			println(string(ctxIn.Response.Body()))
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})

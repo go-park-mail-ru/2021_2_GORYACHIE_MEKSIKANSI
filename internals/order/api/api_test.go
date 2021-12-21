@@ -159,8 +159,6 @@ func TestCreateOrderHandler(t *testing.T) {
 		userInfo := InfoOrder{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			userInfo.CreateOrderHandler(&ctxIn)
-			println(string(ctxIn.Response.Body()))
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
@@ -290,11 +288,6 @@ func TestGetOrdersHandler(t *testing.T) {
 		userInfo := InfoOrder{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			userInfo.GetOrdersHandler(&ctxIn)
-			println(string(ctxIn.Response.Body()))
-			println(string(ctxExpected.Response.Body()))
-			fmt.Printf("exptect ERR: %s", string(byte(0xa)))
-			//println(string([]byte{0x7b, 0x22, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x22, 0x3a, 0x32, 0x30, 0x30, 0x2c, 0x22, 0x62, 0x6f, 0x64, 0x79, 0x22, 0x3a, 0x6e, 0x75, 0x6c, 0x6c, 0x7d}))
-			//println(string([]byte{0x7b, 0x22, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x22, 0x3a, 0x32, 0x30, 0x30, 0x2c, 0x22, 0x62, 0x6f, 0x64, 0x79, 0x22, 0x3a, 0x6e, 0x75, 0x6c, 0x6c, 0x7d, 0xa}))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
@@ -446,8 +439,6 @@ func TestGetOrderActiveHandler(t *testing.T) {
 		userInfo := InfoOrder{Logger: mockMultilogger, Application: mockApplication}
 		t.Run(tt.testName, func(t *testing.T) {
 			userInfo.GetOrderActiveHandler(&ctxIn)
-			println(string(ctxIn.Response.Body()))
-			//println(string(ctxExpected.Response.Body()))
 			require.Equal(t, ctxExpected.Response.Body(), ctxIn.Response.Body(), fmt.Sprintf("Expected: %v\nbut got: %v", ctxExpected.Response.Body(), ctxIn.Response.Body()))
 
 		})
