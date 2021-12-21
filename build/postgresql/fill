@@ -1,6 +1,9 @@
 --
+-- PostgreSQL database dump
 --
 
+-- Dumped from database version 13.4 (Ubuntu 13.4-1.pgdg20.04+1)
+-- Dumped by pg_dump version 13.4 (Ubuntu 13.4-1.pgdg20.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -18,6 +21,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: address_user; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.address_user (
@@ -41,6 +45,7 @@ CREATE TABLE public.address_user (
 ALTER TABLE public.address_user OWNER TO root;
 
 --
+-- Name: address_user_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.address_user_id_seq
@@ -55,12 +60,14 @@ CREATE SEQUENCE public.address_user_id_seq
 ALTER TABLE public.address_user_id_seq OWNER TO root;
 
 --
+-- Name: address_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.address_user_id_seq OWNED BY public.address_user.id;
 
 
 --
+-- Name: card; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.card (
@@ -76,6 +83,7 @@ CREATE TABLE public.card (
 ALTER TABLE public.card OWNER TO root;
 
 --
+-- Name: card_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.card_id_seq
@@ -90,12 +98,14 @@ CREATE SEQUENCE public.card_id_seq
 ALTER TABLE public.card_id_seq OWNER TO root;
 
 --
+-- Name: card_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.card_id_seq OWNED BY public.card.id;
 
 
 --
+-- Name: cart_food; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.cart_food (
@@ -112,6 +122,7 @@ CREATE TABLE public.cart_food (
 ALTER TABLE public.cart_food OWNER TO root;
 
 --
+-- Name: cart_food_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.cart_food_id_seq
@@ -126,12 +137,14 @@ CREATE SEQUENCE public.cart_food_id_seq
 ALTER TABLE public.cart_food_id_seq OWNER TO root;
 
 --
+-- Name: cart_food_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.cart_food_id_seq OWNED BY public.cart_food.id;
 
 
 --
+-- Name: cart_radios_food; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.cart_radios_food (
@@ -148,6 +161,7 @@ CREATE TABLE public.cart_radios_food (
 ALTER TABLE public.cart_radios_food OWNER TO root;
 
 --
+-- Name: cart_radios_food_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.cart_radios_food_id_seq
@@ -162,12 +176,14 @@ CREATE SEQUENCE public.cart_radios_food_id_seq
 ALTER TABLE public.cart_radios_food_id_seq OWNER TO root;
 
 --
+-- Name: cart_radios_food_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.cart_radios_food_id_seq OWNED BY public.cart_radios_food.id;
 
 
 --
+-- Name: cart_structure_food; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.cart_structure_food (
@@ -183,6 +199,7 @@ CREATE TABLE public.cart_structure_food (
 ALTER TABLE public.cart_structure_food OWNER TO root;
 
 --
+-- Name: cart_structure_food_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.cart_structure_food_id_seq
@@ -197,12 +214,14 @@ CREATE SEQUENCE public.cart_structure_food_id_seq
 ALTER TABLE public.cart_structure_food_id_seq OWNER TO root;
 
 --
+-- Name: cart_structure_food_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.cart_structure_food_id_seq OWNED BY public.cart_structure_food.id;
 
 
 --
+-- Name: cart_user; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.cart_user (
@@ -216,6 +235,7 @@ CREATE TABLE public.cart_user (
 ALTER TABLE public.cart_user OWNER TO root;
 
 --
+-- Name: cart_user_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.cart_user_id_seq
@@ -230,12 +250,14 @@ CREATE SEQUENCE public.cart_user_id_seq
 ALTER TABLE public.cart_user_id_seq OWNER TO root;
 
 --
+-- Name: cart_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.cart_user_id_seq OWNED BY public.cart_user.id;
 
 
 --
+-- Name: client; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.client (
@@ -248,6 +270,7 @@ CREATE TABLE public.client (
 ALTER TABLE public.client OWNER TO root;
 
 --
+-- Name: client_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.client_id_seq
@@ -262,12 +285,14 @@ CREATE SEQUENCE public.client_id_seq
 ALTER TABLE public.client_id_seq OWNER TO root;
 
 --
+-- Name: client_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.client_id_seq OWNED BY public.client.id;
 
 
 --
+-- Name: cookie; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.cookie (
@@ -283,6 +308,7 @@ CREATE TABLE public.cookie (
 ALTER TABLE public.cookie OWNER TO root;
 
 --
+-- Name: cookie_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.cookie_id_seq
@@ -297,12 +323,14 @@ CREATE SEQUENCE public.cookie_id_seq
 ALTER TABLE public.cookie_id_seq OWNER TO root;
 
 --
+-- Name: cookie_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.cookie_id_seq OWNED BY public.cookie.id;
 
 
 --
+-- Name: courier; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.courier (
@@ -314,6 +342,7 @@ CREATE TABLE public.courier (
 ALTER TABLE public.courier OWNER TO root;
 
 --
+-- Name: courier_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.courier_id_seq
@@ -328,12 +357,14 @@ CREATE SEQUENCE public.courier_id_seq
 ALTER TABLE public.courier_id_seq OWNER TO root;
 
 --
+-- Name: courier_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.courier_id_seq OWNED BY public.courier.id;
 
 
 --
+-- Name: dishes; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.dishes (
@@ -360,6 +391,7 @@ CREATE TABLE public.dishes (
 ALTER TABLE public.dishes OWNER TO root;
 
 --
+-- Name: dishes_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.dishes_id_seq
@@ -374,12 +406,14 @@ CREATE SEQUENCE public.dishes_id_seq
 ALTER TABLE public.dishes_id_seq OWNER TO root;
 
 --
+-- Name: dishes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.dishes_id_seq OWNED BY public.dishes.id;
 
 
 --
+-- Name: event; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.event (
@@ -395,6 +429,7 @@ CREATE TABLE public.event (
 ALTER TABLE public.event OWNER TO root;
 
 --
+-- Name: event_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.event_id_seq
@@ -409,12 +444,14 @@ CREATE SEQUENCE public.event_id_seq
 ALTER TABLE public.event_id_seq OWNER TO root;
 
 --
+-- Name: event_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.event_id_seq OWNED BY public.event.id;
 
 
 --
+-- Name: favorite_restaurant; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.favorite_restaurant (
@@ -428,6 +465,7 @@ CREATE TABLE public.favorite_restaurant (
 ALTER TABLE public.favorite_restaurant OWNER TO root;
 
 --
+-- Name: favorite_restaurant_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.favorite_restaurant_id_seq
@@ -442,12 +480,14 @@ CREATE SEQUENCE public.favorite_restaurant_id_seq
 ALTER TABLE public.favorite_restaurant_id_seq OWNER TO root;
 
 --
+-- Name: favorite_restaurant_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.favorite_restaurant_id_seq OWNED BY public.favorite_restaurant.id;
 
 
 --
+-- Name: general_user_info; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.general_user_info (
@@ -466,6 +506,7 @@ CREATE TABLE public.general_user_info (
 ALTER TABLE public.general_user_info OWNER TO root;
 
 --
+-- Name: general_user_info_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.general_user_info_id_seq
@@ -480,12 +521,14 @@ CREATE SEQUENCE public.general_user_info_id_seq
 ALTER TABLE public.general_user_info_id_seq OWNER TO root;
 
 --
+-- Name: general_user_info_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.general_user_info_id_seq OWNED BY public.general_user_info.id;
 
 
 --
+-- Name: host; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.host (
@@ -497,6 +540,7 @@ CREATE TABLE public.host (
 ALTER TABLE public.host OWNER TO root;
 
 --
+-- Name: host_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.host_id_seq
@@ -511,12 +555,14 @@ CREATE SEQUENCE public.host_id_seq
 ALTER TABLE public.host_id_seq OWNER TO root;
 
 --
+-- Name: host_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.host_id_seq OWNED BY public.host.id;
 
 
 --
+-- Name: manager; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.manager (
@@ -528,6 +574,7 @@ CREATE TABLE public.manager (
 ALTER TABLE public.manager OWNER TO root;
 
 --
+-- Name: manager_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.manager_id_seq
@@ -542,12 +589,14 @@ CREATE SEQUENCE public.manager_id_seq
 ALTER TABLE public.manager_id_seq OWNER TO root;
 
 --
+-- Name: manager_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.manager_id_seq OWNED BY public.manager.id;
 
 
 --
+-- Name: order_list; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.order_list (
@@ -563,6 +612,7 @@ CREATE TABLE public.order_list (
 ALTER TABLE public.order_list OWNER TO root;
 
 --
+-- Name: order_list_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.order_list_id_seq
@@ -577,12 +627,14 @@ CREATE SEQUENCE public.order_list_id_seq
 ALTER TABLE public.order_list_id_seq OWNER TO root;
 
 --
+-- Name: order_list_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.order_list_id_seq OWNED BY public.order_list.id;
 
 
 --
+-- Name: order_radios_list; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.order_radios_list (
@@ -599,6 +651,7 @@ CREATE TABLE public.order_radios_list (
 ALTER TABLE public.order_radios_list OWNER TO root;
 
 --
+-- Name: order_radios_list_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.order_radios_list_id_seq
@@ -613,12 +666,14 @@ CREATE SEQUENCE public.order_radios_list_id_seq
 ALTER TABLE public.order_radios_list_id_seq OWNER TO root;
 
 --
+-- Name: order_radios_list_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.order_radios_list_id_seq OWNED BY public.order_radios_list.id;
 
 
 --
+-- Name: order_structure_list; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.order_structure_list (
@@ -634,6 +689,7 @@ CREATE TABLE public.order_structure_list (
 ALTER TABLE public.order_structure_list OWNER TO root;
 
 --
+-- Name: order_structure_list_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.order_structure_list_id_seq
@@ -648,12 +704,14 @@ CREATE SEQUENCE public.order_structure_list_id_seq
 ALTER TABLE public.order_structure_list_id_seq OWNER TO root;
 
 --
+-- Name: order_structure_list_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.order_structure_list_id_seq OWNED BY public.order_structure_list.id;
 
 
 --
+-- Name: order_user; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.order_user (
@@ -676,6 +734,7 @@ CREATE TABLE public.order_user (
 ALTER TABLE public.order_user OWNER TO root;
 
 --
+-- Name: order_user_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.order_user_id_seq
@@ -690,12 +749,14 @@ CREATE SEQUENCE public.order_user_id_seq
 ALTER TABLE public.order_user_id_seq OWNER TO root;
 
 --
+-- Name: order_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.order_user_id_seq OWNED BY public.order_user.id;
 
 
 --
+-- Name: promocode; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.promocode (
@@ -723,6 +784,7 @@ CREATE TABLE public.promocode (
 ALTER TABLE public.promocode OWNER TO root;
 
 --
+-- Name: promocode_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.promocode_id_seq
@@ -737,12 +799,14 @@ CREATE SEQUENCE public.promocode_id_seq
 ALTER TABLE public.promocode_id_seq OWNER TO root;
 
 --
+-- Name: promocode_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.promocode_id_seq OWNED BY public.promocode.id;
 
 
 --
+-- Name: radios; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.radios (
@@ -756,6 +820,7 @@ CREATE TABLE public.radios (
 ALTER TABLE public.radios OWNER TO root;
 
 --
+-- Name: radios_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.radios_id_seq
@@ -770,12 +835,14 @@ CREATE SEQUENCE public.radios_id_seq
 ALTER TABLE public.radios_id_seq OWNER TO root;
 
 --
+-- Name: radios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.radios_id_seq OWNED BY public.radios.id;
 
 
 --
+-- Name: restaurant; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.restaurant (
@@ -804,6 +871,7 @@ CREATE TABLE public.restaurant (
 ALTER TABLE public.restaurant OWNER TO root;
 
 --
+-- Name: restaurant_category; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.restaurant_category (
@@ -818,6 +886,7 @@ CREATE TABLE public.restaurant_category (
 ALTER TABLE public.restaurant_category OWNER TO root;
 
 --
+-- Name: restaurant_category_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.restaurant_category_id_seq
@@ -832,12 +901,14 @@ CREATE SEQUENCE public.restaurant_category_id_seq
 ALTER TABLE public.restaurant_category_id_seq OWNER TO root;
 
 --
+-- Name: restaurant_category_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.restaurant_category_id_seq OWNED BY public.restaurant_category.id;
 
 
 --
+-- Name: restaurant_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.restaurant_id_seq
@@ -852,12 +923,14 @@ CREATE SEQUENCE public.restaurant_id_seq
 ALTER TABLE public.restaurant_id_seq OWNER TO root;
 
 --
+-- Name: restaurant_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.restaurant_id_seq OWNED BY public.restaurant.id;
 
 
 --
+-- Name: review; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.review (
@@ -874,6 +947,7 @@ CREATE TABLE public.review (
 ALTER TABLE public.review OWNER TO root;
 
 --
+-- Name: review_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.review_id_seq
@@ -888,12 +962,14 @@ CREATE SEQUENCE public.review_id_seq
 ALTER TABLE public.review_id_seq OWNER TO root;
 
 --
+-- Name: review_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.review_id_seq OWNED BY public.review.id;
 
 
 --
+-- Name: structure_dishes; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.structure_dishes (
@@ -915,6 +991,7 @@ CREATE TABLE public.structure_dishes (
 ALTER TABLE public.structure_dishes OWNER TO root;
 
 --
+-- Name: structure_dishes_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.structure_dishes_id_seq
@@ -929,12 +1006,14 @@ CREATE SEQUENCE public.structure_dishes_id_seq
 ALTER TABLE public.structure_dishes_id_seq OWNER TO root;
 
 --
+-- Name: structure_dishes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.structure_dishes_id_seq OWNED BY public.structure_dishes.id;
 
 
 --
+-- Name: structure_radios; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.structure_radios (
@@ -952,6 +1031,7 @@ CREATE TABLE public.structure_radios (
 ALTER TABLE public.structure_radios OWNER TO root;
 
 --
+-- Name: structure_radios_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.structure_radios_id_seq
@@ -966,12 +1046,14 @@ CREATE SEQUENCE public.structure_radios_id_seq
 ALTER TABLE public.structure_radios_id_seq OWNER TO root;
 
 --
+-- Name: structure_radios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.structure_radios_id_seq OWNED BY public.structure_radios.id;
 
 
 --
+-- Name: worker; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.worker (
@@ -983,6 +1065,7 @@ CREATE TABLE public.worker (
 ALTER TABLE public.worker OWNER TO root;
 
 --
+-- Name: worker_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
 CREATE SEQUENCE public.worker_id_seq
@@ -997,223 +1080,261 @@ CREATE SEQUENCE public.worker_id_seq
 ALTER TABLE public.worker_id_seq OWNER TO root;
 
 --
+-- Name: worker_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
 --
 
 ALTER SEQUENCE public.worker_id_seq OWNED BY public.worker.id;
 
 
 --
+-- Name: address_user id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.address_user ALTER COLUMN id SET DEFAULT nextval('public.address_user_id_seq'::regclass);
 
 
 --
+-- Name: card id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.card ALTER COLUMN id SET DEFAULT nextval('public.card_id_seq'::regclass);
 
 
 --
+-- Name: cart_food id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_food ALTER COLUMN id SET DEFAULT nextval('public.cart_food_id_seq'::regclass);
 
 
 --
+-- Name: cart_radios_food id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_radios_food ALTER COLUMN id SET DEFAULT nextval('public.cart_radios_food_id_seq'::regclass);
 
 
 --
+-- Name: cart_structure_food id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_structure_food ALTER COLUMN id SET DEFAULT nextval('public.cart_structure_food_id_seq'::regclass);
 
 
 --
+-- Name: cart_user id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_user ALTER COLUMN id SET DEFAULT nextval('public.cart_user_id_seq'::regclass);
 
 
 --
+-- Name: client id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.client ALTER COLUMN id SET DEFAULT nextval('public.client_id_seq'::regclass);
 
 
 --
+-- Name: cookie id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cookie ALTER COLUMN id SET DEFAULT nextval('public.cookie_id_seq'::regclass);
 
 
 --
+-- Name: courier id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.courier ALTER COLUMN id SET DEFAULT nextval('public.courier_id_seq'::regclass);
 
 
 --
+-- Name: dishes id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.dishes ALTER COLUMN id SET DEFAULT nextval('public.dishes_id_seq'::regclass);
 
 
 --
+-- Name: event id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.event ALTER COLUMN id SET DEFAULT nextval('public.event_id_seq'::regclass);
 
 
 --
+-- Name: favorite_restaurant id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.favorite_restaurant ALTER COLUMN id SET DEFAULT nextval('public.favorite_restaurant_id_seq'::regclass);
 
 
 --
+-- Name: general_user_info id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.general_user_info ALTER COLUMN id SET DEFAULT nextval('public.general_user_info_id_seq'::regclass);
 
 
 --
+-- Name: host id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.host ALTER COLUMN id SET DEFAULT nextval('public.host_id_seq'::regclass);
 
 
 --
+-- Name: manager id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.manager ALTER COLUMN id SET DEFAULT nextval('public.manager_id_seq'::regclass);
 
 
 --
+-- Name: order_list id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_list ALTER COLUMN id SET DEFAULT nextval('public.order_list_id_seq'::regclass);
 
 
 --
+-- Name: order_radios_list id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_radios_list ALTER COLUMN id SET DEFAULT nextval('public.order_radios_list_id_seq'::regclass);
 
 
 --
+-- Name: order_structure_list id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_structure_list ALTER COLUMN id SET DEFAULT nextval('public.order_structure_list_id_seq'::regclass);
 
 
 --
+-- Name: order_user id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_user ALTER COLUMN id SET DEFAULT nextval('public.order_user_id_seq'::regclass);
 
 
 --
+-- Name: promocode id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.promocode ALTER COLUMN id SET DEFAULT nextval('public.promocode_id_seq'::regclass);
 
 
 --
+-- Name: radios id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.radios ALTER COLUMN id SET DEFAULT nextval('public.radios_id_seq'::regclass);
 
 
 --
+-- Name: restaurant id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.restaurant ALTER COLUMN id SET DEFAULT nextval('public.restaurant_id_seq'::regclass);
 
 
 --
+-- Name: restaurant_category id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.restaurant_category ALTER COLUMN id SET DEFAULT nextval('public.restaurant_category_id_seq'::regclass);
 
 
 --
+-- Name: review id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.review ALTER COLUMN id SET DEFAULT nextval('public.review_id_seq'::regclass);
 
 
 --
+-- Name: structure_dishes id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.structure_dishes ALTER COLUMN id SET DEFAULT nextval('public.structure_dishes_id_seq'::regclass);
 
 
 --
+-- Name: structure_radios id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.structure_radios ALTER COLUMN id SET DEFAULT nextval('public.structure_radios_id_seq'::regclass);
 
 
 --
+-- Name: worker id; Type: DEFAULT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.worker ALTER COLUMN id SET DEFAULT nextval('public.worker_id_seq'::regclass);
 
 
 --
+-- Data for Name: address_user; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 INSERT INTO public.address_user VALUES (1, 1, 'Москва', 'Вязов', '2', '28', 2, 5, '28K', 'Есть злая собака', 'Мой дом', 500, 500, false);
 
 
 --
+-- Data for Name: card; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
+-- Data for Name: cart_food; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 INSERT INTO public.cart_food VALUES (295, 0, 1, 1, 1, 1, 1);
 
 
 --
+-- Data for Name: cart_radios_food; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
+-- Data for Name: cart_structure_food; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
+-- Data for Name: cart_user; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
+-- Data for Name: client; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 INSERT INTO public.client VALUES (1, 1, '2021-12-21 22:12:10.689883');
 
 
 --
+-- Data for Name: cookie; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 INSERT INTO public.cookie VALUES (1, 1, '1', '2021-12-21 22:12:10.689883', '', NULL);
 
 
 --
+-- Data for Name: courier; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
+-- Data for Name: dishes; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 INSERT INTO public.dishes VALUES (1, 'Тако', 60, 1000, 1, 0, 0, '', 1, 1, 224, 1, 1, 'Горячее', 'Снеки', 'https://pbs.twimg.com/media/DtAriH3U8AAD3jV.jpg', false);
@@ -1916,53 +2037,63 @@ INSERT INTO public.dishes VALUES (697, 'Шоколадный фондан', 180,
 
 
 --
+-- Data for Name: event; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
+-- Data for Name: favorite_restaurant; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 INSERT INTO public.favorite_restaurant VALUES (1, 1, 1, 0);
 
 
 --
+-- Data for Name: general_user_info; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 INSERT INTO public.general_user_info VALUES (1, 'root', 'ca2e080a74ed1590cd141171c20e164d40d058fb45817c7b59f83159d059a6c0', 'salt', '88888888888', 'root@root', '/default/defaultUser.jpg', '2021-12-21 22:12:10.689883', false);
 
 
 --
+-- Data for Name: host; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
+-- Data for Name: manager; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
+-- Data for Name: order_list; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
+-- Data for Name: order_radios_list; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
+-- Data for Name: order_structure_list; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
+-- Data for Name: order_user; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
+-- Data for Name: promocode; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 INSERT INTO public.promocode VALUES (1, 'HL4D4', 1, 1, 'Бесплатно куда угодно', 'Бесплатная доставка', '2021-12-21 22:12:10.689883', '2022-04-28 00:00:00', 'https://buslik.by/buyers/delivery/images/icon-2.png', true, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
@@ -1971,6 +2102,7 @@ INSERT INTO public.promocode VALUES (3, 'DBL45', 3, 1, 'Бесплатное т�
 
 
 --
+-- Data for Name: radios; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 INSERT INTO public.radios VALUES (1, 'МакКомбо', 0, 8);
@@ -2035,6 +2167,7 @@ INSERT INTO public.radios VALUES (59, 'Напиток', 0, 644);
 
 
 --
+-- Data for Name: restaurant; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 INSERT INTO public.restaurant VALUES (30, 1, 'Darbar', 'description', '2021-12-21 22:12:10.689883', false, 'https://sovkusom.ru/wp-content/uploads/blog/v/vrednaya-eda/1.jpg', 0, 0, 24, 54, 'city', 'street', 'house', 100, 5, 1, 1, '''darbar'':1');
@@ -2093,6 +2226,7 @@ INSERT INTO public.restaurant VALUES (53, 1, 'Валентино', 'description'
 
 
 --
+-- Data for Name: restaurant_category; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 INSERT INTO public.restaurant_category VALUES (57, 'Бар', 20, 0, '''бар'':1');
@@ -2256,6 +2390,7 @@ INSERT INTO public.restaurant_category VALUES (158, 'Кальянная', 53, 2,
 
 
 --
+-- Data for Name: review; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 INSERT INTO public.review VALUES (1, 1, 0, 'rootrootro', '2021-12-01 18:53:51.550501', 2, false);
@@ -2273,6 +2408,7 @@ INSERT INTO public.review VALUES (12, 1, 0, 'asdasda2sdasd', '2021-12-01 19:12:0
 
 
 --
+-- Data for Name: structure_dishes; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 INSERT INTO public.structure_dishes VALUES (1, 'Кетчуп', 5, 1, 0, 1, 1, 1, 1, 5, false, false);
@@ -2337,6 +2473,7 @@ INSERT INTO public.structure_dishes VALUES (59, 'Сахар', 5, 635, 0, 1, 1, 1
 
 
 --
+-- Data for Name: structure_radios; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 INSERT INTO public.structure_radios VALUES (1, 'Картофель Фри', 1, 0, 1, 1, 1, 1);
@@ -2425,173 +2562,202 @@ INSERT INTO public.structure_radios VALUES (83, 'Кофе', 59, 0, 1, 1, 1, 1);
 
 
 --
+-- Data for Name: worker; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
+-- Name: address_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.address_user_id_seq', 1, true);
 
 
 --
+-- Name: card_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.card_id_seq', 1, false);
 
 
 --
+-- Name: cart_food_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.cart_food_id_seq', 295, true);
 
 
 --
+-- Name: cart_radios_food_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.cart_radios_food_id_seq', 1, false);
 
 
 --
+-- Name: cart_structure_food_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.cart_structure_food_id_seq', 1, false);
 
 
 --
+-- Name: cart_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.cart_user_id_seq', 1, false);
 
 
 --
+-- Name: client_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.client_id_seq', 1, true);
 
 
 --
+-- Name: cookie_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.cookie_id_seq', 1, true);
 
 
 --
+-- Name: courier_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.courier_id_seq', 1, false);
 
 
 --
+-- Name: dishes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.dishes_id_seq', 697, true);
 
 
 --
+-- Name: event_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.event_id_seq', 1, false);
 
 
 --
+-- Name: favorite_restaurant_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.favorite_restaurant_id_seq', 1, true);
 
 
 --
+-- Name: general_user_info_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.general_user_info_id_seq', 1, true);
 
 
 --
+-- Name: host_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.host_id_seq', 1, false);
 
 
 --
+-- Name: manager_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.manager_id_seq', 1, false);
 
 
 --
+-- Name: order_list_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.order_list_id_seq', 1, false);
 
 
 --
+-- Name: order_radios_list_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.order_radios_list_id_seq', 1, false);
 
 
 --
+-- Name: order_structure_list_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.order_structure_list_id_seq', 1, false);
 
 
 --
+-- Name: order_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.order_user_id_seq', 1, false);
 
 
 --
+-- Name: promocode_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.promocode_id_seq', 1, false);
 
 
 --
+-- Name: radios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.radios_id_seq', 59, true);
 
 
 --
+-- Name: restaurant_category_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.restaurant_category_id_seq', 158, true);
 
 
 --
+-- Name: restaurant_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.restaurant_id_seq', 53, true);
 
 
 --
+-- Name: review_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.review_id_seq', 12, true);
 
 
 --
+-- Name: structure_dishes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.structure_dishes_id_seq', 59, true);
 
 
 --
+-- Name: structure_radios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.structure_radios_id_seq', 83, true);
 
 
 --
+-- Name: worker_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
 SELECT pg_catalog.setval('public.worker_id_seq', 1, false);
 
 
 --
+-- Name: address_user address_user_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.address_user
@@ -2599,6 +2765,7 @@ ALTER TABLE ONLY public.address_user
 
 
 --
+-- Name: card card_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.card
@@ -2606,6 +2773,7 @@ ALTER TABLE ONLY public.card
 
 
 --
+-- Name: cart_food cart_food_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_food
@@ -2613,6 +2781,7 @@ ALTER TABLE ONLY public.cart_food
 
 
 --
+-- Name: cart_radios_food cart_radios_food_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_radios_food
@@ -2620,6 +2789,7 @@ ALTER TABLE ONLY public.cart_radios_food
 
 
 --
+-- Name: cart_structure_food cart_structure_food_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_structure_food
@@ -2627,6 +2797,7 @@ ALTER TABLE ONLY public.cart_structure_food
 
 
 --
+-- Name: cart_user cart_user_client_id_key; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_user
@@ -2634,6 +2805,7 @@ ALTER TABLE ONLY public.cart_user
 
 
 --
+-- Name: cart_user cart_user_client_id_promo_code_key; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_user
@@ -2641,6 +2813,7 @@ ALTER TABLE ONLY public.cart_user
 
 
 --
+-- Name: cart_user cart_user_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_user
@@ -2648,6 +2821,7 @@ ALTER TABLE ONLY public.cart_user
 
 
 --
+-- Name: client client_client_id_key; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.client
@@ -2655,6 +2829,7 @@ ALTER TABLE ONLY public.client
 
 
 --
+-- Name: client client_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.client
@@ -2662,6 +2837,7 @@ ALTER TABLE ONLY public.client
 
 
 --
+-- Name: cookie cookie_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cookie
@@ -2669,6 +2845,7 @@ ALTER TABLE ONLY public.cookie
 
 
 --
+-- Name: courier courier_client_id_key; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.courier
@@ -2676,6 +2853,7 @@ ALTER TABLE ONLY public.courier
 
 
 --
+-- Name: courier courier_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.courier
@@ -2683,6 +2861,7 @@ ALTER TABLE ONLY public.courier
 
 
 --
+-- Name: dishes dishes_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.dishes
@@ -2690,6 +2869,7 @@ ALTER TABLE ONLY public.dishes
 
 
 --
+-- Name: event event_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.event
@@ -2697,6 +2877,7 @@ ALTER TABLE ONLY public.event
 
 
 --
+-- Name: favorite_restaurant favorite_restaurant_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.favorite_restaurant
@@ -2704,6 +2885,7 @@ ALTER TABLE ONLY public.favorite_restaurant
 
 
 --
+-- Name: general_user_info general_user_info_email_key; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.general_user_info
@@ -2711,6 +2893,7 @@ ALTER TABLE ONLY public.general_user_info
 
 
 --
+-- Name: general_user_info general_user_info_phone_key; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.general_user_info
@@ -2718,6 +2901,7 @@ ALTER TABLE ONLY public.general_user_info
 
 
 --
+-- Name: general_user_info general_user_info_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.general_user_info
@@ -2725,6 +2909,7 @@ ALTER TABLE ONLY public.general_user_info
 
 
 --
+-- Name: host host_client_id_key; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.host
@@ -2732,6 +2917,7 @@ ALTER TABLE ONLY public.host
 
 
 --
+-- Name: host host_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.host
@@ -2739,6 +2925,7 @@ ALTER TABLE ONLY public.host
 
 
 --
+-- Name: manager manager_client_id_key; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.manager
@@ -2746,6 +2933,7 @@ ALTER TABLE ONLY public.manager
 
 
 --
+-- Name: manager manager_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.manager
@@ -2753,6 +2941,7 @@ ALTER TABLE ONLY public.manager
 
 
 --
+-- Name: order_list order_list_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_list
@@ -2760,6 +2949,7 @@ ALTER TABLE ONLY public.order_list
 
 
 --
+-- Name: order_radios_list order_radios_list_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_radios_list
@@ -2767,6 +2957,7 @@ ALTER TABLE ONLY public.order_radios_list
 
 
 --
+-- Name: order_structure_list order_structure_list_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_structure_list
@@ -2774,6 +2965,7 @@ ALTER TABLE ONLY public.order_structure_list
 
 
 --
+-- Name: order_user order_user_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_user
@@ -2781,6 +2973,7 @@ ALTER TABLE ONLY public.order_user
 
 
 --
+-- Name: promocode promocode_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.promocode
@@ -2788,6 +2981,7 @@ ALTER TABLE ONLY public.promocode
 
 
 --
+-- Name: radios radios_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.radios
@@ -2795,6 +2989,7 @@ ALTER TABLE ONLY public.radios
 
 
 --
+-- Name: restaurant_category restaurant_category_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.restaurant_category
@@ -2802,6 +2997,7 @@ ALTER TABLE ONLY public.restaurant_category
 
 
 --
+-- Name: restaurant restaurant_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.restaurant
@@ -2809,6 +3005,7 @@ ALTER TABLE ONLY public.restaurant
 
 
 --
+-- Name: review review_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.review
@@ -2816,6 +3013,7 @@ ALTER TABLE ONLY public.review
 
 
 --
+-- Name: structure_dishes structure_dishes_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.structure_dishes
@@ -2823,6 +3021,7 @@ ALTER TABLE ONLY public.structure_dishes
 
 
 --
+-- Name: structure_radios structure_radios_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.structure_radios
@@ -2830,6 +3029,7 @@ ALTER TABLE ONLY public.structure_radios
 
 
 --
+-- Name: worker worker_client_id_key; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.worker
@@ -2837,6 +3037,7 @@ ALTER TABLE ONLY public.worker
 
 
 --
+-- Name: worker worker_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.worker
@@ -2844,18 +3045,21 @@ ALTER TABLE ONLY public.worker
 
 
 --
+-- Name: restaurant_category_fts; Type: INDEX; Schema: public; Owner: root
 --
 
 CREATE INDEX restaurant_category_fts ON public.restaurant_category USING btree (fts);
 
 
 --
+-- Name: restaurant_fts; Type: INDEX; Schema: public; Owner: root
 --
 
 CREATE INDEX restaurant_fts ON public.restaurant USING btree (fts);
 
 
 --
+-- Name: address_user address_user_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.address_user
@@ -2863,6 +3067,7 @@ ALTER TABLE ONLY public.address_user
 
 
 --
+-- Name: card card_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.card
@@ -2870,6 +3075,7 @@ ALTER TABLE ONLY public.card
 
 
 --
+-- Name: cart_radios_food cart_radios_food_cart_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_radios_food
@@ -2877,6 +3083,7 @@ ALTER TABLE ONLY public.cart_radios_food
 
 
 --
+-- Name: cart_radios_food cart_radios_food_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_radios_food
@@ -2884,6 +3091,7 @@ ALTER TABLE ONLY public.cart_radios_food
 
 
 --
+-- Name: cart_radios_food cart_radios_food_food_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_radios_food
@@ -2891,6 +3099,7 @@ ALTER TABLE ONLY public.cart_radios_food
 
 
 --
+-- Name: cart_radios_food cart_radios_food_radios_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_radios_food
@@ -2898,6 +3107,7 @@ ALTER TABLE ONLY public.cart_radios_food
 
 
 --
+-- Name: cart_radios_food cart_radios_food_radios_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_radios_food
@@ -2905,6 +3115,7 @@ ALTER TABLE ONLY public.cart_radios_food
 
 
 --
+-- Name: cart_structure_food cart_structure_food_cart_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_structure_food
@@ -2912,6 +3123,7 @@ ALTER TABLE ONLY public.cart_structure_food
 
 
 --
+-- Name: cart_structure_food cart_structure_food_checkbox_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_structure_food
@@ -2919,6 +3131,7 @@ ALTER TABLE ONLY public.cart_structure_food
 
 
 --
+-- Name: cart_structure_food cart_structure_food_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_structure_food
@@ -2926,6 +3139,7 @@ ALTER TABLE ONLY public.cart_structure_food
 
 
 --
+-- Name: cart_structure_food cart_structure_food_food_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_structure_food
@@ -2933,6 +3147,7 @@ ALTER TABLE ONLY public.cart_structure_food
 
 
 --
+-- Name: cart_user cart_user_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_user
@@ -2940,6 +3155,7 @@ ALTER TABLE ONLY public.cart_user
 
 
 --
+-- Name: cart_user cart_user_restaurant_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cart_user
@@ -2947,6 +3163,7 @@ ALTER TABLE ONLY public.cart_user
 
 
 --
+-- Name: client client_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.client
@@ -2954,6 +3171,7 @@ ALTER TABLE ONLY public.client
 
 
 --
+-- Name: cookie cookie_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.cookie
@@ -2961,6 +3179,7 @@ ALTER TABLE ONLY public.cookie
 
 
 --
+-- Name: courier courier_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.courier
@@ -2968,6 +3187,7 @@ ALTER TABLE ONLY public.courier
 
 
 --
+-- Name: dishes dishes_restaurant_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.dishes
@@ -2975,6 +3195,7 @@ ALTER TABLE ONLY public.dishes
 
 
 --
+-- Name: event event_restaurant_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.event
@@ -2982,6 +3203,7 @@ ALTER TABLE ONLY public.event
 
 
 --
+-- Name: favorite_restaurant favorite_restaurant_client_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.favorite_restaurant
@@ -2989,6 +3211,7 @@ ALTER TABLE ONLY public.favorite_restaurant
 
 
 --
+-- Name: favorite_restaurant favorite_restaurant_restaurant_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.favorite_restaurant
@@ -2996,6 +3219,7 @@ ALTER TABLE ONLY public.favorite_restaurant
 
 
 --
+-- Name: host host_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.host
@@ -3003,6 +3227,7 @@ ALTER TABLE ONLY public.host
 
 
 --
+-- Name: manager manager_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.manager
@@ -3010,6 +3235,7 @@ ALTER TABLE ONLY public.manager
 
 
 --
+-- Name: order_list order_list_food_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_list
@@ -3017,6 +3243,7 @@ ALTER TABLE ONLY public.order_list
 
 
 --
+-- Name: order_list order_list_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_list
@@ -3024,6 +3251,7 @@ ALTER TABLE ONLY public.order_list
 
 
 --
+-- Name: order_radios_list order_radios_list_food_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_radios_list
@@ -3031,6 +3259,7 @@ ALTER TABLE ONLY public.order_radios_list
 
 
 --
+-- Name: order_radios_list order_radios_list_list_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_radios_list
@@ -3038,6 +3267,7 @@ ALTER TABLE ONLY public.order_radios_list
 
 
 --
+-- Name: order_radios_list order_radios_list_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_radios_list
@@ -3045,6 +3275,7 @@ ALTER TABLE ONLY public.order_radios_list
 
 
 --
+-- Name: order_radios_list order_radios_list_radios_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_radios_list
@@ -3052,6 +3283,7 @@ ALTER TABLE ONLY public.order_radios_list
 
 
 --
+-- Name: order_radios_list order_radios_list_radios_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_radios_list
@@ -3059,6 +3291,7 @@ ALTER TABLE ONLY public.order_radios_list
 
 
 --
+-- Name: order_structure_list order_structure_list_food_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_structure_list
@@ -3066,6 +3299,7 @@ ALTER TABLE ONLY public.order_structure_list
 
 
 --
+-- Name: order_structure_list order_structure_list_list_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_structure_list
@@ -3073,6 +3307,7 @@ ALTER TABLE ONLY public.order_structure_list
 
 
 --
+-- Name: order_structure_list order_structure_list_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_structure_list
@@ -3080,6 +3315,7 @@ ALTER TABLE ONLY public.order_structure_list
 
 
 --
+-- Name: order_structure_list order_structure_list_structure_food_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_structure_list
@@ -3087,6 +3323,7 @@ ALTER TABLE ONLY public.order_structure_list
 
 
 --
+-- Name: order_user order_user_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_user
@@ -3094,6 +3331,7 @@ ALTER TABLE ONLY public.order_user
 
 
 --
+-- Name: order_user order_user_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_user
@@ -3101,6 +3339,7 @@ ALTER TABLE ONLY public.order_user
 
 
 --
+-- Name: order_user order_user_courier_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_user
@@ -3108,6 +3347,7 @@ ALTER TABLE ONLY public.order_user
 
 
 --
+-- Name: order_user order_user_restaurant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.order_user
@@ -3115,6 +3355,7 @@ ALTER TABLE ONLY public.order_user
 
 
 --
+-- Name: promocode promocode_free_dish_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.promocode
@@ -3122,6 +3363,7 @@ ALTER TABLE ONLY public.promocode
 
 
 --
+-- Name: promocode promocode_restaurant_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.promocode
@@ -3129,6 +3371,7 @@ ALTER TABLE ONLY public.promocode
 
 
 --
+-- Name: radios radios_food_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.radios
@@ -3136,6 +3379,7 @@ ALTER TABLE ONLY public.radios
 
 
 --
+-- Name: restaurant_category restaurant_category_restaurant_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.restaurant_category
@@ -3143,6 +3387,7 @@ ALTER TABLE ONLY public.restaurant_category
 
 
 --
+-- Name: restaurant restaurant_owner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.restaurant
@@ -3150,6 +3395,7 @@ ALTER TABLE ONLY public.restaurant
 
 
 --
+-- Name: structure_dishes structure_dishes_food_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.structure_dishes
@@ -3157,6 +3403,7 @@ ALTER TABLE ONLY public.structure_dishes
 
 
 --
+-- Name: structure_radios structure_radios_radios_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.structure_radios
@@ -3164,6 +3411,7 @@ ALTER TABLE ONLY public.structure_radios
 
 
 --
+-- Name: worker worker_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.worker
@@ -3171,6 +3419,7 @@ ALTER TABLE ONLY public.worker
 
 
 --
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: root
 --
 
 GRANT ALL ON SCHEMA public TO postgres;
@@ -3178,5 +3427,6 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
+-- PostgreSQL database dump complete
 --
 

@@ -58,10 +58,14 @@ func FillDb(conn *pgxpool.Pool) error {
 		}
 	}
 
-	_, err = tx.Exec(context.Background(), string(file))
-	if err != nil {
-		return &errPkg.Errors{
-			Text: errPkg.MCreateDBNotFillTables,
+	requests = strings.Split(string(file), ";")
+	for _, request := range requests {
+
+		_, err = tx.Exec(context.Background(), request)
+		if err != nil {
+			return &errPkg.Errors{
+				Text: errPkg.MCreateDBNotFillTables,
+			}
 		}
 	}
 
