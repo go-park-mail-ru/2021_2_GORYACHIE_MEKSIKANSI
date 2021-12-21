@@ -1,3 +1,5 @@
+//go:generate mockgen -destination=mocks/api.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/myerror MultiLogger
+//go:generate mockgen -destination=mocks/apiApplication.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/restaurant/application RestaurantApplicationInterface
 package api
 
 import (
@@ -36,6 +38,7 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvert.Error()))
 		r.Logger.Errorf("%s", errConvert.Error())
+		return
 	}
 
 	checkError := &errPkg.CheckError{
@@ -67,7 +70,7 @@ func (r *InfoRestaurant) RestaurantHandler(ctx *fasthttp.RequestCtx) {
 	if errResponse != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errPkg.ErrEncode))
-		r.Logger.Errorf("%s, %v, requestId: %d", errPkg.ErrEncode, errResponse, reqId)
+		r.Logger.Errorf("%s, %s, requestId: %d", errPkg.ErrEncode, errResponse.Error(), reqId)
 		return
 	}
 

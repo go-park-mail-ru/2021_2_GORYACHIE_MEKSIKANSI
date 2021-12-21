@@ -20,7 +20,7 @@ func (c *CheckError) CheckErrorRestaurant(err error) (error, []byte, int) {
 					},
 					nil, http.StatusInternalServerError
 			}
-			c.Logger.Warnf("%s, requestId: %d", RGetRestaurantRestaurantNotFound, c.RequestId)
+			c.Logger.Warnf("%s, requestId: %d", RGetRestaurantsRestaurantsNotFound, c.RequestId)
 			return &Errors{
 					Text: ErrCheck,
 				},
