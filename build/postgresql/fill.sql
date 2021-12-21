@@ -1,136 +1,2316 @@
-INSERT INTO general_user_info (name, email, phone, password, salt)
-VALUES ('root','root@root', 88888888888,'ca2e080a74ed1590cd141171c20e164d40d058fb45817c7b59f83159d059a6c0', 'salt');
+--
+-- PostgreSQL database dump
+--
 
-INSERT INTO client (client_id, date_birthday) VALUES (1, NOW());
+-- Dumped from database version 13.4 (Ubuntu 13.4-1.pgdg20.04+1)
+-- Dumped by pg_dump version 13.4 (Ubuntu 13.4-1.pgdg20.04+1)
 
-INSERT INTO restaurant (owner, name, description, price_delivery, min_delivery_time, max_delivery_time, city,
-                        street, house, floor, rating, latitude, longitude, avatar) VALUES
-      (1, 'Атмосфера', 'description', 250, 15, 90, 'city', 'street', 'house', 100, 5, 1, 1, 'https://www.delivery-club.ru/naturmort/6000027_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Shokolaat', 'description', 10, 25, 65, 'city', 'street', 'house', 100, 3, 1, 1, 'https://www.delivery-club.ru/naturmort/5000052_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Gordon Biersch', 'description', 15, 35, 40, 'city', 'street', 'house', 100, 4, 1, 1, 'https://www.delivery-club.ru/naturmort/44000095_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Crepevine', 'description', 350, 22, 30, 'city', 'street', 'house', 100, 2, 1, 1, 'https://www.delivery-club.ru/naturmort/6000035_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Creamery', 'description', 250, 10, 55, 'city', 'street', 'house', 100, 1, 1, 1, 'https://www.delivery-club.ru/naturmort/27000060_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Old Pro', 'description', 100, 31, 32, 'city', 'street', 'house', 100, 2.5, 1, 1, 'https://www.delivery-club.ru/naturmort/5f59d56754805_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Дом вкуснятины', 'description', 53, 15, 30, 'city', 'street', 'house', 100, 4.5, 1, 1, 'https://www.delivery-club.ru/naturmort/5f4a59b84ad69_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Продуктовая печь', 'description', 220, 45, 60, 'city', 'street', 'house', 100, 5, 1, 1, 'https://www.delivery-club.ru/naturmort/26000199_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'La Strada', 'description', 121, 17, 20, 'city', 'street', 'house', 100, 3.4, 1, 1, 'https://www.delivery-club.ru/naturmort/5f62243740d71_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Buca di Beppo', 'description', 150, 15, 45, 'city', 'street', 'house', 100, 2.1, 1, 1, 'https://www.delivery-club.ru/naturmort/1000026_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Мадам Там', 'description', 200, 20, 30, 'city', 'street', 'house', 100, 1.6, 1, 1, 'https://www.delivery-club.ru/naturmort/19000230_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Спрут кафе', 'description', 250, 22, 37, 'city', 'street', 'house', 100, 2.3, 1, 1, 'https://www.delivery-club.ru/naturmort/43000086_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Bistro Maxine', 'description', 300, 15, 46, 'city', 'street', 'house', 100, 3.1, 1, 1, 'https://www.delivery-club.ru/naturmort/61864cc9d00ea_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Три сезона', 'description', 350, 16, 50, 'city', 'street', 'house', 100, 2.7, 1, 1, 'https://www.delivery-club.ru/naturmort/26000199_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Спокойствие', 'description', 400, 15, 30, 'city', 'street', 'house', 100, 4.9, 1, 1, 'https://www.delivery-club.ru/naturmort/5edb9be4ddeba_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Siam Royal', 'description', 450, 25, 44, 'city', 'street', 'house', 100, 3.9, 1, 1, 'https://www.delivery-club.ru/naturmort/5f22cd5325126_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Krung Siam', 'description', 0, 13, 55, 'city', 'street', 'house', 100, 2.31, 1, 1, 'https://www.delivery-club.ru/naturmort/60df0e2fec006_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Тайфун', 'description', 0, 20, 56, 'city', 'street', 'house', 100, 1.2, 1, 1, 'https://www.delivery-club.ru/naturmort/61027eda0d4c0_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Tamarine', 'description', 0, 10, 44, 'city', 'street', 'house', 100, 3.4, 1, 1, 'https://www.delivery-club.ru/naturmort/1000039_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Joya', 'description', 0, 19, 33, 'city', 'street', 'house', 100, 2.6, 1, 1, 'https://www.delivery-club.ru/naturmort/60df0e2fec006_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Колокольчик', 'description', 499, 16, 47, 'city', 'street', 'house', 100, 4.7, 1, 1, 'https://www.delivery-club.ru/naturmort/61780d63510c1_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Evvia', 'description', 449, 30, 39, 'city', 'street', 'house', 100, 0.5, 1, 1, 'https://www.delivery-club.ru/naturmort/60d201e011fd4_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Кафе 220', 'description', 399, 40, 50, 'city', 'street', 'house', 100, 0.8, 1, 1, 'https://mywowo.net/media/images/cache/tokyo_meraviglie_tavola_01_introduzione_jpg_1200_630_cover_85.jpg'),
-      (1, 'Кафе Ренессанс', 'description', 349, 11, 55, 'city', 'street', 'house', 100, 0.1, 1, 1, 'https://www.delivery-club.ru/naturmort/48000050_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Kan Zeman', 'description', 299, 40, 45, 'city', 'street', 'house', 100, 0.75, 1, 1, 'https://www.delivery-club.ru/naturmort/2000031_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Кафе Манго', 'description', 249, 30, 40, 'city', 'street', 'house', 100, 1.3, 1, 1, 'https://www.delivery-club.ru/naturmort/25000109_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Балаклава', 'description', 199, 24, 53, 'city', 'street', 'house', 100, 2.34, 1, 1, 'https://www.delivery-club.ru/naturmort/61864cc9d00ea_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Иностранный гурман', 'description', 149, 18, 32, 'city', 'street', 'house', 100, 1.23, 1, 1, 'https://www.delivery-club.ru/naturmort/5ec2443197ff3_480x300.jpg?resize=fill&width=960&height=960&gravity=ce&out=webp'),
-      (1, 'Частичка Бангкока', 'description', 99, 19, 50, 'city', 'street', 'house', 100, 4.1, 1, 1, 'https://incrussia.ru/wp-content/uploads/2018/10/iStock-694189032.jpg'),
-      (1, 'Darbar', 'description', 0, 24, 54, 'city', 'street', 'house', 100, 5, 1, 1, 'https://sovkusom.ru/wp-content/uploads/blog/v/vrednaya-eda/1.jpg'),
-      (1, 'Mantra', 'description', 0, 23, 44, 'city', 'street', 'house', 100, 5, 1, 1, 'https://naked-science.ru/wp-content/uploads/2020/12/fast-fud-pitstsa-burger-chipsy-lukovye-koltsa-kartofel-fri.jpg'),
-      (1, 'Janta', 'description', 0, 19, 23, 'city', 'street', 'house', 100, 5, 1, 1, 'https://static.tildacdn.com/tild6561-6165-4337-b835-316638666562/20-05-20.jpg'),
-      (1, 'Hyderabad', 'description', 0, 25, 50, 'city', 'street', 'house', 100, 5, 1, 1, 'https://www.kamis-pripravy.ru/upload/medialibrary/907/9073bb8cc5579504bd22a62e5c1fe0e0.jpg'),
-      (1, 'Кофейня Джека', 'description', 0, 26, 52, 'city', 'street', 'house', 100, 5, 1, 1, 'https://images.aif.by/007/433/e73337ac5677e37f8baa002e41232ed4.jpg'),
-      (1, 'Coop кофейня', 'description', 0, 15, 45, 'city', 'street', 'house', 100, 5, 1, 1, 'https://img.gazeta.ru/files3/829/13377829/Depositphotos_412834214_xl-2015-pic905-895x505-19117.jpg'),
-      (1, 'Lytton Coffee', 'description', 0, 16, 48, 'city', 'street', 'house', 100, 5, 1, 1, 'https://cdnmyslo.ru/Photogallery/99/1d/991dffc2-ea20-483e-9352-88cd8e2aa751_b.jpg'),
-      (1, 'Il Fornaio', 'description', 0, 17, 51, 'city', 'street', 'house', 100, 4.5, 1, 1, 'https://images.ua.prom.st/3125534192_w600_h600_eda-na-vynos.jpg'),
-      (1, 'Lavanda', 'description', 0, 18, 54, 'city', 'street', 'house', 100, 3.5, 1, 1, 'https://incrussia.ru/wp-content/uploads/2020/11/iStock-1175505781.jpg'),
-      (1, 'MacArthur', 'description', 0, 19, 57, 'city', 'street', 'house', 100, 2.5, 1, 1, 'https://kidpassage.com/images/publications/eda-sankt-peterburge-chto-poprobovat-skolko-stoit/cover_original.jpg'),
-      (1, 'Osteria', 'description', 399, 20, 34, 'city', 'street', 'house', 100, 1.5, 1, 1, 'https://cdn.fishki.net/upload/post/2017/01/30/2205250/2-1485519719-1.jpg'),
-      (1, 'Vero', 'description', 499, 20, 40, 'city', 'street', 'house', 100, 0.5, 1, 1, 'https://www.learnathome.ru/files/media/food.jpg'),
-      (1, 'Renzo', 'description', 299, 21, 42, 'city', 'street', 'house', 100, 0.4, 1, 1, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTvLJHAw98D_0U8xi8fjAN573FWUX42sltrRp2-CkVtQOKUrmoIBP1XyLO5RE_fITY1KQ&usqp=CAU'),
-      (1, 'Miyake', 'description', 249, 22, 44, 'city', 'street', 'house', 100, 0.3, 1, 1, 'https://interesnyefakty.org/wp-content/uploads/Interesnye-fakty-o-ede-v-raznyh-stranah.jpg'),
-      (1, 'Tomo', 'description', 199, 23, 46, 'city', 'street', 'house', 100, 0.2, 1, 1, 'https://billionnews.ru/timthumb/timthumb.php?src=http://billionnews.ru/uploads/posts/2017-01/thumbs/1485519719_1.jpg&w=940&h=600&zc=1'),
-      (1, 'Kanpai', 'description', 149, 24, 36, 'city', 'street', 'house', 100, 0.1, 1, 1, 'https://gorobzor.ru/content/news/2018/06/chto_iz_edy_poprobovat_v_sochi_image_5b2cf79b7278f1.83210187.jpg'),
-      (1, 'Любовь моей жизни', 'description', 266, 30, 45, 'city', 'street', 'house', 100, 5, 1, 1, 'https://kidpassage.com/images/publications/eda-sohi-hto-poprobovat-skolko-stoit/cover_original.jpg'),
-      (1, 'Новая пицца', 'description', 233, 31, 46, 'city', 'street', 'house', 100, 4, 1, 1, 'https://www.oum.ru/upload/iblock/4a6/4a689562637ffe31a94e1770388395f8.jpg'),
-      (1, 'Калифорнийская кухня', 'description', 150, 23, 32, 'city', 'street', 'house', 100, 3, 1, 1, 'https://cs1.livemaster.ru/storage/15/98/6a9751d56360234808ec8ac68anj--kukly-i-igrushki-eda-dlya-kukol-eda-dlya-barbi-kukolnaya-eda-.jpg'),
-      (1, 'Круглый стол', 'description', 175, 17, 37, 'city', 'street', 'house', 100, 2, 1, 1, 'https://lh3.googleusercontent.com/proxy/HgfW931vlU8WqU-KdGv8doKW5Re0c1qU6t-EkRfRzehj0c1-eEbSMgbSIZe4e7wVyGOGUNFzGWwaTFZwDkD_bu75cIZm4PhFxJj4WI-S-xXWtwhozr8U'),
-      (1, 'Любимая шляпа', 'description', 250, 16, 36, 'city', 'street', 'house', 100, 1, 1, 1, 'https://img.the-village.me/the-village.me/post-cover/-k0NDtajdfoONfacIAqvoA-default.jpg'),
-      (1, 'Garden Fresh', 'description', 300, 16, 46, 'city', 'street', 'house', 100, 3.2, 1, 1, 'https://tomato.ua/blog/wp-content/uploads/2019/03/000-39-1-1440x961.jpg'),
-      (1, 'Epi', 'description', 150, 16, 56, 'city', 'street', 'house', 100, 2.1, 1, 1, 'https://avatars.mds.yandex.net/get-altay/2960979/2a0000017260a9d9f85eb44d3ab634dd7d7f/XXL'),
-      (1, 'Валентино', 'description', 100, 15, 55, 'city', 'street', 'house', 100, 4.2, 1, 1, 'https://i1.wp.com/www.agoda.com/wp-content/uploads/2018/07/Experience-Tokyo_food-and-drink_Featured-image-1200x350_sushi-tray_Tokyo.jpg?fit=1200%2C350&ssl=1')
-;
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
 
-UPDATE restaurant
-SET
-    fts = to_tsvector(name)
-;
+SET default_tablespace = '';
 
-INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES (1, '1', NOW(), '');
+SET default_table_access_method = heap;
 
-INSERT INTO dishes (name, cost, restaurant, description, protein, falt, kilocalorie, carbohydrates, category_dishes, category_restaurant, count, weight, avatar, place_category, place) VALUES
-    ('Тако', 60, 1, '', 1, 1, 224, 1, 'Горячее', 'Снеки', 1000, 1, 'https://pbs.twimg.com/media/DtAriH3U8AAD3jV.jpg', 0, 0),
-    ('Пряник', 60, 1, '', 1, 1, 126, 1, 'К чаю', 'К чаю', 1000, 1, 'https://s3.amazonaws.com/images.ecwid.com/images/38011115/2135671623.jpg', 1, 0),
-    ('Чёрный бургер', 60, 1, '', 1, 1, 361, 1, 'горячее', 'Снеки', 1000, 1, 'https://meat-pepper.ru/image/cache/catalog/products/burgers/kotlety-dly-burgerov-black-angus-3-800x667.jpg', 0, 1),
-    ('Пицца Ассорти', 60, 1, '', 1, 1, 1024, 1, 'горячее', 'Пиццы', 1000, 1, 'https://www.koolinar.ru/all_image/recipes/156/156543/recipe_7b4bb7f7-1d42-428a-bb0a-3db8df03093a.jpg', 2, 0),
-    ('Кофе', 60, 1, '', 1, 1, 90, 1, 'горячее', 'Напитки', 1000, 1, 'https://traveltimes.ru/wp-content/uploads/2021/08/kofe-caska-penka-scaled.jpg', 3, 0),
-    ('Картошка Фри', 60, 1, '', 1, 1, 232, 1, 'горячее', 'Снеки', 1000, 1, 'https://вести35.рф/images/2020/07/06/5f2775ffddc94d76a57605479b3f02e0.jpg', 0, 2),
-    ('Картошка по деревенски', 60, 1, '', 1, 1, 172, 1, 'Горячее', 'Снеки', 1000, 1, 'https://cherkessk.crazybrothers.ru/wp-content/uploads/Kartofel-po-derevenski.jpg', 0, 3),
-    ('МакКомбо', 256, 1, '', 1, 1, 5036, 1, 'Горячее', 'Комбо', 1000, 1, 'https://www.eatthis.com/wp-content/uploads/sites/4/2019/05/mcdonalds-fries-food-lights.jpg', 4, 0),
-    ('Утреннее комбо', 99, 1, '', 1, 1, 4708, 1, 'Горячее', 'Комбо', 1000, 1, 'https://imageproxy.ru/img/crop/1380x920/https/xn--h1ame.xn--80adxhks/storage/app/uploads/public/5e2/700/f07/5e2700f079c4c587329799.jpg', 4, 1),
-    ('Аппетитное комбо', 150, 1, '', 1, 1, 3575, 1, 'Горячее', 'Комбо', 1000, 1, 'https://www.iphones.ru/wp-content/plugins/wonderm00ns-simple-facebook-open-graph-tags/fbimg.php?img=https%3A%2F%2Fwww.iphones.ru%2Fwp-content%2Fuploads%2F2018%2F08%2FBurgerN.jpg', 4, 2),
-    ('Универсальное комбо', 100, 1, '', 1, 1, 1500, 1, 'Горячее', 'Комбо', 1000, 1, 'https://eda.yandex.ru/images/3667559/9724883e03ae48c2b6a1e28c5b9ea111-680x500.jpeg', 4, 3)
-    ;
+--
+-- Name: address_user; Type: TABLE; Schema: public; Owner: root
+--
 
-INSERT INTO structure_dishes (name, food, cost, protein, falt, carbohydrates, kilocalorie, count_element, place) VALUES
-    ('Кетчуп', 1, 5, 1, 1, 1, 1, 5, 0),
-    ('Горчица', 1, 5, 1, 1, 1, 1, 5, 1),
-    ('Сырные бортики', 4, 5, 1, 1, 1, 1, 5, 0),
-    ('Колбаса', 4, 5, 1, 1, 1, 1, 5, 1),
-    ('Сыр Пармезан', 4, 5, 1, 1, 1, 1, 5, 2),
-    ('Сыр Моцарелла', 4, 5, 1, 1, 1, 1, 5, 3),
-    ('Сахар', 5, 5, 1, 1, 1, 1, 5, 0),
-    ('Кетчап', 1, 5, 1, 1, 1, 1, 5, 2)
-    ;
+CREATE TABLE public.address_user (
+    id integer NOT NULL,
+    client_id integer,
+    city text NOT NULL,
+    street text NOT NULL,
+    house text NOT NULL,
+    flat text DEFAULT ''::text,
+    porch integer DEFAULT 0,
+    floor integer DEFAULT 0,
+    intercom text DEFAULT ''::text,
+    comment text DEFAULT ''::text,
+    alias text DEFAULT ''::text,
+    latitude double precision NOT NULL,
+    longitude double precision NOT NULL,
+    deleted boolean DEFAULT false NOT NULL
+);
 
-INSERT INTO radios (name, food, place) VALUES
-    ('МакКомбо', 8, 0),
-    ('Утреннее комбо', 9, 0),
-    ('Аппетитное комбо', 10, 0),
-    ('Универсальное комбо', 11, 0)
-    ;
 
-INSERT INTO structure_radios (name, radios, protein, falt, carbohydrates, kilocalorie, place) VALUES
-    ('Картофель Фри', 1, 1, 1, 1, 1, 0),
-    ('Картофель по деревенски', 1, 1, 1, 1, 1, 1),
-    ('Сырный соус', 2, 1, 1, 1, 1, 0),
-    ('Чесночный соус', 2, 1, 1, 1, 1, 1),
-    ('Кисло-сладкий соус', 2, 1, 1, 1, 1, 2),
-    ('Картофель Фри', 3, 1, 1, 1, 1, 0),
-    ('Картофель по деревенски', 3, 1, 1, 1, 1, 1),
-    ('Сырный соус', 4, 1, 1, 1, 1, 0),
-    ('Чесночный соус', 4, 1, 1, 1, 1, 1)
-    ;
+ALTER TABLE public.address_user OWNER TO root;
 
-INSERT INTO restaurant_category (restaurant, category, place)
-VALUES
-(1, 'Кафе', 0),
-(1, 'Поп-ап', 1)
-;
+--
+-- Name: address_user_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
 
-UPDATE restaurant_category
-    SET fts = to_tsvector(category);
+CREATE SEQUENCE public.address_user_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
-INSERT INTO promocode (id, code, type, restaurant, name, description, end_date, avatar, free_delivery)
-VALUES (1, 'FREED', 1, 1, 'Бесплатно куда угодно', 'Бесплатная доставка', TIMESTAMP '2022-04-28', 'https://buslik.by/buyers/delivery/images/icon-2.png', true);
 
-INSERT INTO promocode (id, code, type, restaurant, name, description, end_date, avatar, cost_for_sale, sale_percent)
-VALUES (2, 'Sales', 2, 1, 'Всем скидку!', 'Скидка 20% от цены 300', TIMESTAMP '2022-04-28', 'http://pes-nv.ru/upload/iblock/eed/eedf46366e565834d5e726873a7ae200.jpg', 300, 20);
+ALTER TABLE public.address_user_id_seq OWNER TO root;
 
-INSERT INTO promocode (id, code, type, restaurant, name, description, end_date, avatar, cost_for_free_dish, free_dish_id)
-VALUES (3, 'Tacooo', 3, 1, 'Бесплатное тако за покупку!', 'Бесплатно блюдо от 300', TIMESTAMP '2022-04-28', 'https://image.freepik.com/free-photo/fresh-taco_144627-38286.jpg', 300, 1);
+--
+-- Name: address_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
 
-INSERT INTO promocode (id, code, type, restaurant, name, description, end_date, avatar, time_for_sale_start, time_for_sale_finish, sale_in_time_percent)
-VALUES (4, 'TimeSale', 4, 1, 'Время скидок', 'Скидка 30% с 17 до 21', TIMESTAMP '2022-04-28', '', TIME '17:00', TIME '21:00', 30);
+ALTER SEQUENCE public.address_user_id_seq OWNED BY public.address_user.id;
 
-INSERT INTO favorite_restaurant (restaurant, client, position)
-VALUES (1, 1, 0);
+
+--
+-- Name: card; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.card (
+    id integer NOT NULL,
+    client_id integer,
+    number bigint NOT NULL,
+    month character varying(2) NOT NULL,
+    year character varying(2) NOT NULL,
+    alias text
+);
+
+
+ALTER TABLE public.card OWNER TO root;
+
+--
+-- Name: card_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.card_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.card_id_seq OWNER TO root;
+
+--
+-- Name: card_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.card_id_seq OWNED BY public.card.id;
+
+
+--
+-- Name: cart_food; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.cart_food (
+    id integer NOT NULL,
+    place integer,
+    number_item integer NOT NULL,
+    client_id integer,
+    food integer,
+    count_food integer DEFAULT 1 NOT NULL,
+    restaurant_id integer
+);
+
+
+ALTER TABLE public.cart_food OWNER TO root;
+
+--
+-- Name: cart_food_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.cart_food_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.cart_food_id_seq OWNER TO root;
+
+--
+-- Name: cart_food_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.cart_food_id_seq OWNED BY public.cart_food.id;
+
+
+--
+-- Name: cart_radios_food; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.cart_radios_food (
+    id integer NOT NULL,
+    radios_id integer,
+    radios integer,
+    place integer,
+    client_id integer,
+    food integer,
+    cart_id integer
+);
+
+
+ALTER TABLE public.cart_radios_food OWNER TO root;
+
+--
+-- Name: cart_radios_food_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.cart_radios_food_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.cart_radios_food_id_seq OWNER TO root;
+
+--
+-- Name: cart_radios_food_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.cart_radios_food_id_seq OWNED BY public.cart_radios_food.id;
+
+
+--
+-- Name: cart_structure_food; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.cart_structure_food (
+    id integer NOT NULL,
+    checkbox integer,
+    client_id integer,
+    place integer,
+    food integer,
+    cart_id integer
+);
+
+
+ALTER TABLE public.cart_structure_food OWNER TO root;
+
+--
+-- Name: cart_structure_food_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.cart_structure_food_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.cart_structure_food_id_seq OWNER TO root;
+
+--
+-- Name: cart_structure_food_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.cart_structure_food_id_seq OWNED BY public.cart_structure_food.id;
+
+
+--
+-- Name: cart_user; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.cart_user (
+    id integer NOT NULL,
+    client_id integer,
+    promo_code text,
+    restaurant integer
+);
+
+
+ALTER TABLE public.cart_user OWNER TO root;
+
+--
+-- Name: cart_user_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.cart_user_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.cart_user_id_seq OWNER TO root;
+
+--
+-- Name: cart_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.cart_user_id_seq OWNED BY public.cart_user.id;
+
+
+--
+-- Name: client; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.client (
+    id integer NOT NULL,
+    client_id integer,
+    date_birthday timestamp without time zone
+);
+
+
+ALTER TABLE public.client OWNER TO root;
+
+--
+-- Name: client_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.client_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.client_id_seq OWNER TO root;
+
+--
+-- Name: client_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.client_id_seq OWNED BY public.client.id;
+
+
+--
+-- Name: cookie; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.cookie (
+    id integer NOT NULL,
+    client_id integer,
+    session_id character varying(92) NOT NULL,
+    date_life timestamp without time zone NOT NULL,
+    csrf_token character varying(92) NOT NULL,
+    websocket character varying(40)
+);
+
+
+ALTER TABLE public.cookie OWNER TO root;
+
+--
+-- Name: cookie_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.cookie_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.cookie_id_seq OWNER TO root;
+
+--
+-- Name: cookie_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.cookie_id_seq OWNED BY public.cookie.id;
+
+
+--
+-- Name: courier; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.courier (
+    id integer NOT NULL,
+    client_id integer
+);
+
+
+ALTER TABLE public.courier OWNER TO root;
+
+--
+-- Name: courier_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.courier_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.courier_id_seq OWNER TO root;
+
+--
+-- Name: courier_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.courier_id_seq OWNED BY public.courier.id;
+
+
+--
+-- Name: dishes; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.dishes (
+    id integer NOT NULL,
+    name text NOT NULL,
+    cost integer,
+    count integer,
+    restaurant integer,
+    place integer,
+    place_category integer,
+    description text NOT NULL,
+    protein double precision NOT NULL,
+    falt double precision NOT NULL,
+    kilocalorie integer NOT NULL,
+    carbohydrates double precision NOT NULL,
+    weight integer NOT NULL,
+    category_dishes text NOT NULL,
+    category_restaurant text NOT NULL,
+    avatar text DEFAULT '/default/defaultDishes.jpg'::text,
+    deleted boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE public.dishes OWNER TO root;
+
+--
+-- Name: dishes_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.dishes_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.dishes_id_seq OWNER TO root;
+
+--
+-- Name: dishes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.dishes_id_seq OWNED BY public.dishes.id;
+
+
+--
+-- Name: event; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.event (
+    id integer NOT NULL,
+    restaurant integer,
+    start_date timestamp without time zone DEFAULT now() NOT NULL,
+    end_date timestamp without time zone NOT NULL,
+    name text NOT NULL,
+    description text NOT NULL
+);
+
+
+ALTER TABLE public.event OWNER TO root;
+
+--
+-- Name: event_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.event_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.event_id_seq OWNER TO root;
+
+--
+-- Name: event_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.event_id_seq OWNED BY public.event.id;
+
+
+--
+-- Name: favorite_restaurant; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.favorite_restaurant (
+    id integer NOT NULL,
+    client integer,
+    restaurant integer,
+    "position" integer
+);
+
+
+ALTER TABLE public.favorite_restaurant OWNER TO root;
+
+--
+-- Name: favorite_restaurant_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.favorite_restaurant_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.favorite_restaurant_id_seq OWNER TO root;
+
+--
+-- Name: favorite_restaurant_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.favorite_restaurant_id_seq OWNED BY public.favorite_restaurant.id;
+
+
+--
+-- Name: general_user_info; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.general_user_info (
+    id integer NOT NULL,
+    name text NOT NULL,
+    password character varying(64) NOT NULL,
+    salt character varying(5) NOT NULL,
+    phone character varying(15) NOT NULL,
+    email text,
+    avatar text DEFAULT '/default/defaultUser.jpg'::text,
+    date_registration timestamp without time zone DEFAULT now() NOT NULL,
+    deleted boolean DEFAULT false
+);
+
+
+ALTER TABLE public.general_user_info OWNER TO root;
+
+--
+-- Name: general_user_info_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.general_user_info_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.general_user_info_id_seq OWNER TO root;
+
+--
+-- Name: general_user_info_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.general_user_info_id_seq OWNED BY public.general_user_info.id;
+
+
+--
+-- Name: host; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.host (
+    id integer NOT NULL,
+    client_id integer
+);
+
+
+ALTER TABLE public.host OWNER TO root;
+
+--
+-- Name: host_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.host_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.host_id_seq OWNER TO root;
+
+--
+-- Name: host_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.host_id_seq OWNED BY public.host.id;
+
+
+--
+-- Name: manager; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.manager (
+    id integer NOT NULL,
+    client_id integer
+);
+
+
+ALTER TABLE public.manager OWNER TO root;
+
+--
+-- Name: manager_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.manager_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.manager_id_seq OWNER TO root;
+
+--
+-- Name: manager_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.manager_id_seq OWNED BY public.manager.id;
+
+
+--
+-- Name: order_list; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.order_list (
+    id integer NOT NULL,
+    order_id integer,
+    food integer,
+    place integer,
+    count_dishes integer,
+    item_number integer
+);
+
+
+ALTER TABLE public.order_list OWNER TO root;
+
+--
+-- Name: order_list_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.order_list_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.order_list_id_seq OWNER TO root;
+
+--
+-- Name: order_list_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.order_list_id_seq OWNED BY public.order_list.id;
+
+
+--
+-- Name: order_radios_list; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.order_radios_list (
+    id integer NOT NULL,
+    order_id integer,
+    place integer,
+    radios_id integer,
+    radios integer,
+    food integer,
+    list_id integer
+);
+
+
+ALTER TABLE public.order_radios_list OWNER TO root;
+
+--
+-- Name: order_radios_list_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.order_radios_list_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.order_radios_list_id_seq OWNER TO root;
+
+--
+-- Name: order_radios_list_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.order_radios_list_id_seq OWNED BY public.order_radios_list.id;
+
+
+--
+-- Name: order_structure_list; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.order_structure_list (
+    id integer NOT NULL,
+    order_id integer,
+    place integer,
+    food integer,
+    structure_food integer,
+    list_id integer
+);
+
+
+ALTER TABLE public.order_structure_list OWNER TO root;
+
+--
+-- Name: order_structure_list_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.order_structure_list_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.order_structure_list_id_seq OWNER TO root;
+
+--
+-- Name: order_structure_list_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.order_structure_list_id_seq OWNED BY public.order_structure_list.id;
+
+
+--
+-- Name: order_user; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.order_user (
+    id integer NOT NULL,
+    client_id integer,
+    courier_id integer,
+    address_id integer,
+    restaurant_id integer,
+    promo_code text,
+    comment text DEFAULT ''::text NOT NULL,
+    status integer DEFAULT 1 NOT NULL,
+    method_pay text NOT NULL,
+    date_order timestamp without time zone DEFAULT now(),
+    dcost integer,
+    sumcost integer,
+    check_run boolean DEFAULT true
+);
+
+
+ALTER TABLE public.order_user OWNER TO root;
+
+--
+-- Name: order_user_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.order_user_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.order_user_id_seq OWNER TO root;
+
+--
+-- Name: order_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.order_user_id_seq OWNED BY public.order_user.id;
+
+
+--
+-- Name: promocode; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.promocode (
+    id integer NOT NULL,
+    code text NOT NULL,
+    type integer DEFAULT 0 NOT NULL,
+    restaurant integer,
+    name text NOT NULL,
+    description text NOT NULL,
+    start_date timestamp without time zone DEFAULT now(),
+    end_date timestamp without time zone NOT NULL,
+    avatar text NOT NULL,
+    free_delivery boolean,
+    cost_for_free_dish integer,
+    free_dish_id integer,
+    cost_for_sale integer,
+    sale_percent integer,
+    sale_amount integer,
+    time_for_sale_start time without time zone,
+    time_for_sale_finish time without time zone,
+    sale_in_time_percent integer,
+    sale_in_time_amount integer
+);
+
+
+ALTER TABLE public.promocode OWNER TO root;
+
+--
+-- Name: promocode_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.promocode_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.promocode_id_seq OWNER TO root;
+
+--
+-- Name: promocode_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.promocode_id_seq OWNED BY public.promocode.id;
+
+
+--
+-- Name: radios; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.radios (
+    id integer NOT NULL,
+    name text DEFAULT ''::text NOT NULL,
+    place integer,
+    food integer
+);
+
+
+ALTER TABLE public.radios OWNER TO root;
+
+--
+-- Name: radios_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.radios_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.radios_id_seq OWNER TO root;
+
+--
+-- Name: radios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.radios_id_seq OWNED BY public.radios.id;
+
+
+--
+-- Name: restaurant; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.restaurant (
+    id integer NOT NULL,
+    owner integer,
+    name text NOT NULL,
+    description text NOT NULL,
+    created timestamp without time zone DEFAULT now() NOT NULL,
+    deleted boolean DEFAULT false,
+    avatar text DEFAULT '/default/defaultRestaurant.jpg'::text,
+    min_price integer DEFAULT 0,
+    price_delivery integer NOT NULL,
+    min_delivery_time integer,
+    max_delivery_time integer,
+    city text NOT NULL,
+    street text NOT NULL,
+    house text NOT NULL,
+    floor integer,
+    rating double precision,
+    latitude double precision NOT NULL,
+    longitude double precision NOT NULL,
+    fts tsvector
+);
+
+
+ALTER TABLE public.restaurant OWNER TO root;
+
+--
+-- Name: restaurant_category; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.restaurant_category (
+    id integer NOT NULL,
+    category text NOT NULL,
+    restaurant integer,
+    place integer,
+    fts tsvector
+);
+
+
+ALTER TABLE public.restaurant_category OWNER TO root;
+
+--
+-- Name: restaurant_category_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.restaurant_category_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.restaurant_category_id_seq OWNER TO root;
+
+--
+-- Name: restaurant_category_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.restaurant_category_id_seq OWNED BY public.restaurant_category.id;
+
+
+--
+-- Name: restaurant_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.restaurant_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.restaurant_id_seq OWNER TO root;
+
+--
+-- Name: restaurant_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.restaurant_id_seq OWNED BY public.restaurant.id;
+
+
+--
+-- Name: review; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.review (
+    id integer NOT NULL,
+    author integer,
+    restaurant integer,
+    text text,
+    date_create timestamp without time zone DEFAULT now() NOT NULL,
+    rate integer NOT NULL,
+    deleted boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE public.review OWNER TO root;
+
+--
+-- Name: review_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.review_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.review_id_seq OWNER TO root;
+
+--
+-- Name: review_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.review_id_seq OWNED BY public.review.id;
+
+
+--
+-- Name: structure_dishes; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.structure_dishes (
+    id integer NOT NULL,
+    name text DEFAULT ''::text NOT NULL,
+    cost integer,
+    food integer,
+    place integer,
+    protein double precision NOT NULL,
+    falt double precision NOT NULL,
+    carbohydrates double precision NOT NULL,
+    kilocalorie integer NOT NULL,
+    count_element integer NOT NULL,
+    changed boolean DEFAULT false NOT NULL,
+    deleted boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE public.structure_dishes OWNER TO root;
+
+--
+-- Name: structure_dishes_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.structure_dishes_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.structure_dishes_id_seq OWNER TO root;
+
+--
+-- Name: structure_dishes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.structure_dishes_id_seq OWNED BY public.structure_dishes.id;
+
+
+--
+-- Name: structure_radios; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.structure_radios (
+    id integer NOT NULL,
+    name text DEFAULT ''::text NOT NULL,
+    radios integer,
+    place integer,
+    protein double precision NOT NULL,
+    falt double precision NOT NULL,
+    carbohydrates double precision NOT NULL,
+    kilocalorie integer NOT NULL
+);
+
+
+ALTER TABLE public.structure_radios OWNER TO root;
+
+--
+-- Name: structure_radios_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.structure_radios_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.structure_radios_id_seq OWNER TO root;
+
+--
+-- Name: structure_radios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.structure_radios_id_seq OWNED BY public.structure_radios.id;
+
+
+--
+-- Name: worker; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.worker (
+    id integer NOT NULL,
+    client_id integer
+);
+
+
+ALTER TABLE public.worker OWNER TO root;
+
+--
+-- Name: worker_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.worker_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.worker_id_seq OWNER TO root;
+
+--
+-- Name: worker_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.worker_id_seq OWNED BY public.worker.id;
+
+
+--
+-- Name: address_user id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.address_user ALTER COLUMN id SET DEFAULT nextval('public.address_user_id_seq'::regclass);
+
+
+--
+-- Name: card id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.card ALTER COLUMN id SET DEFAULT nextval('public.card_id_seq'::regclass);
+
+
+--
+-- Name: cart_food id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_food ALTER COLUMN id SET DEFAULT nextval('public.cart_food_id_seq'::regclass);
+
+
+--
+-- Name: cart_radios_food id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_radios_food ALTER COLUMN id SET DEFAULT nextval('public.cart_radios_food_id_seq'::regclass);
+
+
+--
+-- Name: cart_structure_food id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_structure_food ALTER COLUMN id SET DEFAULT nextval('public.cart_structure_food_id_seq'::regclass);
+
+
+--
+-- Name: cart_user id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_user ALTER COLUMN id SET DEFAULT nextval('public.cart_user_id_seq'::regclass);
+
+
+--
+-- Name: client id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.client ALTER COLUMN id SET DEFAULT nextval('public.client_id_seq'::regclass);
+
+
+--
+-- Name: cookie id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cookie ALTER COLUMN id SET DEFAULT nextval('public.cookie_id_seq'::regclass);
+
+
+--
+-- Name: courier id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.courier ALTER COLUMN id SET DEFAULT nextval('public.courier_id_seq'::regclass);
+
+
+--
+-- Name: dishes id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.dishes ALTER COLUMN id SET DEFAULT nextval('public.dishes_id_seq'::regclass);
+
+
+--
+-- Name: event id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.event ALTER COLUMN id SET DEFAULT nextval('public.event_id_seq'::regclass);
+
+
+--
+-- Name: favorite_restaurant id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.favorite_restaurant ALTER COLUMN id SET DEFAULT nextval('public.favorite_restaurant_id_seq'::regclass);
+
+
+--
+-- Name: general_user_info id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.general_user_info ALTER COLUMN id SET DEFAULT nextval('public.general_user_info_id_seq'::regclass);
+
+
+--
+-- Name: host id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.host ALTER COLUMN id SET DEFAULT nextval('public.host_id_seq'::regclass);
+
+
+--
+-- Name: manager id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.manager ALTER COLUMN id SET DEFAULT nextval('public.manager_id_seq'::regclass);
+
+
+--
+-- Name: order_list id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_list ALTER COLUMN id SET DEFAULT nextval('public.order_list_id_seq'::regclass);
+
+
+--
+-- Name: order_radios_list id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_radios_list ALTER COLUMN id SET DEFAULT nextval('public.order_radios_list_id_seq'::regclass);
+
+
+--
+-- Name: order_structure_list id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_structure_list ALTER COLUMN id SET DEFAULT nextval('public.order_structure_list_id_seq'::regclass);
+
+
+--
+-- Name: order_user id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_user ALTER COLUMN id SET DEFAULT nextval('public.order_user_id_seq'::regclass);
+
+
+--
+-- Name: promocode id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.promocode ALTER COLUMN id SET DEFAULT nextval('public.promocode_id_seq'::regclass);
+
+
+--
+-- Name: radios id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.radios ALTER COLUMN id SET DEFAULT nextval('public.radios_id_seq'::regclass);
+
+
+--
+-- Name: restaurant id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.restaurant ALTER COLUMN id SET DEFAULT nextval('public.restaurant_id_seq'::regclass);
+
+
+--
+-- Name: restaurant_category id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.restaurant_category ALTER COLUMN id SET DEFAULT nextval('public.restaurant_category_id_seq'::regclass);
+
+
+--
+-- Name: review id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.review ALTER COLUMN id SET DEFAULT nextval('public.review_id_seq'::regclass);
+
+
+--
+-- Name: structure_dishes id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.structure_dishes ALTER COLUMN id SET DEFAULT nextval('public.structure_dishes_id_seq'::regclass);
+
+
+--
+-- Name: structure_radios id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.structure_radios ALTER COLUMN id SET DEFAULT nextval('public.structure_radios_id_seq'::regclass);
+
+
+--
+-- Name: worker id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.worker ALTER COLUMN id SET DEFAULT nextval('public.worker_id_seq'::regclass);
+
+
+--
+-- Data for Name: address_user; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: card; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: cart_food; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+INSERT INTO public.cart_food VALUES (295, 0, 1, 1, 1, 1, 1);
+
+
+--
+-- Data for Name: cart_radios_food; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: cart_structure_food; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: cart_user; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: client; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: cookie; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: courier; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: dishes; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: event; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: favorite_restaurant; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: general_user_info; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: host; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: manager; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: order_list; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: order_radios_list; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: order_structure_list; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: order_user; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: promocode; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: radios; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: restaurant; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: restaurant_category; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: review; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+INSERT INTO public.review VALUES (1, 1, 0, 'rootrootro', '2021-12-01 18:53:51.550501', 2, false);
+INSERT INTO public.review VALUES (2, 1, 0, 'rootrootro', '2021-12-01 18:54:02.753424', 2, false);
+INSERT INTO public.review VALUES (3, 1, 0, 'rootrootrp', '2021-12-01 18:54:51.736683', 2, false);
+INSERT INTO public.review VALUES (4, 1, 0, 'rootrootrp', '2021-12-01 18:57:26.043285', 2, false);
+INSERT INTO public.review VALUES (5, 1, 0, 'rootrootrp', '2021-12-01 18:58:22.53117', 2, false);
+INSERT INTO public.review VALUES (6, 1, 0, 'rootrootrp', '2021-12-01 18:58:29.022712', 2, false);
+INSERT INTO public.review VALUES (7, 1, 0, 'rootrootrp', '2021-12-01 19:03:04.076647', 2, false);
+INSERT INTO public.review VALUES (8, 1, 0, 'rootrootrp', '2021-12-01 19:03:04.113509', 2, false);
+INSERT INTO public.review VALUES (9, 1, 0, 'rootrootrp', '2021-12-01 19:03:04.126966', 2, false);
+INSERT INTO public.review VALUES (11, 1, 27, 'asdasdasdasd', '2021-12-01 19:06:47.812287', 3, false);
+INSERT INTO public.review VALUES (10, 1, 29, '2dasdassssdsaasd', '2021-12-01 19:03:27.551381', 5, false);
+INSERT INTO public.review VALUES (12, 1, 0, 'asdasda2sdasd', '2021-12-01 19:12:05.52179', 4, false);
+
+
+--
+-- Data for Name: structure_dishes; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: structure_radios; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Data for Name: worker; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- Name: address_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.address_user_id_seq', 1, false);
+
+
+--
+-- Name: card_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.card_id_seq', 1, false);
+
+
+--
+-- Name: cart_food_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.cart_food_id_seq', 295, true);
+
+
+--
+-- Name: cart_radios_food_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.cart_radios_food_id_seq', 1, false);
+
+
+--
+-- Name: cart_structure_food_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.cart_structure_food_id_seq', 1, false);
+
+
+--
+-- Name: cart_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.cart_user_id_seq', 1, false);
+
+
+--
+-- Name: client_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.client_id_seq', 1, false);
+
+
+--
+-- Name: cookie_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.cookie_id_seq', 1, false);
+
+
+--
+-- Name: courier_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.courier_id_seq', 1, false);
+
+
+--
+-- Name: dishes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.dishes_id_seq', 1, false);
+
+
+--
+-- Name: event_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.event_id_seq', 1, false);
+
+
+--
+-- Name: favorite_restaurant_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.favorite_restaurant_id_seq', 1, false);
+
+
+--
+-- Name: general_user_info_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.general_user_info_id_seq', 1, false);
+
+
+--
+-- Name: host_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.host_id_seq', 1, false);
+
+
+--
+-- Name: manager_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.manager_id_seq', 1, false);
+
+
+--
+-- Name: order_list_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.order_list_id_seq', 1, false);
+
+
+--
+-- Name: order_radios_list_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.order_radios_list_id_seq', 1, false);
+
+
+--
+-- Name: order_structure_list_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.order_structure_list_id_seq', 1, false);
+
+
+--
+-- Name: order_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.order_user_id_seq', 1, false);
+
+
+--
+-- Name: promocode_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.promocode_id_seq', 1, false);
+
+
+--
+-- Name: radios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.radios_id_seq', 1, false);
+
+
+--
+-- Name: restaurant_category_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.restaurant_category_id_seq', 1, false);
+
+
+--
+-- Name: restaurant_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.restaurant_id_seq', 1, false);
+
+
+--
+-- Name: review_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.review_id_seq', 12, true);
+
+
+--
+-- Name: structure_dishes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.structure_dishes_id_seq', 1, false);
+
+
+--
+-- Name: structure_radios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.structure_radios_id_seq', 1, false);
+
+
+--
+-- Name: worker_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.worker_id_seq', 1, false);
+
+
+--
+-- Name: address_user address_user_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.address_user
+    ADD CONSTRAINT address_user_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: card card_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.card
+    ADD CONSTRAINT card_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cart_food cart_food_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_food
+    ADD CONSTRAINT cart_food_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cart_radios_food cart_radios_food_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_radios_food
+    ADD CONSTRAINT cart_radios_food_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cart_structure_food cart_structure_food_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_structure_food
+    ADD CONSTRAINT cart_structure_food_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cart_user cart_user_client_id_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_user
+    ADD CONSTRAINT cart_user_client_id_key UNIQUE (client_id);
+
+
+--
+-- Name: cart_user cart_user_client_id_promo_code_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_user
+    ADD CONSTRAINT cart_user_client_id_promo_code_key UNIQUE (client_id, promo_code);
+
+
+--
+-- Name: cart_user cart_user_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_user
+    ADD CONSTRAINT cart_user_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: client client_client_id_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.client
+    ADD CONSTRAINT client_client_id_key UNIQUE (client_id);
+
+
+--
+-- Name: client client_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.client
+    ADD CONSTRAINT client_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cookie cookie_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cookie
+    ADD CONSTRAINT cookie_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: courier courier_client_id_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.courier
+    ADD CONSTRAINT courier_client_id_key UNIQUE (client_id);
+
+
+--
+-- Name: courier courier_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.courier
+    ADD CONSTRAINT courier_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dishes dishes_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.dishes
+    ADD CONSTRAINT dishes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: event event_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.event
+    ADD CONSTRAINT event_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: favorite_restaurant favorite_restaurant_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.favorite_restaurant
+    ADD CONSTRAINT favorite_restaurant_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: general_user_info general_user_info_email_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.general_user_info
+    ADD CONSTRAINT general_user_info_email_key UNIQUE (email);
+
+
+--
+-- Name: general_user_info general_user_info_phone_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.general_user_info
+    ADD CONSTRAINT general_user_info_phone_key UNIQUE (phone);
+
+
+--
+-- Name: general_user_info general_user_info_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.general_user_info
+    ADD CONSTRAINT general_user_info_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: host host_client_id_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.host
+    ADD CONSTRAINT host_client_id_key UNIQUE (client_id);
+
+
+--
+-- Name: host host_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.host
+    ADD CONSTRAINT host_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: manager manager_client_id_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.manager
+    ADD CONSTRAINT manager_client_id_key UNIQUE (client_id);
+
+
+--
+-- Name: manager manager_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.manager
+    ADD CONSTRAINT manager_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: order_list order_list_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_list
+    ADD CONSTRAINT order_list_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: order_radios_list order_radios_list_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_radios_list
+    ADD CONSTRAINT order_radios_list_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: order_structure_list order_structure_list_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_structure_list
+    ADD CONSTRAINT order_structure_list_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: order_user order_user_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_user
+    ADD CONSTRAINT order_user_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: promocode promocode_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.promocode
+    ADD CONSTRAINT promocode_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: radios radios_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.radios
+    ADD CONSTRAINT radios_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: restaurant_category restaurant_category_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.restaurant_category
+    ADD CONSTRAINT restaurant_category_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: restaurant restaurant_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.restaurant
+    ADD CONSTRAINT restaurant_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: review review_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.review
+    ADD CONSTRAINT review_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: structure_dishes structure_dishes_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.structure_dishes
+    ADD CONSTRAINT structure_dishes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: structure_radios structure_radios_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.structure_radios
+    ADD CONSTRAINT structure_radios_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: worker worker_client_id_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.worker
+    ADD CONSTRAINT worker_client_id_key UNIQUE (client_id);
+
+
+--
+-- Name: worker worker_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.worker
+    ADD CONSTRAINT worker_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: restaurant_category_fts; Type: INDEX; Schema: public; Owner: root
+--
+
+CREATE INDEX restaurant_category_fts ON public.restaurant_category USING btree (fts);
+
+
+--
+-- Name: restaurant_fts; Type: INDEX; Schema: public; Owner: root
+--
+
+CREATE INDEX restaurant_fts ON public.restaurant USING btree (fts);
+
+
+--
+-- Name: address_user address_user_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.address_user
+    ADD CONSTRAINT address_user_client_id_fkey FOREIGN KEY (client_id) REFERENCES public.general_user_info(id) ON DELETE CASCADE;
+
+
+--
+-- Name: card card_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.card
+    ADD CONSTRAINT card_client_id_fkey FOREIGN KEY (client_id) REFERENCES public.general_user_info(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cart_radios_food cart_radios_food_cart_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_radios_food
+    ADD CONSTRAINT cart_radios_food_cart_id_fkey FOREIGN KEY (cart_id) REFERENCES public.cart_food(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cart_radios_food cart_radios_food_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_radios_food
+    ADD CONSTRAINT cart_radios_food_client_id_fkey FOREIGN KEY (client_id) REFERENCES public.general_user_info(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cart_radios_food cart_radios_food_food_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_radios_food
+    ADD CONSTRAINT cart_radios_food_food_fkey FOREIGN KEY (food) REFERENCES public.dishes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cart_radios_food cart_radios_food_radios_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_radios_food
+    ADD CONSTRAINT cart_radios_food_radios_fkey FOREIGN KEY (radios) REFERENCES public.structure_radios(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cart_radios_food cart_radios_food_radios_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_radios_food
+    ADD CONSTRAINT cart_radios_food_radios_id_fkey FOREIGN KEY (radios_id) REFERENCES public.radios(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cart_structure_food cart_structure_food_cart_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_structure_food
+    ADD CONSTRAINT cart_structure_food_cart_id_fkey FOREIGN KEY (cart_id) REFERENCES public.cart_food(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cart_structure_food cart_structure_food_checkbox_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_structure_food
+    ADD CONSTRAINT cart_structure_food_checkbox_fkey FOREIGN KEY (checkbox) REFERENCES public.structure_dishes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cart_structure_food cart_structure_food_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_structure_food
+    ADD CONSTRAINT cart_structure_food_client_id_fkey FOREIGN KEY (client_id) REFERENCES public.general_user_info(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cart_structure_food cart_structure_food_food_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_structure_food
+    ADD CONSTRAINT cart_structure_food_food_fkey FOREIGN KEY (food) REFERENCES public.dishes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cart_user cart_user_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_user
+    ADD CONSTRAINT cart_user_client_id_fkey FOREIGN KEY (client_id) REFERENCES public.general_user_info(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cart_user cart_user_restaurant_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cart_user
+    ADD CONSTRAINT cart_user_restaurant_fkey FOREIGN KEY (restaurant) REFERENCES public.restaurant(id) ON DELETE CASCADE;
+
+
+--
+-- Name: client client_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.client
+    ADD CONSTRAINT client_client_id_fkey FOREIGN KEY (client_id) REFERENCES public.general_user_info(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cookie cookie_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.cookie
+    ADD CONSTRAINT cookie_client_id_fkey FOREIGN KEY (client_id) REFERENCES public.general_user_info(id) ON DELETE CASCADE;
+
+
+--
+-- Name: courier courier_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.courier
+    ADD CONSTRAINT courier_client_id_fkey FOREIGN KEY (client_id) REFERENCES public.general_user_info(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dishes dishes_restaurant_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.dishes
+    ADD CONSTRAINT dishes_restaurant_fkey FOREIGN KEY (restaurant) REFERENCES public.restaurant(id) ON DELETE CASCADE;
+
+
+--
+-- Name: event event_restaurant_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.event
+    ADD CONSTRAINT event_restaurant_fkey FOREIGN KEY (restaurant) REFERENCES public.restaurant(id) ON DELETE CASCADE;
+
+
+--
+-- Name: favorite_restaurant favorite_restaurant_client_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.favorite_restaurant
+    ADD CONSTRAINT favorite_restaurant_client_fkey FOREIGN KEY (client) REFERENCES public.general_user_info(id) ON DELETE CASCADE;
+
+
+--
+-- Name: favorite_restaurant favorite_restaurant_restaurant_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.favorite_restaurant
+    ADD CONSTRAINT favorite_restaurant_restaurant_fkey FOREIGN KEY (restaurant) REFERENCES public.restaurant(id) ON DELETE CASCADE;
+
+
+--
+-- Name: host host_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.host
+    ADD CONSTRAINT host_client_id_fkey FOREIGN KEY (client_id) REFERENCES public.general_user_info(id) ON DELETE CASCADE;
+
+
+--
+-- Name: manager manager_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.manager
+    ADD CONSTRAINT manager_client_id_fkey FOREIGN KEY (client_id) REFERENCES public.general_user_info(id) ON DELETE CASCADE;
+
+
+--
+-- Name: order_list order_list_food_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_list
+    ADD CONSTRAINT order_list_food_fkey FOREIGN KEY (food) REFERENCES public.dishes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: order_list order_list_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_list
+    ADD CONSTRAINT order_list_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.order_user(id) ON DELETE CASCADE;
+
+
+--
+-- Name: order_radios_list order_radios_list_food_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_radios_list
+    ADD CONSTRAINT order_radios_list_food_fkey FOREIGN KEY (food) REFERENCES public.dishes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: order_radios_list order_radios_list_list_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_radios_list
+    ADD CONSTRAINT order_radios_list_list_id_fkey FOREIGN KEY (list_id) REFERENCES public.order_list(id) ON DELETE CASCADE;
+
+
+--
+-- Name: order_radios_list order_radios_list_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_radios_list
+    ADD CONSTRAINT order_radios_list_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.order_user(id) ON DELETE CASCADE;
+
+
+--
+-- Name: order_radios_list order_radios_list_radios_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_radios_list
+    ADD CONSTRAINT order_radios_list_radios_fkey FOREIGN KEY (radios) REFERENCES public.structure_radios(id) ON DELETE CASCADE;
+
+
+--
+-- Name: order_radios_list order_radios_list_radios_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_radios_list
+    ADD CONSTRAINT order_radios_list_radios_id_fkey FOREIGN KEY (radios_id) REFERENCES public.radios(id) ON DELETE CASCADE;
+
+
+--
+-- Name: order_structure_list order_structure_list_food_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_structure_list
+    ADD CONSTRAINT order_structure_list_food_fkey FOREIGN KEY (food) REFERENCES public.dishes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: order_structure_list order_structure_list_list_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_structure_list
+    ADD CONSTRAINT order_structure_list_list_id_fkey FOREIGN KEY (list_id) REFERENCES public.order_list(id) ON DELETE CASCADE;
+
+
+--
+-- Name: order_structure_list order_structure_list_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_structure_list
+    ADD CONSTRAINT order_structure_list_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.order_user(id) ON DELETE CASCADE;
+
+
+--
+-- Name: order_structure_list order_structure_list_structure_food_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_structure_list
+    ADD CONSTRAINT order_structure_list_structure_food_fkey FOREIGN KEY (structure_food) REFERENCES public.structure_dishes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: order_user order_user_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_user
+    ADD CONSTRAINT order_user_address_id_fkey FOREIGN KEY (address_id) REFERENCES public.address_user(id) ON DELETE CASCADE;
+
+
+--
+-- Name: order_user order_user_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_user
+    ADD CONSTRAINT order_user_client_id_fkey FOREIGN KEY (client_id) REFERENCES public.general_user_info(id) ON DELETE CASCADE;
+
+
+--
+-- Name: order_user order_user_courier_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_user
+    ADD CONSTRAINT order_user_courier_id_fkey FOREIGN KEY (courier_id) REFERENCES public.general_user_info(id) ON DELETE CASCADE;
+
+
+--
+-- Name: order_user order_user_restaurant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.order_user
+    ADD CONSTRAINT order_user_restaurant_id_fkey FOREIGN KEY (restaurant_id) REFERENCES public.restaurant(id) ON DELETE CASCADE;
+
+
+--
+-- Name: promocode promocode_free_dish_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.promocode
+    ADD CONSTRAINT promocode_free_dish_id_fkey FOREIGN KEY (free_dish_id) REFERENCES public.dishes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: promocode promocode_restaurant_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.promocode
+    ADD CONSTRAINT promocode_restaurant_fkey FOREIGN KEY (restaurant) REFERENCES public.restaurant(id) ON DELETE CASCADE;
+
+
+--
+-- Name: radios radios_food_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.radios
+    ADD CONSTRAINT radios_food_fkey FOREIGN KEY (food) REFERENCES public.dishes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: restaurant_category restaurant_category_restaurant_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.restaurant_category
+    ADD CONSTRAINT restaurant_category_restaurant_fkey FOREIGN KEY (restaurant) REFERENCES public.restaurant(id) ON DELETE CASCADE;
+
+
+--
+-- Name: restaurant restaurant_owner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.restaurant
+    ADD CONSTRAINT restaurant_owner_fkey FOREIGN KEY (owner) REFERENCES public.general_user_info(id) ON DELETE CASCADE;
+
+
+--
+-- Name: structure_dishes structure_dishes_food_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.structure_dishes
+    ADD CONSTRAINT structure_dishes_food_fkey FOREIGN KEY (food) REFERENCES public.dishes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: structure_radios structure_radios_radios_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.structure_radios
+    ADD CONSTRAINT structure_radios_radios_fkey FOREIGN KEY (radios) REFERENCES public.radios(id) ON DELETE CASCADE;
+
+
+--
+-- Name: worker worker_client_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.worker
+    ADD CONSTRAINT worker_client_id_fkey FOREIGN KEY (client_id) REFERENCES public.general_user_info(id) ON DELETE CASCADE;
+
+
+--
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: root
+--
+
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS
     event, favorite_restaurant, feedback,
     manager, order_list, order_user,
     promocode, promocode_on_food, restaurant_category,
-    structure_dishes, worker, cart,
+    structure_dishes, worker, cart_food,
     radios, structure_radios, cart_radios_food,
-    cart_structure_food, order_structure_list, order_radios_list
+    cart_structure_food, order_structure_list, order_radios_list, review
 CASCADE;

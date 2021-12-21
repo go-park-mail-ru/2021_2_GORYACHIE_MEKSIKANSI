@@ -42,7 +42,15 @@ func runServer() {
 	awsConfig := configStructure[2].(configPkg.AwsConfig)
 	microserviceConfig := configStructure[3].(configPkg.MicroserviceConfig)
 
-	connectionPostgres, err := build.CreateDb(dbConfig.Db, appConfig.Primary.Debug)
+	connectionPostgres, err := build.CreateDb(dbConfig.Db)
+	if appConfig.Primary.Debug {
+		err := build.FillDb(connectionPostgres)
+		if err != nil {
+			logger.Log.Errorf("Unable fill database: %s", err.Error())
+			os.Exit(2)
+		}
+
+	}
 	defer connectionPostgres.Close()
 	if err != nil {
 		logger.Log.Errorf("Unable to connect to database: %s", err.Error())
@@ -139,7 +147,11 @@ func runServer() {
 
 	port := ":" + appConfig.Port
 	logger.Log.Infof("Listen in 127:0.0.1%s", port)
-	err = fasthttp.ListenAndServeTLS(port, "fullchain.pem", "privkey.pem", withCors.CorsMiddleware(infoMid.MetricsTiming(printURL)))
+	if appConfig.Primary.Debug {
+		err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(infoMid.MetricsTiming(printURL)))
+	} else {
+		err = fasthttp.ListenAndServeTLS(port, "fullchain.pem", "privkey.pem", withCors.CorsMiddleware(infoMid.MetricsTiming(printURL)))
+	}
 	if err != nil {
 		logger.Log.Errorf("Listen and server error: %v", err)
 		os.Exit(2)
