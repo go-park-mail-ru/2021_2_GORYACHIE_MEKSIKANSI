@@ -1,3 +1,7 @@
+//go:generate mockgen -destination=mocks/api.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/myerror MultiLogger
+//go:generate mockgen -destination=mocks/apiApplication.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/middleware/application MiddlewareApplicationInterface
+//go:generate mockgen -destination=mocks/apiCounterMetrics.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/middleware/api CounterMetricInterface
+//go:generate mockgen -destination=mocks/apiCounterVecMetrics.go -package=mocks 2021_2_GORYACHIE_MEKSIKANSI/internals/middleware/api CounterVecMetricInterface
 package api
 
 import (
