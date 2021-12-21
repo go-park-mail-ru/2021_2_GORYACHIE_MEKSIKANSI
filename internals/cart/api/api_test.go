@@ -167,15 +167,29 @@ var UpdateCartHandler = []struct {
 	inputWarnfArgs               []interface{}
 	inputWarnfFormat             string
 	countWarnf                   int
-	outGetCart                   *cart.ResponseCartErrors
+	outUpdateCart                *cart.ResponseCartErrors
 	errGetCart                   error
 	countGetCart                 int
 }{
 	{
-		testName:                    "Successful UpdateCartHandler handler",
+		testName:                    "Successful UpdateCartHandler handler 1",
 		inputValueReqId:             10,
 		inputUpdateCartHandlerIdCtx: 1,
 		inputUpdateCartHandlerId:    1,
+		inputValueUnmarshal:         []byte("{\"id\":1}"),
+		inputUpdateCartCSRFCtx:      "token",
+		out:                         []byte("{\"status\":200,\"body\":{\"cart\":{\"restaurant\":{\"id\":0},\"dishes\":null,\"promo_code\":\"\"}}}"),
+		countErrorf:                 0,
+		countWarnf:                  0,
+		errGetCart:                  nil,
+		countGetCart:                1,
+	},
+	{
+		testName:                    "Successful UpdateCartHandler handler 2",
+		inputValueReqId:             10,
+		inputUpdateCartHandlerIdCtx: 1,
+		inputUpdateCartHandlerId:    1,
+		outUpdateCart:               nil,
 		inputValueUnmarshal:         []byte("{\"id\":1}"),
 		inputUpdateCartCSRFCtx:      "token",
 		out:                         []byte("{\"status\":200,\"body\":{\"cart\":{\"restaurant\":{\"id\":0},\"dishes\":null,\"promo_code\":\"\"}}}"),
@@ -196,7 +210,7 @@ var UpdateCartHandler = []struct {
 	},
 	{
 		testName:                    "Error Unmarshall interfaceConvertInt",
-		out:                         []byte("EOF"),
+		out:                         []byte(errPkg.ErrUnmarshal),
 		inputValueReqId:             1,
 		inputUpdateCartCSRFCtx:      nil,
 		inputUpdateCartHandlerIdCtx: nil,
@@ -235,29 +249,16 @@ var UpdateCartHandler = []struct {
 	{
 		testName:                    "Error checkError-ErrCheck-500",
 		out:                         []byte("{\"status\":500,\"explain\":\"database is not responding\"}"),
+		inputUpdateCartCSRFCtx:      "token",
 		inputValueReqId:             1,
 		inputUpdateCartHandlerIdCtx: 1,
 		inputUpdateCartHandlerId:    1,
 		inputValueUnmarshal:         []byte("{\"id\":1}"),
-		inputErrorfArgs:             []interface{}{errPkg.CGetCartDishesNotFound, 1},
+		inputErrorfArgs:             []interface{}{errPkg.CUpdateCartCartNotInsert, 1},
 		inputErrorfFormat:           "%s, requestId: %d",
 		countErrorf:                 1,
 		countWarnf:                  0,
-		errGetCart:                  errors.New(errPkg.CGetCartDishesNotFound),
-		countGetCart:                1,
-	},
-	{
-		testName:                    "Error checkError-ErrCheck-404",
-		out:                         []byte("{\"status\":404,\"explain\":\"Ваша корзина пустая\"}"),
-		inputValueReqId:             1,
-		inputUpdateCartHandlerIdCtx: 1,
-		inputUpdateCartHandlerId:    1,
-		inputValueUnmarshal:         []byte("{\"id\":1}"),
-		inputWarnfArgs:              []interface{}{errPkg.RGetRestaurantRestaurantNotFound, 1},
-		inputWarnfFormat:            "%s, requestId: %d",
-		countErrorf:                 0,
-		countWarnf:                  1,
-		errGetCart:                  errors.New(errPkg.RGetRestaurantRestaurantNotFound),
+		errGetCart:                  errors.New(errPkg.CUpdateCartCartNotInsert),
 		countGetCart:                1,
 	},
 	{
@@ -266,6 +267,7 @@ var UpdateCartHandler = []struct {
 		inputValueReqId:             1,
 		inputUpdateCartHandlerIdCtx: 1,
 		inputUpdateCartHandlerId:    1,
+		inputUpdateCartCSRFCtx:      "token",
 		inputValueUnmarshal:         []byte("{\"id\":1}"),
 		inputErrorfArgs:             []interface{}{"tempError", 1},
 		inputErrorfFormat:           "%s, requestId: %d",
@@ -305,7 +307,7 @@ func TestUpdateCartHandler(t *testing.T) {
 		mockApplication.
 			EXPECT().
 			UpdateCart(tt.inputUpdateCartHandlerDishes, tt.inputUpdateCartHandlerId).
-			Return(tt.outGetCart, tt.errGetCart).
+			Return(tt.outUpdateCart, tt.errGetCart).
 			Times(tt.countGetCart)
 
 		userInfo := InfoCart{Logger: mockMultilogger, Application: mockApplication}

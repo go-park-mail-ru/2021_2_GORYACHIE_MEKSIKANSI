@@ -110,6 +110,7 @@ func (c *InfoCart) UpdateCartHandler(ctx *fasthttp.RequestCtx) {
 	if errConvertToken != nil {
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 		ctx.Response.SetBody([]byte(errConvertToken.Error()))
+		c.Logger.Errorf("%s, requestId: %d", errPkg.ErrNotStringAndInt, reqId)
 		return
 	}
 	idCtx := ctx.UserValue("id")

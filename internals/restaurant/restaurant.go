@@ -31,6 +31,7 @@ type PromoCode struct {
 	Description  string `json:"desc"`
 	Img          string `json:"img"`
 	RestaurantId int    `json:"restId"`
+	Code         string `json:"code"`
 }
 
 type RestaurantIdResponse struct {
