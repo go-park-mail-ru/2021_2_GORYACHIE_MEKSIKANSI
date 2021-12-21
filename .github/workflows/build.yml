@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dev
+      - tests_api
   pull_request:
     branches:
       - main
@@ -27,61 +28,74 @@ jobs:
           go get github.com/golangci/golangci-lint/cmd/golangci-lint
           go mod vendor
           golangci-lint run -c configCi.yml ./...
-
-  build:
+  tests:
+    name: tests
     runs-on: ubuntu-latest
     needs: linter
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
       - name: Install Go
         uses: actions/setup-go@v2
         with:
           go-version: '1.17.x'
-      - name: add go.sum
-        run: go mod tidy
-      - name: Login to DockerHub Registry
-        uses: docker/login-action@v1
-        with:
-            username: ${{ secrets.DOCKERHUB_USERNAME }}
-            password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - name: Build and push monolith
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: Dockerfile
-          platforms: linux/amd64
-          push: true
-          tags: matros71239/monolith:latest
-      - name: Build and push authorization
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./internals/microservice/authorization/Dockerfile
-          platforms: linux/amd64
-          push: true
-          tags: matros71239/auth:latest
-      - name: Build and push cart
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./internals/microservice/cart/Dockerfile
-          platforms: linux/amd64
-          push: true
-          tags: matros71239/cart:latest
-      - name: Build and push promocode
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./internals/microservice/promocode/Dockerfile
-          platforms: linux/amd64
-          push: true
-          tags: matros71239/promo:latest
-      - name: Build and push restaurant
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./internals/microservice/restaurant/Dockerfile
-          platforms: linux/amd64
-          push: true
-          tags: matros71239/res:latest
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run linter
+        run: make tests
+
+#  build:
+#    runs-on: ubuntu-latest
+#    needs: tests
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#      - name: Install Go
+#        uses: actions/setup-go@v2
+#        with:
+#          go-version: '1.17.x'
+#      - name: add go.sum
+#        run: go mod tidy
+#      - name: Login to DockerHub Registry
+#        uses: docker/login-action@v1
+#        with:
+#            username: ${{ secrets.DOCKERHUB_USERNAME }}
+#            password: ${{ secrets.DOCKERHUB_PASSWORD }}
+#      - name: Build and push monolith
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: .
+#          file: Dockerfile
+#          platforms: linux/amd64
+#          push: true
+#          tags: matros71239/monolith:latest
+#      - name: Build and push authorization
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: .
+#          file: ./internals/microservice/authorization/Dockerfile
+#          platforms: linux/amd64
+#          push: true
+#          tags: matros71239/auth:latest
+#      - name: Build and push cart
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: .
+#          file: ./internals/microservice/cart/Dockerfile
+#          platforms: linux/amd64
+#          push: true
+#          tags: matros71239/cart:latest
+#      - name: Build and push promocode
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: .
+#          file: ./internals/microservice/promocode/Dockerfile
+#          platforms: linux/amd64
+#          push: true
+#          tags: matros71239/promo:latest
+#      - name: Build and push restaurant
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: .
+#          file: ./internals/microservice/restaurant/Dockerfile
+#          platforms: linux/amd64
+#          push: true
+#          tags: matros71239/res:latest
