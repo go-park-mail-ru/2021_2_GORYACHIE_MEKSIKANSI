@@ -180,7 +180,7 @@ func CastRadiosProtoToRadios(radios []*resProto.Radios) []restaurant.Radios {
 		protoRadios.Id = int(i.Id)
 		protoRadios.Title = i.Name
 		for _, element := range i.Rows {
-			var protoRadiosElement restaurant.CheckboxesRows
+			var protoRadiosElement restaurant.ElementRadios
 			protoRadiosElement.Id = int(element.Id)
 			protoRadiosElement.Name = element.Name
 			protoRadios.Rows = append(protoRadios.Rows, protoRadiosElement)

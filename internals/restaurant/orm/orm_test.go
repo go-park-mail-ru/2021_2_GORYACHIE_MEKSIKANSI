@@ -509,7 +509,7 @@ var RestaurantDishes = []struct {
 				{
 					Title: "Тип шоколада",
 					Id:    1,
-					Rows: []rest.CheckboxesRows{
+					Rows: []rest.ElementRadios{
 						{
 							Id:   1,
 							Name: "Белый",

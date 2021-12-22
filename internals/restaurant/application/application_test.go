@@ -313,7 +313,7 @@ var RestaurantDishes = []struct {
 				{
 					Title: "Тип шоколада",
 					Id:    1,
-					Rows: []resPkg.CheckboxesRows{
+					Rows: []resPkg.ElementRadios{
 						{
 							Id:   1,
 							Name: "Белый",
@@ -347,7 +347,7 @@ var RestaurantDishes = []struct {
 				{
 					Title: "Тип шоколада",
 					Id:    1,
-					Rows: []resPkg.CheckboxesRows{
+					Rows: []resPkg.ElementRadios{
 						{
 							Id:   1,
 							Name: "Белый",

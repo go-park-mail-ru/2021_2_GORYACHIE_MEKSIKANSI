@@ -52,6 +52,10 @@ type WebSocketOrder struct {
 	Status int `json:"status"`
 }
 
+type TokenVK struct {
+	Token string `json:"token_vk"`
+}
+
 func UserConvertRegistration(signUpAll *RegistrationRequest) *User {
 	user := User{
 		TypeUser: signUpAll.TypeUser,

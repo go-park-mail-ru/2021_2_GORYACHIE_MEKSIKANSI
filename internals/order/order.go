@@ -53,9 +53,14 @@ type ActiveOrder struct {
 	Date         string                     `json:"date"`
 	Time         string                     `json:"time"`
 	TimeDelivery string                     `json:"time_delivery"`
+	TextCancel   string                     `json:"text_cancel"`
 	Address      profile.AddressCoordinates `json:"address"`
 	Restaurant   HistoryResOrder            `json:"restaurant"`
 	Cart         ResponseCartOrder          `json:"cart"`
+}
+
+type CancelOrderHost struct {
+	TextCancel string `json:"text_cancel"`
 }
 
 func ConvertCreateOrderIdToOrderResponse(id int) ResponseOrder {

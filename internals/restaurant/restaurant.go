@@ -1,6 +1,8 @@
 //go:generate easyjson -no_std_marshalers restaurant.go
 package restaurant
 
+import "mime/multipart"
+
 type RestaurantsResponse struct {
 	RestaurantsGet interface{} `json:"restaurants"`
 }
@@ -85,12 +87,12 @@ type Dishes struct {
 }
 
 type Radios struct {
-	Title string           `json:"name"`
-	Id    int              `json:"id"`
-	Rows  []CheckboxesRows `json:"opt"`
+	Title string          `json:"name"`
+	Id    int             `json:"id"`
+	Rows  []ElementRadios `json:"opt"`
 }
 
-type CheckboxesRows struct {
+type ElementRadios struct {
 	Id   int    `json:"id"`
 	Name string `json:"name"`
 }
@@ -140,6 +142,31 @@ type SearchRestaurant struct {
 //easyjson:json
 type ResFavouriteNew struct {
 	Id int `json:"id"`
+}
+
+type DishesHost struct {
+	Id          int           `json:"id"`
+	Img         string        `json:"avatar"`
+	Title       string        `json:"name"`
+	Cost        int           `json:"cost"`
+	Ccal        int           `json:"ccal"`
+	Description string        `json:"desc"`
+	Radios      []Radios      `json:"radios,omitempty"`
+	Ingredient  []Ingredients `json:"ingredients,omitempty"`
+}
+
+type CreateDishHost struct {
+	Dishes     DishesHost `json:"dishes"`
+	FileHeader *multipart.FileHeader
+}
+
+type UpdateDishHost struct {
+	Dishes     DishesHost `json:"dishes"`
+	FileHeader *multipart.FileHeader
+}
+
+type DeleteDishesHost struct {
+	IdDishes int `json:"id_dishes"`
 }
 
 type ResFavouriteStatus struct {
