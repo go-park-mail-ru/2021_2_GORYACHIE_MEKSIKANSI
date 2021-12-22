@@ -21,7 +21,8 @@ type WrapperOrderInterface interface {
 	CreateOrder(id int, createOrder orderPkg.CreateOrder, addressId int, cart cart.ResponseCartErrors, courierId int) (int, error)
 	GetOrders(id int) (*orderPkg.HistoryOrderArray, error)
 	GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, error)
-	UpdateStatusOrder(id int, status int) error
+	UpdateStatusOrder(id int) (int, error)
+	CancelStatusOrder(id int, textCancel string) error
 	CheckRun(id int) (bool, error)
 	DeleteCart(id int) error
 	GetCart(id int) (*cart.ResponseCartErrors, error)
@@ -461,68 +462,41 @@ func (db *Wrapper) GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, e
 	return &order, nil
 }
 
-func (db *Wrapper) UpdateStatusOrder(id int, status int) error {
+func (db *Wrapper) UpdateStatusOrder(id int) (int, error) {
 	contextTransaction := context.Background()
 	tx, err := db.Conn.Begin(contextTransaction)
 	if err != nil {
-		return &errPkg.Errors{
+		return 0, &errPkg.Errors{
 			Text: errPkg.OUpdateStatusOrderTransactionNotCreate,
 		}
 	}
 
 	defer tx.Rollback(contextTransaction)
 
-	_, err = tx.Exec(contextTransaction,
-		"UPDATE order_user SET status = $1 WHERE id = $2",
-		status, id)
-	if err != nil {
-		return &errPkg.Errors{
-			Text: errPkg.OUpdateStatusOrderNotUpdate,
-		}
-	}
-
-	err = tx.Commit(contextTransaction)
-	if err != nil {
-		return &errPkg.Errors{
-			Text: errPkg.OUpdateStatusOrderNotCommit,
-		}
-	}
-
-	return nil
-}
-
-func (db *Wrapper) CheckRun(id int) (bool, error) {
-	contextTransaction := context.Background()
-	tx, err := db.Conn.Begin(contextTransaction)
-	if err != nil {
-		return false, &errPkg.Errors{
-			Text: errPkg.OUpdateStatusOrderTransactionNotCreate,
-		}
-	}
-
-	defer tx.Rollback(contextTransaction)
-
-	var check bool
+	var newStatus int
 	err = tx.QueryRow(contextTransaction,
-		"SELECT check_run FROM order_user WHERE id = $1",
-		id).Scan(&check)
-	_, err = tx.Exec(contextTransaction,
-		"UPDATE order_user SET check_run = false WHERE id = $1",
-		id)
+		"UPDATE order_user SET status = status + 1 WHERE id = $1 RETURNING status",
+		id).Scan(&newStatus)
 	if err != nil {
-		return false, &errPkg.Errors{
+		return 0, &errPkg.Errors{
 			Text: errPkg.OUpdateStatusOrderNotUpdate,
+		}
+	}
+
+	if newStatus == 4 {
+		return 0, &errPkg.Errors{
+			Text: errPkg.OUpdateStatusMaxStatus,
 		}
 	}
 
 	err = tx.Commit(contextTransaction)
 	if err != nil {
-		return false, &errPkg.Errors{
+		return 0, &errPkg.Errors{
 			Text: errPkg.OUpdateStatusOrderNotCommit,
 		}
 	}
 
-	return check, nil
+	return newStatus, nil
 }
 
 func (db *Wrapper) GetCart(id int) (*cart.ResponseCartErrors, error) {
@@ -606,5 +580,34 @@ func (db *Wrapper) DeleteCart(id int) error {
 			Text: errPkg.CDeleteCartNotCommit,
 		}
 	}
+	return nil
+}
+
+func (db *Wrapper) CancelOrder(id int, TextCancel string) error {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.OCancelOrderTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	_, err = tx.Exec(contextTransaction,
+		"UPDATE order_user SET status = 4 AND reason = $2 WHERE client_id = $1", id, TextCancel)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.OCancelOrderNotFound,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.OCancelOrderTransactionNotCommit,
+		}
+	}
+
 	return nil
 }

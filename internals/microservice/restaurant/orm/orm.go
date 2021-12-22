@@ -26,6 +26,7 @@ type WrapperRestaurantInterface interface {
 	EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error)
 	IsFavoriteRestaurant(idClient int, idRestaurant int) (bool, error)
 	GetPromoCodes() ([]resPkg.Promocode, error)
+	DeleteDish(id int) error
 }
 
 type ConnectionInterface interface {
@@ -836,4 +837,34 @@ func (db *Wrapper) GetPromoCodes() ([]resPkg.Promocode, error) {
 	}
 
 	return promoCodes, nil
+}
+
+func (db *Wrapper) DeleteDish(id int) error {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	_, err = tx.Exec(contextTransaction,
+		"UPDATE dish SET deleted = true WHERE id = $1",
+		&id)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesCodesNotSelect,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesNotCommit,
+		}
+	}
+
+	return nil
 }

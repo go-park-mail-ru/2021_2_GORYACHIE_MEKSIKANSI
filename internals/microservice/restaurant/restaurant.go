@@ -1,5 +1,7 @@
 package restaurantlf
 
+import "mime/multipart"
+
 type Restaurants struct {
 	Id                  int     `json:"id"`
 	Img                 string  `json:"img"`
@@ -117,6 +119,20 @@ type Review struct {
 
 type ResFavouriteNew struct {
 	Id int `json:"id"`
+}
+
+type CreateDishHost struct {
+	Dishes     Dishes `json:"dishes"`
+	FileHeader *multipart.FileHeader
+}
+
+type UpdateDishHost struct {
+	Dishes     Dishes `json:"dishes"`
+	FileHeader *multipart.FileHeader
+}
+
+type DeleteDishesHost struct {
+	IdDishes int `json:"id_dishes"`
 }
 
 type ResFavouriteStatus struct {

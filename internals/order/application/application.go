@@ -6,14 +6,14 @@ import (
 	Order2 "2021_2_GORYACHIE_MEKSIKANSI/internals/order"
 	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/order/orm"
 	profileOrmPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/profile/orm"
-	"time"
 )
 
 type OrderApplicationInterface interface {
 	CreateOrder(id int, createOrder Order2.CreateOrder) (int, error)
 	GetOrders(id int) (*Order2.HistoryOrderArray, error)
 	GetActiveOrder(idClient int, idOrder int) (*Order2.ActiveOrder, error)
-	UpdateStatusOrder(id int, status int) error
+	UpdateStatusOrder(id int) error
+	CancelOrder(id int, textCancel string) error
 }
 
 type Order struct {
@@ -50,11 +50,6 @@ func (o *Order) CreateOrder(id int, createOrder Order2.CreateOrder) (int, error)
 		return 0, err
 	}
 
-	check, _ := o.DB.CheckRun(order)
-	if check {
-		go o.UpdateStatusOrder(order, 4)
-	}
-
 	return order, nil
 }
 
@@ -66,12 +61,12 @@ func (o *Order) GetActiveOrder(idClient int, idOrder int) (*Order2.ActiveOrder, 
 	return o.DB.GetOrder(idClient, idOrder)
 }
 
-func (o *Order) UpdateStatusOrder(id int, status int) error {
-	for i := 1; i <= 4; i++ {
-		time.Sleep(time.Second * 15)
-		o.IntCh <- authPkg.WebSocketOrder{Id: id, Status: i}
-		o.DB.UpdateStatusOrder(id, i)
-	}
-	// o.IntCh <- authPkg.WebSocketOrder{Id: id, Status: status}
-	return o.DB.UpdateStatusOrder(id, status)
+func (o *Order) UpdateStatusOrder(id int) error {
+	status, err := o.DB.UpdateStatusOrder(id)
+	o.IntCh <- authPkg.WebSocketOrder{Id: id, Status: status}
+	return err
+}
+
+func (o *Order) CancelOrder(id int, textCancel string) error {
+	return o.DB.CancelStatusOrder(id, textCancel)
 }

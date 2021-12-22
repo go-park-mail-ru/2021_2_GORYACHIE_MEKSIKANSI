@@ -20,6 +20,7 @@ type WrapperRestaurantServerInterface interface {
 	SearchRestaurant(search string) ([]restaurant.Restaurants, error)
 	GetFavoriteRestaurants(id int) ([]restaurant.Restaurants, error)
 	EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error)
+	DeleteDish(idDish int) error
 }
 
 type ConnectRestaurantServiceInterface interface {

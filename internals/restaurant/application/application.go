@@ -16,6 +16,7 @@ type RestaurantApplicationInterface interface {
 	SearchRestaurant(search string) ([]resPkg.Restaurants, error)
 	GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error)
 	EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error)
+	DeleteDish(idDish int) error
 }
 
 type Restaurant struct {
@@ -56,4 +57,8 @@ func (r *Restaurant) GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error
 
 func (r *Restaurant) EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error) {
 	return r.DB.EditRestaurantInFavorite(idRestaurant, idClient)
+}
+
+func (r *Restaurant) DeleteDish(idDish int) error {
+	return r.DB.DeleteDish(idDish)
 }

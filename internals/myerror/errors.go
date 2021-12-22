@@ -294,6 +294,10 @@ const (
 	OUpdateStatusOrderNotCommit              = "transaction update status not commit"
 	OGetCartCartNoActual                     = "cart not valid"
 	OGetOrderNotExist                        = "order not exist"
+	OUpdateStatusMaxStatus                   = "status not allow"
+	OCancelOrderTransactionNotCreate         = ""
+	OCancelOrderNotFound                     = ""
+	OCancelOrderTransactionNotCommit         = ""
 )
 
 // Error of promo codes

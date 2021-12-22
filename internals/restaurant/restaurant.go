@@ -144,24 +144,13 @@ type ResFavouriteNew struct {
 	Id int `json:"id"`
 }
 
-type DishesHost struct {
-	Id          int           `json:"id"`
-	Img         string        `json:"avatar"`
-	Title       string        `json:"name"`
-	Cost        int           `json:"cost"`
-	Ccal        int           `json:"ccal"`
-	Description string        `json:"desc"`
-	Radios      []Radios      `json:"radios,omitempty"`
-	Ingredient  []Ingredients `json:"ingredients,omitempty"`
-}
-
 type CreateDishHost struct {
-	Dishes     DishesHost `json:"dishes"`
+	Dishes     Dishes `json:"dishes"`
 	FileHeader *multipart.FileHeader
 }
 
 type UpdateDishHost struct {
-	Dishes     DishesHost `json:"dishes"`
+	Dishes     Dishes `json:"dishes"`
 	FileHeader *multipart.FileHeader
 }
 
