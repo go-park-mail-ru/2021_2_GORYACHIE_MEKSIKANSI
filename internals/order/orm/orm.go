@@ -23,7 +23,6 @@ type WrapperOrderInterface interface {
 	GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, error)
 	UpdateStatusOrder(id int) (int, error)
 	CancelStatusOrder(id int, textCancel string) error
-	CheckRun(id int) (bool, error)
 	DeleteCart(id int) error
 	GetCart(id int) (*cart.ResponseCartErrors, error)
 	GetRestaurant(id int) (*restaurant.RestaurantId, error)

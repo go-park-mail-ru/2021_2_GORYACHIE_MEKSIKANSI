@@ -169,6 +169,10 @@ message ResponseEditRestaurantInFavorite {
   string error = 2;
 }
 
+message DishId {
+  int64 id = 1;
+}
+
 service RestaurantService {
   rpc AllRestaurants(Empty) returns (RestaurantsTagsPromo);
   rpc GetRecommendedRestaurants(Empty) returns (RecommendedRestaurants);
@@ -179,4 +183,5 @@ service RestaurantService {
   rpc SearchRestaurant(SearchRestaurantText) returns (Restaurants);
   rpc GetFavoriteRestaurants(UserId) returns (Restaurants);
   rpc EditRestaurantInFavorite(EditRestaurantInFavoriteRequest) returns (ResponseEditRestaurantInFavorite);
+  rpc deleteDish(DishId) returns (Error);
 }

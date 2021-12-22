@@ -669,7 +669,7 @@ CREATE TABLE public.order_user (
     date_order timestamp without time zone DEFAULT now(),
     dcost integer,
     sumcost integer,
-    check_run boolean DEFAULT true
+    reason text
 );
 
 

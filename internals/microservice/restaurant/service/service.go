@@ -18,6 +18,7 @@ type RestaurantManagerInterface interface {
 	SearchRestaurant(ctx context.Context, search *resProto.SearchRestaurantText) (*resProto.Restaurants, error)
 	GetFavoriteRestaurants(ctx context.Context, id *resProto.UserId) (*resProto.Restaurants, error)
 	EditRestaurantInFavorite(ctx context.Context, ids *resProto.EditRestaurantInFavoriteRequest) (*resProto.ResponseEditRestaurantInFavorite, error)
+	DeleteDish(ctx context.Context, ids *resProto.ClientId) (*resProto.Error, error)
 }
 
 type RestaurantManager struct {
@@ -115,4 +116,12 @@ func (r *RestaurantManager) EditRestaurantInFavorite(ctx context.Context, restau
 	var result resProto.ResponseEditRestaurantInFavorite
 	result.Status = status
 	return &result, nil
+}
+
+func (r *RestaurantManager) DeleteDish(ctx context.Context, ids *resProto.ClientId) (*resProto.Error, error) {
+	err := r.Application.DeleteDish(int(ids.Id))
+	if err != nil {
+		return &resProto.Error{Error: err.Error()}, nil
+	}
+	return &resProto.Error{Error: ""}, nil
 }

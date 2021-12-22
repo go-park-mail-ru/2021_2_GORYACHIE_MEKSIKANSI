@@ -33,6 +33,7 @@ type ConnectRestaurantServiceInterface interface {
 	SearchRestaurant(ctx context.Context, in *resProto.SearchRestaurantText, opts ...grpc.CallOption) (*resProto.Restaurants, error)
 	GetFavoriteRestaurants(ctx context.Context, clientId *resProto.UserId, opts ...grpc.CallOption) (*resProto.Restaurants, error)
 	EditRestaurantInFavorite(ctx context.Context, restaurant *resProto.EditRestaurantInFavoriteRequest, opts ...grpc.CallOption) (*resProto.ResponseEditRestaurantInFavorite, error)
+	DeleteDish(ctx context.Context, restaurant *resProto.DishId, opts ...grpc.CallOption) (*resProto.Error, error)
 }
 
 type Wrapper struct {
@@ -152,4 +153,15 @@ func (r *Wrapper) EditRestaurantInFavorite(idRestaurant int, idClient int) (bool
 		return false, &errPkg.Errors{Text: restaurants.Error}
 	}
 	return restaurants.Status, nil
+}
+
+func (r *Wrapper) DeleteDish(idDish int) error {
+	result, err := r.Conn.DeleteDish(r.Ctx, &resProto.DishesId{Id: int64(idDish)})
+	if err != nil {
+		return err
+	}
+	if result.Error != "" {
+		return &errPkg.Errors{Text: result.Error}
+	}
+	return nil
 }
