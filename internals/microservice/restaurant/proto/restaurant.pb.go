@@ -2680,14 +2680,14 @@ var file_restaurant_proto_rawDesc = []byte{
 	0x37, 0x0a, 0x0a, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x44, 0x69, 0x73, 0x68, 0x12, 0x16, 0x2e,
 	0x72, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x2e, 0x44, 0x69, 0x73, 0x68, 0x65,
 	0x73, 0x48, 0x6f, 0x73, 0x74, 0x1a, 0x11, 0x2e, 0x72, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61,
-	0x6e, 0x74, 0x2e, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x12, 0x44, 0x0a, 0x10, 0x55, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x49, 0x6e, 0x67, 0x72, 0x65, 0x64, 0x69, 0x65, 0x6e, 0x74, 0x12, 0x1d, 0x2e, 0x72,
+	0x6e, 0x74, 0x2e, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x12, 0x49, 0x0a, 0x10, 0x55, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x49, 0x6e, 0x67, 0x72, 0x65, 0x64, 0x69, 0x65, 0x6e, 0x74, 0x12, 0x22, 0x2e, 0x72,
 	0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
-	0x52, 0x61, 0x64, 0x69, 0x6f, 0x73, 0x41, 0x72, 0x72, 0x61, 0x79, 0x1a, 0x11, 0x2e, 0x72, 0x65,
-	0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x2e, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x12, 0x45,
-	0x0a, 0x0c, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x61, 0x64, 0x69, 0x6f, 0x73, 0x12, 0x22,
-	0x2e, 0x72, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x2e, 0x43, 0x72, 0x65, 0x61,
-	0x74, 0x65, 0x49, 0x6e, 0x67, 0x72, 0x65, 0x64, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x41, 0x72, 0x72,
+	0x49, 0x6e, 0x67, 0x72, 0x65, 0x64, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x41, 0x72, 0x72, 0x61, 0x79,
+	0x1a, 0x11, 0x2e, 0x72, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x2e, 0x45, 0x72,
+	0x72, 0x6f, 0x72, 0x12, 0x40, 0x0a, 0x0c, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x61, 0x64,
+	0x69, 0x6f, 0x73, 0x12, 0x1d, 0x2e, 0x72, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74,
+	0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x61, 0x64, 0x69, 0x6f, 0x73, 0x41, 0x72, 0x72,
 	0x61, 0x79, 0x1a, 0x11, 0x2e, 0x72, 0x65, 0x73, 0x74, 0x61, 0x75, 0x72, 0x61, 0x6e, 0x74, 0x2e,
 	0x45, 0x72, 0x72, 0x6f, 0x72, 0x42, 0x04, 0x5a, 0x02, 0x2e, 0x2f, 0x62, 0x06, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x33,
@@ -2777,8 +2777,8 @@ var file_restaurant_proto_depIdxs = []int32{
 	19, // 32: restaurant.RestaurantService.AddRadios:input_type -> restaurant.CreateRadiosArray
 	22, // 33: restaurant.RestaurantService.AddIngredient:input_type -> restaurant.CreateIngredientsArray
 	18, // 34: restaurant.RestaurantService.UpdateDish:input_type -> restaurant.DishesHost
-	19, // 35: restaurant.RestaurantService.UpdateIngredient:input_type -> restaurant.CreateRadiosArray
-	22, // 36: restaurant.RestaurantService.UpdateRadios:input_type -> restaurant.CreateIngredientsArray
+	22, // 35: restaurant.RestaurantService.UpdateIngredient:input_type -> restaurant.CreateIngredientsArray
+	19, // 36: restaurant.RestaurantService.UpdateRadios:input_type -> restaurant.CreateRadiosArray
 	2,  // 37: restaurant.RestaurantService.AllRestaurants:output_type -> restaurant.RestaurantsTagsPromo
 	1,  // 38: restaurant.RestaurantService.GetRecommendedRestaurants:output_type -> restaurant.RecommendedRestaurants
 	7,  // 39: restaurant.RestaurantService.GetRestaurant:output_type -> restaurant.RestaurantInfo
@@ -3251,8 +3251,8 @@ type RestaurantServiceClient interface {
 	AddRadios(ctx context.Context, in *CreateRadiosArray, opts ...grpc.CallOption) (*Error, error)
 	AddIngredient(ctx context.Context, in *CreateIngredientsArray, opts ...grpc.CallOption) (*Error, error)
 	UpdateDish(ctx context.Context, in *DishesHost, opts ...grpc.CallOption) (*Error, error)
-	UpdateIngredient(ctx context.Context, in *CreateRadiosArray, opts ...grpc.CallOption) (*Error, error)
-	UpdateRadios(ctx context.Context, in *CreateIngredientsArray, opts ...grpc.CallOption) (*Error, error)
+	UpdateIngredient(ctx context.Context, in *CreateIngredientsArray, opts ...grpc.CallOption) (*Error, error)
+	UpdateRadios(ctx context.Context, in *CreateRadiosArray, opts ...grpc.CallOption) (*Error, error)
 }
 
 type restaurantServiceClient struct {
@@ -3389,7 +3389,7 @@ func (c *restaurantServiceClient) UpdateDish(ctx context.Context, in *DishesHost
 	return out, nil
 }
 
-func (c *restaurantServiceClient) UpdateIngredient(ctx context.Context, in *CreateRadiosArray, opts ...grpc.CallOption) (*Error, error) {
+func (c *restaurantServiceClient) UpdateIngredient(ctx context.Context, in *CreateIngredientsArray, opts ...grpc.CallOption) (*Error, error) {
 	out := new(Error)
 	err := c.cc.Invoke(ctx, "/restaurant.RestaurantService/UpdateIngredient", in, out, opts...)
 	if err != nil {
@@ -3398,7 +3398,7 @@ func (c *restaurantServiceClient) UpdateIngredient(ctx context.Context, in *Crea
 	return out, nil
 }
 
-func (c *restaurantServiceClient) UpdateRadios(ctx context.Context, in *CreateIngredientsArray, opts ...grpc.CallOption) (*Error, error) {
+func (c *restaurantServiceClient) UpdateRadios(ctx context.Context, in *CreateRadiosArray, opts ...grpc.CallOption) (*Error, error) {
 	out := new(Error)
 	err := c.cc.Invoke(ctx, "/restaurant.RestaurantService/UpdateRadios", in, out, opts...)
 	if err != nil {
@@ -3423,8 +3423,8 @@ type RestaurantServiceServer interface {
 	AddRadios(context.Context, *CreateRadiosArray) (*Error, error)
 	AddIngredient(context.Context, *CreateIngredientsArray) (*Error, error)
 	UpdateDish(context.Context, *DishesHost) (*Error, error)
-	UpdateIngredient(context.Context, *CreateRadiosArray) (*Error, error)
-	UpdateRadios(context.Context, *CreateIngredientsArray) (*Error, error)
+	UpdateIngredient(context.Context, *CreateIngredientsArray) (*Error, error)
+	UpdateRadios(context.Context, *CreateRadiosArray) (*Error, error)
 }
 
 // UnimplementedRestaurantServiceServer can be embedded to have forward compatible implementations.
@@ -3473,10 +3473,10 @@ func (*UnimplementedRestaurantServiceServer) AddIngredient(context.Context, *Cre
 func (*UnimplementedRestaurantServiceServer) UpdateDish(context.Context, *DishesHost) (*Error, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDish not implemented")
 }
-func (*UnimplementedRestaurantServiceServer) UpdateIngredient(context.Context, *CreateRadiosArray) (*Error, error) {
+func (*UnimplementedRestaurantServiceServer) UpdateIngredient(context.Context, *CreateIngredientsArray) (*Error, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateIngredient not implemented")
 }
-func (*UnimplementedRestaurantServiceServer) UpdateRadios(context.Context, *CreateIngredientsArray) (*Error, error) {
+func (*UnimplementedRestaurantServiceServer) UpdateRadios(context.Context, *CreateRadiosArray) (*Error, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRadios not implemented")
 }
 
@@ -3737,7 +3737,7 @@ func _RestaurantService_UpdateDish_Handler(srv interface{}, ctx context.Context,
 }
 
 func _RestaurantService_UpdateIngredient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRadiosArray)
+	in := new(CreateIngredientsArray)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3749,13 +3749,13 @@ func _RestaurantService_UpdateIngredient_Handler(srv interface{}, ctx context.Co
 		FullMethod: "/restaurant.RestaurantService/UpdateIngredient",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RestaurantServiceServer).UpdateIngredient(ctx, req.(*CreateRadiosArray))
+		return srv.(RestaurantServiceServer).UpdateIngredient(ctx, req.(*CreateIngredientsArray))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RestaurantService_UpdateRadios_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateIngredientsArray)
+	in := new(CreateRadiosArray)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3767,7 +3767,7 @@ func _RestaurantService_UpdateRadios_Handler(srv interface{}, ctx context.Contex
 		FullMethod: "/restaurant.RestaurantService/UpdateRadios",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RestaurantServiceServer).UpdateRadios(ctx, req.(*CreateIngredientsArray))
+		return srv.(RestaurantServiceServer).UpdateRadios(ctx, req.(*CreateRadiosArray))
 	}
 	return interceptor(ctx, in, info, handler)
 }

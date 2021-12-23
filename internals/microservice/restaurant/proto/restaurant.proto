@@ -247,6 +247,6 @@ service RestaurantService {
   rpc AddRadios(CreateRadiosArray) returns (Error);
   rpc AddIngredient(CreateIngredientsArray) returns (Error);
   rpc UpdateDish(DishesHost) returns (Error);
-  rpc UpdateIngredient(CreateRadiosArray) returns (Error);
-  rpc UpdateRadios(CreateIngredientsArray) returns (Error);
+  rpc UpdateIngredient(CreateIngredientsArray) returns (Error);
+  rpc UpdateRadios(CreateRadiosArray) returns (Error);
 }
