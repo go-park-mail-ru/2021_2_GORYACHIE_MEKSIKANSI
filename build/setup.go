@@ -78,8 +78,8 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 	authManager := authProto.NewAuthorizationServiceClient(grpcConnAuth)
 	authCtx := context.Background()
 	conf := oauth2.Config{
-		ClientID:     APP_ID,
-		ClientSecret: APP_KEY,
+		ClientID:     "APP_ID",
+		ClientSecret: "APP_KEY",
 		RedirectURL:  "https://bc7d-109-252-107-54.ngrok.io/",
 		Endpoint:     vk.Endpoint,
 	}

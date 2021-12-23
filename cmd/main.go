@@ -89,6 +89,7 @@ func runServer() {
 	userWSGroup := userGroup.Group("/ws")
 	favouriteGroup := userGroup.Group("/restaurant/favourite")
 	promoCodeGroup := userGroup.Group("/promocode")
+	hostGroup := versionGroup.Group("/host")
 
 	userGroup.POST("/login", userInfo.LoginHandler)
 	userGroup.POST("/signup", userInfo.SignUpHandler)
@@ -133,6 +134,8 @@ func runServer() {
 	myRouter.GET("/internal", infoMid.MetricsInternal(func(ctx *fasthttp.RequestCtx) { // TODO(): delete test handler
 		ctx.Response.SetStatusCode(http.StatusInternalServerError)
 	}))
+
+	hostGroup.GET("/signup/", userInfo.VkSignUpHandler)
 
 	printURL := infoMid.LogURL(infoMid.MetricsHits(myRouter.Handler))
 

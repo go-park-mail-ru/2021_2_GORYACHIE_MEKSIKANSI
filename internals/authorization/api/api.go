@@ -22,6 +22,7 @@ type AuthorizationApiInterface interface {
 	PayHandler(ctx *fasthttp.RequestCtx)
 	UserWebSocket(ctx *fasthttp.RequestCtx)
 	UserWebSocketNewKey(ctx *fasthttp.RequestCtx)
+	VkSignUpHandler(ctx *fasthttp.RequestCtx)
 }
 
 type UserInfo struct {
@@ -355,4 +356,44 @@ func (u *UserInfo) UserWebSocket(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
+}
+
+func (u *UserInfo) VkSignUpHandler(ctx *fasthttp.RequestCtx) {
+	reqIdCtx := ctx.UserValue("reqId")
+	reqId, errConvert := util.InterfaceConvertInt(reqIdCtx)
+	if errConvert != nil {
+		ctx.Response.SetStatusCode(http.StatusInternalServerError)
+		ctx.Response.SetBody([]byte(errConvert.Error()))
+		u.Logger.Errorf("%s", errConvert.Error())
+		return
+	}
+
+	checkError := &errPkg.CheckError{
+		Logger:    u.Logger,
+		RequestId: reqId,
+	}
+
+	codeGet := string(ctx.FormValue("code"))
+
+	var cookieHTTP fasthttp.Cookie
+	cookieDB, errIn := u.Application.AuthVK(codeGet)
+
+	errOut, resultOut, codeHTTP := checkError.CheckSignUpVK(errIn)
+	if errOut != nil {
+		switch errOut.Error() {
+		case errPkg.ErrMarshal:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody([]byte(errPkg.ErrMarshal))
+			return
+		case errPkg.ErrCheck:
+			ctx.Response.SetStatusCode(codeHTTP)
+			ctx.Response.SetBody(resultOut)
+			return
+		}
+	}
+
+	util.SetCookieResponse(&cookieHTTP, *cookieDB, util.KeyCookieSessionId)
+	ctx.Response.Header.SetCookie(&cookieHTTP)
+
+	ctx.Response.SetStatusCode(http.StatusOK)
 }
