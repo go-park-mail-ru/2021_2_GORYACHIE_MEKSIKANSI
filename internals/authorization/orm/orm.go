@@ -15,6 +15,11 @@ import (
 	"io/ioutil"
 )
 
+const (
+	APP_SECRET = "8e0564128e0564128e689879548e7ff1ff88e058e056412efc6c1f72a21a320b854ad06"
+	API_URL    = "https://api.vk.com/method/users.get?fields=contacts&access_token=%s&v=5.131"
+)
+
 type WrapperAuthorizationInterface interface {
 	SignUp(signup *authorization.RegistrationRequest) (*Utils2.Defense, error)
 	Login(login *authorization.Authorization) (*Utils2.Defense, error)

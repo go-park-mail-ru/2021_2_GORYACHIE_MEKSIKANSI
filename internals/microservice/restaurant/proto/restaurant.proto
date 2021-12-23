@@ -141,7 +141,7 @@ message DishesHost {
 }
 
 message CreateRadiosArray {
-  CreateRadios radios = 1;
+  repeated CreateRadios radios = 1;
   int64      dishId = 2;
 }
 
@@ -162,7 +162,7 @@ message CreateElementRadios {
 }
 
 message CreateIngredientsArray {
-  CreateIngredients ingredients = 1;
+  repeated CreateIngredients ingredients = 1;
   int64      dishId = 2;
 }
 

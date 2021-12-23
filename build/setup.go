@@ -54,8 +54,6 @@ const (
 	ConfPath             = "./config/"
 	APP_ID               = "8033773"
 	APP_KEY              = "mGDODD6W5VbN8XHN8NiE"
-	APP_SECRET           = "8e0564128e0564128e689879548e7ff1ff88e058e056412efc6c1f72a21a320b854ad06"
-	API_URL              = "https://api.vk.com/method/users.get?fields=contacts,home_phone,mobile_phone,has_mobile&access_token=%s&v=5.131"
 )
 
 type installSetUp struct {

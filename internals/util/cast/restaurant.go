@@ -273,8 +273,8 @@ func CastDishHostProtoToDishHost(dishInfo *resPkg.DishHost) *resProto.DishesHost
 	p.CategoryRestaurant = dishInfo.Dishes.CategoryRestaurant
 	p.Count = int64(dishInfo.Dishes.Count)
 
-	p.Radios = CastCreateRadiosToCreateRadiosProto(dishInfo.Dishes.Radios, dishInfo.Dishes.Id).Radios.Radios
-	p.Ingredients = CastCreateIngredientsToCreateIngredientsProto(dishInfo.Dishes.Ingredient, dishInfo.Dishes.Id).Ingredients.Ingredients
+	p.Radios = CastCreateRadiosToCreateRadiosProto(dishInfo.Dishes.Radios, dishInfo.Dishes.Id).Radios
+	p.Ingredients = CastCreateIngredientsToCreateIngredientsProto(dishInfo.Dishes.Ingredient, dishInfo.Dishes.Id).Ingredients
 	return p
 }
 
@@ -298,7 +298,7 @@ func CastCreateRadiosToCreateRadiosProto(radios []resPkg.CreateRadios, dishId in
 		}
 		p = append(p, protoRadios)
 	}
-	result.Id = int64(dishId)
+	result.DishId = int64(dishId)
 	result.Radios = p
 	return result
 }
@@ -318,7 +318,7 @@ func CastCreateIngredientsToCreateIngredientsProto(ingredients []resPkg.CreateIn
 		ingredient.Count = int64(i.Count)
 		p = append(p, ingredient)
 	}
-	result.Id = int64(dishId)
+	result.DishId = int64(dishId)
 	result.Ingredients = p
 	return result
 }
