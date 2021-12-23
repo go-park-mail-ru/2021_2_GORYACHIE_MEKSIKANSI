@@ -851,11 +851,250 @@ func (db *Wrapper) DeleteDish(id int) error {
 	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
-		"UPDATE public.dish SET deleted = true WHERE id = $1",
+		"UPDATE public.dishes SET deleted = true WHERE id = $1",
 		&id)
 	if err != nil {
 		return &errPkg.Errors{
 			Text: errPkg.RGetPromoCodesCodesNotSelect,
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesNotCommit,
+		}
+	}
+
+	return nil
+}
+
+func (db *Wrapper) AddDish(dish resPkg.DishHost) error {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+	var idDish int
+
+	// TODO: get photo dish
+	err = tx.QueryRow(contextTransaction,
+		"INSERT INTO public.dishes (description, kilocalorie, name, cost, avatar, protein, falt, carbohydrates, weight, category_dishes, category_restaurant, count) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id",
+		Sanitize(dish.Dishes.Description), dish.Dishes.Ccal, Sanitize(dish.Dishes.Title),
+		dish.Dishes.Cost, dish.Dishes.Img, dish.Dishes.Protein, dish.Dishes.Falt, dish.Dishes.Carbohydrates,
+		dish.Dishes.Weight, Sanitize(dish.Dishes.CategoryDishes), Sanitize(dish.Dishes.CategoryRestaurant), dish.Dishes.Count).Scan(&idDish)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesCodesNotSelect,
+		}
+	}
+
+	err = db.AddIngredient(idDish, dish.Dishes.Ingredient)
+	if err != nil {
+		return err
+	}
+	err = db.AddRadios(idDish, dish.Dishes.Radios)
+	if err != nil {
+		return err
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesNotCommit,
+		}
+	}
+
+	return nil
+}
+
+func (db *Wrapper) AddRadios(dishId int, dish []resPkg.CreateRadios) error {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	for placeRadio, radio := range dish {
+		var idRadios int
+		err = tx.QueryRow(contextTransaction,
+			"INSERT INTO public.radios (name, food, place) VALUES ($1, $2, $3) RETURNING id",
+			Sanitize(radio.Title), dishId, placeRadio).Scan(&idRadios)
+		if err != nil {
+			return &errPkg.Errors{
+				Text: errPkg.RGetPromoCodesCodesNotSelect,
+			}
+		}
+		for placeElementRadio, elementRadio := range radio.Rows {
+			_, err = tx.Exec(contextTransaction,
+				"INSERT INTO public.structure_radios (name, radios, place, protein, falt, carbohydrates, kilocalorie) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+				Sanitize(elementRadio.Name), idRadios, placeElementRadio, elementRadio.Protein, elementRadio.Falt, elementRadio.Carbohydrates)
+			if err != nil {
+				return &errPkg.Errors{
+					Text: errPkg.RGetPromoCodesCodesNotSelect,
+				}
+			}
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesNotCommit,
+		}
+	}
+
+	return nil
+}
+
+func (db *Wrapper) AddIngredient(dishId int, dish []resPkg.CreateIngredients) error {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	for placeIngredient, ingredient := range dish {
+		_, err = tx.Exec(contextTransaction,
+			"INSERT INTO public.structure_dishes (name, cost, food, place, protein, falt, carbohydrates, kilocalorie, count_element) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+			Sanitize(ingredient.Title), ingredient.Cost, dishId, placeIngredient, ingredient.Protein,
+			ingredient.Falt, ingredient.Carbohydrates, ingredient.Count)
+		if err != nil {
+			return &errPkg.Errors{
+				Text: errPkg.RGetPromoCodesCodesNotSelect,
+			}
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesNotCommit,
+		}
+	}
+
+	return nil
+}
+
+func (db *Wrapper) UpdateDish(dish resPkg.DishHost) error {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+	var idDish int
+
+	// TODO: get name dish
+	_, err = tx.Exec(contextTransaction,
+		"UPDATE public.dishes SET description = $1, kilocalorie = $2, name = $3, cost = $4, avatar = $5, protein = $6, falt = $7, carbohydrates = $8, weight = $9, category_dishes = $10, category_restaurant = $11, count = $12 WHERE id = $13",
+		Sanitize(dish.Dishes.Description), dish.Dishes.Ccal, Sanitize(dish.Dishes.Title),
+		dish.Dishes.Cost, dish.Dishes.Img, dish.Dishes.Protein, dish.Dishes.Falt, dish.Dishes.Carbohydrates,
+		dish.Dishes.Weight, Sanitize(dish.Dishes.CategoryDishes), Sanitize(dish.Dishes.CategoryRestaurant), dish.Dishes.Count, &dish.Dishes.Id)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesCodesNotSelect,
+		}
+	}
+
+	err = db.UpdateIngredient(idDish, dish.Dishes.Ingredient)
+	if err != nil {
+		return err
+	}
+
+	err = db.UpdateRadios(idDish, dish.Dishes.Radios)
+	if err != nil {
+		return err
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesNotCommit,
+		}
+	}
+
+	return nil
+}
+func (db *Wrapper) UpdateIngredient(dishId int, ingredients []resPkg.CreateIngredients) error {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	for placeIngredient, ingredient := range ingredients {
+		_, err = tx.Exec(contextTransaction,
+			"UPDATE public.structure_dishes SET name = $1, cost = $2, food = $3, place = $4, protein = $5, falt = $6, carbohydrates = $7, kilocalorie = $8, count_element = $9 WHERE id = $8",
+			Sanitize(ingredient.Title), ingredient.Cost, dishId, placeIngredient, placeIngredient, ingredient.Protein,
+			ingredient.Falt, ingredient.Carbohydrates, ingredient.Count, ingredient.Id)
+		if err != nil {
+			return &errPkg.Errors{
+				Text: errPkg.RGetPromoCodesCodesNotSelect,
+			}
+		}
+	}
+
+	err = tx.Commit(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesNotCommit,
+		}
+	}
+
+	return nil
+}
+
+func (db *Wrapper) UpdateRadios(dishId int, radios []resPkg.CreateRadios) error {
+	contextTransaction := context.Background()
+	tx, err := db.Conn.Begin(contextTransaction)
+	if err != nil {
+		return &errPkg.Errors{
+			Text: errPkg.RGetPromoCodesTransactionNotCreate,
+		}
+	}
+
+	defer tx.Rollback(contextTransaction)
+
+	for placeRadio, radio := range radios {
+		var idRadios int
+		_, err = tx.Exec(contextTransaction,
+			"UPDATE public.radios SET name = $1, food = $2, place = $3 WHERE id = $4",
+			Sanitize(radio.Title), dishId, placeRadio, radio.Id)
+		if err != nil {
+			return &errPkg.Errors{
+				Text: errPkg.RGetPromoCodesCodesNotSelect,
+			}
+		}
+
+		for placeElementRadio, elementRadio := range radio.Rows {
+			_, err = tx.Exec(contextTransaction,
+				"UPDATE public.structure_radios SET name = $1, radios = $2, place = $3, protein = $4, falt = $5, carbohydrates = $6, kilocalorie = $7 WHERE id = $7",
+				Sanitize(elementRadio.Name), idRadios, placeElementRadio, elementRadio.Protein, elementRadio.Falt, elementRadio.Carbohydrates, elementRadio.Id)
+			if err != nil {
+				return &errPkg.Errors{
+					Text: errPkg.RGetPromoCodesCodesNotSelect,
+				}
+			}
 		}
 	}
 
