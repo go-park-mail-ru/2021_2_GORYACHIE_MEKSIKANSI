@@ -141,7 +141,8 @@ message DishesHost {
 }
 
 message CreateRadiosArray {
-  DishesHost radios = 1;
+  CreateRadios radios = 1;
+  int64      dishId = 2;
 }
 
 message CreateRadios {
@@ -154,18 +155,26 @@ message CreateRadios {
 message CreateElementRadios {
   int64 id = 1;
   string name = 2;
-  string error = 3;
+  int64 protein = 3;
+  int64 falt = 4;
+  int64 carbohydrates = 5;
+  string error = 6;
 }
 
 message CreateIngredientsArray {
-  DishesHost ingredients = 1;
+  CreateIngredients ingredients = 1;
+  int64      dishId = 2;
 }
 
 message CreateIngredients {
   int64 id = 1;
   string name = 2;
   int64 cost = 3;
-  string error = 4;
+  int64 protein = 4;
+  int64 falt = 5;
+  int64 carbohydrates = 6;
+  int64 count = 7;
+  string error = 8;
 }
 
 message NewReview {

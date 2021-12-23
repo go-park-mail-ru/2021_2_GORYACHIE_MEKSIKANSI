@@ -219,7 +219,7 @@ func CastDishHostProtoToDishHost(dishInfo *resProto.DishesHost) *resPkg.DishHost
 	var p *resPkg.DishHost
 	p = &resPkg.DishHost{}
 	p.Dishes.Id = int(dishInfo.Id)
-	p.Dishes.Title = dishInfo.Title
+	p.Dishes.Title = dishInfo.Name
 	p.Dishes.Cost = int(dishInfo.Cost)
 	p.Dishes.Ccal = int(dishInfo.Ccal)
 	p.Dishes.Description = dishInfo.Description
@@ -231,17 +231,24 @@ func CastDishHostProtoToDishHost(dishInfo *resProto.DishesHost) *resPkg.DishHost
 	p.Dishes.CategoryRestaurant = dishInfo.CategoryRestaurant
 	p.Dishes.Count = int(dishInfo.Count)
 
-	_, p.Dishes.Radios = CastCreateRadiosProtoToCreateRadios(dishInfo.Radios).Radios
-	_, p.Dishes.Ingredient = CastCreateIngredientsProtoToCreateIngredients(dishInfo.Ingredient).Ingredients
+	for _, radio := range p.Dishes.Radios {
+		t := &resProto.CreateRadiosArray{Radios: radio}
+		_, p.Dishes.Radios = CastCreateRadiosProtoToCreateRadios(t)
+
+	}
+	for _, ingredient := range p.Dishes.Ingredient {
+		t := &resProto.CreateIngredientsArray{Ingredients: ingredient}
+		_, p.Dishes.Ingredient = CastCreateIngredientsProtoToCreateIngredients(t)
+	}
 	return p
 }
 
 func CastCreateRadiosProtoToCreateRadios(radios *resProto.CreateRadiosArray) (int, []resPkg.CreateRadios) {
 	var p []resPkg.CreateRadios
-	for _, i := range radios.Radios {
+	for _, i := range radios.Radios.Radios {
 		var protoRadios resPkg.CreateRadios
 		protoRadios = resPkg.CreateRadios{}
-		protoRadios.Id = int(i.Food)
+		protoRadios.Id = int(i.Id)
 		protoRadios.Title = i.Name
 		for _, element := range i.Rows {
 			var protoRadiosElement resPkg.CreateElementRadios
@@ -260,7 +267,7 @@ func CastCreateRadiosProtoToCreateRadios(radios *resProto.CreateRadiosArray) (in
 
 func CastCreateIngredientsProtoToCreateIngredients(ingredients *resProto.CreateIngredientsArray) (int, []resPkg.CreateIngredients) {
 	var p []resPkg.CreateIngredients
-	for _, i := range ingredients.Ingredients {
+	for _, i := range ingredients.Ingredients.Ingredients {
 		var ingredient resPkg.CreateIngredients
 		ingredient = resPkg.CreateIngredients{}
 		ingredient.Cost = int(i.Cost)
@@ -272,5 +279,5 @@ func CastCreateIngredientsProtoToCreateIngredients(ingredients *resProto.CreateI
 		ingredient.Count = int(i.Count)
 		p = append(p, ingredient)
 	}
-	return ingredients.Id, p
+	return ingredients.Food, p
 }

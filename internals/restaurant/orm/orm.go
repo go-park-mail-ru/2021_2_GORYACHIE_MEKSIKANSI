@@ -43,9 +43,9 @@ type ConnectRestaurantServiceInterface interface {
 	DeleteDish(ctx context.Context, restaurant *resProto.DishId, opts ...grpc.CallOption) (*resProto.Error, error)
 	AddDish(ctx context.Context, dish *resProto.DishesHost, opts ...grpc.CallOption) (*resProto.Error, error)
 	AddRadios(ctx context.Context, radios *resProto.CreateRadiosArray, opts ...grpc.CallOption) (*resProto.Error, error)
-	AddIngredient(ctx context.Context, ingredient *resProto.CreateIngredientArray, opts ...grpc.CallOption) (*resProto.Error, error)
+	AddIngredient(ctx context.Context, ingredient *resProto.CreateIngredientsArray, opts ...grpc.CallOption) (*resProto.Error, error)
 	UpdateDish(ctx context.Context, dish *resProto.DishesHost, opts ...grpc.CallOption) (*resProto.Error, error)
-	UpdateIngredient(ctx context.Context, dish *resProto.CreateIngredientArray, opts ...grpc.CallOption) (*resProto.Error, error)
+	UpdateIngredient(ctx context.Context, dish *resProto.CreateIngredientsArray, opts ...grpc.CallOption) (*resProto.Error, error)
 	UpdateRadios(ctx context.Context, dish *resProto.CreateRadiosArray, opts ...grpc.CallOption) (*resProto.Error, error)
 }
 

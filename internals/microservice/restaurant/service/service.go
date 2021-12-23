@@ -19,12 +19,12 @@ type RestaurantManagerInterface interface {
 	GetFavoriteRestaurants(ctx context.Context, id *resProto.UserId) (*resProto.Restaurants, error)
 	EditRestaurantInFavorite(ctx context.Context, ids *resProto.EditRestaurantInFavoriteRequest) (*resProto.ResponseEditRestaurantInFavorite, error)
 	DeleteDish(ctx context.Context, ids *resProto.DishId) (*resProto.Error, error)
-	AddDish(ctx context.Context, dish *resProto.DishHost) (*resProto.Error, error)
-	AddRadios(ctx context.Context, dish *resProto.CreateRadios) (*resProto.Error, error)
-	AddIngredient(ctx context.Context, dish *resProto.CreateIngredients) (*resProto.Error, error)
-	UpdateDish(ctx context.Context, dish *resProto.DishHost) (*resProto.Error, error)
-	UpdateIngredient(ctx context.Context, ingredients *resProto.CreateIngredients) (*resProto.Error, error)
-	UpdateRadios(ctx context.Context, radios *resProto.CreateRadios) (*resProto.Error, error)
+	AddDish(ctx context.Context, dish *resProto.DishesHost) (*resProto.Error, error)
+	AddRadios(ctx context.Context, dish *resProto.CreateRadiosArray) (*resProto.Error, error)
+	AddIngredient(ctx context.Context, dish *resProto.CreateIngredientsArray) (*resProto.Error, error)
+	UpdateDish(ctx context.Context, dish *resProto.DishesHost) (*resProto.Error, error)
+	UpdateIngredient(ctx context.Context, ingredients *resProto.CreateIngredientsArray) (*resProto.Error, error)
+	UpdateRadios(ctx context.Context, radios *resProto.CreateRadiosArray) (*resProto.Error, error)
 }
 
 type RestaurantManager struct {
@@ -131,7 +131,7 @@ func (r *RestaurantManager) DeleteDish(ctx context.Context, ids *resProto.DishId
 	}
 	return &resProto.Error{Error: ""}, nil
 }
-func (r *RestaurantManager) AddDish(ctx context.Context, dish *resProto.DishHost) (*resProto.Error, error) {
+func (r *RestaurantManager) AddDish(ctx context.Context, dish *resProto.DishesHost) (*resProto.Error, error) {
 	err := r.Application.AddDish(*CastDishHostProtoToDishHost(dish))
 	if err != nil {
 		return &resProto.Error{Error: err.Error()}, nil
@@ -139,7 +139,7 @@ func (r *RestaurantManager) AddDish(ctx context.Context, dish *resProto.DishHost
 	return &resProto.Error{Error: ""}, nil
 }
 
-func (r *RestaurantManager) AddRadios(ctx context.Context, dish *resProto.CreateRadios) (*resProto.Error, error) {
+func (r *RestaurantManager) AddRadios(ctx context.Context, dish *resProto.CreateRadiosArray) (*resProto.Error, error) {
 	err := r.Application.AddRadios(CastCreateRadiosProtoToCreateRadios(dish))
 	if err != nil {
 		return &resProto.Error{Error: err.Error()}, nil
@@ -147,7 +147,7 @@ func (r *RestaurantManager) AddRadios(ctx context.Context, dish *resProto.Create
 	return &resProto.Error{Error: ""}, nil
 }
 
-func (r *RestaurantManager) AddIngredient(ctx context.Context, dish *resProto.CreateIngredients) (*resProto.Error, error) {
+func (r *RestaurantManager) AddIngredient(ctx context.Context, dish *resProto.CreateIngredientsArray) (*resProto.Error, error) {
 	err := r.Application.AddIngredient(CastCreateIngredientsProtoToCreateIngredients(dish))
 	if err != nil {
 		return &resProto.Error{Error: err.Error()}, nil
@@ -155,7 +155,7 @@ func (r *RestaurantManager) AddIngredient(ctx context.Context, dish *resProto.Cr
 	return &resProto.Error{Error: ""}, nil
 }
 
-func (r *RestaurantManager) UpdateDish(ctx context.Context, dish *resProto.DishHost) (*resProto.Error, error) {
+func (r *RestaurantManager) UpdateDish(ctx context.Context, dish *resProto.DishesHost) (*resProto.Error, error) {
 	err := r.Application.UpdateDish(*CastDishHostProtoToDishHost(dish))
 	if err != nil {
 		return &resProto.Error{Error: err.Error()}, nil
@@ -163,7 +163,7 @@ func (r *RestaurantManager) UpdateDish(ctx context.Context, dish *resProto.DishH
 	return &resProto.Error{Error: ""}, nil
 }
 
-func (r *RestaurantManager) UpdateIngredient(ctx context.Context, ingredients *resProto.CreateIngredients) (*resProto.Error, error) {
+func (r *RestaurantManager) UpdateIngredient(ctx context.Context, ingredients *resProto.CreateIngredientsArray) (*resProto.Error, error) {
 	err := r.Application.UpdateIngredient(CastCreateIngredientsProtoToCreateIngredients(ingredients))
 	if err != nil {
 		return &resProto.Error{Error: err.Error()}, nil
@@ -171,7 +171,7 @@ func (r *RestaurantManager) UpdateIngredient(ctx context.Context, ingredients *r
 	return &resProto.Error{Error: ""}, nil
 }
 
-func (r *RestaurantManager) UpdateRadios(ctx context.Context, radios *resProto.CreateRadios) (*resProto.Error, error) {
+func (r *RestaurantManager) UpdateRadios(ctx context.Context, radios *resProto.CreateRadiosArray) (*resProto.Error, error) {
 	err := r.Application.UpdateRadios(CastCreateRadiosProtoToCreateRadios(radios))
 	if err != nil {
 		return &resProto.Error{Error: err.Error()}, nil

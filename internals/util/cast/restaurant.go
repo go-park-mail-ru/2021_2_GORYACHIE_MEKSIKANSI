@@ -258,10 +258,10 @@ func CastResReviewProtoToResReview(review *resProto.ResReview) *restaurant.ResRe
 }
 
 func CastDishHostProtoToDishHost(dishInfo *resPkg.DishHost) *resProto.DishesHost {
-	var p *resPkg.DishesHost
-	p = &resPkg.DishesHost{}
+	var p *resProto.DishesHost
+	p = &resProto.DishesHost{}
 	p.Id = int64(dishInfo.Dishes.Id)
-	p.Title = dishInfo.Dishes.Title
+	p.Name = dishInfo.Dishes.Title
 	p.Cost = int64(dishInfo.Dishes.Cost)
 	p.Ccal = int64(dishInfo.Dishes.Ccal)
 	p.Description = dishInfo.Dishes.Description
@@ -273,23 +273,22 @@ func CastDishHostProtoToDishHost(dishInfo *resPkg.DishHost) *resProto.DishesHost
 	p.CategoryRestaurant = dishInfo.Dishes.CategoryRestaurant
 	p.Count = int64(dishInfo.Dishes.Count)
 
-	p.Radios = CastCreateRadiosToCreateRadiosProto(dishInfo.Dishes.Radios, dishInfo.Dishes.Id).Radios
-	p.ingredients = CastCreateIngredientsToCreateIngredientsProto(dishInfo.Dishes.Ingredient, dishInfo.Dishes.Id).Ingredients
+	p.Radios = CastCreateRadiosToCreateRadiosProto(dishInfo.Dishes.Radios, dishInfo.Dishes.Id).Radios.Radios
+	p.Ingredients = CastCreateIngredientsToCreateIngredientsProto(dishInfo.Dishes.Ingredient, dishInfo.Dishes.Id).Ingredients.Ingredients
 	return p
 }
 
 func CastCreateRadiosToCreateRadiosProto(radios []resPkg.CreateRadios, dishId int) *resProto.CreateRadiosArray {
 	var result *resProto.CreateRadiosArray
 	var p []*resProto.CreateRadios
-	p.Food = dishId
 	for _, i := range radios {
 		var protoRadios *resProto.CreateRadios
 		protoRadios = &resProto.CreateRadios{}
 		protoRadios.Id = int64(i.Id)
 		protoRadios.Name = i.Title
 		for _, element := range i.Rows {
-			var protoRadiosElement *resProto.CreateElementradios
-			protoRadiosElement = &resProto.CreateElementradios{}
+			var protoRadiosElement *resProto.CreateElementRadios
+			protoRadiosElement = &resProto.CreateElementRadios{}
 			protoRadiosElement.Id = int64(element.Id)
 			protoRadiosElement.Name = element.Name
 			protoRadiosElement.Protein = int64(element.Protein)
@@ -299,6 +298,7 @@ func CastCreateRadiosToCreateRadiosProto(radios []resPkg.CreateRadios, dishId in
 		}
 		p = append(p, protoRadios)
 	}
+	result.Id = int64(dishId)
 	result.Radios = p
 	return result
 }
@@ -306,7 +306,6 @@ func CastCreateRadiosToCreateRadiosProto(radios []resPkg.CreateRadios, dishId in
 func CastCreateIngredientsToCreateIngredientsProto(ingredients []resPkg.CreateIngredients, dishId int) *resProto.CreateIngredientsArray {
 	var result *resProto.CreateIngredientsArray
 	var p []*resProto.CreateIngredients
-	p.Food = dishId
 	for _, i := range ingredients {
 		var ingredient *resProto.CreateIngredients
 		ingredient = &resProto.CreateIngredients{}
@@ -319,6 +318,7 @@ func CastCreateIngredientsToCreateIngredientsProto(ingredients []resPkg.CreateIn
 		ingredient.Count = int64(i.Count)
 		p = append(p, ingredient)
 	}
-	result.inggredients = p
+	result.Id = int64(dishId)
+	result.Ingredients = p
 	return result
 }
