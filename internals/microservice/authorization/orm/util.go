@@ -39,6 +39,17 @@ func RandString(length int) string {
 	return b.String()
 }
 
+func RandPhone() string {
+	chars := []rune("0123456789")
+	var b strings.Builder
+
+	for i := 0; i < PhoneLen; i++ {
+		b.WriteRune(chars[util.RandomInteger(0, len(chars))])
+	}
+
+	return b.String()
+}
+
 func generateWebsocket() string {
 	return RandString(LenFirstField) + "-" + RandString(LenSecondField) + "-" + RandString(LenThirdField) + "-" + RandString(LenFourthField) + "-" + RandString(LenFifthField)
 }

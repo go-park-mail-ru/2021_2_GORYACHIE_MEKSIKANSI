@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	APP_SECRET = "8e0564128e0564128e689879548e7ff1ff88e058e056412efc6c1f72a21a320b854ad06"
+	APP_SECRET = "7b6ede787b6ede787b032213907b14474d77b6e7b6ede781aaa2200c612a9a417c87b69"
 	API_URL    = "https://api.vk.com/method/users.get?fields=contacts&access_token=%s&v=5.131"
 )
 

@@ -530,7 +530,7 @@ func (db *Wrapper) AuthVK(email string, name string) (*authPkg.Defense, error) {
 	signup := &authPkg.RegistrationRequest{
 		Email: email,
 		Name:  name,
-		Phone: "88888888888",
+		Phone: RandPhone(),
 	}
 	cookie, err := db.SignupClient(signup, &authPkg.Defense{})
 	if err != nil {

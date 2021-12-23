@@ -52,8 +52,8 @@ const (
 	ConfNameMicroservice = "microservice"
 	ConfType             = "yml"
 	ConfPath             = "./config/"
-	APP_ID               = "8033773"
-	APP_KEY              = "mGDODD6W5VbN8XHN8NiE"
+	APP_ID               = "8034613"
+	APP_KEY              = "emM0F4fV8B7PkZsSwlXT"
 )
 
 type installSetUp struct {
@@ -82,7 +82,7 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 	conf := oauth2.Config{
 		ClientID:     APP_ID,
 		ClientSecret: APP_KEY,
-		RedirectURL:  "https://bc7d-109-252-107-54.ngrok.io/",
+		RedirectURL:  "https://4b37-109-252-107-54.ngrok.io/api/v1/host/signup/",
 		Endpoint:     vk.Endpoint,
 	}
 	authWrapper := orm.Wrapper{Conn: authManager, Ctx: authCtx, VKConn: conf}

@@ -30,7 +30,7 @@ type CheckError struct {
 const (
 	ASaltNotSelect                     = "salt not scan"
 	ALoginOrPasswordIncorrect          = "Неправильный логин или пароль"
-	AGeneralSignUpNotInsert            = "general_user_info not scan"
+	AGeneralSignUpNotInsert            = "general_user_info not insert"
 	ASignUpHostHostNotInsert           = "host not insert"
 	ASignUpCourierCourierNotInsert     = "courier not insert"
 	ASignUpClientClientNotInsert       = "client not insert"

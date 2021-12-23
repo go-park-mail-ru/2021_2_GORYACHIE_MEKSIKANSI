@@ -2,6 +2,7 @@
 package application
 
 import (
+	restaurant "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/restaurant"
 	resPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/restaurant"
 	ormPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/restaurant/orm"
 )
@@ -17,12 +18,12 @@ type RestaurantApplicationInterface interface {
 	GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error)
 	EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error)
 	DeleteDish(idDish int) error
-	AddDish(dish resPkg.DishHost) error
-	AddRadios(dishId int, dish []resPkg.CreateRadios) error
-	AddIngredient(dishId int, dish []resPkg.CreateIngredients) error
-	UpdateDish(dish resPkg.DishHost) error
-	UpdateIngredient(dishId int, ingredients []resPkg.CreateIngredients) error
-	UpdateRadios(dishId int, radios []resPkg.CreateRadios) error
+	AddDish(dish restaurant.DishHost) error
+	AddRadios(dishId int, dish []restaurant.CreateRadios) error
+	AddIngredient(dishId int, dish []restaurant.CreateIngredients) error
+	UpdateDish(dish restaurant.DishHost) error
+	UpdateIngredient(dishId int, ingredients []restaurant.CreateIngredients) error
+	UpdateRadios(dishId int, radios []restaurant.CreateRadios) error
 }
 
 type Restaurant struct {
@@ -69,26 +70,26 @@ func (r *Restaurant) DeleteDish(idDish int) error {
 	return r.DB.DeleteDish(idDish)
 }
 
-func (r *Restaurant) AddDish(dish resPkg.DishHost) error {
+func (r *Restaurant) AddDish(dish restaurant.DishHost) error {
 	return r.DB.AddDish(dish)
 }
 
-func (r *Restaurant) AddRadios(dishId int, dish []resPkg.CreateRadios) error {
+func (r *Restaurant) AddRadios(dishId int, dish []restaurant.CreateRadios) error {
 	return r.DB.AddRadios(dishId, dish)
 }
 
-func (r *Restaurant) AddIngredient(dishId int, dish []resPkg.CreateIngredients) error {
+func (r *Restaurant) AddIngredient(dishId int, dish []restaurant.CreateIngredients) error {
 	return r.DB.AddIngredient(dishId, dish)
 }
 
-func (r *Restaurant) UpdateDish(dish resPkg.DishHost) error {
+func (r *Restaurant) UpdateDish(dish restaurant.DishHost) error {
 	return r.DB.UpdateDish(dish)
 }
 
-func (r *Restaurant) UpdateIngredient(dishId int, ingredients []resPkg.CreateIngredients) error {
+func (r *Restaurant) UpdateIngredient(dishId int, ingredients []restaurant.CreateIngredients) error {
 	return r.DB.UpdateIngredient(dishId, ingredients)
 }
 
-func (r *Restaurant) UpdateRadios(dishId int, radios []resPkg.CreateRadios) error {
+func (r *Restaurant) UpdateRadios(dishId int, radios []restaurant.CreateRadios) error {
 	return r.DB.UpdateRadios(dishId, radios)
 }
