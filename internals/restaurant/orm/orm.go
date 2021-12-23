@@ -22,12 +22,12 @@ type WrapperRestaurantServerInterface interface {
 	GetFavoriteRestaurants(id int) ([]restaurant.Restaurants, error)
 	EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error)
 	DeleteDish(idDish int) error
-	AddDish(dish restaurant.DishHost) error
-	AddRadios(dishId int, dish []restaurant.CreateRadios) error
-	AddIngredient(dishId int, dish []restaurant.CreateIngredients) error
-	UpdateDish(dish restaurant.DishHost) error
-	UpdateIngredient(dishId int, ingredients []restaurant.CreateIngredients) error
-	UpdateRadios(dishId int, radios []restaurant.CreateRadios) error
+	AddDish(dish resPkg.DishHost) error
+	AddRadios(dishId int, dish []resPkg.CreateRadios) error
+	AddIngredient(dishId int, dish []resPkg.CreateIngredients) error
+	UpdateDish(dish resPkg.DishHost) error
+	UpdateIngredient(dishId int, ingredients []resPkg.CreateIngredients) error
+	UpdateRadios(dishId int, radios []resPkg.CreateRadios) error
 }
 
 type ConnectRestaurantServiceInterface interface {

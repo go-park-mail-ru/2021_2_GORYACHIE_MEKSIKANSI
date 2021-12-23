@@ -3251,6 +3251,36 @@ type RestaurantServiceClient interface {
 	UpdateRadios(ctx context.Context, in *DishId, opts ...grpc.CallOption) (*Error, error)
 }
 
+func (r RestaurantServiceClient) AddDish(ctx context.Context, dish *DishesHost, opts ...grpc.CallOption) (*Error, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (r RestaurantServiceClient) AddRadios(ctx context.Context, radios *CreateRadiosArray, opts ...grpc.CallOption) (*Error, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (r RestaurantServiceClient) AddIngredient(ctx context.Context, ingredient *CreateIngredientsArray, opts ...grpc.CallOption) (*Error, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (r RestaurantServiceClient) UpdateDish(ctx context.Context, dish *DishesHost, opts ...grpc.CallOption) (*Error, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (r RestaurantServiceClient) UpdateIngredient(ctx context.Context, dish *CreateIngredientsArray, opts ...grpc.CallOption) (*Error, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (r RestaurantServiceClient) UpdateRadios(ctx context.Context, dish *CreateRadiosArray, opts ...grpc.CallOption) (*Error, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 type restaurantServiceClient struct {
 	cc grpc.ClientConnInterface
 }

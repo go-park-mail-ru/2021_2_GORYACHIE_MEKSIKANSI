@@ -13,7 +13,6 @@ import (
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"io/ioutil"
-	"net/http"
 )
 
 type WrapperAuthorizationInterface interface {
@@ -21,7 +20,7 @@ type WrapperAuthorizationInterface interface {
 	Login(login *authorization.Authorization) (*Utils2.Defense, error)
 	Logout(CSRF string) (string, error)
 	NewCSRFWebsocket(id int) (string, error)
-	AuthVK(email string, name string) (*Utils2.Defense, error)
+	AuthVK(code string) (*Utils2.Defense, error)
 }
 
 type ConnectAuthServiceInterface interface {
@@ -94,7 +93,15 @@ type Response struct {
 	}
 }
 
-func (w *Wrapper) AuthVK(client *http.Client, email string) (*Utils2.Defense, error) {
+func (w *Wrapper) AuthVK(code string) (*Utils2.Defense, error) {
+	token, err := w.VKConn.Exchange(w.Ctx, code)
+	if err != nil {
+		return nil, nil
+	}
+	email := token.Extra("email").(string)
+
+	client := w.VKConn.Client(w.Ctx, token)
+
 	resp, err := client.Get(fmt.Sprintf(API_URL, APP_SECRET))
 	if err != nil {
 		return nil, err
@@ -108,6 +115,6 @@ func (w *Wrapper) AuthVK(client *http.Client, email string) (*Utils2.Defense, er
 		Email: email,
 		Name:  data.Response[0].FirstName,
 	}
-	result, err := w.Conn.AuthVK(signUp)
+	result, err := w.Conn.AuthVK(w.Ctx, signUp)
 	return cast.CastDefenseResponseProtoToDefense(result), nil
 }

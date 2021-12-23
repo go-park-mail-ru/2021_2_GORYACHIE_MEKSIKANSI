@@ -243,10 +243,10 @@ service RestaurantService {
   rpc GetFavoriteRestaurants(UserId) returns (Restaurants);
   rpc EditRestaurantInFavorite(EditRestaurantInFavoriteRequest) returns (ResponseEditRestaurantInFavorite);
   rpc deleteDish(DishId) returns (Error);
-  rpc AddDish(DishId) returns (Error);
-  rpc AddRadios(DishId) returns (Error);
-  rpc AddIngredient(DishId) returns (Error);
-  rpc UpdateDish(DishId) returns (Error);
-  rpc UpdateIngredient(DishId) returns (Error);
-  rpc UpdateRadios(DishId) returns (Error);
+  rpc AddDish(DishesHost) returns (Error);
+  rpc AddRadios(CreateRadiosArray) returns (Error);
+  rpc AddIngredient(CreateIngredientsArray) returns (Error);
+  rpc UpdateDish(DishesHost) returns (Error);
+  rpc UpdateIngredient(CreateRadiosArray) returns (Error);
+  rpc UpdateRadios(CreateIngredientsArray) returns (Error);
 }
