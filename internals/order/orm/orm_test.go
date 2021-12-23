@@ -192,15 +192,15 @@ func TestGetOrder(t *testing.T) {
 					"d.cost, d.kilocalorie, d.weight, d.description, sr.name, "+
 					"sr.radios, sr.id, sd.name, sd.id, sd.cost, restaurant_id, r.name, r.avatar, r.city, r.street,"+
 					" r.house, r.floor, r.latitude, r.longitude, dCost, sumCost, ol.place, orl.place, osl.place, r.max_delivery_time "+
-					"FROM order_user"+
-					" LEFT JOIN address_user au ON au.id = order_user.address_id"+
-					" LEFT JOIN order_list ol ON ol.order_id = order_user.id"+
-					" LEFT JOIN dishes d ON d.id = ol.food"+
-					" LEFT JOIN order_structure_list osl ON osl.order_id = order_user.id and d.id=osl.food and ol.id=osl.list_id"+
-					" LEFT JOIN order_radios_list orl ON orl.order_id = order_user.id and ol.food=orl.food and ol.id=orl.list_id"+
-					" LEFT JOIN structure_radios sr ON sr.id = orl.radios"+
-					" LEFT JOIN structure_dishes sd ON sd.id = osl.structure_food"+
-					" LEFT JOIN restaurant r ON r.id = order_user.restaurant_id WHERE order_user.client_id = $1 AND order_user.id = $2",
+					"FROM public.order_user"+
+					" LEFT JOIN public.address_user au ON au.id = order_user.address_id"+
+					" LEFT JOIN public.order_list ol ON ol.order_id = order_user.id"+
+					" LEFT JOIN public.dishes d ON d.id = ol.food"+
+					" LEFT JOIN public.order_structure_list osl ON osl.order_id = order_user.id and d.id=osl.food and ol.id=osl.list_id"+
+					" LEFT JOIN public.order_radios_list orl ON orl.order_id = order_user.id and ol.food=orl.food and ol.id=orl.list_id"+
+					" LEFT JOIN public.structure_radios sr ON sr.id = orl.radios"+
+					" LEFT JOIN public.structure_dishes sd ON sd.id = osl.structure_food"+
+					" LEFT JOIN public.restaurant r ON r.id = order_user.restaurant_id WHERE order_user.client_id = $1 AND order_user.id = $2",
 				tt.inputQueryClientId, tt.inputQueryOrderId,
 			).
 			Return(tt.outQuery, tt.errQuery)
@@ -289,15 +289,15 @@ func TestGetOrders(t *testing.T) {
 					"d.cost, d.kilocalorie, d.weight, d.description, sr.name, "+
 					"sr.radios, sr.id, sd.name, sd.id, sd.cost, restaurant_id, r.name, r.avatar, r.city, r.street,"+
 					" r.house, r.floor, r.latitude, r.longitude, dCost, sumCost, ol.place, orl.place, osl.place "+
-					"FROM order_user"+
-					" LEFT JOIN address_user au ON au.id = order_user.address_id"+
-					" LEFT JOIN order_list ol ON ol.order_id = order_user.id"+
-					" LEFT JOIN dishes d ON d.id = ol.food"+
-					" LEFT JOIN order_structure_list osl ON osl.order_id = order_user.id and d.id=osl.food and ol.id=osl.list_id"+
-					" LEFT JOIN order_radios_list orl ON orl.order_id = order_user.id and ol.food=orl.food and ol.id=orl.list_id"+
-					" LEFT JOIN structure_radios sr ON sr.id = orl.radios"+
-					" LEFT JOIN structure_dishes sd ON sd.id = osl.structure_food"+
-					" LEFT JOIN restaurant r ON r.id = order_user.restaurant_id WHERE order_user.client_id = $1 ORDER BY date_order",
+					"FROM public.order_user"+
+					" LEFT JOIN public.address_user au ON au.id = order_user.address_id"+
+					" LEFT JOIN public.order_list ol ON ol.order_id = order_user.id"+
+					" LEFT JOIN public.dishes d ON d.id = ol.food"+
+					" LEFT JOIN public.order_structure_list osl ON osl.order_id = order_user.id and d.id=osl.food and ol.id=osl.list_id"+
+					" LEFT JOIN public.order_radios_list orl ON orl.order_id = order_user.id and ol.food=orl.food and ol.id=orl.list_id"+
+					" LEFT JOIN public.structure_radios sr ON sr.id = orl.radios"+
+					" LEFT JOIN public.structure_dishes sd ON sd.id = osl.structure_food"+
+					" LEFT JOIN public.restaurant r ON r.id = order_user.restaurant_id WHERE order_user.client_id = $1 ORDER BY date_order",
 				tt.inputQueryClientId,
 			).
 			Return(tt.outQuery, tt.errQuery)
@@ -321,10 +321,10 @@ var UpdateStatusOrder = []struct {
 	testName                 string
 	inputClientId            int
 	inputStatus              int
+	out                      int
 	outErr                   string
 	inputQueryClientId       int
-	inputQueryStatus         int
-	errQuery                 error
+	outQuery                 Row
 	countQuery               int
 	errBeginTransaction      error
 	inputDelete              int
@@ -338,10 +338,10 @@ var UpdateStatusOrder = []struct {
 		testName:                 "First",
 		inputClientId:            1,
 		inputStatus:              1,
+		out:                      2,
 		outErr:                   "",
 		inputQueryClientId:       1,
-		inputQueryStatus:         1,
-		errQuery:                 nil,
+		outQuery:                 Row{row: []interface{}{2}},
 		countQuery:               1,
 		errBeginTransaction:      nil,
 		inputDelete:              1,
@@ -376,14 +376,15 @@ func TestUpdateStatusOrder(t *testing.T) {
 			Times(tt.countRollbackTransaction)
 		mTx.
 			EXPECT().
-			Exec(context.Background(),
-				"UPDATE order_user SET status = $1 WHERE id = $2",
-				tt.inputQueryClientId, tt.inputQueryStatus,
+			QueryRow(context.Background(),
+				"UPDATE public.order_user SET status = status + 1 WHERE id = $1 RETURNING status",
+				tt.inputQueryClientId,
 			).
-			Return(nil, tt.errQuery)
+			Return(&tt.outQuery)
 		testUser := &Wrapper{Conn: m}
 		t.Run(tt.testName, func(t *testing.T) {
-			err := testUser.UpdateStatusOrder(tt.inputClientId, tt.inputStatus)
+			result, err := testUser.UpdateStatusOrder(tt.inputClientId)
+			require.Equal(t, tt.out, result, fmt.Sprintf("Expected: %v\nbut got: %v", tt.out, result))
 			if tt.outErr != "" {
 				if err == nil {
 					require.NotNil(t, err, fmt.Sprintf("Expected: %s\nbut got: nil", tt.outErr))
@@ -451,7 +452,7 @@ func TestDeleteCart(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"DELETE FROM cart_food CASCADE WHERE client_id = $1",
+				"DELETE FROM public.cart_food CASCADE WHERE client_id = $1",
 				tt.inputQuery,
 			).
 			Return(nil, tt.errQuery)
@@ -534,7 +535,7 @@ func TestGetRestaurant(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant WHERE id = $1",
+				"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM public.restaurant WHERE id = $1",
 				tt.inputQuery,
 			).
 			Return(&tt.outQuery).

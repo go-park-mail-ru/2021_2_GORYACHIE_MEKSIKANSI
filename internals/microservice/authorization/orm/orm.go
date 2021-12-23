@@ -80,7 +80,7 @@ func (db *Wrapper) generalSignUp(signup *authPkg.RegistrationRequest, transactio
 	}
 
 	err := transaction.QueryRow(contextTransaction,
-		"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+		"INSERT INTO public.general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
 		Sanitize(signup.Name), Sanitize(signup.Email),
 		phone, HashPassword(signup.Password, salt), salt).Scan(&userId)
 
@@ -119,7 +119,7 @@ func (db *Wrapper) SignupHost(signup *authPkg.RegistrationRequest, cookie *authP
 	}
 
 	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO host (client_id) VALUES ($1)", userId)
+		"INSERT INTO public.host (client_id) VALUES ($1)", userId)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Text: errPkg.ASignUpHostHostNotInsert,
@@ -156,7 +156,7 @@ func (db *Wrapper) SignupCourier(signup *authPkg.RegistrationRequest, cookie *au
 	}
 
 	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO courier (client_id) VALUES ($1)", userId, contextTransaction)
+		"INSERT INTO public.courier (client_id) VALUES ($1)", userId, contextTransaction)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Text: errPkg.ASignUpCourierCourierNotInsert,
@@ -194,7 +194,7 @@ func (db *Wrapper) SignupClient(signup *authPkg.RegistrationRequest, cookie *aut
 	}
 
 	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO client (client_id) VALUES ($1)", userId)
+		"INSERT INTO public.client (client_id) VALUES ($1)", userId)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Text: errPkg.ASignUpClientClientNotInsert,
@@ -212,7 +212,7 @@ func (db *Wrapper) SignupClient(signup *authPkg.RegistrationRequest, cookie *aut
 
 func (db *Wrapper) addTransactionCookie(cookie *authPkg.Defense, Transaction TransactionInterface, id int, contextTransaction context.Context) error {
 	_, err := Transaction.Exec(contextTransaction,
-		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
+		"INSERT INTO public.cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
 	if err != nil {
 		return &errPkg.Errors{
@@ -238,7 +238,7 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 	var salt string
 
 	err = tx.QueryRow(contextTransaction,
-		"SELECT salt FROM general_user_info WHERE email = $1",
+		"SELECT salt FROM public.general_user_info WHERE email = $1",
 		email).Scan(&salt)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -252,7 +252,7 @@ func (db *Wrapper) LoginByEmail(email string, password string) (int, error) {
 	}
 
 	err = tx.QueryRow(contextTransaction,
-		"SELECT id FROM general_user_info WHERE email = $1 AND password = $2",
+		"SELECT id FROM public.general_user_info WHERE email = $1 AND password = $2",
 		email, HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
 		return 0, &errPkg.Errors{
@@ -285,7 +285,7 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 	var salt string
 
 	err = tx.QueryRow(contextTransaction,
-		"SELECT salt FROM general_user_info WHERE phone = $1",
+		"SELECT salt FROM public.general_user_info WHERE phone = $1",
 		phone).Scan(&salt)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -299,7 +299,7 @@ func (db *Wrapper) LoginByPhone(phone string, password string) (int, error) {
 	}
 
 	err = tx.QueryRow(contextTransaction,
-		"SELECT id FROM general_user_info WHERE phone = $1 AND password = $2",
+		"SELECT id FROM public.general_user_info WHERE phone = $1 AND password = $2",
 		phone, HashPassword(password, salt)).Scan(&userId)
 	if err != nil {
 		return 0, &errPkg.Errors{
@@ -330,7 +330,7 @@ func (db *Wrapper) DeleteCookie(CSRF string) (string, error) {
 
 	var sessionId *string
 	err = tx.QueryRow(contextTransaction,
-		"DELETE FROM cookie WHERE csrf_token = $1 RETURNING session_id", CSRF).Scan(&sessionId)
+		"DELETE FROM public.cookie WHERE csrf_token = $1 RETURNING session_id", CSRF).Scan(&sessionId)
 
 	if err != nil {
 		return "", &errPkg.Errors{
@@ -359,7 +359,7 @@ func (db *Wrapper) AddCookie(cookie *authPkg.Defense, id int) error {
 	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
+		"INSERT INTO public.cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 		id, cookie.SessionId, cookie.DateLife, cookie.CsrfToken)
 	if err != nil {
 		return &errPkg.Errors{
@@ -391,7 +391,7 @@ func (db *Wrapper) CheckAccess(cookie *authPkg.Defense) (bool, error) {
 	var timeLiveCookie time.Time
 	var id int
 	err = tx.QueryRow(contextTransaction,
-		"SELECT client_id, date_life FROM cookie WHERE session_id = $1 AND csrf_token = $2",
+		"SELECT client_id, date_life FROM public.cookie WHERE session_id = $1 AND csrf_token = $2",
 		cookie.SessionId, cookie.CsrfToken).Scan(&id, &timeLiveCookie)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -431,7 +431,7 @@ func (db *Wrapper) NewCSRF(cookie *authPkg.Defense) (string, error) {
 
 	csrfToken := authPkg.RandString(5)
 	_, err = tx.Exec(contextTransaction,
-		"UPDATE cookie SET csrf_token = $1 WHERE session_id = $2",
+		"UPDATE public.cookie SET csrf_token = $1 WHERE session_id = $2",
 		csrfToken, cookie.SessionId)
 	if err != nil {
 		return "", &errPkg.Errors{
@@ -463,7 +463,7 @@ func (db *Wrapper) GetIdByCookie(cookie *authPkg.Defense) (int, error) {
 	var timeLiveCookie time.Time
 	var id int
 	err = tx.QueryRow(contextTransaction,
-		"SELECT client_id, date_life FROM cookie WHERE session_id = $1",
+		"SELECT client_id, date_life FROM public.cookie WHERE session_id = $1",
 		cookie.SessionId).Scan(&id, &timeLiveCookie)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -508,7 +508,7 @@ func (db *Wrapper) NewCSRFWebsocket(id int) (string, error) {
 	websocket := generateWebsocket()
 
 	_, err = tx.Exec(contextTransaction,
-		"UPDATE cookie SET websocket = $1 WHERE client_id = $2", websocket, id)
+		"UPDATE public.cookie SET websocket = $1 WHERE client_id = $2", websocket, id)
 	if err != nil {
 		return "", &errPkg.Errors{
 			Text: errPkg.MNewCSRFWebsocketNotUpdate,

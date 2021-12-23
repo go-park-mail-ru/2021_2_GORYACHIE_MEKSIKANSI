@@ -198,8 +198,8 @@ func TestGetRestaurants(t *testing.T) {
 				"SELECT t.id, t.avatar, t.name, t.price_delivery, t.min_delivery_time, t.max_delivery_time,"+
 					" t.rating, rc.category, rc.id "+
 					"FROM (SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time,"+
-					" r.rating FROM restaurant r ORDER BY random() LIMIT 51) t "+
-					"LEFT JOIN restaurant_category rc ON rc.restaurant = t.id",
+					" r.rating FROM public.restaurant r ORDER BY random() LIMIT 51) t "+
+					"LEFT JOIN public.restaurant_category rc ON rc.restaurant = t.id",
 			).
 			Return(&tt.outQuery, tt.errQuery).
 			Times(tt.countQuery)
@@ -293,8 +293,8 @@ func TestGetRecommendedRestaurants(t *testing.T) {
 				"SELECT t.id, t.avatar, t.name, t.price_delivery, t.min_delivery_time, "+
 					"t.max_delivery_time, t.rating, rc.category, rc.id FROM "+
 					"(SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, "+
-					"r.max_delivery_time, r.rating FROM restaurant r ORDER BY rating DESC LIMIT 6) t "+
-					"LEFT JOIN restaurant_category rc ON rc.restaurant = t.id",
+					"r.max_delivery_time, r.rating FROM public.restaurant r ORDER BY rating DESC LIMIT 6) t "+
+					"LEFT JOIN public.restaurant_category rc ON rc.restaurant = t.id",
 			).
 			Return(&tt.outQuery, tt.errQuery).
 			Times(tt.countQuery)
@@ -381,7 +381,7 @@ func TestGetRestaurant(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating FROM restaurant r WHERE r.id = $1",
+				"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating FROM public.restaurant r WHERE r.id = $1",
 				tt.inputQuery,
 			).
 			Return(&tt.row)
@@ -455,7 +455,7 @@ func TestGetTagsRestaurant(t *testing.T) {
 		mTx.
 			EXPECT().
 			Query(context.Background(),
-				"SELECT id, category, place FROM restaurant_category WHERE restaurant = $1",
+				"SELECT id, category, place FROM public.restaurant_category WHERE restaurant = $1",
 				tt.inputQuery,
 			).
 			Return(&tt.rowsQuery, tt.errQuery)
@@ -529,7 +529,7 @@ func TestGetMenu(t *testing.T) {
 		mTx.
 			EXPECT().
 			Query(context.Background(),
-				"SELECT category_restaurant, id, avatar, name, cost, kilocalorie, place, place_category FROM dishes WHERE restaurant = $1",
+				"SELECT category_restaurant, id, avatar, name, cost, kilocalorie, place, place_category FROM public.dishes WHERE restaurant = $1",
 				tt.inputQuery,
 			).
 			Return(&tt.outQuery, tt.errQuery)
@@ -613,10 +613,10 @@ func TestGetDishes(t *testing.T) {
 			Query(context.Background(),
 				"SELECT d.id, d.avatar, d.name, d.cost, d.kilocalorie, d.description, r.id, r.name, sr.id, sr.name, r.place, "+
 					"sr.place, sd.id, sd.name, sd.cost, sd.place "+
-					"FROM dishes d"+
-					" LEFT JOIN radios r ON d.id=r.food "+
-					"LEFT JOIN structure_radios sr ON sr.radios=r.id "+
-					"LEFT JOIN structure_dishes sd ON sd.food=d.id WHERE d.id = $1 AND restaurant = $2",
+					"FROM public.dishes d"+
+					" LEFT JOIN public.radios r ON d.id=r.food "+
+					"LEFT JOIN public.structure_radios sr ON sr.radios=r.id "+
+					"LEFT JOIN public.structure_dishes sd ON sd.food=d.id WHERE d.id = $1 AND restaurant = $2",
 				tt.inputQueryDishesId, tt.inputQueryRestaurantId,
 			).
 			Return(&tt.outQuery, tt.errQuery).
@@ -693,8 +693,8 @@ func TestGetReview(t *testing.T) {
 		mTx.
 			EXPECT().
 			Query(context.Background(),
-				"SELECT gn.name, r.text, r.date_create, r.rate FROM review r "+
-					"LEFT JOIN general_user_info gn ON r.author = gn.id "+
+				"SELECT gn.name, r.text, r.date_create, r.rate FROM public.review r "+
+					"LEFT JOIN public.general_user_info gn ON r.author = gn.id "+
 					"WHERE r.restaurant = $1 ORDER BY r.date_create",
 				tt.inputQuery,
 			).
@@ -776,7 +776,7 @@ func TestCreateReview(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"INSERT INTO review (author, restaurant, text, rate) VALUES ($1, $2, $3, $4)",
+				"INSERT INTO public.review (author, restaurant, text, rate) VALUES ($1, $2, $3, $4)",
 				tt.inputClientId, tt.inputQueryRestaurantId, tt.inputQueryText, tt.inputQueryRate,
 			).
 			Return(nil, tt.errQuery).
@@ -852,7 +852,7 @@ func TestSearchCategory(t *testing.T) {
 		mTx.
 			EXPECT().
 			Query(context.Background(),
-				"SELECT restaurant FROM restaurant_category WHERE fts @@ to_tsquery($1)",
+				"SELECT restaurant FROM public.restaurant_category WHERE fts @@ to_tsquery($1)",
 				tt.inputQuery,
 			).
 			Return(&tt.outQuery, tt.errQuery).
@@ -928,7 +928,7 @@ func TestGetGeneralInfoRestaurant(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant WHERE id = $1",
+				"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM public.restaurant WHERE id = $1",
 				tt.inputQuery,
 			).
 			Return(&tt.outQuery).
@@ -1007,7 +1007,7 @@ func TestGetFavoriteRestaurants(t *testing.T) {
 			EXPECT().
 			Query(context.Background(),
 				"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating, fr.position"+
-					" FROM restaurant r RIGHT JOIN favorite_restaurant fr ON fr.restaurant = r.id WHERE fr.client = $1",
+					" FROM public.restaurant r RIGHT JOIN public.favorite_restaurant fr ON fr.restaurant = r.id WHERE fr.client = $1",
 				tt.inputQuery,
 			).
 			Return(&tt.outQuery, tt.errQuery).
@@ -1086,7 +1086,7 @@ func TestIsFavoriteRestaurant(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT id FROM favorite_restaurant WHERE client = $1 AND restaurant = $2",
+				"SELECT id FROM public.favorite_restaurant WHERE client = $1 AND restaurant = $2",
 				tt.inputQueryClientId, tt.inputQueryRestauranId,
 			).
 			Return(&tt.outQuery).
@@ -1171,7 +1171,7 @@ func TestGetPromoCodes(t *testing.T) {
 		mTx.
 			EXPECT().
 			Query(context.Background(),
-				"SELECT name, description, avatar, restaurant, code FROM promocode ORDER BY random() LIMIT 5").
+				"SELECT name, description, avatar, restaurant, code FROM public.promocode ORDER BY random() LIMIT 5").
 			Return(&tt.outQuery, tt.errQuery).
 			Times(tt.countQuery)
 		testUser := &Wrapper{Conn: m}

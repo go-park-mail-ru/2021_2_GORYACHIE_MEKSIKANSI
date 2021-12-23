@@ -107,7 +107,7 @@ func TestGetTypePromoCode(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT type FROM promocode WHERE code = $1 AND restaurant = $2 AND end_date > NOW()",
+				"SELECT type FROM public.promocode WHERE code = $1 AND restaurant = $2 AND end_date > NOW()",
 				tt.inputQueryPromoCode, tt.inputQueryRestaurantId,
 			).
 			Return(&tt.outQuery)
@@ -181,7 +181,7 @@ func TestActiveFreeDelivery(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT free_delivery FROM promocode WHERE code = $1 AND restaurant = $2",
+				"SELECT free_delivery FROM public.promocode WHERE code = $1 AND restaurant = $2",
 				tt.inputQuery,
 			).
 			Return(&tt.outQuery)
@@ -257,7 +257,7 @@ func TestActiveCostForFreeDish(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT cost_for_free_dish, free_dish_id FROM promocode WHERE code = $1 AND restaurant = $2",
+				"SELECT cost_for_free_dish, free_dish_id FROM public.promocode WHERE code = $1 AND restaurant = $2",
 				tt.inputQuery,
 			).
 			Return(&tt.outQuery)
@@ -364,7 +364,7 @@ func TestActiveCostForSale(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT cost_for_sale, sale_percent, sale_amount FROM promocode WHERE code = $1 AND restaurant = $2",
+				"SELECT cost_for_sale, sale_percent, sale_amount FROM public.promocode WHERE code = $1 AND restaurant = $2",
 				tt.inputQuery,
 			).
 			Return(&tt.outQuery)
@@ -628,7 +628,7 @@ func TestActiveTimeForSale(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT time_for_sale_start, time_for_sale_finish, sale_in_time_percent, sale_in_time_amount FROM promocode WHERE code = $1 AND restaurant = $2",
+				"SELECT time_for_sale_start, time_for_sale_finish, sale_in_time_percent, sale_in_time_amount FROM public.promocode WHERE code = $1 AND restaurant = $2",
 				tt.inputQueryCode, tt.inputQueryRestaurant,
 			).
 			Return(&tt.outQuery).
@@ -709,7 +709,7 @@ func TestAddPromoCode(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"INSERT INTO cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3) ON CONFLICT (client_id) DO UPDATE SET promo_code = $2 WHERE cart_user.client_id =  $1",
+				"INSERT INTO public.cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3) ON CONFLICT (client_id) DO UPDATE SET promo_code = $2 WHERE cart_user.client_id =  $1",
 				tt.inputQueryClient, tt.inputQueryPromoCode, tt.inputQueryRestaurant,
 			).
 			Return(nil, tt.errQuery).
@@ -781,7 +781,7 @@ func TestGetPromoCode(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT promo_code FROM cart_user WHERE client_id = $1",
+				"SELECT promo_code FROM public.cart_user WHERE client_id = $1",
 				tt.inputQuery,
 			).
 			Return(&tt.outQuery).

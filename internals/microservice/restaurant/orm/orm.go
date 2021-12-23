@@ -71,8 +71,8 @@ func (db *Wrapper) GetRestaurants() (*resPkg.AllRestaurantsPromo, error) {
 		"SELECT t.id, t.avatar, t.name, t.price_delivery, t.min_delivery_time, t.max_delivery_time,"+
 			" t.rating, rc.category, rc.id "+
 			"FROM (SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time,"+
-			" r.rating FROM restaurant r ORDER BY random() LIMIT 51) t "+
-			"LEFT JOIN restaurant_category rc ON rc.restaurant = t.id")
+			" r.rating FROM public.restaurant r ORDER BY random() LIMIT 51) t "+
+			"LEFT JOIN public.restaurant_category rc ON rc.restaurant = t.id")
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Text: errPkg.RGetRestaurantsRestaurantsNotSelect,
@@ -141,8 +141,8 @@ func (db *Wrapper) GetRecommendedRestaurants() (*resPkg.AllRestaurants, error) {
 		"SELECT t.id, t.avatar, t.name, t.price_delivery, t.min_delivery_time, "+
 			"t.max_delivery_time, t.rating, rc.category, rc.id FROM "+
 			"(SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, "+
-			"r.max_delivery_time, r.rating FROM restaurant r ORDER BY rating DESC LIMIT 6) t "+
-			"LEFT JOIN restaurant_category rc ON rc.restaurant = t.id")
+			"r.max_delivery_time, r.rating FROM public.restaurant r ORDER BY rating DESC LIMIT 6) t "+
+			"LEFT JOIN public.restaurant_category rc ON rc.restaurant = t.id")
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Text: errPkg.RGetRecommendedRestaurantsRestaurantsNotSelect,
@@ -209,7 +209,7 @@ func (db *Wrapper) GetRestaurant(id int) (*resPkg.RestaurantId, error) {
 
 	var restaurant resPkg.RestaurantId
 	err = tx.QueryRow(contextTransaction,
-		"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating FROM restaurant r WHERE r.id = $1", id).Scan(
+		"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating FROM public.restaurant r WHERE r.id = $1", id).Scan(
 		&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery, &restaurant.MinDelivery,
 		&restaurant.MaxDelivery, &restaurant.Rating)
 	if err != nil {
@@ -240,7 +240,7 @@ func (db *Wrapper) GetTagsRestaurant(id int) ([]resPkg.Tag, error) {
 	defer tx.Rollback(contextTransaction)
 
 	rowCategory, err := tx.Query(contextTransaction,
-		"SELECT id, category, place FROM restaurant_category WHERE restaurant = $1", id)
+		"SELECT id, category, place FROM public.restaurant_category WHERE restaurant = $1", id)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Text: errPkg.RGetTagsRestaurantNotSelect,
@@ -290,7 +290,7 @@ func (db *Wrapper) GetMenu(id int) ([]resPkg.Menu, error) {
 	var result []resPkg.Menu
 
 	rowDishes, err := tx.Query(contextTransaction,
-		"SELECT category_restaurant, id, avatar, name, cost, kilocalorie, place, place_category FROM dishes WHERE restaurant = $1", id)
+		"SELECT category_restaurant, id, avatar, name, cost, kilocalorie, place, place_category FROM public.dishes WHERE restaurant = $1", id)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Text: errPkg.RGetMenuDishesCategoryNotSelect,
@@ -356,10 +356,10 @@ func (db *Wrapper) GetDishes(restId int, dishesId int) (*resPkg.Dishes, error) {
 	rows, err := tx.Query(contextTransaction,
 		"SELECT d.id, d.avatar, d.name, d.cost, d.kilocalorie, d.description, r.id, r.name, sr.id, sr.name, r.place, "+
 			"sr.place, sd.id, sd.name, sd.cost, sd.place "+
-			"FROM dishes d"+
-			" LEFT JOIN radios r ON d.id=r.food "+
-			"LEFT JOIN structure_radios sr ON sr.radios=r.id "+
-			"LEFT JOIN structure_dishes sd ON sd.food=d.id WHERE d.id = $1 AND restaurant = $2",
+			"FROM public.dishes d"+
+			" LEFT JOIN public.radios r ON d.id=r.food "+
+			"LEFT JOIN public.structure_radios sr ON sr.radios=r.id "+
+			"LEFT JOIN public.structure_dishes sd ON sd.food=d.id WHERE d.id = $1 AND restaurant = $2",
 		dishesId, restId)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -455,8 +455,8 @@ func (db *Wrapper) GetReview(id int) ([]resPkg.Review, error) {
 	defer tx.Rollback(contextTransaction)
 
 	rowDishes, err := tx.Query(contextTransaction,
-		"SELECT gn.name, r.text, r.date_create, r.rate FROM review r "+
-			"LEFT JOIN general_user_info gn ON r.author = gn.id "+
+		"SELECT gn.name, r.text, r.date_create, r.rate FROM public.review r "+
+			"LEFT JOIN public.general_user_info gn ON r.author = gn.id "+
 			"WHERE r.restaurant = $1 ORDER BY r.date_create", id)
 	if err != nil {
 		return nil, &errPkg.Errors{
@@ -501,7 +501,7 @@ func (db *Wrapper) CreateReview(id int, review resPkg.NewReview) error {
 	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO review (author, restaurant, text, rate) VALUES ($1, $2, $3, $4)",
+		"INSERT INTO public.review (author, restaurant, text, rate) VALUES ($1, $2, $3, $4)",
 		id, review.Restaurant.Id, review.Text, review.Rate)
 	if err != nil {
 		return &errPkg.Errors{
@@ -531,7 +531,7 @@ func (db *Wrapper) SearchCategory(name string) ([]int, error) {
 	defer tx.Rollback(contextTransaction)
 
 	rows, err := tx.Query(contextTransaction,
-		"SELECT restaurant FROM restaurant_category WHERE fts @@ to_tsquery($1)",
+		"SELECT restaurant FROM public.restaurant_category WHERE fts @@ to_tsquery($1)",
 		name)
 	if err != nil {
 		return nil, &errPkg.Errors{
@@ -573,7 +573,7 @@ func (db *Wrapper) SearchRestaurant(name string) ([]int, error) {
 	defer tx.Rollback(contextTransaction)
 
 	rows, err := tx.Query(contextTransaction,
-		"SELECT id FROM restaurant WHERE fts @@ to_tsquery($1)",
+		"SELECT id FROM public.restaurant WHERE fts @@ to_tsquery($1)",
 		name)
 	if err != nil {
 		return nil, &errPkg.Errors{
@@ -622,7 +622,7 @@ func (db *Wrapper) GetGeneralInfoRestaurant(id int) (*resPkg.Restaurants, error)
 
 	restaurant := resPkg.Restaurants{}
 	err = tx.QueryRow(contextTransaction,
-		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant WHERE id = $1",
+		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM public.restaurant WHERE id = $1",
 		id).Scan(&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery,
 		&restaurant.MinDelivery, &restaurant.MaxDelivery, &restaurant.Rating)
 	if err != nil {
@@ -654,7 +654,7 @@ func (db *Wrapper) GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error) 
 
 	rows, err := tx.Query(contextTransaction,
 		"SELECT r.id, r.avatar, r.name, r.price_delivery, r.min_delivery_time, r.max_delivery_time, r.rating, fr.position"+
-			" FROM restaurant r RIGHT JOIN favorite_restaurant fr ON fr.restaurant = r.id WHERE fr.client = $1",
+			" FROM public.restaurant r RIGHT JOIN public.favorite_restaurant fr ON fr.restaurant = r.id WHERE fr.client = $1",
 		id)
 	if err != nil {
 		return nil, &errPkg.Errors{
@@ -712,7 +712,7 @@ func (db *Wrapper) IsFavoriteRestaurant(idClient int, idRestaurant int) (bool, e
 
 	var check *int32
 	err = tx.QueryRow(contextTransaction,
-		"SELECT id FROM favorite_restaurant WHERE client = $1 AND restaurant = $2",
+		"SELECT id FROM public.favorite_restaurant WHERE client = $1 AND restaurant = $2",
 		idClient, idRestaurant).Scan(&check)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -746,7 +746,7 @@ func (db *Wrapper) EditRestaurantInFavorite(idRestaurant int, idClient int) (boo
 
 	var check *int32
 	err = tx.QueryRow(contextTransaction,
-		"DELETE FROM favorite_restaurant WHERE client = $1 AND restaurant = $2 RETURNING id",
+		"DELETE FROM public.favorite_restaurant WHERE client = $1 AND restaurant = $2 RETURNING id",
 		idClient, idRestaurant).Scan(&check)
 	if err != pgx.ErrNoRows {
 		err = tx.Commit(contextTransaction)
@@ -766,7 +766,7 @@ func (db *Wrapper) EditRestaurantInFavorite(idRestaurant int, idClient int) (boo
 
 	var positionRestaurants *int32
 	err = tx.QueryRow(contextTransaction,
-		"SELECT MAX(position) FROM favorite_restaurant WHERE client = $1", idClient).Scan(&positionRestaurants)
+		"SELECT MAX(position) FROM public.favorite_restaurant WHERE client = $1", idClient).Scan(&positionRestaurants)
 	if err != nil {
 		return false, &errPkg.Errors{
 			Text: errPkg.REditRestaurantInFavoriteRestaurantsNotSelect,
@@ -781,7 +781,7 @@ func (db *Wrapper) EditRestaurantInFavorite(idRestaurant int, idClient int) (boo
 	}
 
 	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO favorite_restaurant (client, restaurant, position) VALUES ($1, $2, $3)",
+		"INSERT INTO public.favorite_restaurant (client, restaurant, position) VALUES ($1, $2, $3)",
 		idClient, idRestaurant, pos)
 	if err != nil {
 		return false, &errPkg.Errors{
@@ -811,7 +811,7 @@ func (db *Wrapper) GetPromoCodes() ([]resPkg.Promocode, error) {
 	defer tx.Rollback(contextTransaction)
 
 	rows, err := tx.Query(contextTransaction,
-		"SELECT name, description, avatar, restaurant, code FROM promocode ORDER BY random() LIMIT 5")
+		"SELECT name, description, avatar, restaurant, code FROM public.promocode ORDER BY random() LIMIT 5")
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Text: errPkg.RGetPromoCodesCodesNotSelect,
@@ -851,7 +851,7 @@ func (db *Wrapper) DeleteDish(id int) error {
 	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
-		"UPDATE dish SET deleted = true WHERE id = $1",
+		"UPDATE public.dish SET deleted = true WHERE id = $1",
 		&id)
 	if err != nil {
 		return &errPkg.Errors{

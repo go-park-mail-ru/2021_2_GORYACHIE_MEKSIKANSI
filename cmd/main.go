@@ -150,7 +150,8 @@ func runServer() {
 
 	port := ":" + appConfig.Port
 	logger.Log.Infof("Listen in 127:0.0.1%s", port)
-	err = fasthttp.ListenAndServeTLS(port, "fullchain.pem", "privkey.pem", withCors.CorsMiddleware(infoMid.MetricsTiming(printURL)))
+	//err = fasthttp.ListenAndServeTLS(port, "fullchain.pem", "privkey.pem", withCors.CorsMiddleware(infoMid.MetricsTiming(printURL)))
+	err = fasthttp.ListenAndServe(port, withCors.CorsMiddleware(infoMid.MetricsTiming(printURL)))
 	if err != nil {
 		logger.Log.Errorf("Listen and server error: %v", err)
 		os.Exit(2)

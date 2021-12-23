@@ -125,7 +125,7 @@ func TestGeneralSignUp(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+				"INSERT INTO public.general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
 				tt.inputQueryName, tt.inputQueryEmail, tt.inputQueryPhone, gomock.Any(), gomock.Any(),
 			).
 			Return(&tt.resultQuery)
@@ -202,14 +202,14 @@ func TestLoginByEmail(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT salt FROM general_user_info WHERE email = $1",
+				"SELECT salt FROM public.general_user_info WHERE email = $1",
 				tt.inputQuerySalt,
 			).
 			Return(&tt.resultQuerySalt)
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT id FROM general_user_info WHERE email = $1 AND password = $2",
+				"SELECT id FROM public.general_user_info WHERE email = $1 AND password = $2",
 				tt.inputQuerySalt, tt.inputQueryPassword,
 			).
 			Return(&tt.resultQueryId)
@@ -286,14 +286,14 @@ func TestLoginByPhone(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT salt FROM general_user_info WHERE phone = $1",
+				"SELECT salt FROM public.general_user_info WHERE phone = $1",
 				tt.inputQuerySalt,
 			).
 			Return(&tt.resultQuerySalt)
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT id FROM general_user_info WHERE phone = $1 AND password = $2",
+				"SELECT id FROM public.general_user_info WHERE phone = $1 AND password = $2",
 				tt.inputQuerySalt, tt.inputQueryPassword,
 			).
 			Return(&tt.resultQueryId)
@@ -367,7 +367,7 @@ func TestDeleteCookie(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"DELETE FROM cookie WHERE csrf_token = $1 RETURNING session_id",
+				"DELETE FROM public.cookie WHERE csrf_token = $1 RETURNING session_id",
 				tt.inputDelete,
 			).
 			Return(&tt.outDelete).
@@ -444,7 +444,7 @@ func TestAddCookie(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
+				"INSERT INTO public.cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 				tt.inputQueryClientId, tt.inputQuerySessionId, tt.inputQueryDateLife, tt.inputQueryCSRFToken,
 			).
 			Return(nil, tt.errQuery)
@@ -494,7 +494,7 @@ func TestAddTransactionCookie(t *testing.T) {
 		m.
 			EXPECT().
 			Exec(context.Background(),
-				"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
+				"INSERT INTO public.cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 				tt.inputQueryClientId, tt.inputQuerySessionId, tt.inputQueryDateLife, tt.inputQueryCSRFToken,
 			).
 			Return(nil, tt.errQuery)
@@ -580,14 +580,14 @@ func TestSignupClient(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"INSERT INTO client (client_id) VALUES ($1)",
+				"INSERT INTO public.client (client_id) VALUES ($1)",
 				tt.inputInsert).
 			Return(nil, tt.ErrInsert).
 			Times(tt.countInsert)
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
+				"INSERT INTO public.cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 				tt.inputQueryCookieClientId, tt.inputQueryCookieSessionId, tt.inputQueryCookieDateLife, tt.inputQueryCookieCSRFToken,
 			).
 			Return(nil, tt.errQueryCookie).
@@ -595,7 +595,7 @@ func TestSignupClient(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+				"INSERT INTO public.general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
 				tt.inputQueryInfoName, tt.inputQueryInfoEmail, tt.inputQueryInfoPhone, gomock.Any(), gomock.Any(),
 			).
 			Return(&tt.resultQueryInfo).
@@ -710,14 +710,14 @@ func TestSignupCourier(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"INSERT INTO courier (client_id) VALUES ($1)",
+				"INSERT INTO public.courier (client_id) VALUES ($1)",
 				tt.inputInsert).
 			Return(nil, tt.ErrInsert).
 			Times(tt.countInsert)
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
+				"INSERT INTO public.cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 				tt.inputQueryCookieClientId, tt.inputQueryCookieSessionId, tt.inputQueryCookieDateLife, tt.inputQueryCookieCSRFToken,
 			).
 			Return(nil, tt.errQueryCookie).
@@ -725,7 +725,7 @@ func TestSignupCourier(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+				"INSERT INTO public.general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
 				tt.inputQueryInfoName, tt.inputQueryInfoEmail, tt.inputQueryInfoPhone, gomock.Any(), gomock.Any(),
 			).
 			Return(&tt.resultQueryInfo).
@@ -827,14 +827,14 @@ func TestSignupHost(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"INSERT INTO host (client_id) VALUES ($1)",
+				"INSERT INTO public.host (client_id) VALUES ($1)",
 				tt.inputInsert).
 			Return(nil, tt.ErrInsert).
 			Times(tt.countInsert)
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"INSERT INTO cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
+				"INSERT INTO public.cookie (client_id, session_id, date_life, csrf_token) VALUES ($1, $2, $3, $4)",
 				tt.inputQueryCookieClientId, tt.inputQueryCookieSessionId, tt.inputQueryCookieDateLife, tt.inputQueryCookieCSRFToken,
 			).
 			Return(nil, tt.errQueryCookie).
@@ -842,7 +842,7 @@ func TestSignupHost(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"INSERT INTO general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+				"INSERT INTO public.general_user_info (name, email, phone, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id",
 				tt.inputQueryInfoName, tt.inputQueryInfoEmail, tt.inputQueryInfoPhone, gomock.Any(), gomock.Any(),
 			).
 			Return(&tt.resultQueryInfo).
@@ -922,7 +922,7 @@ func TestCheckAccess(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT client_id, date_life FROM cookie WHERE session_id = $1 AND csrf_token = $2",
+				"SELECT client_id, date_life FROM public.cookie WHERE session_id = $1 AND csrf_token = $2",
 				tt.inputCheckAccessSessionId, tt.inputCheckAccessCSRFToken,
 			).
 			Return(&tt.outCheckAccess).
@@ -1000,7 +1000,7 @@ func TestNewCSRF(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"UPDATE cookie SET csrf_token = $1 WHERE session_id = $2",
+				"UPDATE public.cookie SET csrf_token = $1 WHERE session_id = $2",
 				gomock.Any(), tt.inputNewCSRF,
 			).
 			Return(nil, tt.errNewCSRF).
@@ -1082,7 +1082,7 @@ func TestGetIdByCookie(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT client_id, date_life FROM cookie WHERE session_id = $1",
+				"SELECT client_id, date_life FROM public.cookie WHERE session_id = $1",
 				tt.inputGetIdByCookie,
 			).
 			Return(&tt.outGetIdByCookie).
@@ -1198,7 +1198,7 @@ func TestNewCSRFWebsocket(t *testing.T) {
 			Times(tt.countRollbackTransaction)
 		mTx.
 			EXPECT().
-			Exec(gomock.Any(), "UPDATE cookie SET websocket = $1 WHERE client_id = $2", gomock.Any(), tt.inputQuery).
+			Exec(gomock.Any(), "UPDATE public.cookie SET websocket = $1 WHERE client_id = $2", gomock.Any(), tt.inputQuery).
 			Return(nil, tt.errQuery).
 			Times(tt.countQuery)
 		testUser := &Wrapper{Conn: m}

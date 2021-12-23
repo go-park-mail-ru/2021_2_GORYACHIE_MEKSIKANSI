@@ -60,7 +60,7 @@ func (db *Wrapper) GetTypePromoCode(promoCode string, restaurantId int) (int, er
 
 	var typePromoCode int
 	err = tx.QueryRow(contextTransaction,
-		"SELECT type FROM promocode WHERE code = $1 AND restaurant = $2 AND end_date > NOW()",
+		"SELECT type FROM public.promocode WHERE code = $1 AND restaurant = $2 AND end_date > NOW()",
 		promoCode, restaurantId).Scan(&typePromoCode)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -95,7 +95,7 @@ func (db *Wrapper) ActiveFreeDelivery(promoCode string, restaurantId int) (bool,
 
 	var freeDelivery bool
 	err = tx.QueryRow(contextTransaction,
-		"SELECT free_delivery FROM promocode WHERE code = $1 AND restaurant = $2",
+		"SELECT free_delivery FROM public.promocode WHERE code = $1 AND restaurant = $2",
 		promoCode, restaurantId).Scan(&freeDelivery)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -131,7 +131,7 @@ func (db *Wrapper) ActiveCostForFreeDish(promoCode string, restaurantId int) (in
 	var costForFreeDish int
 	var dishId int
 	err = tx.QueryRow(contextTransaction,
-		"SELECT cost_for_free_dish, free_dish_id FROM promocode WHERE code = $1 AND restaurant = $2",
+		"SELECT cost_for_free_dish, free_dish_id FROM public.promocode WHERE code = $1 AND restaurant = $2",
 		promoCode, restaurantId).Scan(&costForFreeDish, &dishId)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -167,7 +167,7 @@ func (db *Wrapper) ActiveCostForSale(promoCode string, amount int, restaurantId 
 	var costForFreeDelivery int
 	var salePercent, saleAmount *int32
 	err = tx.QueryRow(contextTransaction,
-		"SELECT cost_for_sale, sale_percent, sale_amount FROM promocode WHERE code = $1 AND restaurant = $2",
+		"SELECT cost_for_sale, sale_percent, sale_amount FROM public.promocode WHERE code = $1 AND restaurant = $2",
 		promoCode, restaurantId).Scan(&costForFreeDelivery, &salePercent, &saleAmount)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -213,7 +213,7 @@ func (db *Wrapper) ActiveTimeForSale(promoCode string, amount int, restaurantId 
 	var timeSaleFinish time.Time
 	var salePercent, saleAmount *int32
 	err = tx.QueryRow(contextTransaction,
-		"SELECT time_for_sale_start, time_for_sale_finish, sale_in_time_percent, sale_in_time_amount FROM promocode WHERE code = $1 AND restaurant = $2",
+		"SELECT time_for_sale_start, time_for_sale_finish, sale_in_time_percent, sale_in_time_amount FROM public.promocode WHERE code = $1 AND restaurant = $2",
 		promoCode, restaurantId).Scan(&timeSaleStart, &timeSaleFinish, &salePercent, &saleAmount)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -261,7 +261,7 @@ func (db *Wrapper) AddPromoCode(promoCode string, restaurantId int, clientId int
 	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
-		"INSERT INTO cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3) ON CONFLICT (client_id) DO UPDATE SET promo_code = $2 WHERE cart_user.client_id =  $1",
+		"INSERT INTO public.cart_user (client_id, promo_code, restaurant) VALUES ($1, $2, $3) ON CONFLICT (client_id) DO UPDATE SET promo_code = $2 WHERE cart_user.client_id =  $1",
 		clientId, promoCode, restaurantId)
 	if err != nil {
 		return &errPkg.Errors{
@@ -291,7 +291,7 @@ func (db *Wrapper) GetPromoCode(id int) (string, error) {
 
 	var promoCode string
 	err = tx.QueryRow(contextTransaction,
-		"SELECT promo_code FROM cart_user WHERE client_id = $1",
+		"SELECT promo_code FROM public.cart_user WHERE client_id = $1",
 		id).Scan(&promoCode)
 	if err != nil {
 		if err == pgx.ErrNoRows {

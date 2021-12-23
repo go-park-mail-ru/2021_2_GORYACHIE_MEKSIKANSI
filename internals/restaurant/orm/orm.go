@@ -156,7 +156,7 @@ func (r *Wrapper) EditRestaurantInFavorite(idRestaurant int, idClient int) (bool
 }
 
 func (r *Wrapper) DeleteDish(idDish int) error {
-	result, err := r.Conn.DeleteDish(r.Ctx, &resProto.DishesId{Id: int64(idDish)})
+	result, err := r.Conn.DeleteDish(r.Ctx, &resProto.DishId{Id: int64(idDish)})
 	if err != nil {
 		return err
 	}

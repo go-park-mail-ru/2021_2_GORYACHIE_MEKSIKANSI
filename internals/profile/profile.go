@@ -39,7 +39,7 @@ type UpdatePassword struct {
 
 //easyjson:json
 type UpdatePhone struct {
-	Phone string `json:"Phone"`
+	Phone string `json:"phone"`
 }
 
 type UpdateAvatar struct {

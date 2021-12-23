@@ -66,6 +66,20 @@ func (mr *MockWrapperRestaurantServerInterfaceMockRecorder) CreateReview(arg0, a
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateReview", reflect.TypeOf((*MockWrapperRestaurantServerInterface)(nil).CreateReview), arg0, arg1)
 }
 
+// DeleteDish mocks base method.
+func (m *MockWrapperRestaurantServerInterface) DeleteDish(arg0 int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteDish", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteDish indicates an expected call of DeleteDish.
+func (mr *MockWrapperRestaurantServerInterfaceMockRecorder) DeleteDish(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteDish", reflect.TypeOf((*MockWrapperRestaurantServerInterface)(nil).DeleteDish), arg0)
+}
+
 // EditRestaurantInFavorite mocks base method.
 func (m *MockWrapperRestaurantServerInterface) EditRestaurantInFavorite(arg0, arg1 int) (bool, error) {
 	m.ctrl.T.Helper()
@@ -232,6 +246,26 @@ func (mr *MockConnectRestaurantServiceInterfaceMockRecorder) CreateReview(arg0, 
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateReview", reflect.TypeOf((*MockConnectRestaurantServiceInterface)(nil).CreateReview), varargs...)
+}
+
+// DeleteDish mocks base method.
+func (m *MockConnectRestaurantServiceInterface) DeleteDish(arg0 context.Context, arg1 *resProto.DishId, arg2 ...grpc.CallOption) (*resProto.Error, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "DeleteDish", varargs...)
+	ret0, _ := ret[0].(*resProto.Error)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteDish indicates an expected call of DeleteDish.
+func (mr *MockConnectRestaurantServiceInterfaceMockRecorder) DeleteDish(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteDish", reflect.TypeOf((*MockConnectRestaurantServiceInterface)(nil).DeleteDish), varargs...)
 }
 
 // EditRestaurantInFavorite mocks base method.

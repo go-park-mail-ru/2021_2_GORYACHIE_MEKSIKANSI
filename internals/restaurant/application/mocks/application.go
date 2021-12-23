@@ -63,6 +63,20 @@ func (mr *MockWrapperRestaurantServerInterfaceMockRecorder) CreateReview(arg0, a
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateReview", reflect.TypeOf((*MockWrapperRestaurantServerInterface)(nil).CreateReview), arg0, arg1)
 }
 
+// DeleteDish mocks base method.
+func (m *MockWrapperRestaurantServerInterface) DeleteDish(arg0 int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteDish", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteDish indicates an expected call of DeleteDish.
+func (mr *MockWrapperRestaurantServerInterfaceMockRecorder) DeleteDish(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteDish", reflect.TypeOf((*MockWrapperRestaurantServerInterface)(nil).DeleteDish), arg0)
+}
+
 // EditRestaurantInFavorite mocks base method.
 func (m *MockWrapperRestaurantServerInterface) EditRestaurantInFavorite(arg0, arg1 int) (bool, error) {
 	m.ctrl.T.Helper()

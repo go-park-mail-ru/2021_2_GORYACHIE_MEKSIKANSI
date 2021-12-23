@@ -77,7 +77,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 	role := 0
 
 	err = tx.QueryRow(contextTransaction,
-		"SELECT id FROM host WHERE client_id = $1", id).Scan(&role)
+		"SELECT id FROM public.host WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err != pgx.ErrNoRows {
 		return "", &errPkg.Errors{
 			Text: errPkg.PGetRoleByIdHostNotScan,
@@ -94,7 +94,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 	}
 
 	err = tx.QueryRow(contextTransaction,
-		"SELECT id FROM client WHERE client_id = $1", id).Scan(&role)
+		"SELECT id FROM public.client WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err != pgx.ErrNoRows {
 		return "", &errPkg.Errors{
 			Text: errPkg.PGetRoleByIdClientNotScan,
@@ -111,7 +111,7 @@ func (db *Wrapper) GetRoleById(id int) (string, error) {
 	}
 
 	err = tx.QueryRow(contextTransaction,
-		"SELECT id FROM courier WHERE client_id = $1", id).Scan(&role)
+		"SELECT id FROM public.courier WHERE client_id = $1", id).Scan(&role)
 	if err != nil && err != pgx.ErrNoRows {
 		return "", &errPkg.Errors{
 			Text: errPkg.PGetRoleByIdCourierNotScan,
@@ -150,7 +150,7 @@ func (db *Wrapper) GetProfileHost(id int) (*profile.Profile, error) {
 
 	var profile = profile.Profile{}
 	err = tx.QueryRow(contextTransaction,
-		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
+		"SELECT email, name, avatar, phone FROM public.general_user_info WHERE id = $1", id).Scan(
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errPkg.Errors{
@@ -181,7 +181,7 @@ func (db *Wrapper) GetProfileClient(id int) (*profile.Profile, error) {
 
 	var profile = profile.Profile{}
 	err = tx.QueryRow(contextTransaction,
-		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
+		"SELECT email, name, avatar, phone FROM public.general_user_info WHERE id = $1", id).Scan(
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errPkg.Errors{
@@ -191,7 +191,7 @@ func (db *Wrapper) GetProfileClient(id int) (*profile.Profile, error) {
 
 	var birthday *time.Time
 	err = tx.QueryRow(contextTransaction,
-		"SELECT date_birthday FROM client WHERE client_id = $1", id).Scan(&birthday)
+		"SELECT date_birthday FROM public.client WHERE client_id = $1", id).Scan(&birthday)
 	if birthday != nil {
 		profile.Birthday, _ = Utils2.FormatDate(*birthday)
 	}
@@ -226,7 +226,7 @@ func (db *Wrapper) GetProfileCourier(id int) (*profile.Profile, error) {
 
 	var profile = profile.Profile{}
 	err = tx.QueryRow(contextTransaction,
-		"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1", id).Scan(
+		"SELECT email, name, avatar, phone FROM public.general_user_info WHERE id = $1", id).Scan(
 		&profile.Email, &profile.Name, &profile.Avatar, &profile.Phone)
 	if err != nil {
 		return nil, &errPkg.Errors{
@@ -255,7 +255,7 @@ func (db *Wrapper) UpdateName(id int, newName string) error {
 	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
-		"UPDATE general_user_info SET name = $1 WHERE id = $2",
+		"UPDATE public.general_user_info SET name = $1 WHERE id = $2",
 		Utils2.Sanitize(newName), id)
 	if err != nil {
 		return &errPkg.Errors{
@@ -285,7 +285,7 @@ func (db *Wrapper) UpdateEmail(id int, newEmail string) error {
 	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
-		"UPDATE general_user_info SET email = $1 WHERE id = $2",
+		"UPDATE public.general_user_info SET email = $1 WHERE id = $2",
 		Utils2.Sanitize(newEmail), id)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -321,7 +321,7 @@ func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
 
 	var salt string
 	err = tx.QueryRow(contextTransaction,
-		"SELECT salt FROM general_user_info WHERE id = $1",
+		"SELECT salt FROM public.general_user_info WHERE id = $1",
 		id).Scan(&salt)
 	if err != nil {
 		return &errPkg.Errors{
@@ -330,7 +330,7 @@ func (db *Wrapper) UpdatePassword(id int, newPassword string) error {
 	}
 
 	_, err = tx.Exec(contextTransaction,
-		"UPDATE general_user_info SET password = $1 WHERE id = $2",
+		"UPDATE public.general_user_info SET password = $1 WHERE id = $2",
 		Utils2.HashPassword(newPassword, salt), id)
 	if err != nil {
 		return &errPkg.Errors{
@@ -378,7 +378,7 @@ func (db *Wrapper) UpdatePhone(id int, newPhone string) error {
 	newPhone = string(s)
 
 	_, err = tx.Exec(contextTransaction,
-		"UPDATE general_user_info SET phone = $1 WHERE id = $2",
+		"UPDATE public.general_user_info SET phone = $1 WHERE id = $2",
 		newPhone, id)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -433,7 +433,7 @@ func (db *Wrapper) UpdateAvatar(id int, newAvatar *profile.UpdateAvatar, newFile
 	}
 
 	_, err = tx.Exec(contextTransaction,
-		"UPDATE general_user_info SET avatar = $1 WHERE id = $2",
+		"UPDATE public.general_user_info SET avatar = $1 WHERE id = $2",
 		newAvatar.Avatar, id)
 	if err != nil {
 		return &errPkg.Errors{
@@ -469,7 +469,7 @@ func (db *Wrapper) UpdateBirthday(id int, newBirthday string) error {
 		}
 	}
 	_, err = tx.Exec(contextTransaction,
-		"UPDATE client SET date_birthday = $1 WHERE client_id = $2",
+		"UPDATE public.client SET date_birthday = $1 WHERE client_id = $2",
 		birthday, id)
 	if err != nil {
 		return &errPkg.Errors{
@@ -500,7 +500,7 @@ func (db *Wrapper) UpdateAddress(id int, newAddress profile.AddressCoordinates) 
 
 	newAddress.Sanitize()
 	_, err = tx.Exec(contextTransaction,
-		"UPDATE address_user SET alias = $1, comment = $2, city = $3, street = $4, house = $5, floor = $6,"+
+		"UPDATE public.address_user SET alias = $1, comment = $2, city = $3, street = $4, house = $5, floor = $6,"+
 			" flat = $7, porch = $8, intercom = $9, latitude = $10, longitude = $11"+
 			" WHERE client_id = $12 AND deleted = false",
 		newAddress.Alias, newAddress.Comment, newAddress.City,
@@ -537,7 +537,7 @@ func (db *Wrapper) AddAddress(id int, newAddress profile.AddressCoordinates) (in
 	var idAddress int
 	newAddress.Sanitize()
 	err = tx.QueryRow(contextTransaction,
-		"INSERT INTO address_user (city, street, house, floor, flat, porch, intercom, latitude, longitude, client_id, deleted)"+
+		"INSERT INTO public.address_user (city, street, house, floor, flat, porch, intercom, latitude, longitude, client_id, deleted)"+
 			" VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true) RETURNING id",
 		newAddress.City, newAddress.Street, newAddress.House,
 		newAddress.Floor, newAddress.Flat, newAddress.Porch,
@@ -571,7 +571,7 @@ func (db *Wrapper) DeleteAddress(id int, addressId int) error {
 	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
-		"UPDATE address_user SET deleted = true WHERE client_id = $1 AND id = $2",
+		"UPDATE public.address_user SET deleted = true WHERE client_id = $1 AND id = $2",
 		id, addressId)
 	if err != nil {
 		return &errPkg.Errors{

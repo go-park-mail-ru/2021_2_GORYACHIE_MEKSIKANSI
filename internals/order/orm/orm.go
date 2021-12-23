@@ -22,7 +22,7 @@ type WrapperOrderInterface interface {
 	GetOrders(id int) (*orderPkg.HistoryOrderArray, error)
 	GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, error)
 	UpdateStatusOrder(id int) (int, error)
-	CancelStatusOrder(id int, textCancel string) error
+	CancelOrder(id int, textCancel string) error
 	DeleteCart(id int) error
 	GetCart(id int) (*cart.ResponseCartErrors, error)
 	GetRestaurant(id int) (*restaurant.RestaurantId, error)
@@ -71,7 +71,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 	var orderId int
 
 	err = tx.QueryRow(contextTransaction,
-		"INSERT INTO order_user (client_id, courier_id, address_id, restaurant_id, comment,"+
+		"INSERT INTO public.order_user (client_id, courier_id, address_id, restaurant_id, comment,"+
 			" method_pay, dCost, sumCost) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id",
 		id, courierId, addressId, cart.Restaurant.Id, createOrder.Comment, createOrder.MethodPay,
 		cart.Cost.DCost, cart.Cost.SumCost).Scan(&orderId)
@@ -86,7 +86,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 	for i, dish := range cart.Dishes {
 		var listId int
 		err = tx.QueryRow(contextTransaction,
-			"INSERT INTO order_list (order_id, food, count_dishes, item_number, place) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+			"INSERT INTO public.order_list (order_id, food, count_dishes, item_number, place) VALUES ($1, $2, $3, $4, $5) RETURNING id",
 			orderId, dish.Id, dish.Count, dish.ItemNumber, dishPlace).Scan(&listId)
 		if err != nil {
 			return 0, &errPkg.Errors{
@@ -97,7 +97,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 		if dish.RadiosCart != nil {
 			for _, radios := range dish.RadiosCart {
 				_, err = tx.Exec(contextTransaction,
-					"INSERT INTO order_radios_list (order_id, radios_id, radios, food, list_id, place) VALUES ($1, $2, $3, $4, $5, $6)",
+					"INSERT INTO public.order_radios_list (order_id, radios_id, radios, food, list_id, place) VALUES ($1, $2, $3, $4, $5, $6)",
 					orderId, radios.RadiosId, radios.Id, cart.Dishes[i].Id, listId, elementPlace)
 				if err != nil {
 					return 0, &errPkg.Errors{
@@ -110,7 +110,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 		if dish.IngredientCart != nil {
 			for _, ingredient := range dish.IngredientCart {
 				_, err = tx.Exec(contextTransaction,
-					"INSERT INTO order_structure_list (order_id, food, structure_food, list_id, place) VALUES ($1, $2, $3, $4, $5)",
+					"INSERT INTO public.order_structure_list (order_id, food, structure_food, list_id, place) VALUES ($1, $2, $3, $4, $5)",
 					orderId, dish.Id, ingredient.Id, listId, elementPlace)
 				if err != nil {
 					return 0, &errPkg.Errors{
@@ -123,7 +123,7 @@ func (db *Wrapper) CreateOrder(id int, createOrder orderPkg.CreateOrder, address
 
 		var newCount int
 		err = tx.QueryRow(contextTransaction,
-			"UPDATE dishes SET count = count - $1 WHERE id = $2 RETURNING count",
+			"UPDATE public.dishes SET count = count - $1 WHERE id = $2 RETURNING count",
 			dish.Count, dish.Id).Scan(&newCount)
 		if err != nil {
 			return 0, &errPkg.Errors{
@@ -169,15 +169,15 @@ func (db *Wrapper) GetOrders(id int) (*orderPkg.HistoryOrderArray, error) {
 			"d.cost, d.kilocalorie, d.weight, d.description, sr.name, "+
 			"sr.radios, sr.id, sd.name, sd.id, sd.cost, restaurant_id, r.name, r.avatar, r.city, r.street,"+
 			" r.house, r.floor, r.latitude, r.longitude, dCost, sumCost, ol.place, orl.place, osl.place "+
-			"FROM order_user"+
-			" LEFT JOIN address_user au ON au.id = order_user.address_id"+
-			" LEFT JOIN order_list ol ON ol.order_id = order_user.id"+
-			" LEFT JOIN dishes d ON d.id = ol.food"+
-			" LEFT JOIN order_structure_list osl ON osl.order_id = order_user.id and d.id=osl.food and ol.id=osl.list_id"+
-			" LEFT JOIN order_radios_list orl ON orl.order_id = order_user.id and ol.food=orl.food and ol.id=orl.list_id"+
-			" LEFT JOIN structure_radios sr ON sr.id = orl.radios"+
-			" LEFT JOIN structure_dishes sd ON sd.id = osl.structure_food"+
-			" LEFT JOIN restaurant r ON r.id = order_user.restaurant_id WHERE order_user.client_id = $1 ORDER BY date_order", id)
+			"FROM public.order_user"+
+			" LEFT JOIN public.address_user au ON au.id = order_user.address_id"+
+			" LEFT JOIN public.order_list ol ON ol.order_id = order_user.id"+
+			" LEFT JOIN public.dishes d ON d.id = ol.food"+
+			" LEFT JOIN public.order_structure_list osl ON osl.order_id = order_user.id and d.id=osl.food and ol.id=osl.list_id"+
+			" LEFT JOIN public.order_radios_list orl ON orl.order_id = order_user.id and ol.food=orl.food and ol.id=orl.list_id"+
+			" LEFT JOIN public.structure_radios sr ON sr.id = orl.radios"+
+			" LEFT JOIN public.structure_dishes sd ON sd.id = osl.structure_food"+
+			" LEFT JOIN public.restaurant r ON r.id = order_user.restaurant_id WHERE order_user.client_id = $1 ORDER BY date_order", id)
 	if err != nil {
 		return nil, &errPkg.Errors{
 			Text: errPkg.OGetOrdersNotSelect,
@@ -195,7 +195,7 @@ func (db *Wrapper) GetOrders(id int) (*orderPkg.HistoryOrderArray, error) {
 		var address profile.AddressCoordinates
 		var dish cart.DishesCartResponse
 		var order orderPkg.HistoryOrder
-		var restaurant orderPkg.HistoryResOrder
+		var rest orderPkg.HistoryResOrder
 
 		var getPlaceDishes, getPlaceRadios, getPlaceIngredient *int32
 		var srRadios, srId, sdId, sdCost *int32
@@ -207,9 +207,9 @@ func (db *Wrapper) GetOrders(id int) (*orderPkg.HistoryOrderArray, error) {
 			&address.Floor, &address.Intercom, &address.Comment, &address.Coordinates.Latitude,
 			&address.Coordinates.Longitude, &dish.Id, &dish.Img, &dish.Name, &dish.Count,
 			&dish.Cost, &dish.Kilocalorie, &dish.Weight, &dish.Description, &srName, &srRadios,
-			&srId, &sdName, &sdId, &sdCost, &restaurant.Id, &restaurant.Name, &restaurant.Img,
-			&restaurant.Address.City, &restaurant.Address.Street, &restaurant.Address.House,
-			&restaurant.Address.Floor, &restaurant.Address.Coordinates.Latitude, &restaurant.Address.Coordinates.Longitude,
+			&srId, &sdName, &sdId, &sdCost, &rest.Id, &rest.Name, &rest.Img,
+			&rest.Address.City, &rest.Address.Street, &rest.Address.House,
+			&rest.Address.Floor, &rest.Address.Coordinates.Latitude, &rest.Address.Coordinates.Longitude,
 			&order.Cart.Cost.DCost, &order.Cart.Cost.SumCost, &getPlaceDishes, &getPlaceRadios, &getPlaceIngredient)
 
 		if err != nil {
@@ -277,7 +277,7 @@ func (db *Wrapper) GetOrders(id int) (*orderPkg.HistoryOrderArray, error) {
 
 		if _, ok := m[order.Id]; !ok {
 			order.Address = address
-			order.Restaurant = restaurant
+			order.Restaurant = rest
 			m[order.Id] = order
 			placeOrder[numberPlaceOrder] = order.Id
 			numberPlaceOrder++
@@ -335,15 +335,15 @@ func (db *Wrapper) GetOrder(idClient int, idOrder int) (*orderPkg.ActiveOrder, e
 			"d.cost, d.kilocalorie, d.weight, d.description, sr.name, "+
 			"sr.radios, sr.id, sd.name, sd.id, sd.cost, restaurant_id, r.name, r.avatar, r.city, r.street,"+
 			" r.house, r.floor, r.latitude, r.longitude, dCost, sumCost, ol.place, orl.place, osl.place, r.max_delivery_time "+
-			"FROM order_user"+
-			" LEFT JOIN address_user au ON au.id = order_user.address_id"+
-			" LEFT JOIN order_list ol ON ol.order_id = order_user.id"+
-			" LEFT JOIN dishes d ON d.id = ol.food"+
-			" LEFT JOIN order_structure_list osl ON osl.order_id = order_user.id and d.id=osl.food and ol.id=osl.list_id"+
-			" LEFT JOIN order_radios_list orl ON orl.order_id = order_user.id and ol.food=orl.food and ol.id=orl.list_id"+
-			" LEFT JOIN structure_radios sr ON sr.id = orl.radios"+
-			" LEFT JOIN structure_dishes sd ON sd.id = osl.structure_food"+
-			" LEFT JOIN restaurant r ON r.id = order_user.restaurant_id WHERE order_user.client_id = $1 AND order_user.id = $2",
+			"FROM public.order_user"+
+			" LEFT JOIN public.address_user au ON au.id = order_user.address_id"+
+			" LEFT JOIN public.order_list ol ON ol.order_id = order_user.id"+
+			" LEFT JOIN public.dishes d ON d.id = ol.food"+
+			" LEFT JOIN public.order_structure_list osl ON osl.order_id = order_user.id and d.id=osl.food and ol.id=osl.list_id"+
+			" LEFT JOIN public.order_radios_list orl ON orl.order_id = order_user.id and ol.food=orl.food and ol.id=orl.list_id"+
+			" LEFT JOIN public.structure_radios sr ON sr.id = orl.radios"+
+			" LEFT JOIN public.structure_dishes sd ON sd.id = osl.structure_food"+
+			" LEFT JOIN public.restaurant r ON r.id = order_user.restaurant_id WHERE order_user.client_id = $1 AND order_user.id = $2",
 		idClient, idOrder)
 	if err != nil {
 		return nil, &errPkg.Errors{
@@ -474,7 +474,7 @@ func (db *Wrapper) UpdateStatusOrder(id int) (int, error) {
 
 	var newStatus int
 	err = tx.QueryRow(contextTransaction,
-		"UPDATE order_user SET status = status + 1 WHERE id = $1 RETURNING status",
+		"UPDATE public.order_user SET status = status + 1 WHERE id = $1 RETURNING status",
 		id).Scan(&newStatus)
 	if err != nil {
 		return 0, &errPkg.Errors{
@@ -535,7 +535,7 @@ func (db *Wrapper) GetRestaurant(id int) (*restaurant.RestaurantId, error) {
 
 	var restaurant restaurant.RestaurantId
 	err = tx.QueryRow(contextTransaction,
-		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant WHERE id = $1", id).Scan(
+		"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM public.restaurant WHERE id = $1", id).Scan(
 		&restaurant.Id, &restaurant.Img, &restaurant.Name, &restaurant.CostForFreeDelivery, &restaurant.MinDelivery,
 		&restaurant.MaxDelivery, &restaurant.Rating)
 	if err != nil {
@@ -566,7 +566,7 @@ func (db *Wrapper) DeleteCart(id int) error {
 	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
-		"DELETE FROM cart_food CASCADE WHERE client_id = $1", id)
+		"DELETE FROM public.cart_food CASCADE WHERE client_id = $1", id)
 	if err != nil {
 		return &errPkg.Errors{
 			Text: errPkg.CDeleteCartCartNotDelete,
@@ -594,7 +594,7 @@ func (db *Wrapper) CancelOrder(id int, TextCancel string) error {
 	defer tx.Rollback(contextTransaction)
 
 	_, err = tx.Exec(contextTransaction,
-		"UPDATE order_user SET status = 4 AND reason = $2 WHERE client_id = $1", id, TextCancel)
+		"UPDATE public.order_user SET status = 4 AND reason = $2 WHERE client_id = $1", id, TextCancel)
 	if err != nil {
 		return &errPkg.Errors{
 			Text: errPkg.OCancelOrderNotFound,

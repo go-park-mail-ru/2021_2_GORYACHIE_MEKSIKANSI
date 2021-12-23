@@ -124,21 +124,21 @@ func TestGetRoleById(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT id FROM host WHERE client_id = $1",
+				"SELECT id FROM public.host WHERE client_id = $1",
 				tt.inputQueryHost,
 			).
 			Return(&tt.rowsQueryHost).Times(tt.countQueryHost)
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT id FROM client WHERE client_id = $1",
+				"SELECT id FROM public.client WHERE client_id = $1",
 				tt.inputQueryClient,
 			).
 			Return(&tt.rowsQueryClient).Times(tt.countQueryClient)
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT id FROM courier WHERE client_id = $1",
+				"SELECT id FROM public.courier WHERE client_id = $1",
 				tt.inputQueryCourier,
 			).
 			Return(&tt.rowsQueryCourier).Times(tt.countQueryCourier)
@@ -216,7 +216,7 @@ func TestGetProfileHost(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1",
+				"SELECT email, name, avatar, phone FROM public.general_user_info WHERE id = $1",
 				tt.inputQuery,
 			).
 			Return(&tt.rowsQuery)
@@ -294,7 +294,7 @@ func TestGetProfileCourier(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1",
+				"SELECT email, name, avatar, phone FROM public.general_user_info WHERE id = $1",
 				tt.inputQuery,
 			).
 			Return(&tt.rowsQuery)
@@ -378,14 +378,14 @@ func TestGetProfileClient(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT email, name, avatar, phone FROM general_user_info WHERE id = $1",
+				"SELECT email, name, avatar, phone FROM public.general_user_info WHERE id = $1",
 				tt.inputQuery,
 			).
 			Return(&tt.rowsQuery)
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT date_birthday FROM client WHERE client_id = $1",
+				"SELECT date_birthday FROM public.client WHERE client_id = $1",
 				tt.inputQueryBirthday,
 			).
 			Return(&tt.rowsQueryBirthday).
@@ -460,7 +460,7 @@ func TestUpdateName(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"UPDATE general_user_info SET name = $1 WHERE id = $2",
+				"UPDATE public.general_user_info SET name = $1 WHERE id = $2",
 				tt.inputQueryName, tt.inputQueryId,
 			).
 			Return(nil, tt.errQuery)
@@ -533,7 +533,7 @@ func TestUpdateEmail(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"UPDATE general_user_info SET email = $1 WHERE id = $2",
+				"UPDATE public.general_user_info SET email = $1 WHERE id = $2",
 				tt.inputQueryEmail, tt.inputQueryId,
 			).
 			Return(nil, tt.errQuery)
@@ -610,14 +610,14 @@ func TestUpdatePassword(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT salt FROM general_user_info WHERE id = $1",
+				"SELECT salt FROM public.general_user_info WHERE id = $1",
 				tt.inputQuerySalt,
 			).
 			Return(&tt.querySalt)
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"UPDATE general_user_info SET password = $1 WHERE id = $2",
+				"UPDATE public.general_user_info SET password = $1 WHERE id = $2",
 				tt.inputQueryPassword, tt.inputQueryId,
 			).
 			Return(nil, tt.errQuery)
@@ -653,11 +653,11 @@ var UpdatePhone = []struct {
 	{
 		testName:                 "First",
 		inputQueryId:             1,
-		inputQueryPhone:          "89175554433",
+		inputQueryPhone:          "89175554492",
 		errQuery:                 nil,
 		outErr:                   "",
 		inputId:                  1,
-		inputPhone:               "89175554433",
+		inputPhone:               "89175554492",
 		errBeginTransaction:      nil,
 		errCommitTransaction:     nil,
 		countCommitTransaction:   1,
@@ -704,7 +704,7 @@ func TestUpdatePhone(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"UPDATE general_user_info SET phone = $1 WHERE id = $2",
+				"UPDATE public.general_user_info SET phone = $1 WHERE id = $2",
 				tt.inputQueryPhone, tt.inputQueryId,
 			).
 			Return(nil, tt.errQuery)
@@ -862,7 +862,7 @@ func TestUpdateBirthday(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"UPDATE client SET date_birthday = $1 WHERE client_id = $2",
+				"UPDATE public.client SET date_birthday = $1 WHERE client_id = $2",
 				tt.inputQueryBirthday, tt.inputQueryId,
 			).
 			Return(nil, tt.errQuery)
@@ -937,7 +937,7 @@ func TestUpdateAddress(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"UPDATE address_user SET alias = $1, comment = $2, city = $3, street = $4, house = $5, floor = $6,"+
+				"UPDATE public.address_user SET alias = $1, comment = $2, city = $3, street = $4, house = $5, floor = $6,"+
 					" flat = $7, porch = $8, intercom = $9, latitude = $10, longitude = $11"+
 					" WHERE client_id = $12 AND deleted = false",
 				tt.inputQueryAddress.Alias, tt.inputQueryAddress.Comment, tt.inputQueryAddress.City,
@@ -1099,7 +1099,7 @@ func TestAddAddress(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(gomock.Any(),
-				"INSERT INTO address_user (city, street, house, floor, flat, porch, intercom, latitude, longitude, client_id, deleted)"+
+				"INSERT INTO public.address_user (city, street, house, floor, flat, porch, intercom, latitude, longitude, client_id, deleted)"+
 					" VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true) RETURNING id",
 				tt.inputQueryAddress.City, tt.inputQueryAddress.Street, tt.inputQueryAddress.House,
 				tt.inputQueryAddress.Floor, tt.inputQueryAddress.Flat, tt.inputQueryAddress.Porch,
@@ -1230,7 +1230,7 @@ func TestDeleteAddress(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(gomock.Any(),
-				"UPDATE address_user SET deleted = true WHERE client_id = $1 AND id = $2",
+				"UPDATE public.address_user SET deleted = true WHERE client_id = $1 AND id = $2",
 				tt.inputQueryClientId, tt.inputQueryAddressId,
 			).
 			Return(nil, tt.errQuery).

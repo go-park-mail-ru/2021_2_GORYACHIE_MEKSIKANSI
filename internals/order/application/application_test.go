@@ -132,6 +132,7 @@ var UpdateStatusOrder = []struct {
 	outChanStatus                  int
 	inputUpdateStatusOrderIdClient int
 	inputUpdateStatusOrderIdOrder  int
+	outUpdateStatusOrder           int
 	errUpdateStatusOrder           error
 }{
 	{
@@ -143,6 +144,7 @@ var UpdateStatusOrder = []struct {
 		outChanStatus:                  1,
 		inputUpdateStatusOrderIdClient: 1,
 		inputUpdateStatusOrderIdOrder:  1,
+		outUpdateStatusOrder:           1,
 		errUpdateStatusOrder:           nil,
 	},
 	{
@@ -154,6 +156,7 @@ var UpdateStatusOrder = []struct {
 		outChanStatus:                  1,
 		inputUpdateStatusOrderIdClient: 1,
 		inputUpdateStatusOrderIdOrder:  1,
+		outUpdateStatusOrder:           1,
 		errUpdateStatusOrder:           errors.New("text"),
 	},
 }
@@ -164,17 +167,13 @@ func TestUpdateStatusOrder(t *testing.T) {
 
 	m := mocks.NewMockWrapperOrderInterface(ctrl)
 	for _, tt := range UpdateStatusOrder {
-		//m.
-		//	EXPECT().
-		//	UpdateStatusOrder(tt.inputUpdateStatusOrderIdClient, tt.inputUpdateStatusOrderIdOrder).
-		//	Return(tt.errUpdateStatusOrder)
 		m.
 			EXPECT().
-			UpdateStatusOrder(tt.inputUpdateStatusOrderIdClient, gomock.Any()).
-			Return(tt.errUpdateStatusOrder).Times(5)
+			UpdateStatusOrder(tt.inputUpdateStatusOrderIdClient).
+			Return(tt.outUpdateStatusOrder, tt.errUpdateStatusOrder)
 		test := Order{DB: m, IntCh: make(chan authPkg.WebSocketOrder, 10)}
 		t.Run(tt.testName, func(t *testing.T) {
-			err := test.UpdateStatusOrder(tt.inputOrderIdOrder, tt.inputOrderStatus)
+			err := test.UpdateStatusOrder(tt.inputOrderIdOrder)
 			result := <-test.IntCh
 			require.Equal(t, tt.outChanId, result.Id, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outChanId, result.Id))
 			require.Equal(t, tt.outChanStatus, result.Status, fmt.Sprintf("Expected: %v\nbut got: %v", tt.outChanStatus, result.Status))

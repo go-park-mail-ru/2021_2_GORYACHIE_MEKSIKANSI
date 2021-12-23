@@ -550,13 +550,13 @@ func TestGetCart(t *testing.T) {
 				"SELECT cart_food.id, cart_food.food, cart_food.number_item, d.avatar, d.name, cart_food.count_food, d.cost, d.kilocalorie, d.weight,"+
 					" d.description, sr.name, sr.id, sr.radios, sd.name, sd.id, sd.cost, d.restaurant, d.count, sr.kilocalorie, sd.kilocalorie,"+
 					" cart_food.place, crf.place, csf.place "+
-					"FROM cart_food "+
-					"LEFT JOIN dishes d ON d.id = cart_food.food "+
-					"LEFT JOIN cart_structure_food csf ON csf.client_id = cart_food.client_id and d.id=csf.food and cart_food.id=csf.cart_id "+
-					"LEFT JOIN structure_dishes sd ON sd.id = csf.checkbox and sd.food=cart_food.food "+
-					"LEFT JOIN cart_radios_food crf ON crf.client_id = cart_food.client_id and cart_food.id=crf.cart_id "+
-					"LEFT JOIN structure_radios sr ON sr.id = crf.radios "+
-					"WHERE cart_food.client_id = $1",
+					"FROM public.cart_food "+
+					"LEFT JOIN public.dishes d ON d.id = cart_food.food "+
+					"LEFT JOIN public.cart_structure_food csf ON csf.client_id = cart_food.client_id and d.id=csf.food and cart_food.id=csf.cart_id "+
+					"LEFT JOIN public.structure_dishes sd ON sd.id = csf.checkbox and sd.food=cart_food.food "+
+					"LEFT JOIN public.cart_radios_food crf ON crf.client_id = cart_food.client_id and cart_food.id=crf.cart_id "+
+					"LEFT JOIN public.structure_radios sr ON sr.id = crf.radios "+
+					"WHERE public.cart_food.client_id = $1",
 				tt.inputQuery,
 			).
 			Return(&tt.outQuery, tt.errQuery).
@@ -628,7 +628,7 @@ func TestDeleteCart(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"DELETE FROM cart_food CASCADE WHERE client_id = $1",
+				"DELETE FROM public.cart_food CASCADE WHERE client_id = $1",
 				tt.inputDelete,
 			).
 			Return(nil, tt.errDelete)
@@ -785,7 +785,7 @@ func TestUpdateCartStructFood(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT id, name, cost, food FROM structure_dishes WHERE id = $1",
+				"SELECT id, name, cost, food FROM public.structure_dishes WHERE id = $1",
 				tt.inputQuery,
 			).
 			Return(&tt.outQuery).
@@ -794,7 +794,7 @@ func TestUpdateCartStructFood(t *testing.T) {
 			mTx.
 				EXPECT().
 				Exec(context.Background(),
-					"INSERT INTO cart_structure_food (checkbox, client_id, food, cart_id, place) VALUES ($1, $2, $3, $4, $5)",
+					"INSERT INTO public.cart_structure_food (checkbox, client_id, food, cart_id, place) VALUES ($1, $2, $3, $4, $5)",
 					tt.inputInsertIngredient, tt.inputInsertClient, tt.inputInsertFood, tt.inputInsertCartId, i,
 				).
 				Return(nil, tt.errInsert).
@@ -862,7 +862,7 @@ func TestUpdateCartRadios(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT id, name FROM structure_radios WHERE id = $1",
+				"SELECT id, name FROM public.structure_radios WHERE id = $1",
 				tt.inputQuery,
 			).
 			Return(&tt.outQuery).
@@ -871,7 +871,7 @@ func TestUpdateCartRadios(t *testing.T) {
 			mTx.
 				EXPECT().
 				Exec(context.Background(),
-					"INSERT INTO cart_radios_food (radios_id, radios, client_id, cart_id, place) VALUES ($1, $2, $3, $4, $5)",
+					"INSERT INTO public.cart_radios_food (radios_id, radios, client_id, cart_id, place) VALUES ($1, $2, $3, $4, $5)",
 					tt.inputInsertRadiosId, tt.inputInsertRadios, tt.inputInsertClient, tt.inputInsertCartId, i,
 				).
 				Return(nil, tt.errInsert).
@@ -1077,7 +1077,7 @@ func TestUpdateCart(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT id, avatar, cost, name, description, count, weight, kilocalorie FROM dishes WHERE id = $1 AND restaurant = $2",
+				"SELECT id, avatar, cost, name, description, count, weight, kilocalorie FROM public.dishes WHERE id = $1 AND restaurant = $2",
 				tt.inputSelectDishesIdDish, tt.inputSelectDishesIdRestaurant,
 			).
 			Return(&tt.outSelectDishes).
@@ -1085,7 +1085,7 @@ func TestUpdateCart(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"INSERT INTO cart_food (client_id, food, count_food, restaurant_id, number_item, place) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+				"INSERT INTO public.cart_food (client_id, food, count_food, restaurant_id, number_item, place) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
 				tt.inputInsertDishClientId, tt.inputInsertDishFood, tt.inputInsertDishCountFood,
 				tt.inputInsertDishRestaurantId, tt.inputInsertDishNumberItem, tt.inputInsertDishPlace,
 			).
@@ -1094,7 +1094,7 @@ func TestUpdateCart(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT id, name FROM structure_radios WHERE id = $1",
+				"SELECT id, name FROM public.structure_radios WHERE id = $1",
 				tt.inputSelectRadios,
 			).
 			Return(&tt.outSelectRadios).
@@ -1102,7 +1102,7 @@ func TestUpdateCart(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"INSERT INTO cart_radios_food (radios_id, radios, client_id, cart_id, place) VALUES ($1, $2, $3, $4, $5)",
+				"INSERT INTO public.cart_radios_food (radios_id, radios, client_id, cart_id, place) VALUES ($1, $2, $3, $4, $5)",
 				tt.inputInsertRadiosId, tt.inputInsertRadiosRadios,
 				tt.inputInsertRadiosClientId, tt.inputInsertRadiosCartId, tt.inputInsertRadiosPlace,
 			).
@@ -1111,7 +1111,7 @@ func TestUpdateCart(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT id, name, cost, food FROM structure_dishes WHERE id = $1",
+				"SELECT id, name, cost, food FROM public.structure_dishes WHERE id = $1",
 				tt.inputSelectIngredient,
 			).
 			Return(&tt.outSelectIngredient).
@@ -1119,7 +1119,7 @@ func TestUpdateCart(t *testing.T) {
 		mTx.
 			EXPECT().
 			Exec(context.Background(),
-				"INSERT INTO cart_structure_food (checkbox, client_id, food, cart_id, place) VALUES ($1, $2, $3, $4, $5)",
+				"INSERT INTO public.cart_structure_food (checkbox, client_id, food, cart_id, place) VALUES ($1, $2, $3, $4, $5)",
 				tt.inputInsertIngredientCheckbox, tt.inputInsertIngredientClient, tt.inputInsertIngredientFood,
 				tt.inputInsertIngredientCartId, tt.inputInsertIngredientPlace,
 			).
@@ -1196,7 +1196,7 @@ func TestGetPriceDelivery(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT price_delivery FROM restaurant WHERE id = $1",
+				"SELECT price_delivery FROM public.restaurant WHERE id = $1",
 				tt.inputQuery,
 			).
 			Return(&tt.outQuery).
@@ -1281,7 +1281,7 @@ func TestGetRestaurant(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM restaurant WHERE id = $1",
+				"SELECT id, avatar, name, price_delivery, min_delivery_time, max_delivery_time, rating FROM public.restaurant WHERE id = $1",
 				tt.inputQuery,
 			).
 			Return(&tt.outQuery).
@@ -2103,7 +2103,7 @@ func TestDoPromoCode(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(context.Background(),
-				"SELECT name, description FROM promocode WHERE code = $1 AND restaurant = $2",
+				"SELECT name, description FROM public.promocode WHERE code = $1 AND restaurant = $2",
 				tt.inputSelectPromoCodeInfoPromoCode, tt.inputSelectPromoCodeInfoRestaurantId,
 			).
 			Return(&tt.outSelectPromoCodeInfo).
@@ -2140,7 +2140,7 @@ func TestDoPromoCode(t *testing.T) {
 		mTx.
 			EXPECT().
 			QueryRow(gomock.Any(),
-				"SELECT avatar, name, kilocalorie, weight, description FROM dishes WHERE id = $1 AND count > 1",
+				"SELECT avatar, name, kilocalorie, weight, description FROM public.dishes WHERE id = $1 AND count > 1",
 				tt.inputSelectInfoDish).
 			Return(&tt.outSelectInfoDish).
 			Times(tt.countSelectInfoDish)

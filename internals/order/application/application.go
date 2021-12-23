@@ -68,5 +68,5 @@ func (o *Order) UpdateStatusOrder(id int) error {
 }
 
 func (o *Order) CancelOrder(id int, textCancel string) error {
-	return o.DB.CancelStatusOrder(id, textCancel)
+	return o.DB.CancelOrder(id, textCancel)
 }

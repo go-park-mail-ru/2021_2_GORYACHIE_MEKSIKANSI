@@ -34,6 +34,20 @@ func (m *MockOrderApplicationInterface) EXPECT() *MockOrderApplicationInterfaceM
 	return m.recorder
 }
 
+// CancelOrder mocks base method.
+func (m *MockOrderApplicationInterface) CancelOrder(arg0 int, arg1 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CancelOrder", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CancelOrder indicates an expected call of CancelOrder.
+func (mr *MockOrderApplicationInterfaceMockRecorder) CancelOrder(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CancelOrder", reflect.TypeOf((*MockOrderApplicationInterface)(nil).CancelOrder), arg0, arg1)
+}
+
 // CreateOrder mocks base method.
 func (m *MockOrderApplicationInterface) CreateOrder(arg0 int, arg1 order.CreateOrder) (int, error) {
 	m.ctrl.T.Helper()
@@ -80,15 +94,15 @@ func (mr *MockOrderApplicationInterfaceMockRecorder) GetOrders(arg0 interface{})
 }
 
 // UpdateStatusOrder mocks base method.
-func (m *MockOrderApplicationInterface) UpdateStatusOrder(arg0, arg1 int) error {
+func (m *MockOrderApplicationInterface) UpdateStatusOrder(arg0 int) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateStatusOrder", arg0, arg1)
+	ret := m.ctrl.Call(m, "UpdateStatusOrder", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // UpdateStatusOrder indicates an expected call of UpdateStatusOrder.
-func (mr *MockOrderApplicationInterfaceMockRecorder) UpdateStatusOrder(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockOrderApplicationInterfaceMockRecorder) UpdateStatusOrder(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateStatusOrder", reflect.TypeOf((*MockOrderApplicationInterface)(nil).UpdateStatusOrder), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateStatusOrder", reflect.TypeOf((*MockOrderApplicationInterface)(nil).UpdateStatusOrder), arg0)
 }
