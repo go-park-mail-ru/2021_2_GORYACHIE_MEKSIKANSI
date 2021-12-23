@@ -27,6 +27,12 @@ type WrapperRestaurantInterface interface {
 	IsFavoriteRestaurant(idClient int, idRestaurant int) (bool, error)
 	GetPromoCodes() ([]resPkg.Promocode, error)
 	DeleteDish(id int) error
+	AddDish(dish resPkg.DishHost) error
+	AddRadios(dishId int, dish []resPkg.CreateRadios) error
+	AddIngredient(dishId int, dish []resPkg.CreateIngredients) error
+	UpdateDish(dish resPkg.DishHost) error
+	UpdateIngredient(dishId int, ingredients []resPkg.CreateIngredients) error
+	UpdateRadios(dishId int, radios []resPkg.CreateRadios) error
 }
 
 type ConnectionInterface interface {

@@ -58,6 +58,11 @@ message Defense {
   string x_csrf_token = 3;
 }
 
+message PartSignUp {
+  string email = 2;
+  string name = 3;
+}
+
 
 service AuthorizationService {
   rpc CheckAccessUser(Defense) returns (CheckAccess);
@@ -67,4 +72,5 @@ service AuthorizationService {
   rpc Login(Authorization) returns (DefenseResponse);
   rpc Logout(CSRF) returns (CSRFResponse);
   rpc NewCSRFWebsocket(IdClient) returns (WebsocketResponse);
+  rpc AuthVK(PartSignUp) returns (DefenseResponse);
 }

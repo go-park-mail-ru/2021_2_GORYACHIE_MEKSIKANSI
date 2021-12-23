@@ -15,6 +15,7 @@ type AuthorizationManagerInterface interface {
 	Login(ctx context.Context, login *authProto.Authorization) (*authProto.DefenseResponse, error)
 	Logout(ctx context.Context, CSRF *authProto.CSRF) (*authProto.CSRFResponse, error)
 	NewCSRFWebsocket(ctx context.Context, client *authProto.IdClient) (*authProto.WebsocketResponse, error)
+	AuthVK(ctx context.Context, client *authProto.PartSignUp) (*authProto.DefenseResponse, error)
 }
 
 type AuthorizationManager struct {
@@ -111,5 +112,18 @@ func (am *AuthorizationManager) NewCSRFWebsocket(ctx context.Context, client *au
 
 	return &authProto.WebsocketResponse{
 		Websocket: CSRF,
+	}, nil
+}
+
+func (am *AuthorizationManager) AuthVK(ctx context.Context, client *authProto.PartSignUp) (*authProto.DefenseResponse, error) {
+	cookie, err := am.Application.AuthVK(client.Email, client.Name)
+	if err != nil {
+		return &authProto.DefenseResponse{
+			Error: err.Error(),
+		}, nil
+	}
+
+	return &authProto.DefenseResponse{
+		Defense: CastDefenseToDefenseProto(cookie),
 	}, nil
 }

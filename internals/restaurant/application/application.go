@@ -17,6 +17,12 @@ type RestaurantApplicationInterface interface {
 	GetFavoriteRestaurants(id int) ([]resPkg.Restaurants, error)
 	EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error)
 	DeleteDish(idDish int) error
+	AddDish(dish resPkg.DishHost) error
+	AddRadios(dishId int, dish []resPkg.CreateRadios) error
+	AddIngredient(dishId int, dish []resPkg.CreateIngredients) error
+	UpdateDish(dish resPkg.DishHost) error
+	UpdateIngredient(dishId int, ingredients []resPkg.CreateIngredients) error
+	UpdateRadios(dishId int, radios []resPkg.CreateRadios) error
 }
 
 type Restaurant struct {
@@ -61,4 +67,28 @@ func (r *Restaurant) EditRestaurantInFavorite(idRestaurant int, idClient int) (b
 
 func (r *Restaurant) DeleteDish(idDish int) error {
 	return r.DB.DeleteDish(idDish)
+}
+
+func (r *Restaurant) AddDish(dish resPkg.DishHost) error {
+	return r.DB.AddDish(dish)
+}
+
+func (r *Restaurant) AddRadios(dishId int, dish []resPkg.CreateRadios) error {
+	return r.DB.AddRadios(dishId, dish)
+}
+
+func (r *Restaurant) AddIngredient(dishId int, dish []resPkg.CreateIngredients) error {
+	return r.DB.AddIngredient(dishId, dish)
+}
+
+func (r *Restaurant) UpdateDish(dish resPkg.DishHost) error {
+	return r.DB.UpdateDish(dish)
+}
+
+func (r *Restaurant) UpdateIngredient(dishId int, ingredients []resPkg.CreateIngredients) error {
+	return r.DB.UpdateIngredient(dishId, ingredients)
+}
+
+func (r *Restaurant) UpdateRadios(dishId int, radios []resPkg.CreateRadios) error {
+	return r.DB.UpdateRadios(dishId, radios)
 }

@@ -24,6 +24,7 @@ type WrapperAuthorizationInterface interface {
 	NewCSRF(cookie *authPkg.Defense) (string, error)
 	GetIdByCookie(cookie *authPkg.Defense) (int, error)
 	NewCSRFWebsocket(id int) (string, error)
+	AuthVK(email string, name string) (*authPkg.Defense, error)
 }
 
 type ConnectionInterface interface {
@@ -523,4 +524,17 @@ func (db *Wrapper) NewCSRFWebsocket(id int) (string, error) {
 	}
 
 	return websocket, nil
+}
+
+func (db *Wrapper) AuthVK(email string, name string) (*authPkg.Defense, error) {
+	signup := &authPkg.RegistrationRequest{
+		Email: email,
+		Name:  name,
+		Phone: "88888888888",
+	}
+	cookie, err := db.SignupClient(signup, &authPkg.Defense{})
+	if err != nil {
+		return nil, err
+	}
+	return cookie, nil
 }

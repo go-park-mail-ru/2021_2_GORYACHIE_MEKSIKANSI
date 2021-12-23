@@ -214,3 +214,63 @@ func CastRestaurantIdToRestaurantInfoProto(restInfo *resPkg.RestaurantId) *resPr
 	p.Tags = CastTagsToTagsProto(restInfo.Tags)
 	return p
 }
+
+func CastDishHostProtoToDishHost(dishInfo *resProto.DishesHost) *resPkg.DishHost {
+	var p *resPkg.DishHost
+	p = &resPkg.DishHost{}
+	p.Dishes.Id = int(dishInfo.Id)
+	p.Dishes.Title = dishInfo.Title
+	p.Dishes.Cost = int(dishInfo.Cost)
+	p.Dishes.Ccal = int(dishInfo.Ccal)
+	p.Dishes.Description = dishInfo.Description
+	p.Dishes.Protein = int(dishInfo.Protein)
+	p.Dishes.Falt = int(dishInfo.Falt)
+	p.Dishes.Carbohydrates = int(dishInfo.Carbohydrates)
+	p.Dishes.Weight = int(dishInfo.Weight)
+	p.Dishes.CategoryDishes = dishInfo.CategoryDishes
+	p.Dishes.CategoryRestaurant = dishInfo.CategoryRestaurant
+	p.Dishes.Count = int(dishInfo.Count)
+
+	_, p.Dishes.Radios = CastCreateRadiosProtoToCreateRadios(dishInfo.Radios).Radios
+	_, p.Dishes.Ingredient = CastCreateIngredientsProtoToCreateIngredients(dishInfo.Ingredient).Ingredients
+	return p
+}
+
+func CastCreateRadiosProtoToCreateRadios(radios *resProto.CreateRadiosArray) (int, []resPkg.CreateRadios) {
+	var p []resPkg.CreateRadios
+	for _, i := range radios.Radios {
+		var protoRadios resPkg.CreateRadios
+		protoRadios = resPkg.CreateRadios{}
+		protoRadios.Id = int(i.Food)
+		protoRadios.Title = i.Name
+		for _, element := range i.Rows {
+			var protoRadiosElement resPkg.CreateElementRadios
+			protoRadiosElement = resPkg.CreateElementRadios{}
+			protoRadiosElement.Id = int(element.Id)
+			protoRadiosElement.Name = element.Name
+			protoRadiosElement.Protein = int(element.Protein)
+			protoRadiosElement.Falt = int(element.Falt)
+			protoRadiosElement.Carbohydrates = int(element.Carbohydrates)
+			protoRadios.Rows = append(protoRadios.Rows, protoRadiosElement)
+		}
+		p = append(p, protoRadios)
+	}
+	return radios.Food, p
+}
+
+func CastCreateIngredientsProtoToCreateIngredients(ingredients *resProto.CreateIngredientsArray) (int, []resPkg.CreateIngredients) {
+	var p []resPkg.CreateIngredients
+	for _, i := range ingredients.Ingredients {
+		var ingredient resPkg.CreateIngredients
+		ingredient = resPkg.CreateIngredients{}
+		ingredient.Cost = int(i.Cost)
+		ingredient.Id = int(i.Id)
+		ingredient.Title = i.Name
+		ingredient.Protein = int(i.Protein)
+		ingredient.Falt = int(i.Falt)
+		ingredient.Carbohydrates = int(i.Carbohydrates)
+		ingredient.Count = int(i.Count)
+		p = append(p, ingredient)
+	}
+	return ingredients.Id, p
+}

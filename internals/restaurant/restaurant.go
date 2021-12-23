@@ -154,6 +154,52 @@ type UpdateDishHost struct {
 	FileHeader *multipart.FileHeader
 }
 
+type DishHost struct {
+	Dishes     CreateDishes `json:"dishes"`
+	FileHeader *multipart.FileHeader
+}
+
+type CreateDishes struct {
+	Id                 int    `json:"id"`
+	Title              string `json:"name"`
+	Cost               int    `json:"cost"`
+	Ccal               int    `json:"ccal"`
+	Description        string `json:"desc"`
+	Protein            int
+	Falt               int
+	Carbohydrates      int
+	Weight             int
+	CategoryDishes     string
+	CategoryRestaurant string
+	Count              int
+	Radios             []CreateRadios      `json:"radios,omitempty"`
+	Ingredient         []CreateIngredients `json:"ingredients,omitempty"`
+}
+
+type CreateRadios struct {
+	Title string                `json:"name"`
+	Id    int                   `json:"id"`
+	Rows  []CreateElementRadios `json:"opt"`
+}
+
+type CreateElementRadios struct {
+	Id            int    `json:"id"`
+	Name          string `json:"name"`
+	Protein       int
+	Falt          int
+	Carbohydrates int
+}
+
+type CreateIngredients struct {
+	Id            int    `json:"id"`
+	Title         string `json:"name"`
+	Cost          int    `json:"cost"`
+	Protein       int
+	Falt          int
+	Carbohydrates int
+	Count         int
+}
+
 type DeleteDishesHost struct {
 	IdDishes int `json:"id_dishes"`
 }

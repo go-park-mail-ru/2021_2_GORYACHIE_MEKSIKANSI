@@ -118,6 +118,56 @@ message Ingredients {
   int64 cost = 3;
 }
 
+message DishesHostArray {
+  DishesHost dishes = 1;
+}
+
+message DishesHost {
+  int64 id = 1;
+  string name = 2;
+  int64 cost = 3;
+  int64 ccal = 4;
+  string description = 5;
+  int64 protein = 6;
+  int64 falt = 7;
+  int64 carbohydrates = 8;
+  int64 weight = 9;
+  string category_dishes = 10;
+  string category_restaurant = 11;
+  int64 count = 12;
+  repeated CreateRadios radios = 13;
+  repeated CreateIngredients ingredients = 14;
+  string error = 15;
+}
+
+message CreateRadiosArray {
+  DishesHost radios = 1;
+}
+
+message CreateRadios {
+  string name = 1;
+  int64 id = 2;
+  repeated CreateElementRadios rows = 3;
+  string error = 4;
+}
+
+message CreateElementRadios {
+  int64 id = 1;
+  string name = 2;
+  string error = 3;
+}
+
+message CreateIngredientsArray {
+  DishesHost ingredients = 1;
+}
+
+message CreateIngredients {
+  int64 id = 1;
+  string name = 2;
+  int64 cost = 3;
+  string error = 4;
+}
+
 message NewReview {
   RestaurantInfo restaurant = 1;
   string text = 2;
@@ -184,4 +234,10 @@ service RestaurantService {
   rpc GetFavoriteRestaurants(UserId) returns (Restaurants);
   rpc EditRestaurantInFavorite(EditRestaurantInFavoriteRequest) returns (ResponseEditRestaurantInFavorite);
   rpc deleteDish(DishId) returns (Error);
+  rpc AddDish(DishId) returns (Error);
+  rpc AddRadios(DishId) returns (Error);
+  rpc AddIngredient(DishId) returns (Error);
+  rpc UpdateDish(DishId) returns (Error);
+  rpc UpdateIngredient(DishId) returns (Error);
+  rpc UpdateRadios(DishId) returns (Error);
 }

@@ -40,6 +40,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/viper"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/vk"
 	"google.golang.org/grpc"
 )
 
@@ -75,8 +77,13 @@ func SetUp(connectionDB profileOrmPkg.ConnectionInterface, logger errPkg.MultiLo
 	}
 	authManager := authProto.NewAuthorizationServiceClient(grpcConnAuth)
 	authCtx := context.Background()
-
-	authWrapper := orm.Wrapper{Conn: authManager, Ctx: authCtx}
+	conf := oauth2.Config{
+		ClientID:     APP_ID,
+		ClientSecret: APP_KEY,
+		RedirectURL:  "https://bc7d-109-252-107-54.ngrok.io/",
+		Endpoint:     vk.Endpoint,
+	}
+	authWrapper := orm.Wrapper{Conn: authManager, Ctx: authCtx, VKConn: conf}
 	authApp := application.Authorization{DB: &authWrapper}
 	userInfo := api.UserInfo{
 		Application: &authApp,

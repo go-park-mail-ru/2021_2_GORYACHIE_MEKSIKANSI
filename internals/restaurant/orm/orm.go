@@ -2,10 +2,11 @@
 package orm
 
 import (
+	resPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/restaurant"
 	resProto "2021_2_GORYACHIE_MEKSIKANSI/internals/microservice/restaurant/proto"
 	errPkg "2021_2_GORYACHIE_MEKSIKANSI/internals/myerror"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/restaurant"
-	cast "2021_2_GORYACHIE_MEKSIKANSI/internals/util/cast"
+	"2021_2_GORYACHIE_MEKSIKANSI/internals/util/cast"
 	"context"
 	"google.golang.org/grpc"
 )
@@ -21,6 +22,12 @@ type WrapperRestaurantServerInterface interface {
 	GetFavoriteRestaurants(id int) ([]restaurant.Restaurants, error)
 	EditRestaurantInFavorite(idRestaurant int, idClient int) (bool, error)
 	DeleteDish(idDish int) error
+	AddDish(dish restaurant.DishHost) error
+	AddRadios(dishId int, dish []restaurant.CreateRadios) error
+	AddIngredient(dishId int, dish []restaurant.CreateIngredients) error
+	UpdateDish(dish restaurant.DishHost) error
+	UpdateIngredient(dishId int, ingredients []restaurant.CreateIngredients) error
+	UpdateRadios(dishId int, radios []restaurant.CreateRadios) error
 }
 
 type ConnectRestaurantServiceInterface interface {
@@ -34,6 +41,12 @@ type ConnectRestaurantServiceInterface interface {
 	GetFavoriteRestaurants(ctx context.Context, clientId *resProto.UserId, opts ...grpc.CallOption) (*resProto.Restaurants, error)
 	EditRestaurantInFavorite(ctx context.Context, restaurant *resProto.EditRestaurantInFavoriteRequest, opts ...grpc.CallOption) (*resProto.ResponseEditRestaurantInFavorite, error)
 	DeleteDish(ctx context.Context, restaurant *resProto.DishId, opts ...grpc.CallOption) (*resProto.Error, error)
+	AddDish(ctx context.Context, dish *resProto.DishesHost, opts ...grpc.CallOption) (*resProto.Error, error)
+	AddRadios(ctx context.Context, radios *resProto.CreateRadiosArray, opts ...grpc.CallOption) (*resProto.Error, error)
+	AddIngredient(ctx context.Context, ingredient *resProto.CreateIngredientArray, opts ...grpc.CallOption) (*resProto.Error, error)
+	UpdateDish(ctx context.Context, dish *resProto.DishesHost, opts ...grpc.CallOption) (*resProto.Error, error)
+	UpdateIngredient(ctx context.Context, dish *resProto.CreateIngredientArray, opts ...grpc.CallOption) (*resProto.Error, error)
+	UpdateRadios(ctx context.Context, dish *resProto.CreateRadiosArray, opts ...grpc.CallOption) (*resProto.Error, error)
 }
 
 type Wrapper struct {
@@ -157,6 +170,72 @@ func (r *Wrapper) EditRestaurantInFavorite(idRestaurant int, idClient int) (bool
 
 func (r *Wrapper) DeleteDish(idDish int) error {
 	result, err := r.Conn.DeleteDish(r.Ctx, &resProto.DishId{Id: int64(idDish)})
+	if err != nil {
+		return err
+	}
+	if result.Error != "" {
+		return &errPkg.Errors{Text: result.Error}
+	}
+	return nil
+}
+
+func (r *Wrapper) AddDish(dish resPkg.DishHost) error {
+	result, err := r.Conn.AddDish(r.Ctx, cast.CastDishHostProtoToDishHost(&dish))
+	if err != nil {
+		return err
+	}
+	if result.Error != "" {
+		return &errPkg.Errors{Text: result.Error}
+	}
+	return nil
+}
+
+func (r *Wrapper) AddRadios(dishId int, dish []resPkg.CreateRadios) error {
+	result, err := r.Conn.AddRadios(r.Ctx, cast.CastCreateRadiosToCreateRadiosProto(dish, dishId))
+	if err != nil {
+		return err
+	}
+	if result.Error != "" {
+		return &errPkg.Errors{Text: result.Error}
+	}
+	return nil
+}
+
+func (r *Wrapper) AddIngredient(dishId int, dish []resPkg.CreateIngredients) error {
+	result, err := r.Conn.AddIngredient(r.Ctx, cast.CastCreateIngredientsToCreateIngredientsProto(dish, dishId))
+	if err != nil {
+		return err
+	}
+	if result.Error != "" {
+		return &errPkg.Errors{Text: result.Error}
+	}
+	return nil
+}
+
+func (r *Wrapper) UpdateDish(dish resPkg.DishHost) error {
+	result, err := r.Conn.UpdateDish(r.Ctx, cast.CastDishHostProtoToDishHost(&dish))
+	if err != nil {
+		return err
+	}
+	if result.Error != "" {
+		return &errPkg.Errors{Text: result.Error}
+	}
+	return nil
+}
+
+func (r *Wrapper) UpdateIngredient(dishId int, ingredients []resPkg.CreateIngredients) error {
+	result, err := r.Conn.UpdateIngredient(r.Ctx, cast.CastCreateIngredientsToCreateIngredientsProto(ingredients, dishId))
+	if err != nil {
+		return err
+	}
+	if result.Error != "" {
+		return &errPkg.Errors{Text: result.Error}
+	}
+	return nil
+}
+
+func (r *Wrapper) UpdateRadios(dishId int, radios []resPkg.CreateRadios) error {
+	result, err := r.Conn.UpdateRadios(r.Ctx, cast.CastCreateRadiosToCreateRadiosProto(radios, dishId))
 	if err != nil {
 		return err
 	}

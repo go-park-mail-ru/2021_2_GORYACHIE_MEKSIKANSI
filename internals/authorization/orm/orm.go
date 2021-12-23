@@ -8,7 +8,12 @@ import (
 	Utils2 "2021_2_GORYACHIE_MEKSIKANSI/internals/util"
 	"2021_2_GORYACHIE_MEKSIKANSI/internals/util/cast"
 	"context"
+	"encoding/json"
+	"fmt"
+	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
+	"io/ioutil"
+	"net/http"
 )
 
 type WrapperAuthorizationInterface interface {
@@ -16,6 +21,7 @@ type WrapperAuthorizationInterface interface {
 	Login(login *authorization.Authorization) (*Utils2.Defense, error)
 	Logout(CSRF string) (string, error)
 	NewCSRFWebsocket(id int) (string, error)
+	AuthVK(email string, name string) (*Utils2.Defense, error)
 }
 
 type ConnectAuthServiceInterface interface {
@@ -23,11 +29,13 @@ type ConnectAuthServiceInterface interface {
 	Login(ctx context.Context, in *authProto.Authorization, opts ...grpc.CallOption) (*authProto.DefenseResponse, error)
 	Logout(ctx context.Context, in *authProto.CSRF, opts ...grpc.CallOption) (*authProto.CSRFResponse, error)
 	NewCSRFWebsocket(ctx context.Context, client *authProto.IdClient, opts ...grpc.CallOption) (*authProto.WebsocketResponse, error)
+	AuthVK(ctx context.Context, client *authProto.PartSignUp, opts ...grpc.CallOption) (*authProto.DefenseResponse, error)
 }
 
 type Wrapper struct {
-	Conn ConnectAuthServiceInterface
-	Ctx  context.Context
+	Conn   ConnectAuthServiceInterface
+	Ctx    context.Context
+	VKConn oauth2.Config
 }
 
 func (w *Wrapper) SignUp(signup *authorization.RegistrationRequest) (*Utils2.Defense, error) {
@@ -78,4 +86,28 @@ func (w *Wrapper) NewCSRFWebsocket(id int) (string, error) {
 		}
 	}
 	return websocket.Websocket, nil
+}
+
+type Response struct {
+	Response []struct {
+		FirstName string `json:"first_name"`
+	}
+}
+
+func (w *Wrapper) AuthVK(client *http.Client, email string) (*Utils2.Defense, error) {
+	resp, err := client.Get(fmt.Sprintf(API_URL, APP_SECRET))
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+
+	data := &Response{}
+	json.Unmarshal(body, data)
+	signUp := &authProto.PartSignUp{
+		Email: email,
+		Name:  data.Response[0].FirstName,
+	}
+	result, err := w.Conn.AuthVK(signUp)
+	return cast.CastDefenseResponseProtoToDefense(result), nil
 }

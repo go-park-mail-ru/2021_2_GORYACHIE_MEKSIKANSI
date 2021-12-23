@@ -19,6 +19,12 @@ type RestaurantManagerInterface interface {
 	GetFavoriteRestaurants(ctx context.Context, id *resProto.UserId) (*resProto.Restaurants, error)
 	EditRestaurantInFavorite(ctx context.Context, ids *resProto.EditRestaurantInFavoriteRequest) (*resProto.ResponseEditRestaurantInFavorite, error)
 	DeleteDish(ctx context.Context, ids *resProto.DishId) (*resProto.Error, error)
+	AddDish(ctx context.Context, dish *resProto.DishHost) (*resProto.Error, error)
+	AddRadios(ctx context.Context, dish *resProto.CreateRadios) (*resProto.Error, error)
+	AddIngredient(ctx context.Context, dish *resProto.CreateIngredients) (*resProto.Error, error)
+	UpdateDish(ctx context.Context, dish *resProto.DishHost) (*resProto.Error, error)
+	UpdateIngredient(ctx context.Context, ingredients *resProto.CreateIngredients) (*resProto.Error, error)
+	UpdateRadios(ctx context.Context, radios *resProto.CreateRadios) (*resProto.Error, error)
 }
 
 type RestaurantManager struct {
@@ -120,6 +126,53 @@ func (r *RestaurantManager) EditRestaurantInFavorite(ctx context.Context, restau
 
 func (r *RestaurantManager) DeleteDish(ctx context.Context, ids *resProto.DishId) (*resProto.Error, error) {
 	err := r.Application.DeleteDish(int(ids.Id))
+	if err != nil {
+		return &resProto.Error{Error: err.Error()}, nil
+	}
+	return &resProto.Error{Error: ""}, nil
+}
+func (r *RestaurantManager) AddDish(ctx context.Context, dish *resProto.DishHost) (*resProto.Error, error) {
+	err := r.Application.AddDish(*CastDishHostProtoToDishHost(dish))
+	if err != nil {
+		return &resProto.Error{Error: err.Error()}, nil
+	}
+	return &resProto.Error{Error: ""}, nil
+}
+
+func (r *RestaurantManager) AddRadios(ctx context.Context, dish *resProto.CreateRadios) (*resProto.Error, error) {
+	err := r.Application.AddRadios(CastCreateRadiosProtoToCreateRadios(dish))
+	if err != nil {
+		return &resProto.Error{Error: err.Error()}, nil
+	}
+	return &resProto.Error{Error: ""}, nil
+}
+
+func (r *RestaurantManager) AddIngredient(ctx context.Context, dish *resProto.CreateIngredients) (*resProto.Error, error) {
+	err := r.Application.AddIngredient(CastCreateIngredientsProtoToCreateIngredients(dish))
+	if err != nil {
+		return &resProto.Error{Error: err.Error()}, nil
+	}
+	return &resProto.Error{Error: ""}, nil
+}
+
+func (r *RestaurantManager) UpdateDish(ctx context.Context, dish *resProto.DishHost) (*resProto.Error, error) {
+	err := r.Application.UpdateDish(*CastDishHostProtoToDishHost(dish))
+	if err != nil {
+		return &resProto.Error{Error: err.Error()}, nil
+	}
+	return &resProto.Error{Error: ""}, nil
+}
+
+func (r *RestaurantManager) UpdateIngredient(ctx context.Context, ingredients *resProto.CreateIngredients) (*resProto.Error, error) {
+	err := r.Application.UpdateIngredient(CastCreateIngredientsProtoToCreateIngredients(ingredients))
+	if err != nil {
+		return &resProto.Error{Error: err.Error()}, nil
+	}
+	return &resProto.Error{Error: ""}, nil
+}
+
+func (r *RestaurantManager) UpdateRadios(ctx context.Context, radios *resProto.CreateRadios) (*resProto.Error, error) {
+	err := r.Application.UpdateRadios(CastCreateRadiosProtoToCreateRadios(radios))
 	if err != nil {
 		return &resProto.Error{Error: err.Error()}, nil
 	}
